@@ -1,0 +1,9 @@
+{
+  "generators": {
+    "create-model": {
+      "factory": "./src/generators/create-model/create-model",
+      "schema": "./src/generators/create-model/schema.json",
+      "description": "create-model generator"
+    }
+  }
+}
