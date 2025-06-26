@@ -1,0 +1,41 @@
+{
+  "name": "custom-generators",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "custom-generators/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/custom-generators",
+        "main": "custom-generators/src/index.ts",
+        "tsConfig": "custom-generators/tsconfig.lib.json",
+        "assets": [
+          "custom-generators/*.md",
+          {
+            "input": "./custom-generators/src",
+            "glob": "**/!(*.ts)",
+            "output": "./src"
+          },
+          {
+            "input": "./custom-generators/src",
+            "glob": "**/*.d.ts",
+            "output": "./src"
+          },
+          {
+            "input": "./custom-generators",
+            "glob": "generators.json",
+            "output": "."
+          },
+          {
+            "input": "./custom-generators",
+            "glob": "executors.json",
+            "output": "."
+          }
+        ]
+      }
+    }
+  }
+}

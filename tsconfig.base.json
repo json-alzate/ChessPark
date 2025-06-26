@@ -15,6 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@chesspark/custom-generators": ["custom-generators/src/index.ts"],
       "@cpark/models": ["libs/models/src/index.ts"]
     }
   },
