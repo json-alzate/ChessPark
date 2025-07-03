@@ -16,6 +16,7 @@
     "baseUrl": ".",
     "paths": {
       "@chesspark/board": ["libs/board/src/index.ts"],
+      "@chesspark/cp-ui": ["libs/cp-ui/src/index.ts"],
       "@chesspark/custom-generators": ["tools/custom-generators/src/index.ts"],
       "@cpark/models": ["libs/models/src/index.ts"]
     }

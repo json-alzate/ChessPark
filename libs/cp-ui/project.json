@@ -1,0 +1,24 @@
+{
+  "name": "cp-ui",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/cp-ui/src",
+  "projectType": "library",
+  "generators": {
+    "@nxext/stencil:component": {
+      "style": "scss"
+    }
+  },
+  "tags": [],
+  "targets": {
+    "test": {
+      "executor": "@nxext/stencil:test",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "projectType": "library",
+        "tsConfig": "libs/cp-ui/tsconfig.lib.json",
+        "configPath": "libs/cp-ui/stencil.config.ts",
+        "outputPath": "dist/libs/cp-ui"
+      }
+    }
+  }
+}
