@@ -44,3 +44,5 @@ Thumbs.db
 .github/instructions/nx.instructions.md
 
 .angular
+libs/cp-ui/www/
+libs/cp-ui/.stencil/

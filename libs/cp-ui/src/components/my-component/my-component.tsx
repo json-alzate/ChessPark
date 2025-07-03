@@ -27,6 +27,8 @@ export class MyComponent {
   }
 
   render() {
-    return <div>Hello, World! I'm {this.getText()}</div>;
+    return  <button class="btn btn-primary">
+        {this.getText()}
+      </button>;
   }
 }

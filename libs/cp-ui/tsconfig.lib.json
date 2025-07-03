@@ -6,6 +6,6 @@
     "composite": true,
     "types": ["node"]
   },
-  "exclude": ["**/*.spec.ts", "**/*.spec.tsx"],
+  "exclude": ["stencil.config.ts","**/*.spec.ts", "**/*.spec.tsx", "src/**/*"],
   "include": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"]
 }
