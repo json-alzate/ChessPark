@@ -1,3 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@plugin "daisyui";
+
+@layer components {
+  .btn {
+    @apply btn btn-primary text-lg text-center;
+  }
+}

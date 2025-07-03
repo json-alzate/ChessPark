@@ -4,7 +4,7 @@ import { format } from '../../utils/utils';
 @Component({
   tag: 'my-component',
   styleUrl: 'my-component.scss',
-  shadow: true,
+  shadow: false,
 })
 export class MyComponent {
   /**
@@ -27,7 +27,7 @@ export class MyComponent {
   }
 
   render() {
-    return  <button class="btn btn-primary">
+    return  <button class="btn btn-primary text-lg text-center">
         {this.getText()}
       </button>;
   }
