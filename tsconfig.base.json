@@ -19,7 +19,8 @@
       "@chesspark/cp-ui": ["libs/cp-ui/src/index.ts"],
       "@chesspark/custom-generators": ["tools/custom-generators/src/index.ts"],
       "@cpark/models": ["libs/models/src/index.ts"],
-      "@cpark/state": ["libs/state/src/index.ts"]
+      "@cpark/state": ["libs/state/src/index.ts"],
+      "@cpark/widgets": ["libs/widgets/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
