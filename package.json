@@ -70,7 +70,6 @@
     "postcss": "^8.5.6",
     "prettier": "^2.6.2",
     "puppeteer": "^21.4.1",
-    "stencil-tailwind-plugin": "^2.0.5",
     "tailwindcss": "^4.1.11",
     "ts-jest": "^29.1.0",
     "ts-node": "10.9.1",
