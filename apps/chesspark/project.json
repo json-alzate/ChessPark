@@ -21,7 +21,8 @@
             "input": "apps/chesspark/public"
           }
         ],
-        "styles": ["apps/chesspark/src/styles.scss"]
+        "styles": ["apps/chesspark/src/styles.scss"],
+        "index": "apps/chesspark/src/index.html"
       },
       "configurations": {
         "production": {

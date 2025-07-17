@@ -1,1 +1,1 @@
-export * from './lib/board/board';
+export * from './lib/board/board.component';
