@@ -50,6 +50,11 @@
       "cache": true,
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"]
+    },
+    "@angular-devkit/build-angular:application": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"]
     }
   },
   "plugins": [
@@ -67,7 +72,8 @@
       "options": {
         "targetName": "lint"
       }
-    }
+    },
+    "@nxext/capacitor/plugin"
   ],
   "generators": {
     "@nx/angular:application": {
