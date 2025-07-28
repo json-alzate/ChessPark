@@ -2,6 +2,8 @@
 import { Component, inject } from '@angular/core';
 import { RefresherCustomEvent, IonHeader, IonToolbar, IonTitle, IonContent, IonRefresher, IonRefresherContent, IonList } from '@ionic/angular/standalone';
 import { MessageComponent } from '../message/message.component';
+import { BoardComponent } from '@chesspark/board';
+
 
 import { DataService, Message } from '../services/data.service';
 

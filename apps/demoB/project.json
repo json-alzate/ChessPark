@@ -8,7 +8,7 @@
       "executor": "@angular/build:application",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/apps/demoB/browser",
+        "outputPath": "dist/apps/demoB",
         "browser": "apps/demoB/src/main.ts",
         "polyfills": ["zone.js", "apps/demoB/src/polyfills.ts"],
         "tsConfig": "apps/demoB/tsconfig.app.json",
