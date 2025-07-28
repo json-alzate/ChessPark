@@ -1,0 +1,7 @@
+{
+  "name": "ChessCoordinatesTrainer",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

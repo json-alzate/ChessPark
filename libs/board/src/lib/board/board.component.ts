@@ -17,9 +17,10 @@ export class BoardComponent implements OnInit {
   }
 
   buildBoard() {
-    const config = {};
-    const ground = Chessground(document.getElementById('boardPuzzle') as HTMLElement, config);
-    console.log('ground', ground);
+    const config = {
+      coordinates: false
+    };
+    Chessground(document.getElementById('boardPuzzle') as HTMLElement, config);
     
   }
 }
