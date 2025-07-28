@@ -1,11 +1,21 @@
 {
-  "name": "board",
+  "name": "@chesspark/board",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/board/src",
   "prefix": "lib",
   "projectType": "library",
   "tags": ["board"],
   "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/board",
+        "main": "libs/board/src/index.ts",
+        "tsConfig": "libs/board/tsconfig.lib.json",
+        "assets": ["libs/board/*.md"]
+      }
+    },
     "test": {
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
