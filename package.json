@@ -2,7 +2,12 @@
   "name": "@chesspark/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "build": "nx build",
+    "test": "nx test",
+    "postinstall": "npm run copy-chessboard-assets",
+    "copy-chessboard-assets": "mkdir -p apps/chessCoordinatesTrainer/src/assets/cm-chessboard/assets && cp -r node_modules/cm-chessboard/assets/* apps/chessCoordinatesTrainer/src/assets/cm-chessboard/assets/ && mkdir -p apps/chesspark/public/cm-chessboard/assets && cp -r node_modules/cm-chessboard/assets/* apps/chesspark/public/cm-chessboard/assets/"
+  },
   "private": true,
   "dependencies": {
     "@angular/common": "~19.2.0",
@@ -20,6 +25,7 @@
     "@capacitor/ios": "^7.4.2",
     "@ionic/angular": "^8.6.4",
     "@ionic/angular-toolkit": "^12.2.0",
+    "@lichess-org/chessground": "^9.3.1",
     "@ngrx/component-store": "^19.2.1",
     "@ngrx/effects": "^19.2.1",
     "@ngrx/entity": "^19.2.1",
@@ -29,8 +35,8 @@
     "@ngrx/store": "^19.2.1",
     "@ngrx/store-devtools": "^19.2.1",
     "@nx/devkit": "21.2.1",
-    "@lichess-org/chessground": "^9.3.1",
     "chart.js": "^4.5.0",
+    "cm-chessboard": "^8.7.8",
     "date-fns": "^4.1.0",
     "ionicons": "^8.0.13",
     "rxjs": "~7.8.0",

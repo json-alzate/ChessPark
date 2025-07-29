@@ -20,7 +20,9 @@
     "strictTemplates": true
   },
   "files": [],
-  "include": [],
+  "include": [
+    "src/types/cm-chessboard.d.ts"
+  ],
   "references": [
     {
       "path": "./tsconfig.app.json"

@@ -23,5 +23,8 @@
       "@cpark/widgets": ["libs/widgets/src/index.ts"]
     }
   },
-  "exclude": ["node_modules", "tmp"]
+  "exclude": ["node_modules", "tmp"],
+  "include": [
+    "types/cm-chessboard.d.ts"
+  ]
 }
