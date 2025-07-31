@@ -20,8 +20,14 @@ export class BoardComponent implements OnInit {
     const config = {
       coordinates: false,
       responsive: true,
-      position: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+      position: '8/8/8/8/8/8/8/8 w - - 0 1',
       assetsUrl: 'assets/cm-chessboard/assets/',
+      style: {
+        cssClass: 'chessboard-js',
+        showCoordinates: false,
+        // borderType: BORDER_TYPE.thin,
+      
+      },
     };
     // Chessground(document.getElementById('boardPuzzle') as HTMLElement, config);
     const board = new Chessboard(document.getElementById('boardPuzzle') as HTMLElement, config);
