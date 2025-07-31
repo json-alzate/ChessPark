@@ -1,0 +1,26 @@
+.content-accordion-themes {
+    max-height: 50vh;
+    overflow-y: auto;
+}
+
+.thumbnail-theme {
+    --size: 2rem;
+}
+
+.range-container {
+    display: flex;
+    flex-direction: column;
+    .header {
+        display: flex;
+        padding: 0px 8px;
+        .note {
+            margin-left: 8px;
+        }
+    }
+    .control {
+        padding: 0px 16px;
+        ion-range {
+            padding: 0px;
+        }
+    }
+}

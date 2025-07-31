@@ -1,0 +1,56 @@
+<ion-content>
+
+  <ion-grid>
+    <ion-row>
+
+      <ion-col size-xs="12" size-sm="12" size-md="12" size-lg="3" size-xl="3" class="ion-margin-top">
+
+        <ion-list>
+          <div *ngFor="let block of plan?.blocks; let i=index">
+            <div *ngIf="i === currentIndexBlock; else itemOtherBlock">
+              <ion-item class="item-block-training-info" lines="none">
+                <ion-label>
+                  <h6 *ngIf="block.title">{{ block.title }}</h6>
+                  <h6 *ngIf="block.theme">{{ appService.getNameThemePuzzleByValue(block.theme) }}</h6>
+                  <h6 *ngIf="block.openingFamily">{{ appService.getNameOpeningByValue( block.openingFamily) }}</h6>
+                </ion-label>
+                <div slot="end" *ngIf="showBlockTimer">{{ timeLeftBlock | secondsToMinutesSeconds }}</div>
+                <div slot="end" *ngIf="totalPuzzlesInBlock > 0"> {{ countPuzzlesPlayedBlock }} / {{totalPuzzlesInBlock
+                  }}</div>
+              </ion-item>
+            </div>
+            <ng-template #itemOtherBlock>
+              <ion-item class="item-block-training-info ion-hide-lg-down" lines="none" disabled>
+                <ion-label>
+                  <h6 *ngIf="block.title">{{ block.title }}</h6>
+                  <h6 *ngIf="block.theme">{{ appService.getNameThemePuzzleByValue(block.theme) }}</h6>
+                  <h6 *ngIf="block.openingFamily">{{ appService.getNameOpeningByValue( block.openingFamily) }}</h6>
+                </ion-label>
+                <ion-icon *ngIf="i < currentIndexBlock" color="success" slot="end"
+                  name="checkmark-done-outline"></ion-icon>
+                <ion-icon *ngIf="i > currentIndexBlock" slot="end" name="checkmark-outline"></ion-icon>
+              </ion-item>
+            </ng-template>
+          </div>
+
+        </ion-list>
+
+      </ion-col>
+
+      <ion-col class="ion-no-padding ion-margin-top" size-xs="12" size-sm="12" size-md="12" size-lg="6" size-xl="6">
+        <app-board-puzzle [setPuzzle]="puzzleToPlay" [setForceStopTimer]="forceStopTimerInPuzzleBoard"
+          (puzzleCompleted)="onPuzzleCompleted($event, 'good')" (puzzleFailed)="onPuzzleCompleted($event, 'bad')"
+          (puzzleEndByTime)="onPuzzleCompleted($event, 'timeOut')"></app-board-puzzle>
+      </ion-col>
+      <ion-col size-xs="12" size-sm="12" size-md="12" size-lg="6" size-xl="6" offset-lg="3" offset-xl="3"
+        *ngIf="isGoshHelperShow">
+        <ion-note>
+          {{ 'PUZZLES.goshHelp' | translate}} <ion-icon [name]="'eye-outline'"></ion-icon> {{ 'PUZZLES.goshHelp2' |
+          translate}} 00:00
+        </ion-note>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+
+</ion-content>

@@ -1,0 +1,23 @@
+ion-toolbar {
+    --background: transparent;
+}
+canvas {
+    max-height: 50vh;
+    position: absolute;
+}
+
+.div-chart-container {
+    position: relative;
+}
+
+.hide {
+    height: 0px;
+    width: 0px;
+    opacity: 0;
+}
+ion-list {
+    --background: transparent;
+}
+ion-item {
+    --background: transparent;
+}

@@ -1,0 +1,212 @@
+/*
+ * App Global CSS
+ * ----------------------------------------------------------------------------
+ * Put style rules here that you want to apply globally. These styles are for
+ * the entire app and not just one component. Additionally, this file can be
+ * used as an entry point to import other CSS/Sass files to be included in the
+ * output CSS.
+ * For more information on global stylesheets, visit the documentation:
+ * https://ionicframework.com/docs/layout/global-stylesheets
+ */
+
+/* Core CSS required for Ionic components to work properly */
+@import "~@ionic/angular/css/core.css";
+
+/* Basic CSS for apps built with Ionic */
+@import "~@ionic/angular/css/normalize.css";
+@import "~@ionic/angular/css/structure.css";
+@import "~@ionic/angular/css/typography.css";
+@import "~@ionic/angular/css/display.css";
+
+/* Optional CSS utils that can be commented out */
+@import "~@ionic/angular/css/padding.css";
+@import "~@ionic/angular/css/float-elements.css";
+@import "~@ionic/angular/css/text-alignment.css";
+@import "~@ionic/angular/css/text-transformation.css";
+@import "~@ionic/angular/css/flex-utils.css";
+
+// Theme
+@import "./theme/fonts.scss";
+
+// cm-chessboard
+@import "./assets/cm-chessboard/extensions/arrows/arrows.scss";
+@import "./assets/cm-chessboard/extensions/markers/markers.scss";
+@import "./assets/cm-chessboard/extensions/promotion-dialog/promotion-dialog.scss";
+
+// markers
+.cm-chessboard .markers .marker.marker-circle-green {
+    stroke: green;
+    stroke-width: 3px;
+    opacity: 0.6;
+}
+
+.cm-chessboard .markers .marker.marker-circle-yellow {
+    stroke: yellow;
+    stroke-width: 3px;
+    opacity: 0.6;
+}
+
+.cm-chessboard .markers .marker.marker-circle-blue {
+    stroke: blue;
+    stroke-width: 3px;
+    opacity: 0.6;
+}
+
+.cm-chessboard .markers .marker.marker-circle-red {
+    stroke: red;
+    stroke-width: 3px;
+    opacity: 0.6;
+}
+
+.cm-chessboard .markers .marker.marker-square-green {
+    fill: green;
+    opacity: 0.2;
+}
+
+.cm-chessboard .markers .marker.marker-square-clue {
+    fill: #46b0e0;
+    opacity: 0.8;
+}
+
+.cm-chessboard .markers .marker.marker-square-stockfish-best-move {
+    fill: #7974ff;
+    opacity: 0.8;
+}
+
+.cm-chessboard .markers .marker.marker-dot-green {
+    fill: green;
+    opacity: 0.2;
+}
+
+// Arrows
+.cm-chessboard .arrow-green .arrow-head {
+    fill: green;
+    fill-rule: nonzero;
+    fill-opacity: 1;
+}
+
+.cm-chessboard .arrow-green .arrow-line {
+    stroke: green;
+    stroke-linecap: round;
+    opacity: 0.5;
+}
+
+.cm-chessboard .arrow-yellow .arrow-head {
+    fill: yellow;
+    fill-rule: nonzero;
+    fill-opacity: 1;
+}
+
+.cm-chessboard .arrow-yellow .arrow-line {
+    stroke: yellow;
+    stroke-linecap: round;
+    opacity: 0.5;
+}
+
+.cm-chessboard .arrow-blue .arrow-head {
+    fill: blue;
+    fill-rule: nonzero;
+    fill-opacity: 1;
+}
+
+.cm-chessboard .arrow-blue .arrow-line {
+    stroke: blue;
+    stroke-linecap: round;
+    opacity: 0.5;
+}
+
+.cm-chessboard .arrow-red .arrow-head {
+    fill: red;
+    fill-rule: nonzero;
+    fill-opacity: 1;
+}
+
+.cm-chessboard .arrow-red .arrow-line {
+    stroke: red;
+    stroke-linecap: round;
+    opacity: 0.5;
+}
+
+.cm-chessboard .arrow-stockfish-best-move .arrow-head {
+    fill: #7974ff;
+    fill-rule: nonzero;
+    fill-opacity: 1;
+}
+
+.cm-chessboard .arrow-stockfish-best-move .arrow-line {
+    stroke: #7974ff;
+    stroke-linecap: round;
+    opacity: 0.5;
+}
+
+.cm-chessboard .arrow-stockfish-ponder-move .arrow-head {
+    fill: orange;
+    fill-rule: nonzero;
+    fill-opacity: 1;
+}
+
+.cm-chessboard .arrow-stockfish-ponder-move .arrow-line {
+    stroke: orange;
+    stroke-linecap: round;
+    opacity: 0.5;
+}
+
+// end cm-chessboard
+
+div.message-error {
+    min-height: 12px;
+    text-align: center;
+    margin: 0 auto;
+    opacity: 0;
+
+    @media only screen and (max-width: 360px) {
+        width: 90%;
+    }
+
+    span {
+        color: var(--ion-color-danger);
+        font-size: 0.8em !important;
+        margin: 2px 0px 10px;
+        text-align: right !important;
+        width: 100%;
+    }
+
+    &.active {
+        opacity: 1;
+    }
+}
+
+hr.solid {
+    border-top: 3px solid rgba(228, 228, 228, 0.022);
+}
+
+//buttons
+ion-button {
+    text-transform: none;
+}
+
+ion-segment-button {
+    ion-label {
+        text-transform: none;
+    }
+}
+
+// scroll
+::-webkit-scrollbar {
+    width: 3px;
+    height: 3px;
+}
+
+// alerts
+
+.alert-score {
+    .alert-title {
+        text-align: center;
+        font-size: 1em;
+    }
+
+    .alert-sub-title {
+        text-align: center;
+        font-size: 3em;
+    }
+}

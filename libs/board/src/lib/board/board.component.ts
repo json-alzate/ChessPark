@@ -1,11 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { Chessground } from '@lichess-org/chessground';
 import { Chessboard, BOARD_TYPE } from 'cm-chessboard';
-
-// Importar los estilos de cm-chessboard
-import 'cm-chessboard/assets/chessboard.scss';
 
 
 @Component({

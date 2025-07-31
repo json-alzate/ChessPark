@@ -1,0 +1,131 @@
+<ion-content class="ion-padding">
+
+    <ion-row>
+        <ion-col size="12" offset-lg="2" offset-xl="4">
+            <h2>
+                {{ 'CUSTOM_TRAINING.title' | translate }}
+                <!-- Crea tu plan de entrenamiento -->
+            </h2>
+
+            <ul>
+                <li>
+                    <ion-text color="medium">
+                        {{ 'CUSTOM_TRAINING.description1' | translate }}
+                        <!-- Un plan se compone de hasta 5 bloques. -->
+                    </ion-text>
+                </li>
+                <li>
+                    <ion-text color="medium">
+                        {{ 'CUSTOM_TRAINING.description2' | translate }}
+                        <!-- Cada bloque puede contener una serie de ejercicios con los ajustes que definas. -->
+                    </ion-text>
+                </li>
+            </ul>
+        </ion-col>
+    </ion-row>
+
+    <ion-row>
+        <ion-col size-xs="12" size-sm="12" size-md="12" size-lg="4" size-xl="4" offset-lg="2" offset-xl="4">
+            <ion-list>
+                <ion-list-header>
+                    <ion-item lines="none">
+                        <ion-input [formControl]="namePlanFormControl"
+                            [label]=" 'CUSTOM_TRAINING.FIELDS.nameLabel' | translate" labelPlacement="floating"
+                            [errorText]="(namePlanFormControl?.hasError('required') ? ('CUSTOM_TRAINING.ERRORS.NameRequired' | translate) : 
+                          (namePlanFormControl?.hasError('maxlength') ? ('CUSTOM_TRAINING.ERRORS.NameMaxLength' | translate) : '')) "
+                            maxlength="30"></ion-input>
+                    </ion-item>
+                </ion-list-header>
+                <ion-reorder-group (ionItemReorder)="doReorder($event)" disabled="false">
+                    <ion-item *ngFor="let block of blocks">
+
+                        <ion-avatar slot="start" *ngIf="block.theme !== 'all' && block.theme !== 'weakness'">
+                            <img [src]="'/assets/images/puzzle-themes/'+block.theme+'.svg'" />
+                        </ion-avatar>
+                        <ion-icon name="shuffle" slot="start" *ngIf="block.theme === 'all'"></ion-icon>
+                        <ion-icon name="trending-down" slot="start" *ngIf="block.theme === 'weakness'"></ion-icon>
+
+
+                        <ion-label>
+                            <h2>
+                                <ng-container *ngIf="block.time || block.puzzlesCount; else elseTemplateDurationInfo">
+                                    <span *ngIf="block.time && block.time > 0"
+                                        [innerHTML]="(block.time | secondsToMinutesSeconds) + ' <small><i>(min:seg)</i></small>'"></span>
+                                    {{ (block.time && block.time > 0) && block.puzzlesCount ?' ó' : '' }}
+                                    {{ block.puzzlesCount ? block.puzzlesCount + ' ejercicios' : '' }}
+                                </ng-container>
+                                <ng-template #elseTemplateDurationInfo>
+                                    <ion-icon name="infinite-outline"></ion-icon>
+                                </ng-template>
+                            </h2>
+                            <ion-note>
+                                <span [ngSwitch]="block.color">
+                                    <span *ngSwitchCase="'white'">
+                                        {{ 'CUSTOM_TRAINING.withWhite' | translate }}
+                                        <!-- Con blancas -->
+                                    </span>
+                                    <span *ngSwitchCase="'black'">
+                                        {{ 'CUSTOM_TRAINING.withBlack' | translate }}
+                                        <!-- Con negras -->
+                                    </span>
+                                    <span *ngSwitchDefault>
+                                        {{ 'CUSTOM_TRAINING.anyColor' | translate }}
+                                        <!-- Cualquier color -->
+                                    </span>
+                                </span>
+                            </ion-note>
+                        </ion-label>
+
+                        <ion-buttons slot="end">
+                            <ion-button *ngIf="block.goshPuzzle" disabled>
+                                <ion-icon slot="icon-only" name="eye-off-outline"></ion-icon>
+                            </ion-button>
+                        </ion-buttons>
+                        <ion-reorder slot="end"></ion-reorder>
+
+                    </ion-item>
+                </ion-reorder-group>
+            </ion-list>
+        </ion-col>
+
+    </ion-row>
+    <ion-row>
+        <ion-col size-xs="12" size-sm="12" size-md="12" size-lg="4" size-xl="4" offset-lg="2" offset-xl="4">
+            <ion-button [disabled]="blocks.length >= 5" class="ion-margin-top" fill="clear" size="large" expand="block"
+                (click)="openBlockSettingsModal()">
+                <ion-icon slot="start" name="add"></ion-icon>
+                {{ 'CUSTOM_TRAINING.addBlock' | translate }}
+                <!-- Añadir bloque -->
+            </ion-button>
+        </ion-col>
+    </ion-row>
+
+    <ion-row class="ion-hide-md-down">
+        <ion-col size-xs="12" size-sm="12" size-md="12" size-lg="4" size-xl="4" offset-lg="2" offset-xl="4">
+            <ion-button size="large" expand="block" [disabled]="blocks.length === 0" (click)="saveAndPlay()">
+                {{ 'CUSTOM_TRAINING.saveAndPlay' | translate }}
+                <!-- Guardar y jugar -->
+            </ion-button>
+        </ion-col>
+    </ion-row>
+
+
+
+
+
+
+
+</ion-content>
+
+<ion-footer class="ion-no-border ion-hide-md-up">
+    <ion-toolbar>
+        <ion-row>
+            <ion-col size="8" offset="2">
+                <ion-button size="large" expand="block" [disabled]="blocks.length === 0" (click)="saveAndPlay()">
+                    {{ 'CUSTOM_TRAINING.saveAndPlay' | translate }}
+                    <!-- Guardar y jugar -->
+                </ion-button>
+            </ion-col>
+        </ion-row>
+    </ion-toolbar>
+</ion-footer>

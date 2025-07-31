@@ -2,12 +2,12 @@ import { Routes } from '@angular/router';
 
 export const routes: Routes = [
   {
-    path: 'login',
-    loadComponent: () => import('./pages/login/login.page').then((m) => m.LoginPage),
+    path: 'coordinates',
+    loadComponent: () => import('./pages/coordinates/coordinates.page').then((m) => m.CoordinatesPage),
   },
   {
     path: '',
-    redirectTo: 'login',
+    redirectTo: 'coordinates',
     pathMatch: 'full',
   },
 ];

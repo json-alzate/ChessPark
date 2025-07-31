@@ -1,0 +1,62 @@
+.item-plan-description {
+    --background: transparent;
+}
+
+.img-plan {
+    display: block;
+    margin: 0 auto;
+    width: 50%;
+    opacity: 0.7;
+}
+
+.btn-img-icon {
+    position: absolute;
+    top: -8px;
+    left: 20px;
+    height: 25px;
+}
+
+ion-card {
+    cursor: pointer;
+    margin: 2px;
+    box-shadow: none;
+    ion-fab-button {
+        --box-shadow: none;
+    }
+}
+
+ion-button {
+    --box-shadow: none;
+}
+a {
+    color: var(--ion-color-medium);
+}
+
+/** Pequeños Dispositivos Móviles (teléfonos en modo retrato) */
+@media only screen and (min-device-width: 320px) and (max-device-width: 480px) {
+    .item-plan-description {
+        ion-label {
+            font-size: 12px;
+        }
+    }
+
+    .img-plan {
+        width: 90%;
+    }
+}
+/* Dispositivos Móviles de Mayor Tamaño (teléfonos grandes, modo retrato y paisaje) */
+@media only screen and (min-device-width: 481px) and (max-device-width: 768px) {
+    /* Estilos aquí */
+}
+/* Tablets (modo retrato) */
+@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
+    /* Estilos aquí */
+}
+/* Tablets y Computadoras Pequeñas (modo paisaje) */
+@media only screen and (min-device-width: 1024px) and (max-device-width: 1224px) {
+    /* Estilos aquí */
+}
+/* Pantallas Grandes y Monitores (computadoras de escritorio) */
+@media only screen and (min-device-width: 1224px) {
+    /* Estilos aquí */
+}

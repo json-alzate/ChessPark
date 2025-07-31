@@ -1,0 +1,28 @@
+div.info-container {
+  margin-top: 15vh;
+}
+
+div.container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50%;
+  width: 100%;
+  // background-color: #fff;
+}
+
+.btn-square-name {
+  height: 20vh;
+  font-size: 15vh;
+  margin-top: 5vh;
+}
+
+ion-card {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  z-index: 1;
+  transform: scale(1);
+  transition: transform 0.5s;
+}

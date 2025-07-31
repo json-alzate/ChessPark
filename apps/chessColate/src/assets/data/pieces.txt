@@ -1,0 +1,15 @@
+// Blancas
+♔ --> Rey
+♕ --> Dama
+♖ --> Torre
+♗ --> Alfil
+♘ --> Caballo
+♙ --> Peon
+
+// Negras
+♚ --> Rey
+♛ --> Dama
+♜ --> Torre
+♝ --> Alfil
+♞ --> Caballo
+♟ --> Peon
