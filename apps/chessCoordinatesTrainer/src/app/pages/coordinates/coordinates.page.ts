@@ -3,7 +3,9 @@ import { Component,  CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 
-import {   IonContent } from '@ionic/angular/standalone';
+import { IonContent } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import { shuffleOutline, settingsOutline } from 'ionicons/icons';
 
 
 
@@ -50,6 +52,15 @@ export class CoordinatesPage {
     // profile: Profile;
   
     private unsubscribeIntervalSeconds$ = new Subject<void>();
+
+    constructor() {
+      addIcons({ shuffleOutline, settingsOutline });
+    }
+
+  // Método para escuchar cuando se presiona una casilla en el tablero
+  onSquareSelected(square: string) {
+    console.log('Casilla presionada:', square);
+  }
 
   play() {
     this.puzzles = this.generatePuzzles(200);

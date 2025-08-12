@@ -1,8 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { Chessboard, BOARD_TYPE } from 'cm-chessboard';
-
+import { Chessboard, BOARD_TYPE, ChessboardConfig } from 'cm-chessboard';
 
 @Component({
   selector: 'lib-board',
@@ -12,25 +11,34 @@ import { Chessboard, BOARD_TYPE } from 'cm-chessboard';
 })
 export class BoardComponent implements OnInit {
   
+  @Output() squareSelected = new EventEmitter<string>();
+  
   ngOnInit() {
     this.buildBoard();
   }
 
-  buildBoard() {
-    const config = {
+  async buildBoard() {
+    const config: ChessboardConfig = {
       coordinates: false,
       responsive: true,
       position: '8/8/8/8/8/8/8/8 w - - 0 1',
       assetsUrl: 'assets/cm-chessboard/assets/',
       style: {
         cssClass: 'chessboard-js',
-        showCoordinates: false,
+        showCoordinates: true,
         // borderType: BORDER_TYPE.thin,
-      
       },
     };
-    // Chessground(document.getElementById('boardPuzzle') as HTMLElement, config);
-    const board = new Chessboard(document.getElementById('boardPuzzle') as HTMLElement, config);
     
+    const board: any = await new Chessboard(document.getElementById('boardPuzzle') as HTMLElement, config);
+
+
+    // Agregar evento de clic en casillas usando enableSquareSelect
+    board.enableSquareSelect('pointerdown', (eventData: any) => {
+      
+      if (eventData.square) {
+        this.squareSelected.emit(eventData.square);
+      }
+    });
   }
 }

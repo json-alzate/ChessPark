@@ -7,7 +7,7 @@
   
         <ion-col size="12" size-sm="12" size-md="12" size-lg="6" size-xl="6" offset-lg="2" offset-xl="2">
   
-              <lib-board></lib-board>
+              <lib-board (squareSelected)="onSquareSelected($event)"></lib-board>
               <h1 class="current-puzzle">
                 {{ currentPuzzle }}
               </h1>
@@ -21,15 +21,33 @@
         </ion-col>
   
         <ion-col size="12" size-sm="12" size-md="12" size-lg="4" size-xl="4" >
-  
-          
-          <div class="flex flex-col justify-center items-center gap-2">
-            
+
+          <div class="flex justify-between items-center">
+
             <div class="join join-horizontal">
-              <input class="join-item btn btn-ghost btn-sm" type="radio" name="options" aria-label="Radio 1" />
-              <input class="join-item btn btn-ghost btn-sm" type="radio" name="options" aria-label="Radio 2" />
-              <input class="join-item btn btn-ghost btn-sm" type="radio" name="options" aria-label="Radio 3" />
+              <button class="join-item btn  btn-sm btn-soft btn-primary" >
+                <img src="assets/images/pieces/cburnett/wK.svg" alt="White King" class="size-6">
+              </button>
+              <button class="join-item btn btn-sm  btn-ghost " >
+                <ion-icon name="shuffle-outline" class="size-6"></ion-icon>
+              </button>
+            
+              <button class="join-item btn btn-ghost btn-sm  " >
+                <img src="assets/images/pieces/cburnett/bK.svg" alt="Black King" class="size-6">
+              </button>
             </div>
+            <div class="join join-horizontal">
+              <button class="btn btn-sm  btn-ghost ">
+                <ion-icon name="settings-outline" class="size-6"></ion-icon>
+              </button>
+            </div>
+          </div>
+
+          
+          <div class="flex flex-col justify-center items-center gap-2 mt-2">
+            
+
+           
             
             <button class="btn btn-lg btn-primary w-full" (click)="play()">Jugar</button>
 
