@@ -1,5 +1,5 @@
 
-import { Component,  CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component,  CUSTOM_ELEMENTS_SCHEMA, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 
@@ -21,6 +21,8 @@ import { interval, Observable, Subject, takeUntil } from 'rxjs';
   imports: [ CommonModule, IonContent, BoardComponent ],
 })
 export class CoordinatesPage {
+
+  @ViewChild(BoardComponent) boardComponent!: BoardComponent;
 
   letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
   numbers = ['1', '2', '3', '4', '5', '6', '7', '8'];
@@ -48,6 +50,9 @@ export class CoordinatesPage {
     randomPosition = false;
     currentFenInBoard = '8/8/8/8/8/8/8/8 w - - 0 1';
     currentColorInBoard: 'white' | 'black' = 'white';
+    
+    // Orientación del tablero
+    boardOrientation: 'random' | 'white' | 'black' = 'random';
   
     // profile: Profile;
   
@@ -60,6 +65,26 @@ export class CoordinatesPage {
   // Método para escuchar cuando se presiona una casilla en el tablero
   onSquareSelected(square: string) {
     console.log('Casilla presionada:', square);
+  }
+
+  /**
+   * Cambia la orientación del tablero
+   * @param orientation Nueva orientación
+   */
+  changeBoardOrientation(orientation: 'random' | 'white' | 'black') {
+    this.boardOrientation = orientation;
+    
+    if (this.boardComponent) {
+      if (orientation === 'random') {
+        // Para random, elegir aleatoriamente entre blanco y negro
+        const randomOrientation = Math.random() < 0.5 ? 'w' : 'b';
+        this.boardComponent.changeOrientation(randomOrientation);
+      } else {
+        // Para blanco o negro específico
+        const boardOrientation = orientation === 'white' ? 'w' : 'b';
+        this.boardComponent.changeOrientation(boardOrientation);
+      }
+    }
   }
 
   play() {
@@ -77,7 +102,9 @@ export class CoordinatesPage {
     }
 
     this.currentColorInBoard = orientation === 'w' ? 'white' : 'black';
-    // this.changeOrientation(orientation);
+    
+    // Aplicar la orientación del tablero al iniciar el juego
+    this.changeBoardOrientation(this.boardOrientation);
 
     this.isPlaying = true;
     this.initInterval();
