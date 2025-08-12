@@ -11,6 +11,7 @@ import { shuffleOutline, settingsOutline } from 'ionicons/icons';
 
 import { BoardComponent } from '@chesspark/board';
 import { interval, Observable, Subject, takeUntil } from 'rxjs';
+import { StorageService, CoordinatesPuzzle } from '../../services/storage.service';
 
 
 @Component({
@@ -53,18 +54,49 @@ export class CoordinatesPage {
     
     // Orientación del tablero
     boardOrientation: 'random' | 'white' | 'black' = 'random';
-  
-    // profile: Profile;
+
+    // Estadísticas del usuario
+    userStats = {
+      totalGames: 0,
+      bestScore: 0,
+      averageScore: 0,
+      totalCorrect: 0,
+      totalIncorrect: 0,
+      accuracy: 0
+    };
   
     private unsubscribeIntervalSeconds$ = new Subject<void>();
 
-    constructor() {
+    constructor(private storageService: StorageService) {
       addIcons({ shuffleOutline, settingsOutline });
+      this.loadUserStats();
     }
+
+  /**
+   * Carga las estadísticas del usuario
+   */
+  loadUserStats() {
+    this.userStats = this.storageService.getUserStats();
+  }
 
   // Método para escuchar cuando se presiona una casilla en el tablero
   onSquareSelected(square: string) {
-    console.log('Casilla presionada:', square);
+    if (this.isPlaying && this.currentPuzzle) {
+      if (square === this.currentPuzzle) {
+        // Coordenada correcta
+        this.squaresGood.push(this.currentPuzzle);
+        this.score++;
+        this.nextPuzzle();
+      } else {
+        // Coordenada incorrecta
+        this.squaresBad.push(this.currentPuzzle);
+        this.timeColor = 'danger';
+        // Cambiar el color de vuelta después de un tiempo
+        setTimeout(() => {
+          this.timeColor = this.time > 15 ? 'success' : 'warning';
+        }, 500);
+      }
+    }
   }
 
   /**
@@ -94,6 +126,8 @@ export class CoordinatesPage {
     this.score = 0;
     this.squaresBad = [];
     this.squaresGood = [];
+    this.timeColor = 'success';
+    this.progressValue = 1;
 
     let orientation: 'w' | 'b' = this.color === 'white' ? 'w' : 'b';
 
@@ -111,7 +145,6 @@ export class CoordinatesPage {
   }
 
   initInterval() {
-
     const seconds = interval(10);
     this.subsSeconds = seconds.pipe(
       takeUntil(this.unsubscribeIntervalSeconds$)
@@ -120,19 +153,72 @@ export class CoordinatesPage {
     this.subsSeconds.subscribe(() => {
       this.time = this.time - 0.01;
       this.progressValue = this.time / 60;
-      if (this.time < 1) {
-        // this.stopGame();
-      } else if (this.time > 15) {
+      
+      if (this.time <= 0) {
+        this.stopGame();
+      } else if (this.time > 20) {
         this.timeColor = 'success';
-      } else {
+      } else if (this.time > 10) {
         this.timeColor = 'warning';
+      } else {
+        this.timeColor = 'danger';
       }
     });
-
   }
 
+  /**
+   * Pasa al siguiente puzzle
+   */
+  nextPuzzle() {
+    //TODO: si se completan lso puzzles cargar mas para que nunca se acaben
+    if (this.score < this.puzzles.length) {
+      this.currentPuzzle = this.puzzles[this.score];
+    } else {
+      // Se acabaron los puzzles, el jugador ganó
+      this.stopGame();
+    }
+  }
 
+  /**
+   * Detiene el juego y guarda los resultados
+   */
+  stopGame() {
+    this.unsubscribeIntervalSeconds$.next();
+    this.isPlaying = false;
+    
+    // Guardar el resultado del juego
+    this.saveGameResult();
+    
+    // Mostrar alerta con el puntaje
+    this.showGameResult();
+    
+    // Recargar estadísticas
+    this.loadUserStats();
+  }
 
+  /**
+   * Guarda el resultado del juego en localStorage
+   */
+  saveGameResult() {
+    const gameResult: Omit<CoordinatesPuzzle, 'uid' | 'uidUser'> = {
+      score: this.score,
+      squaresGood: this.squaresGood,
+      squaresBad: this.squaresBad,
+      round: this.puzzles,
+      date: new Date().getTime(),
+      color: this.boardComponent ? this.boardComponent.getOrientation() : 'w'
+    };
+
+    this.storageService.saveGameResult(gameResult);
+  }
+
+  /**
+   * Muestra el resultado del juego
+   */
+  showGameResult() {
+    const message = `¡Juego terminado!\n\nPuntaje: ${this.score}\nAciertos: ${this.squaresGood.length}\nErrores: ${this.squaresBad.length}`;
+    alert(message);
+  }
 
   /**
    * Generar escaques puzzles
@@ -140,7 +226,7 @@ export class CoordinatesPage {
    * @count = 1
    */
   generatePuzzles(count = 1): string[] {
-    const puzzles = [];
+    const puzzles: string[] = [];
 
     for (let i = 0; i < count; i++) {
       // eslint-disable-next-line max-len
@@ -150,8 +236,6 @@ export class CoordinatesPage {
 
     return puzzles;
   }
-
-
 
   toggleBoardCoordinates() {
     this.showCoordinates = !this.showCoordinates;
@@ -196,6 +280,4 @@ export class CoordinatesPage {
   changeOrientation(orientation?: 'w' | 'b') {
     // this.board.setOrientation(orientation);
   }
-
-
 }
