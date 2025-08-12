@@ -1,5 +1,20 @@
+<ion-header class="ion-no-border" [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      <h1 class="text-2xl font-bold ml-2">Coordenadas de Ajedrez</h1>
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button class="btn-ghost">
+        <ion-icon name="settings-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
 <ion-content [fullscreen]="true" class="ion-padding">
+  
   <div id="theme-target" class="theme-wrapper" appThemeApply>
+
 
 
     <ion-grid class="ion-margin-top">
@@ -69,11 +84,7 @@
                 <img src="assets/images/pieces/cburnett/bK.svg" alt="Black King" class="size-6">
               </button>
             </div>
-            <div class="join join-horizontal">
-              <button class="btn btn-sm  btn-ghost ">
-                <ion-icon name="settings-outline" class="size-6"></ion-icon>
-              </button>
-            </div>
+          
           </div>
 
           
@@ -87,16 +98,39 @@
             <div class="stats stats-horizontal shadow w-full mt-2">
               <div class="stat place-items-center">
                 <div class="stat-title">Blancas</div>
-                <div class="stat-value">23</div>
-                <div class="stat-desc">Hace 1 mes</div>
+                <div class="stat-value text-primary">{{ getBestScoreByColor('w') }}</div>
+                <div class="stat-desc">{{ getBestScoreTimeByColor('w') }}</div>
               </div>
             
               <div class="stat place-items-center">
                 <div class="stat-title">Negras</div>
-                <div class="stat-value">35</div>
-                <div class="stat-desc">Hace 2 semanas</div>
+                <div class="stat-value">{{ getBestScoreByColor('b') }}</div>
+                <div class="stat-desc">{{ getBestScoreTimeByColor('b') }}</div>
               </div>
             
+            </div>
+
+            <!-- Mejores puntajes generales -->
+            <div class="w-full mt-4">
+              <h3 class="text-lg font-bold mb-2 text-center">Mejores Puntajes</h3>
+              <div class="space-y-2">
+                <div 
+                  *ngFor="let score of bestScores; let i = index" 
+                  class="flex justify-between items-center p-2 bg-base-200 rounded-lg"
+                >
+                  <div class="flex items-center gap-2">
+                    <span class="text-sm font-bold text-primary">#{{ i + 1 }}</span>
+                    <span class="text-sm">{{ score.score }} puntos</span>
+                  </div>
+                  <div class="text-xs text-base-content/70">
+                    {{ score.timeAgo }}
+                  </div>
+                </div>
+                
+                <div *ngIf="bestScores.length === 0" class="text-center text-sm text-base-content/70 py-4">
+                  No hay puntajes aún. ¡Juega tu primera partida!
+                </div>
+              </div>
             </div>
           </div>
   
@@ -104,18 +138,6 @@
   
       </ion-row>
     </ion-grid>
-
-    <!-- <div class="ion-padding">
-
-      <lib-board></lib-board>
-
-      <div class="flex items-center mt-2 ">
-        <progress class="progress progress-success w-full" [value]="progressValue * 100" max="100"></progress>
-        <p class="text-sm ml-2 whitespace-nowrap">{{time | number:'1.0-0'}}</p>
-      </div>
-
-      
-    </div> -->
 
   </div>
 

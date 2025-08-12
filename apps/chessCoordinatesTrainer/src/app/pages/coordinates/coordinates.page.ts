@@ -12,6 +12,8 @@ import { shuffleOutline, settingsOutline } from 'ionicons/icons';
 import { BoardComponent } from '@chesspark/board';
 import { interval, Observable, Subject, takeUntil } from 'rxjs';
 import { StorageService, CoordinatesPuzzle } from '../../services/storage.service';
+import { formatDistanceToNow } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 
 @Component({
@@ -64,12 +66,21 @@ export class CoordinatesPage {
       totalIncorrect: 0,
       accuracy: 0
     };
+
+    // Mejores puntajes
+    bestScores: Array<{
+      score: number;
+      date: number;
+      timeAgo: string;
+      color: 'w' | 'b';
+    }> = [];
   
     private unsubscribeIntervalSeconds$ = new Subject<void>();
 
     constructor(private storageService: StorageService) {
       addIcons({ shuffleOutline, settingsOutline });
       this.loadUserStats();
+      this.loadBestScores();
     }
 
   /**
@@ -77,6 +88,68 @@ export class CoordinatesPage {
    */
   loadUserStats() {
     this.userStats = this.storageService.getUserStats();
+  }
+
+  /**
+   * Carga los mejores puntajes del usuario
+   */
+  loadBestScores() {
+    const allGames = this.storageService.getAllGames();
+    
+    // Obtener los 5 mejores puntajes
+    const topScores = allGames
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 5)
+      .map(game => ({
+        score: game.score,
+        date: game.date,
+        timeAgo: this.formatTimeAgo(game.date),
+        color: game.color
+      }));
+
+    this.bestScores = topScores;
+  }
+
+  /**
+   * Formatea la fecha como "hace X tiempo"
+   * @param timestamp Timestamp de la fecha
+   * @returns String formateado
+   */
+  formatTimeAgo(timestamp: number): string {
+    try {
+      return formatDistanceToNow(timestamp, { 
+        addSuffix: true, 
+        locale: es 
+      });
+    } catch (error) {
+      return 'recientemente';
+    }
+  }
+
+  /**
+   * Obtiene el mejor puntaje por color
+   * @param color Color del tablero ('w' o 'b')
+   * @returns Mejor puntaje para ese color
+   */
+  getBestScoreByColor(color: 'w' | 'b'): number {
+    const colorGames = this.bestScores.filter(game => game.color === color);
+    return colorGames.length > 0 ? Math.max(...colorGames.map(g => g.score)) : 0;
+  }
+
+  /**
+   * Obtiene cuándo se hizo el mejor puntaje por color
+   * @param color Color del tablero ('w' o 'b')
+   * @returns String formateado de cuándo se hizo
+   */
+  getBestScoreTimeByColor(color: 'w' | 'b'): string {
+    const colorGames = this.bestScores.filter(game => game.color === color);
+    if (colorGames.length === 0) return 'Nunca';
+    
+    const bestGame = colorGames.reduce((best, current) => 
+      current.score > best.score ? current : best
+    );
+    
+    return bestGame.timeAgo;
   }
 
   // Método para escuchar cuando se presiona una casilla en el tablero
@@ -194,6 +267,7 @@ export class CoordinatesPage {
     
     // Recargar estadísticas
     this.loadUserStats();
+    this.loadBestScores(); // Recargar mejores puntajes después de cada juego
   }
 
   /**
