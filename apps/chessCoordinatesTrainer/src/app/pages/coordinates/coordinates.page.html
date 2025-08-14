@@ -1,166 +1,137 @@
-<ion-header class="ion-no-border" [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
+<ion-content [fullscreen]="true">
+
+  <div id="theme-target" class="p-2 h-full" data-theme="halloween">
+
+    <div class="flex">
       <h1 class="text-2xl font-bold ml-2">Coordenadas de Ajedrez</h1>
-    </ion-title>
-    <!-- <ion-buttons slot="end">
-      <ion-button class="btn-ghost">
-        <ion-icon name="settings-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons> -->
-  </ion-toolbar>
-</ion-header>
-
-<ion-content [fullscreen]="true" class="ion-padding">
-  
-  <div id="theme-target" class="theme-wrapper" appThemeApply>
-
-
+    </div>
 
     <ion-grid class="ion-margin-top">
       <ion-row>
-  
+
         <ion-col size="12" size-sm="12" size-md="12" size-lg="6" size-xl="6" offset-lg="2" offset-xl="2">
-  
-              <lib-board (squareSelected)="onSquareSelected($event)"></lib-board>
-              <h1 class="current-puzzle">
-                {{ currentPuzzle }}
-              </h1>
-  
-  
-              <div class="flex items-center mt-2 ">
-                <progress 
-                  class="progress w-full"
-                  [ngClass]="{
+
+          <lib-board (squareSelected)="onSquareSelected($event)"></lib-board>
+          <h1 class="current-puzzle">
+            {{ currentPuzzle }}
+          </h1>
+
+
+          <div class="flex items-center mt-2 ">
+            <progress class="progress w-full" [ngClass]="{
                     'progress-success': timeColor === 'success',
                     'progress-warning': timeColor === 'warning',
                     'progress-error': timeColor === 'danger'
-                  }"
-                  [value]="progressValue * 100" 
-                  max="100">
-                </progress>
-                <p 
-                  class="text-sm ml-2 whitespace-nowrap"
-                  [ngClass]="{
+                  }" [value]="progressValue * 100" max="100">
+            </progress>
+            <p class="text-sm ml-2 whitespace-nowrap" [ngClass]="{
                     'text-success': timeColor === 'success',
                     'text-warning': timeColor === 'warning',
                     'text-error': timeColor === 'danger'
-                  }"
-                >
-                  {{time | number:'1.0-0'}}
-                </p>
-              </div>
-  
+                  }">
+              {{time | number:'1.0-0'}}
+            </p>
+          </div>
+
         </ion-col>
-  
-        <ion-col size="12" size-sm="12" size-md="12" size-lg="4" size-xl="4" >
+
+        <ion-col size="12" size-sm="12" size-md="12" size-lg="4" size-xl="4">
 
           <div class="flex justify-between items-center">
 
             <div class="join join-horizontal">
-              <button 
-                class="join-item btn btn-sm" 
-                [class.btn-soft]="boardOrientation === 'white'"
-                [class.btn-ghost]="boardOrientation !== 'white'"
-                (click)="changeBoardOrientation('white')"
-              >
+              <button class="join-item btn btn-sm" [class.btn-soft]="boardOrientation === 'white'"
+                [class.btn-ghost]="boardOrientation !== 'white'" (click)="changeBoardOrientation('white')">
                 <img src="assets/images/pieces/cburnett/wK.svg" alt="White King" class="size-6">
               </button>
-              <button 
-                class="join-item btn btn-sm" 
-                [class.btn-soft]="boardOrientation === 'random'"
-                [class.btn-ghost]="boardOrientation !== 'random'"
-                (click)="changeBoardOrientation('random')"
-              >
+              <button class="join-item btn btn-sm" [class.btn-soft]="boardOrientation === 'random'"
+                [class.btn-ghost]="boardOrientation !== 'random'" (click)="changeBoardOrientation('random')">
                 <ion-icon name="shuffle-outline" class="size-6"></ion-icon>
               </button>
-            
-              <button 
-                class="join-item btn btn-sm" 
-                [class.btn-soft]="boardOrientation === 'black'"
-                [class.btn-ghost]="boardOrientation !== 'black'"
-                (click)="changeBoardOrientation('black')"
-              >
+
+              <button class="join-item btn btn-sm" [class.btn-soft]="boardOrientation === 'black'"
+                [class.btn-ghost]="boardOrientation !== 'black'" (click)="changeBoardOrientation('black')">
                 <img src="assets/images/pieces/cburnett/bK.svg" alt="Black King" class="size-6">
               </button>
             </div>
-          
+
           </div>
 
-          
-          <div class="flex flex-col justify-center items-center gap-2 mt-2">
-            
 
-           
-            
+          <div class="flex flex-col justify-center items-center gap-2 mt-2">
+
+
+
+
             <button class="btn btn-lg btn-primary w-full" (click)="play()">Jugar</button>
 
-            <div class="stats stats-horizontal shadow w-full mt-2">
-              <div class="stat place-items-center">
-                <div class="stat-title">Blancas</div>
-                <div class="stat-value">{{ getBestScoreByColor('w') }}</div>
-              </div>
-            
-              <div class="stat place-items-center">
-                <div class="stat-title">Negras</div>
-                <div class="stat-value">{{ getBestScoreByColor('b') }}</div>
-              </div>
-            
-            </div>
+
 
             <!-- Mejores puntajes generales -->
-            <div class="w-full mt-4">
-              <h3 class="text-lg font-bold mb-2 text-center">Mejores Puntajes</h3>
+            <div class="w-full">
               <div class="space-y-2">
-                <div 
-                  *ngFor="let score of bestScores; let i = index" 
-                  class="flex justify-between items-center p-3 rounded-lg transition-all duration-200 hover:shadow-md"
-                  [ngClass]="{
-                    'bg-blue-50 border-l-4 border-blue-500': score.color === 'w',
-                    'bg-gray-50 border-l-4 border-gray-700': score.color === 'b'
-                  }"
-                >
-                  <div class="flex items-center gap-3">
-                    <span 
-                      class="text-sm font-bold px-2 py-1 rounded-full text-white"
-                      [ngClass]="{
-                        'bg-blue-500': i === 0,
-                        'bg-blue-400': i === 1,
-                        'bg-blue-300': i === 2,
-                        'bg-gray-400': i > 2
-                      }"
-                    >
-                      #{{ i + 1 }}
-                    </span>
-                    
-                    <!-- Avatar del rey según el color -->
-                    <div class="flex items-center gap-2">
-                      <img 
-                        [src]="score.color === 'w' ? 'assets/images/pieces/cburnett/wK.svg' : 'assets/images/pieces/cburnett/bK.svg'" 
-                        [alt]="score.color === 'w' ? 'Rey Blanco' : 'Rey Negro'"
-                        class="w-7 h-7 drop-shadow-sm"
-                      />
-                      <span class="text-sm font-medium">{{ score.score }} puntos</span>
+
+                <ul class="list bg-base-100 rounded-box shadow-md">
+
+                  <li class="p-4 pb-2 text-xs opacity-60 tracking-wide">Mejores Puntajes</li>
+
+                  <li>
+
+                    <div class="stats stats-horizontal w-full">
+                      <div class="stat place-items-center">
+
+                        <div class="stat-title">Blancas</div>
+                        <div class="stat-value text-info">{{ getBestScoreByColor('w') }}</div>
+                      </div>
+
+                      <div class="stat place-items-center">
+                        <div class="stat-title">Negras</div>
+                        <div class="stat-value text-info">{{ getBestScoreByColor('b') }}</div>
+                      </div>
+
+                      <div class="stat place-items-center">
+                        <div class="stat-title">Rondas</div>
+                        <div class="stat-value">{{ bestScores.length }}</div>
+                      </div>
+
                     </div>
-                  </div>
-                  
-                  <div class="text-xs text-base-content/70 flex items-center gap-1">
-                    <ion-icon name="time-outline" class="text-base-content/50"></ion-icon>
-                    {{ score.timeAgo }}
-                  </div>
-                </div>
-                
-                <div *ngIf="bestScores.length === 0" class="text-center text-sm text-base-content/70 py-8 bg-base-200 rounded-lg">
+
+                  </li>
+
+
+                  @for (score of bestScores; track score; let i = $index) {
+                  <li class="list-row">
+                    <div class="text-4xl font-thin opacity-30 tabular-nums">{{ i + 1 | number:'2.0-0' }}</div>
+                    <div>
+                      <img
+                        [src]="score.color === 'w' ? 'assets/images/pieces/cburnett/wK.svg' : 'assets/images/pieces/cburnett/bK.svg'"
+                        [alt]="score.color === 'w' ? 'Rey Blanco' : 'Rey Negro'"
+                        class="size-8 rounded-box drop-shadow-sm" />
+                    </div>
+                    <div class="list-col-grow">
+                      <div class="font-medium">{{ score.score }} puntos</div>
+                    </div>
+                    <div class="text-xs opacity-60 flex items-center gap-1">
+                      <ion-icon name="time-outline" class="opacity-50"></ion-icon>
+                      {{ score.timeAgo }}
+                    </div>
+                  </li>
+                  }
+
+                </ul>
+                @if (bestScores.length === 0) {
+                <div class="text-center text-sm text-base-content/70 py-8 bg-base-200 rounded-lg">
                   <ion-icon name="trophy-outline" class="text-4xl text-base-content/30 mb-2"></ion-icon>
                   <p>No hay puntajes aún.</p>
                   <p class="text-xs mt-1">¡Juega tu primera partida!</p>
                 </div>
+                }
               </div>
             </div>
           </div>
-  
+
         </ion-col>
-  
+
       </ion-row>
     </ion-grid>
 

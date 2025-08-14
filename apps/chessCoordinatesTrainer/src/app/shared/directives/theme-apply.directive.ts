@@ -8,7 +8,8 @@ export class ThemeApplyDirective implements OnInit {
   constructor(private el: ElementRef) {}
 
   ngOnInit() {
-    const theme = localStorage.getItem('selected-theme') || 'light';
+    const theme = localStorage.getItem('selected-theme') || 'halloween';
+    console.log('theme', theme);
     this.el.nativeElement.setAttribute('data-theme', theme);
   }
 } 
