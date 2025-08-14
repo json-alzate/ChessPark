@@ -14,6 +14,7 @@ import { interval, Observable, Subject, takeUntil } from 'rxjs';
 import { StorageService, CoordinatesPuzzle } from '../../services/storage.service';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
+import confetti from 'canvas-confetti';
 
 
 @Component({
@@ -283,7 +284,142 @@ export class CoordinatesPage {
       color: this.boardComponent ? this.boardComponent.getOrientation() : 'w'
     };
 
+    // Verificar si se logró un nuevo récord antes de guardar
+    this.checkAndCelebrateNewRecord(gameResult.score, gameResult.color);
+
     this.storageService.saveGameResult(gameResult);
+  }
+
+  /**
+   * Verifica si se logró un nuevo récord y celebra con confetti
+   * @param newScore Nuevo puntaje logrado
+   * @param color Color del tablero con el que se jugó
+   */
+  private checkAndCelebrateNewRecord(newScore: number, color: 'w' | 'b') {
+    const currentBestScoreByColor = this.getBestScoreByColor(color);
+    const currentBestScoreOverall = this.userStats.bestScore;
+    
+    let isNewRecord = false;
+    let recordType: 'color' | 'overall' | 'both' = 'color';
+
+    // Verificar si es nuevo récord por color
+    if (newScore > currentBestScoreByColor) {
+      isNewRecord = true;
+      recordType = 'color';
+    }
+
+    // Verificar si es nuevo récord general
+    if (newScore > currentBestScoreOverall) {
+      isNewRecord = true;
+      recordType = recordType === 'color' ? 'both' : 'overall';
+    }
+
+    if (isNewRecord) {
+      // ¡Nuevo récord! Lanzar confetti
+      this.launchConfetti(color, recordType);
+      
+      // Mostrar mensaje de felicitación
+      this.showNewRecordMessage(newScore, color, recordType);
+    }
+  }
+
+  /**
+   * Lanza confetti para celebrar el nuevo récord
+   * @param color Color del tablero (para personalizar el confetti)
+   * @param recordType Tipo de récord logrado
+   */
+  private launchConfetti(color: 'w' | 'b', recordType: 'color' | 'overall' | 'both') {
+    // Configuración del confetti según el color
+    let confettiColors: string[];
+    
+    if (recordType === 'overall' || recordType === 'both') {
+      // Para récords generales, usar colores dorados
+      confettiColors = ['#FFD700', '#FFA500', '#FF8C00', '#FF6347'];
+    } else {
+      // Para récords por color, usar tonos del color correspondiente
+      confettiColors = color === 'w' 
+        ? ['#ffffff', '#f0f0f0', '#e0e0e0', '#d0d0d0'] // Tonos blancos
+        : ['#000000', '#1a1a1a', '#333333', '#4d4d4d']; // Tonos negros
+    }
+
+    // Lanzar confetti desde múltiples posiciones
+    const duration = recordType === 'both' ? 5000 : 3000; // Más tiempo para récords dobles
+    const animationEnd = Date.now() + duration;
+    const defaults = { 
+      startVelocity: 30, 
+      spread: 360, 
+      ticks: 60, 
+      zIndex: 0,
+      colors: confettiColors
+    };
+
+    function randomInRange(min: number, max: number) {
+      return Math.random() * (max - min) + min;
+    }
+
+    const interval = setInterval(() => {
+      const timeLeft = animationEnd - Date.now();
+
+      if (timeLeft <= 0) {
+        return clearInterval(interval);
+      }
+
+      const particleCount = 50 * (timeLeft / duration);
+
+      // Confetti desde la izquierda
+      confetti({
+        ...defaults,
+        particleCount,
+        origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
+      });
+
+      // Confetti desde la derecha
+      confetti({
+        ...defaults,
+        particleCount,
+        origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
+      });
+
+      // Confetti desde el centro
+      confetti({
+        ...defaults,
+        particleCount: particleCount * 0.5,
+        origin: { x: randomInRange(0.4, 0.6), y: Math.random() - 0.2 }
+      });
+
+      // Confetti extra para récords especiales
+      if (recordType === 'both') {
+        confetti({
+          ...defaults,
+          particleCount: particleCount * 0.3,
+          origin: { x: randomInRange(0.2, 0.8), y: Math.random() - 0.1 }
+        });
+      }
+    }, 250);
+  }
+
+  /**
+   * Muestra un mensaje de felicitación por el nuevo récord
+   * @param score Puntaje logrado
+   * @param color Color del tablero
+   * @param recordType Tipo de récord logrado
+   */
+  private showNewRecordMessage(score: number, color: 'w' | 'b', recordType: 'color' | 'overall' | 'both') {
+    const colorName = color === 'w' ? 'blancas' : 'negras';
+    let message = '';
+    
+    if (recordType === 'both') {
+      message = `🏆 ¡DOBLE RÉCORD! 🏆\n\nHas logrado ${score} puntos jugando con ${colorName}.\n\n¡Nuevo récord por color Y récord general!\n\n🎉 ¡FELICIDADES! 🎉`;
+    } else if (recordType === 'overall') {
+      message = `🏆 ¡NUEVO RÉCORD GENERAL! 🏆\n\nHas logrado ${score} puntos jugando con ${colorName}.\n\n¡El mejor puntaje de todos los tiempos!\n\n🎉 ¡FELICIDADES! 🎉`;
+    } else {
+      message = `🎉 ¡NUEVO RÉCORD! 🎉\n\nHas logrado ${score} puntos jugando con ${colorName}.\n\n¡Mejor puntaje para este color!\n\n🎉 ¡Felicidades! 🎉`;
+    }
+    
+    // Usar setTimeout para que el confetti se vea primero
+    setTimeout(() => {
+      alert(message);
+    }, 500);
   }
 
   /**
