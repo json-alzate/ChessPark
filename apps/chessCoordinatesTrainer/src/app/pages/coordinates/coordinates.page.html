@@ -1,9 +1,11 @@
 <ion-content [fullscreen]="true">
 
-  <div id="theme-target" class="p-2 h-full" data-theme="halloween">
+  <div id="theme-target" class="p-2 min-h-full" data-theme="halloween">
 
-    <div class="flex">
-      <h1 class="text-2xl font-bold ml-2">Coordenadas de Ajedrez</h1>
+    <div class="sticky top-0 z-50 bg-base-100/100 backdrop-blur-sm w-full">
+      <div class="flex items-center">
+        <h1 class="text-2xl font-bold">Coordenadas de Ajedrez</h1>
+      </div>
     </div>
 
     <ion-grid class="ion-margin-top">
@@ -37,25 +39,77 @@
 
         <ion-col size="12" size-sm="12" size-md="12" size-lg="4" size-xl="4">
 
-          <div class="flex justify-between items-center">
+                    @if (!isPlaying) {
+                      <div class="flex justify-between items-center">
 
-            <div class="join join-horizontal">
-              <button class="join-item btn btn-sm" [class.btn-soft]="boardOrientation === 'white'"
-                [class.btn-ghost]="boardOrientation !== 'white'" (click)="changeBoardOrientation('white')">
-                <img src="assets/images/pieces/cburnett/wK.svg" alt="White King" class="size-6">
-              </button>
-              <button class="join-item btn btn-sm" [class.btn-soft]="boardOrientation === 'random'"
-                [class.btn-ghost]="boardOrientation !== 'random'" (click)="changeBoardOrientation('random')">
-                <ion-icon name="shuffle-outline" class="size-6"></ion-icon>
-              </button>
+                        <div class="join join-horizontal">
+                          <button 
+                            class="join-item btn btn-sm" 
+                            [class.btn-soft]="boardOrientation === 'white'"
+                            [class.btn-ghost]="boardOrientation !== 'white'" 
+                            (click)="changeBoardOrientation('white')"
+                          >
+                            <img src="assets/images/pieces/cburnett/wK.svg" alt="White King" class="size-6">
+                          </button>
+                          <button 
+                            class="join-item btn btn-sm" 
+                            [class.btn-soft]="boardOrientation === 'random'"
+                            [class.btn-ghost]="boardOrientation !== 'random'" 
+                            (click)="changeBoardOrientation('random')"
+                          >
+                            <ion-icon name="shuffle-outline" class="size-6"></ion-icon>
+                          </button>
 
-              <button class="join-item btn btn-sm" [class.btn-soft]="boardOrientation === 'black'"
-                [class.btn-ghost]="boardOrientation !== 'black'" (click)="changeBoardOrientation('black')">
-                <img src="assets/images/pieces/cburnett/bK.svg" alt="Black King" class="size-6">
-              </button>
-            </div>
+                          <button 
+                            class="join-item btn btn-sm" 
+                            [class.btn-soft]="boardOrientation === 'black'"
+                            [class.btn-ghost]="boardOrientation !== 'black'" 
+                            (click)="changeBoardOrientation('black')"
+                          >
+                            <img src="assets/images/pieces/cburnett/bK.svg" alt="Black King" class="size-6">
+                          </button>
+                        </div>
+                      
+                      </div>
+                    }
 
-          </div>
+                    @if (isPlaying) {
+                      <!-- Avatar del rey del color con el que se está jugando -->
+                      <div class="flex justify-center items-center p-4">
+                        <div class="avatar">
+                          <div class="w-16 h-16 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+                            <img 
+                              [src]="currentColorInBoard === 'white' ? 'assets/images/pieces/cburnett/wK.svg' : 'assets/images/pieces/cburnett/bK.svg'" 
+                              [alt]="currentColorInBoard === 'white' ? 'Rey Blanco' : 'Rey Negro'"
+                              class="w-full h-full p-2"
+                            />
+                          </div>
+                        </div>
+                        <div class="ml-3">
+                          <p class="text-sm font-medium opacity-70">Jugando con</p>
+                          <p class="text-lg font-bold">{{ currentColorInBoard === 'white' ? 'Blancas' : 'Negras' }}</p>
+                          
+                          @if (getBestScoreByColor(currentColorInBoard === 'white' ? 'w' : 'b') > 0) {
+                            <div class="mt-2 p-2 bg-base-200 rounded-lg">
+                              <p class="text-xs opacity-60">Récord actual:</p>
+                              <p class="text-sm font-bold text-primary">
+                                {{ getBestScoreByColor(currentColorInBoard === 'white' ? 'w' : 'b') }} puntos
+                              </p>
+                              <p class="text-xs opacity-50 mt-1">
+                                ¡Supera tu récord!
+                              </p>
+                            </div>
+                          } @else {
+                            <div class="mt-2 p-2 bg-base-200 rounded-lg">
+                              <p class="text-xs opacity-60">Primera vez</p>
+                              <p class="text-sm font-bold text-success">
+                                ¡Establece tu récord!
+                              </p>
+                            </div>
+                          }
+                        </div>
+                      </div>
+                    }
 
 
           <div class="flex flex-col justify-center items-center gap-2 mt-2">
@@ -63,71 +117,94 @@
 
 
 
-            <button class="btn btn-lg btn-primary w-full" (click)="play()">Jugar</button>
+                        @if (!isPlaying) {
+              <button class="btn btn-lg btn-primary w-full" (click)="play()">Jugar</button>
 
+              <!-- Mejores puntajes generales -->
+              <div class="w-full">
+                <div class="space-y-2">
 
+                  <ul class="list bg-base-100 rounded-box shadow-md">
 
-            <!-- Mejores puntajes generales -->
-            <div class="w-full">
-              <div class="space-y-2">
+                    <li class="p-4 pb-2 text-xs opacity-60 tracking-wide">Mejores Puntajes</li>
 
-                <ul class="list bg-base-100 rounded-box shadow-md">
+                    <li>
 
-                  <li class="p-4 pb-2 text-xs opacity-60 tracking-wide">Mejores Puntajes</li>
+                      <div class="stats stats-horizontal w-full">
+                        <div class="stat place-items-center">
+                    
+                          <div class="stat-title">Blancas</div>
+                          <div class="stat-value text-info">{{ getBestScoreByColor('w') }}</div>
+                        </div>
+                      
+                        <div class="stat place-items-center">
+                          <div class="stat-title">Negras</div>
+                          <div class="stat-value text-info">{{ getBestScoreByColor('b') }}</div>
+                        </div>
 
-                  <li>
+                         <div class="stat place-items-center">
+                           <div class="stat-title">Rondas</div>
+                           <div class="stat-value">{{ bestScores.length }}</div>
+                         </div>
 
-                    <div class="stats stats-horizontal w-full">
-                      <div class="stat place-items-center">
-
-                        <div class="stat-title">Blancas</div>
-                        <div class="stat-value text-info">{{ getBestScoreByColor('w') }}</div>
                       </div>
 
-                      <div class="stat place-items-center">
-                        <div class="stat-title">Negras</div>
-                        <div class="stat-value text-info">{{ getBestScoreByColor('b') }}</div>
-                      </div>
+                    </li>
 
-                      <div class="stat place-items-center">
-                        <div class="stat-title">Rondas</div>
-                        <div class="stat-value">{{ bestScores.length }}</div>
-                      </div>
+                    
+                    @for (score of bestScores; track score; let i = $index) {
+                     <li class="list-row">
+                       <div class="text-4xl font-thin opacity-30 tabular-nums">{{ i + 1 | number:'2.0-0' }}</div>
+                       <div>
+                         <img
+                           [src]="score.color === 'w' ? 'assets/images/pieces/cburnett/wK.svg' : 'assets/images/pieces/cburnett/bK.svg'"
+                           [alt]="score.color === 'w' ? 'Rey Blanco' : 'Rey Negro'"
+                           class="size-8 rounded-box drop-shadow-sm" />
+                       </div>
+                       <div class="list-col-grow">
+                         <div class="font-medium">{{ score.score }} puntos</div>
+                       </div>
+                       <div class="text-xs opacity-60 flex items-center gap-1">
+                         <ion-icon name="time-outline" class="opacity-50"></ion-icon>
+                         {{ score.timeAgo }}
+                       </div>
+                     </li>
+                    }
 
-                    </div>
-
-                  </li>
-
-
-                  @for (score of bestScores; track score; let i = $index) {
-                  <li class="list-row">
-                    <div class="text-4xl font-thin opacity-30 tabular-nums">{{ i + 1 | number:'2.0-0' }}</div>
-                    <div>
-                      <img
-                        [src]="score.color === 'w' ? 'assets/images/pieces/cburnett/wK.svg' : 'assets/images/pieces/cburnett/bK.svg'"
-                        [alt]="score.color === 'w' ? 'Rey Blanco' : 'Rey Negro'"
-                        class="size-8 rounded-box drop-shadow-sm" />
-                    </div>
-                    <div class="list-col-grow">
-                      <div class="font-medium">{{ score.score }} puntos</div>
-                    </div>
-                    <div class="text-xs opacity-60 flex items-center gap-1">
-                      <ion-icon name="time-outline" class="opacity-50"></ion-icon>
-                      {{ score.timeAgo }}
-                    </div>
-                  </li>
+                  </ul>
+                  @if (bestScores.length === 0) {
+                   <div class="text-center text-sm text-base-content/70 py-8 bg-base-200 rounded-lg">
+                     <ion-icon name="trophy-outline" class="text-4xl text-base-content/30 mb-2"></ion-icon>
+                     <p>No hay puntajes aún.</p>
+                     <p class="text-xs mt-1">¡Juega tu primera partida!</p>
+                   </div>
                   }
-
-                </ul>
-                @if (bestScores.length === 0) {
-                <div class="text-center text-sm text-base-content/70 py-8 bg-base-200 rounded-lg">
-                  <ion-icon name="trophy-outline" class="text-4xl text-base-content/30 mb-2"></ion-icon>
-                  <p>No hay puntajes aún.</p>
-                  <p class="text-xs mt-1">¡Juega tu primera partida!</p>
                 </div>
-                }
               </div>
-            </div>
+            }
+
+            @if (isPlaying) {
+              <!-- Tarjeta de estadísticas del juego actual -->
+        
+                  
+                  <div class="stats stats-horizontal w-full">
+                    <div class="stat place-items-center">
+                      <div class="stat-title">Aciertos</div>
+                      <div class="stat-value text-success">{{ currentGameStats.correctAnswers }}</div>
+                    </div>
+                    
+                    <div class="stat place-items-center">
+                      <div class="stat-title">Errores</div>
+                      <div class="stat-value text-error">{{ currentGameStats.incorrectAnswers }}</div>
+                    </div>
+                    
+                    <div class="stat place-items-center">
+                      <div class="stat-title">Precisión</div>
+                      <div class="stat-value text-info">{{ currentGameStats.accuracy | number:'1.0-1' }}%</div>
+                    </div>
+                  </div>
+             
+            }
           </div>
 
         </ion-col>

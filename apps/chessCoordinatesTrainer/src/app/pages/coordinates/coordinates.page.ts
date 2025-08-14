@@ -46,6 +46,13 @@ export class CoordinatesPage {
   progressValue = 1;
   timeColor: 'success' | 'warning' | 'danger' = 'success';
 
+  // Estadísticas del juego actual
+  currentGameStats = {
+    correctAnswers: 0,
+    incorrectAnswers: 0,
+    accuracy: 0
+  };
+
 
     // Options
     color: 'random' | 'white' | 'black' = 'random';
@@ -112,6 +119,14 @@ export class CoordinatesPage {
   }
 
   /**
+   * Actualiza las estadísticas del juego actual
+   */
+  updateGameStats() {
+    const total = this.currentGameStats.correctAnswers + this.currentGameStats.incorrectAnswers;
+    this.currentGameStats.accuracy = total > 0 ? (this.currentGameStats.correctAnswers / total) * 100 : 0;
+  }
+
+  /**
    * Formatea la fecha como "hace X tiempo"
    * @param timestamp Timestamp de la fecha
    * @returns String formateado
@@ -160,10 +175,14 @@ export class CoordinatesPage {
         // Coordenada correcta
         this.squaresGood.push(this.currentPuzzle);
         this.score++;
+        this.currentGameStats.correctAnswers++;
+        this.updateGameStats();
         this.nextPuzzle();
       } else {
         // Coordenada incorrecta
         this.squaresBad.push(this.currentPuzzle);
+        this.currentGameStats.incorrectAnswers++;
+        this.updateGameStats();
         this.timeColor = 'danger';
         // Cambiar el color de vuelta después de un tiempo
         setTimeout(() => {
@@ -203,6 +222,13 @@ export class CoordinatesPage {
     this.timeColor = 'success';
     this.progressValue = 1;
 
+    // Reiniciar estadísticas del juego actual
+    this.currentGameStats = {
+      correctAnswers: 0,
+      incorrectAnswers: 0,
+      accuracy: 0
+    };
+
     let orientation: 'w' | 'b' = this.color === 'white' ? 'w' : 'b';
 
     if (this.color === 'random') {
@@ -212,7 +238,12 @@ export class CoordinatesPage {
     this.currentColorInBoard = orientation === 'w' ? 'white' : 'black';
     
     // Aplicar la orientación del tablero al iniciar el juego
-    this.changeBoardOrientation(this.boardOrientation);
+    // Si es random, usar el color específico que se seleccionó aleatoriamente
+    if (this.boardOrientation === 'random') {
+      this.boardComponent?.changeOrientation(orientation);
+    } else {
+      this.changeBoardOrientation(this.boardOrientation);
+    }
 
     this.isPlaying = true;
     this.initInterval();
