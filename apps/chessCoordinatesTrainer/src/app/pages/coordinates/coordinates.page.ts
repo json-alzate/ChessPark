@@ -3,9 +3,10 @@ import { Component,  CUSTOM_ELEMENTS_SCHEMA, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 
-import { IonContent } from '@ionic/angular/standalone';
+import { IonContent, IonModal} from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { shuffleOutline, settingsOutline } from 'ionicons/icons';
+import { OverlayEventDetail } from '@ionic/core/components';
 
 
 
@@ -22,11 +23,12 @@ import confetti from 'canvas-confetti';
   templateUrl: 'coordinates.page.html',
   styleUrls: ['coordinates.page.scss'],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  imports: [ CommonModule, IonContent, BoardComponent ],
+  imports: [ CommonModule, IonContent, BoardComponent, IonModal ],
 })
 export class CoordinatesPage {
 
   @ViewChild(BoardComponent) boardComponent!: BoardComponent;
+  @ViewChild(IonModal) resultsModal!: IonModal;
 
   letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
   numbers = ['1', '2', '3', '4', '5', '6', '7', '8'];
@@ -65,15 +67,19 @@ export class CoordinatesPage {
     // Orientación del tablero
     boardOrientation: 'random' | 'white' | 'black' = 'random';
 
-    // Estadísticas del usuario
-    userStats = {
-      totalGames: 0,
-      bestScore: 0,
-      averageScore: 0,
-      totalCorrect: 0,
-      totalIncorrect: 0,
-      accuracy: 0
-    };
+      // Estadísticas del usuario
+  userStats = {
+    totalGames: 0,
+    bestScore: 0,
+    averageScore: 0,
+    totalCorrect: 0,
+    totalIncorrect: 0,
+    accuracy: 0
+  };
+
+  // Modal de resultados
+  isNewRecord = false;
+  recordType: 'color' | 'overall' | 'both' | null = null;
 
     // Mejores puntajes
     bestScores: Array<{
@@ -294,8 +300,8 @@ export class CoordinatesPage {
     // Guardar el resultado del juego
     this.saveGameResult();
     
-    // Mostrar alerta con el puntaje
-    this.showGameResult();
+    // Mostrar modal de resultados
+    this.resultsModal.present();
     
     // Recargar estadísticas
     this.loadUserStats();
@@ -330,27 +336,24 @@ export class CoordinatesPage {
     const currentBestScoreByColor = this.getBestScoreByColor(color);
     const currentBestScoreOverall = this.userStats.bestScore;
     
-    let isNewRecord = false;
-    let recordType: 'color' | 'overall' | 'both' = 'color';
+    this.isNewRecord = false;
+    this.recordType = null;
 
     // Verificar si es nuevo récord por color
     if (newScore > currentBestScoreByColor) {
-      isNewRecord = true;
-      recordType = 'color';
+      this.isNewRecord = true;
+      this.recordType = 'color';
     }
 
     // Verificar si es nuevo récord general
     if (newScore > currentBestScoreOverall) {
-      isNewRecord = true;
-      recordType = recordType === 'color' ? 'both' : 'overall';
+      this.isNewRecord = true;
+      this.recordType = this.recordType === 'color' ? 'both' : 'overall';
     }
 
-    if (isNewRecord) {
+    if (this.isNewRecord && this.recordType) {
       // ¡Nuevo récord! Lanzar confetti
-      this.launchConfetti(color, recordType);
-      
-      // Mostrar mensaje de felicitación
-      this.showNewRecordMessage(newScore, color, recordType);
+      this.launchConfetti(color, this.recordType);
     }
   }
 
@@ -429,36 +432,21 @@ export class CoordinatesPage {
     }, 250);
   }
 
+
+
   /**
-   * Muestra un mensaje de felicitación por el nuevo récord
-   * @param score Puntaje logrado
-   * @param color Color del tablero
-   * @param recordType Tipo de récord logrado
+   * Cierra el modal de resultados
    */
-  private showNewRecordMessage(score: number, color: 'w' | 'b', recordType: 'color' | 'overall' | 'both') {
-    const colorName = color === 'w' ? 'blancas' : 'negras';
-    let message = '';
-    
-    if (recordType === 'both') {
-      message = `🏆 ¡DOBLE RÉCORD! 🏆\n\nHas logrado ${score} puntos jugando con ${colorName}.\n\n¡Nuevo récord por color Y récord general!\n\n🎉 ¡FELICIDADES! 🎉`;
-    } else if (recordType === 'overall') {
-      message = `🏆 ¡NUEVO RÉCORD GENERAL! 🏆\n\nHas logrado ${score} puntos jugando con ${colorName}.\n\n¡El mejor puntaje de todos los tiempos!\n\n🎉 ¡FELICIDADES! 🎉`;
-    } else {
-      message = `🎉 ¡NUEVO RÉCORD! 🎉\n\nHas logrado ${score} puntos jugando con ${colorName}.\n\n¡Mejor puntaje para este color!\n\n🎉 ¡Felicidades! 🎉`;
-    }
-    
-    // Usar setTimeout para que el confetti se vea primero
-    setTimeout(() => {
-      alert(message);
-    }, 500);
+  closeResultsModal() {
+    this.resultsModal.dismiss(null, 'confirm');
   }
 
   /**
-   * Muestra el resultado del juego
+   * Maneja el cierre del modal
    */
-  showGameResult() {
-    const message = `¡Juego terminado!\n\nPuntaje: ${this.score}\nAciertos: ${this.squaresGood.length}\nErrores: ${this.squaresBad.length}`;
-    alert(message);
+  onWillDismiss(event: CustomEvent<OverlayEventDetail>) {
+    this.isNewRecord = false;
+    this.recordType = null;
   }
 
   /**
