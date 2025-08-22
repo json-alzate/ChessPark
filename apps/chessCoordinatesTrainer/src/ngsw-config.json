@@ -2,7 +2,7 @@
     "index": "/index.html",
     "assetGroups": [
       {
-        "name": "ChessCoordinatesTrainer",
+        "name": "chessGrid",
         "installMode": "prefetch",
         "resources": {
           "files": [

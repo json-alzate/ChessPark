@@ -95,6 +95,23 @@
         "staticFilePath": "dist/apps/chesspark/browser",
         "spa": true
       }
+    },
+    "deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "firebase deploy --only hosting:chesspark",
+        "cwd": "."
+      },
+      "dependsOn": ["build"]
+    },
+    "serve-static": {
+      "executor": "@nx/web:file-server",
+      "options": {
+        "buildTarget": "chesspark:build",
+        "port": 4200,
+        "staticFilePath": "dist/apps/chesspark/browser",
+        "spa": true
+      }
     }
   }
 }

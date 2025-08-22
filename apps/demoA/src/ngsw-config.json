@@ -1,0 +1,28 @@
+{
+    "index": "/index.html",
+    "assetGroups": [
+      {
+        "name": "XerpaDemoApp",
+        "installMode": "prefetch",
+        "resources": {
+          "files": [
+            "/favicon.ico",
+            "/index.html",
+            "/*.css",
+            "/*.js"
+          ]
+        }
+      },
+      {
+        "name": "assets",
+        "installMode": "lazy",
+        "updateMode": "prefetch",
+        "resources": {
+          "files": [
+            "/assets/**",
+            "/*.(png|jpg|jpeg|svg|webp)"
+          ]
+        }
+      }
+    ]
+  }

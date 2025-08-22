@@ -1,4 +1,5 @@
 {
-    "name": "chessCoordinatesTrainer",
+    "name": "chessGrid",
+    "version": "1.0.0",
     "description": "An ionic project for chess coordinates trainer"
 }

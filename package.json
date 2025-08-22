@@ -6,7 +6,18 @@
     "build": "nx build",
     "test": "nx test",
     "postinstall": "npm run copy-chessboard-assets",
-    "copy-chessboard-assets": "mkdir -p apps/chessCoordinatesTrainer/src/assets/cm-chessboard/assets && cp -r node_modules/cm-chessboard/assets/* apps/chessCoordinatesTrainer/src/assets/cm-chessboard/assets/ && mkdir -p apps/chesspark/public/cm-chessboard/assets && cp -r node_modules/cm-chessboard/assets/* apps/chesspark/public/cm-chessboard/assets/"
+    "copy-chessboard-assets": "mkdir -p apps/chessCoordinatesTrainer/src/assets/cm-chessboard/assets && cp -r node_modules/cm-chessboard/assets/* apps/chessCoordinatesTrainer/src/assets/cm-chessboard/assets/ && mkdir -p apps/chesspark/public/cm-chessboard/assets && cp -r node_modules/cm-chessboard/assets/* apps/chesspark/public/cm-chessboard/assets/",
+    "deploy:all": "nx run deploy-all",
+    "deploy:chesspark": "nx run deploy-chesspark",
+    "deploy:chessCoordinatesTrainer": "nx run deploy-chessCoordinatesTrainer",
+    "deploy:chessColate": "nx run deploy-chessColate",
+    "serve:chesspark": "nx run chesspark:serve-static",
+    "serve:chessCoordinatesTrainer": "nx run chessCoordinatesTrainer:serve-static",
+    "build:chesspark": "nx build chesspark",
+    "build:chessCoordinatesTrainer": "nx build chessCoordinatesTrainer",
+    "firebase:init": "firebase init hosting",
+    "firebase:deploy": "firebase deploy",
+    "firebase:status": "firebase projects:list"
   },
   "private": true,
   "dependencies": {

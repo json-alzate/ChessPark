@@ -1,0 +1,46 @@
+/* Animaciones de navegación para WebView - Solo hacia atrás */
+
+/* Animación de salida hacia atrás */
+.navigation-back-exit {
+  animation: slideOutRight 0.3s cubic-bezier(0.4, 0.0, 0.2, 1) forwards;
+}
+
+/* Keyframes para la animación hacia atrás */
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0.8;
+  }
+}
+
+/* Estilos para mejorar la transición en WebView */
+ion-page {
+  transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+  will-change: transform;
+}
+
+ion-content {
+  transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+  will-change: transform;
+}
+
+/* Clase para deshabilitar animaciones si es necesario */
+.no-animation {
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Mejoras para dispositivos móviles */
+@media (max-width: 768px) {
+  ion-page {
+    transition-duration: 0.25s;
+  }
+  
+  ion-content {
+    transition-duration: 0.25s;
+  }
+} 

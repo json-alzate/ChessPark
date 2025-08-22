@@ -1,0 +1,21 @@
+{
+  "projects": {
+    "default": "chesspark-53bce"
+  },
+  "targets": {
+    "chesspark-53bce": {
+      "hosting": {
+        "chesspark": [
+          "chesspark-app"
+        ],
+        "chessCoordinatesTrainer": [
+          "chess-coordinates-trainer-app"
+        ],
+        "chessColate": [
+          "chesscolate-app"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

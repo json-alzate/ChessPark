@@ -3,7 +3,7 @@ import { Component,  CUSTOM_ELEMENTS_SCHEMA, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 
-import { IonContent, IonModal} from '@ionic/angular/standalone';
+import { IonContent, IonModal, IonGrid, IonRow, IonCol, IonIcon , IonTitle, IonToolbar, IonHeader, IonFooter} from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { shuffleOutline, settingsOutline } from 'ionicons/icons';
 import { OverlayEventDetail } from '@ionic/core/components';
@@ -18,12 +18,16 @@ import { es } from 'date-fns/locale';
 import confetti from 'canvas-confetti';
 
 
+addIcons({ shuffleOutline, settingsOutline });
+
+
+
 @Component({
   selector: 'app-coordinates',
   templateUrl: 'coordinates.page.html',
   styleUrls: ['coordinates.page.scss'],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  imports: [ CommonModule, IonContent, BoardComponent, IonModal ],
+  imports: [ CommonModule, IonContent, BoardComponent, IonModal, IonGrid, IonRow, IonCol, IonIcon ],
 })
 export class CoordinatesPage {
 
@@ -92,7 +96,6 @@ export class CoordinatesPage {
     private unsubscribeIntervalSeconds$ = new Subject<void>();
 
     constructor(private storageService: StorageService) {
-      addIcons({ shuffleOutline, settingsOutline });
       this.loadUserStats();
       this.loadBestScores();
     }
