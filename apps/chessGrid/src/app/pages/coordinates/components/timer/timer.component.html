@@ -1,0 +1,22 @@
+<div class="flex items-center mt-2">
+  <progress
+    class="progress w-full"
+    [ngClass]="{
+          'progress-success': timeColor === 'success',
+          'progress-warning': timeColor === 'warning',
+          'progress-error': timeColor === 'danger'
+        }"
+    [value]="progressValue * 100"
+    max="100"
+  ></progress>
+  <p
+    class="text-sm ml-2 whitespace-nowrap"
+    [ngClass]="{
+          'text-success': timeColor === 'success',
+          'text-warning': timeColor === 'warning',
+          'text-error': timeColor === 'danger'
+        }"
+  >
+    {{time | number:'1.0-0'}}
+  </p>
+</div>

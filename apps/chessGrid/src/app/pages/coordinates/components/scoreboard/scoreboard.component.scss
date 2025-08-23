@@ -1,0 +1,24 @@
+// Estilos específicos para el scoreboard
+.list {
+  .list-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-bottom: 1px solid hsl(var(--b2));
+    
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+  
+  .list-col-grow {
+    flex: 1;
+  }
+}
+
+.stats {
+  .stat-value {
+    font-weight: bold;
+  }
+}

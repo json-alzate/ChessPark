@@ -1,0 +1,19 @@
+// Estilos específicos para los controles de orientación
+.join-item {
+  transition: all 0.2s ease;
+  
+  &:hover {
+    transform: translateY(-1px);
+  }
+}
+
+.btn-soft {
+  background-color: hsl(var(--p));
+  color: hsl(var(--pc));
+}
+
+.btn-ghost {
+  &:hover {
+    background-color: hsl(var(--bc));
+  }
+}

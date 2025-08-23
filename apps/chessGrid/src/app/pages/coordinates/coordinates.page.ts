@@ -3,19 +3,13 @@ import { CommonModule } from '@angular/common';
 
 import {
   IonContent,
-  IonModal,
   IonGrid,
   IonRow,
   IonCol,
   IonIcon,
-  IonTitle,
-  IonToolbar,
-  IonHeader,
-  IonFooter,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { shuffleOutline, settingsOutline } from 'ionicons/icons';
-import { OverlayEventDetail } from '@ionic/core/components';
+import { settingsOutline } from 'ionicons/icons';
 
 import { BoardComponent } from '@chesspark/board';
 import { interval, Observable, Subject, takeUntil } from 'rxjs';
@@ -27,7 +21,17 @@ import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { ConfettiService } from '@chesspark/common-utils';
 
-addIcons({ shuffleOutline, settingsOutline });
+// Importar componentes auxiliares
+import {
+  GameResultsModalComponent,
+  ScoreboardComponent,
+  KingAvatarComponent,
+  GameStatsComponent,
+  TimerComponent,
+  BoardOrientationControlsComponent,
+} from './components';
+
+addIcons({ settingsOutline });
 
 @Component({
   selector: 'app-coordinates',
@@ -38,20 +42,22 @@ addIcons({ shuffleOutline, settingsOutline });
     CommonModule,
     IonContent,
     BoardComponent,
-    IonModal,
     IonGrid,
     IonRow,
     IonCol,
     IonIcon,
-    IonTitle,
-    IonToolbar,
-    IonHeader,
-    IonFooter,
+    // Componentes auxiliares
+    GameResultsModalComponent,
+    ScoreboardComponent,
+    KingAvatarComponent,
+    GameStatsComponent,
+    TimerComponent,
+    BoardOrientationControlsComponent,
   ],
 })
 export class CoordinatesPage {
   @ViewChild(BoardComponent) boardComponent!: BoardComponent;
-  @ViewChild(IonModal) resultsModal!: IonModal;
+  @ViewChild(GameResultsModalComponent) resultsModal!: GameResultsModalComponent;
 
   letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
   numbers = ['1', '2', '3', '4', '5', '6', '7', '8'];
@@ -184,22 +190,6 @@ export class CoordinatesPage {
     return colorGames.length > 0
       ? Math.max(...colorGames.map((g) => g.score))
       : 0;
-  }
-
-  /**
-   * Obtiene cuándo se hizo el mejor puntaje por color
-   * @param color Color del tablero ('w' o 'b')
-   * @returns String formateado de cuándo se hizo
-   */
-  getBestScoreTimeByColor(color: 'w' | 'b'): string {
-    const colorGames = this.bestScores.filter((game) => game.color === color);
-    if (colorGames.length === 0) return 'Nunca';
-
-    const bestGame = colorGames.reduce((best, current) =>
-      current.score > best.score ? current : best
-    );
-
-    return bestGame.timeAgo;
   }
 
   // Método para escuchar cuando se presiona una casilla en el tablero
@@ -420,15 +410,7 @@ export class CoordinatesPage {
    * Cierra el modal de resultados
    */
   closeResultsModal() {
-    this.resultsModal.dismiss(null, 'confirm');
-  }
-
-  /**
-   * Maneja el cierre del modal
-   */
-  onWillDismiss(event: CustomEvent<OverlayEventDetail>) {
-    this.isNewRecord = false;
-    this.recordType = null;
+    this.resultsModal.dismiss();
   }
 
   /**
@@ -448,48 +430,5 @@ export class CoordinatesPage {
     }
 
     return puzzles;
-  }
-
-  toggleBoardCoordinates() {
-    this.showCoordinates = !this.showCoordinates;
-    // this.board.destroy();
-    // Eliminar el div vacío
-    const boardContainer = document.getElementById('boardCoordinates');
-    const emptyDiv = Array.from(boardContainer?.children || []).find(
-      (child) => child.childElementCount === 0
-    );
-    emptyDiv?.remove();
-
-    // this.loadBoard(this.showCoordinates, this.currentFenInBoard);
-  }
-
-  toggleShowPieces() {
-    this.showPieces = !this.showPieces;
-    const fenToSet = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'; // Inicial
-
-    if (this.showPieces) {
-      if (this.randomPosition) {
-        // this.currentFenInBoard = randomFEN();
-      } else {
-        this.currentFenInBoard = fenToSet;
-      }
-    } else {
-      this.currentFenInBoard = '8/8/8/8/8/8/8/8 w - - 0 1'; // Vacío
-    }
-
-    // this.board.setPosition(this.currentFenInBoard);
-  }
-
-  toggleRandomPosition() {
-    this.randomPosition = !this.randomPosition;
-    if (this.randomPosition) {
-      // this.board.setPosition(randomFEN());
-    } else {
-      // this.board.setPosition('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1');
-    }
-  }
-
-  changeOrientation(orientation?: 'w' | 'b') {
-    // this.board.setOrientation(orientation);
   }
 }

@@ -1,0 +1,14 @@
+// Estilos específicos para el avatar del rey
+.avatar img {
+  object-fit: contain;
+}
+
+.avatar {
+  .ring {
+    transition: all 0.3s ease;
+  }
+  
+  &:hover .ring {
+    transform: scale(1.05);
+  }
+}
