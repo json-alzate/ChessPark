@@ -19,7 +19,6 @@ export class StorageService {
   private readonly STORAGE_KEY = 'chess_coordinates_games';
   private readonly USER_ID_KEY = 'chess_user_id';
 
-  constructor() { }
 
   /**
    * Genera un ID único para el usuario
