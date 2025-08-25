@@ -14,13 +14,13 @@ import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
 import { environment } from './environments/environment';
 
-if (environment.production) {
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('ngsw-worker.js');
-    });
-  }
-}
+// if (environment.production) {
+//   if ('serviceWorker' in navigator) {
+//     window.addEventListener('load', () => {
+//       navigator.serviceWorker.register('ngsw-worker.js');
+//     });
+//   }
+// }
 
 bootstrapApplication(AppComponent, {
   providers: [

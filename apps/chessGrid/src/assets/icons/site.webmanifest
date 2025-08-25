@@ -1,6 +1,8 @@
 {
   "name": "chessGrid",
   "short_name": "chessGrid",
+  "version": "1.0.1",
+  "description": "Entrenador de coordenadas de ajedrez",
   "icons": [
     {
       "src": "/assets/icons/web-app-manifest-192x192.png",
@@ -17,5 +19,10 @@
   ],
   "theme_color": "#ffffff",
   "background_color": "#ffffff",
-  "display": "standalone"
+  "display": "standalone",
+  "start_url": "/",
+  "scope": "/",
+  "orientation": "portrait",
+  "categories": ["games", "education", "puzzle"],
+  "lang": "es"
 }
