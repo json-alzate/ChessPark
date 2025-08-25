@@ -2,137 +2,124 @@
   #settingsModal
   trigger="settings-trigger"
   [presentingElement]="null"
-  [breakpoints]="[0, 0.5, 0.8]"
-  [initialBreakpoint]="0.5"
+  [breakpoints]="[0, 0.6, 0.8]"
+  [initialBreakpoint]="0.6"
   [backdropDismiss]="true"
   class="settings-modal"
 >
-  <ng-template>
-    <ion-header class="ion-no-border">
-      <ion-toolbar>
-        <ion-title class="text-center">
-          <ion-icon name="settings-outline" class="mr-2"></ion-icon>
-          Configuración
-        </ion-title>
-        <ion-button
-          fill="clear"
-          slot="end"
-          (click)="dismiss()"
-        >
-          <ion-icon name="close-outline"></ion-icon>
-        </ion-button>
-      </ion-toolbar>
-    </ion-header>
+  <ng-template >
 
-    <ion-content class="ion-padding">
-      <div class="space-y-6">
+
+    <ion-content>
+
+      <div data-theme="halloween" class="h-full">
+
+        <ion-header class="ion-no-border">
+          <ion-toolbar>
+            <ion-title class="text-center">
+              <ion-icon name="settings-outline" class="mr-2"></ion-icon>
+              Configuración
+            </ion-title>
+            <ion-button
+              fill="clear"
+              slot="end"
+              (click)="dismiss()"
+            >
+              <ion-icon name="close-outline"></ion-icon>
+            </ion-button>
+          </ion-toolbar>
+        </ion-header>
+
+      <div class="space-y-6 p-2">
         <!-- Configuración del Tablero -->
         <div class="space-y-4">
-          <h3 class="text-lg font-semibold text-base-content">Tablero</h3>
-          
-          <ion-list class="bg-base-100 rounded-lg">
-            <ion-item class="rounded-lg">
-              <ion-label class="flex flex-col">
-                <span class="font-medium">Mostrar Coordenadas</span>
-                <span class="text-sm opacity-70">Muestra las letras y números del tablero</span>
-              </ion-label>
-              <ion-toggle
-                slot="end"
-                [checked]="settings.showCoordinates"
-                (ionChange)="onSettingChange('showCoordinates', $event.detail.checked)"
-              ></ion-toggle>
-            </ion-item>
 
-            <ion-item class="rounded-lg">
-              <ion-label class="flex flex-col">
-                <span class="font-medium">Mostrar Piezas</span>
-                <span class="text-sm opacity-70">Muestra las piezas de ajedrez en el tablero</span>
-              </ion-label>
-              <ion-toggle
-                slot="end"
-                [checked]="settings.showPieces"
-                (ionChange)="onSettingChange('showPieces', $event.detail.checked)"
-              ></ion-toggle>
-            </ion-item>
-          </ion-list>
-        </div>
-
-        <!-- Configuración del Juego -->
-        <div class="space-y-4">
-          <h3 class="text-lg font-semibold text-base-content">Juego</h3>
-          
-          <ion-list class="bg-base-100 rounded-lg">
-            <ion-item class="rounded-lg">
-              <ion-label class="flex flex-col">
-                <span class="font-medium">Modo Infinito</span>
-                <span class="text-sm opacity-70">Jugar sin límite de tiempo</span>
-              </ion-label>
-              <ion-toggle
-                slot="end"
-                [checked]="settings.infiniteMode"
-                (ionChange)="onSettingChange('infiniteMode', $event.detail.checked)"
-              ></ion-toggle>
-            </ion-item>
-          </ion-list>
-
-          <!-- Botón para detener el juego (solo visible en modo infinito) -->
-          @if (isPlaying && settings.infiniteMode) {
-          <div class="p-4 bg-warning/20 rounded-lg border border-warning/30">
-            <div class="flex items-center justify-between">
+          <ul class="list bg-base-100 rounded-box shadow-md">
+            <li class="list-row">
+              <div></div>
               <div>
-                <p class="font-medium text-warning">Juego en Modo Infinito</p>
-                <p class="text-sm opacity-70">Presiona el botón para detener</p>
+                <div>Mostrar Coordenadas</div>
+                <div class="text-xs font-semibold opacity-60">Muestra las letras y números del tablero</div>
               </div>
-              <ion-button
-                fill="clear"
-                color="warning"
-                (click)="onStopGame()"
-              >
-                <ion-icon name="stop-outline" slot="start"></ion-icon>
-                Detener
-              </ion-button>
-            </div>
-          </div>
-          }
-        </div>
+              <input
+                type="checkbox"
+                [checked]="settings.showCoordinates"
+                class="toggle toggle-primary"
+                (change)="onCheckboxChange($event, 'showCoordinates')"              />
+            </li>
 
-        <!-- Información Adicional -->
-        <div class="space-y-4">
-          <h3 class="text-lg font-semibold text-base-content">Información</h3>
-          
-          <div class="p-4 bg-base-200 rounded-lg">
-            <div class="space-y-2">
-              <div class="flex justify-between items-center">
-                <span class="text-sm opacity-70">Modo de Juego:</span>
-                <span class="font-medium">
-                  {{ settings.infiniteMode ? 'Infinito' : 'Con Tiempo' }}
-                </span>
+            <li class="list-row">
+              <div></div>
+              <div>
+                <div>Mostrar Piezas</div>
+                <div class="text-xs font-semibold opacity-60">Muestra las piezas de ajedrez en el tablero</div>
               </div>
-              <div class="flex justify-between items-center">
-                <span class="text-sm opacity-70">Coordenadas:</span>
-                <span class="font-medium">
-                  {{ settings.showCoordinates ? 'Visibles' : 'Ocultas' }}
-                </span>
+              <input
+                type="checkbox"
+                [checked]="settings.showPieces"
+                class="toggle toggle-primary"
+                (change)="onCheckboxChange($event, 'showPieces')"              />
+            </li>
+
+            <li class="list-row">
+              <div></div>
+              <div>
+                <div>Mostrar Piezas en Posiciones Aleatorias</div>
+                <div class="text-xs font-semibold opacity-60">Coloca las piezas en posiciones aleatorias del tablero</div>
               </div>
-              <div class="flex justify-between items-center">
-                <span class="text-sm opacity-70">Piezas:</span>
-                <span class="text-sm font-medium">
-                  {{ settings.showPieces ? 'Visibles' : 'Ocultas' }}
-                </span>
+              <input
+                type="checkbox"
+                [checked]="settings.showRandomPieces"
+                [disabled]="!settings.showPieces"
+                class="toggle toggle-primary"
+                [class.opacity-50]="!settings.showPieces"
+                (change)="onCheckboxChange($event, 'showRandomPieces')"              />
+            </li>
+
+            <li class="list-row">
+              <div></div>
+              <div>
+                <div>Modo Infinito</div>
+                <div class="text-xs font-semibold opacity-60">Jugar sin límite de tiempo</div>
               </div>
-            </div>
-          </div>
+              <input
+                type="checkbox"
+                [checked]="settings.infiniteMode"
+                class="toggle toggle-primary"
+                (change)="onCheckboxChange($event, 'infiniteMode')"              />
+            </li>
+
+            <li class="list-row">
+              <div></div>
+              <div>
+                <div>Reproducir Sonido</div>
+                <div class="text-xs font-semibold opacity-60">Reproduce un sonido cuando se toca una casilla</div>
+              </div>
+              <input
+                type="checkbox"
+                [checked]="settings.playSound"
+                class="toggle toggle-primary"
+                (change)="onCheckboxChange($event, 'playSound')"              />
+            </li>
+          </ul>
+
+  
         </div>
+       
       </div>
+
+
+
+      <ion-footer class="ion-no-border">
+        <ion-toolbar class="ion-padding-horizontal">
+          <div class="text-center w-full">
+            <p class="text-sm opacity-60">{{ appVersion }}</p>
+            <p class="text-xs opacity-40 mt-1">ChessGrid - ChessPark</p>
+          </div>
+        </ion-toolbar>
+      </ion-footer>
+    </div>
     </ion-content>
 
-    <ion-footer class="ion-no-border">
-      <ion-toolbar class="ion-padding-horizontal">
-        <div class="text-center w-full">
-          <p class="text-sm opacity-60">{{ appVersion }}</p>
-          <p class="text-xs opacity-40 mt-1">ChessPark - Coordenadas</p>
-        </div>
-      </ion-toolbar>
-    </ion-footer>
   </ng-template>
 </ion-modal>

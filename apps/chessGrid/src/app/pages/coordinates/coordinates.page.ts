@@ -91,6 +91,8 @@ export class CoordinatesPage {
     showCoordinates: false,
     showPieces: false,
     infiniteMode: false,
+    playSound: false,
+    showRandomPieces: false,
   };
 
   // Options
