@@ -40,14 +40,8 @@ export class BoardComponent implements OnInit {
 
   async buildBoard() {
 
-    if (this.board) {
-      this.board.destroy();
-    }
-
-    console.log('config', this.config);
     this.board = await new Chessboard(document.getElementById('boardPuzzle') as HTMLElement, this.config);
 
-    console.log(this.board);
     // Agregar evento de clic en casillas usando enableSquareSelect
     this.board.enableSquareSelect('pointerdown', (eventData: any) => {
       if (eventData.square) {
@@ -61,6 +55,8 @@ export class BoardComponent implements OnInit {
    */
   public toggleCoordinates(showCoordinates: boolean) {
     this.config = { ...this.config, style: { ...this.config.style, showCoordinates } };
+console.log(this.board);
+
   }
 
 
@@ -73,12 +69,16 @@ export class BoardComponent implements OnInit {
     } else {
       this.config = { ...this.config, position: '8/8/8/8/8/8/8/8 w - - 0 1' };
     }
+    if (this.board) {
+      this.board.setPosition(this.config.position);
+    }
   }
 
   public setPosition(position: string) {
-    this.config = { ...this.config, position };
-    console.log('setPosition',this.config);
-    
+    this.config = { ...this.config, position };  
+    if (this.board) {
+      this.board.setPosition(position);
+    }
   }
 
   /**

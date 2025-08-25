@@ -183,12 +183,10 @@ export class CoordinatesPage {
 
   /**
    * Aplica las configuraciones del juego al tablero
+   * Espera a que el boardComponent y su instancia interna estén listos antes de aplicar la configuración.
    */
   applyGameSettings() {
-    /**
-     * Espera a que el boardComponent y su instancia interna estén listos antes de aplicar la configuración.
-     * 
-     */
+
     const waitForBoardReady = (retries = 20) => {
       if (
         this.boardComponent &&
@@ -196,18 +194,13 @@ export class CoordinatesPage {
         typeof (this.boardComponent as any).toggleCoordinates === 'function'
       ) {
         try {
-          console.log('gameSettingsssssssss-',this.gameSettings);
           // Aplicar configuración solo si el board está inicializado
           this.boardComponent.toggleCoordinates(this.gameSettings.showCoordinates);
           this.boardComponent.togglePieces(this.gameSettings.showPieces);
           if(this.gameSettings.showPieces && this.gameSettings.showRandomPieces) {
-            console.log('showPieces && showRandomPieces');
-            
             const randomFEN = this.randomFENService.generateRandomFEN();
-            console.log('randomFEN',randomFEN);
             this.boardComponent.setPosition(randomFEN);
           }
-          this.boardComponent.rebuildBoard();
         } catch (e) {
           console.error('Error aplicando configuraciones al tablero:', e);
         }
@@ -287,6 +280,7 @@ export class CoordinatesPage {
   // Método para escuchar cuando se presiona una casilla en el tablero
   onSquareSelected(square: string) {
     if (this.isPlaying && this.currentPuzzle) {
+      console.log('square',square);
       if (square === this.currentPuzzle) {
         // Coordenada correcta
         this.squaresGood.push(this.currentPuzzle);
@@ -407,7 +401,6 @@ export class CoordinatesPage {
     if (this.score < this.puzzles.length) {
       if(this.gameSettings.showCoordinates && this.gameSettings.showRandomPieces) {
         this.boardComponent.setPosition(this.randomFENService.generateRandomFEN());
-        this.boardComponent.rebuildBoard();
       }
       this.currentPuzzle = this.puzzles[this.score];
     } else {
