@@ -13,7 +13,21 @@ export class BoardComponent implements OnInit {
   
   @Output() squareSelected = new EventEmitter<string>();
   
-  @Input() boardConfig?: ChessboardConfig;
+  @Input() set boardConfig(config: ChessboardConfig) {
+    this.config = { ...this.config, ...config };
+    this.buildBoard();
+  }
+
+  private config: ChessboardConfig = {
+    coordinates: false,
+    responsive: true,
+    position: '8/8/8/8/8/8/8/8 w - - 0 1',
+    assetsUrl: 'assets/cm-chessboard/assets/',
+    style: {
+      cssClass: 'chessboard-js',
+      showCoordinates: true,
+    },
+  };
   
   private board: any = null;
   
@@ -22,23 +36,12 @@ export class BoardComponent implements OnInit {
   }
 
   async buildBoard() {
-    // Configuración por defecto
-    const defaultConfig: ChessboardConfig = {
-      coordinates: false,
-      responsive: true,
-      position: '8/8/8/8/8/8/8/8 w - - 0 1',
-      assetsUrl: 'assets/cm-chessboard/assets/',
-      style: {
-        cssClass: 'chessboard-js',
-        showCoordinates: true,
-        // borderType: BORDER_TYPE.thin,
-      },
-    };
+
+    if (this.board) {
+      this.board.destroy();
+    }
     
-    // Usar la configuración inyectada o la configuración por defecto
-    const config: ChessboardConfig = this.boardConfig ? { ...defaultConfig, ...this.boardConfig } : defaultConfig;
-    
-    this.board = await new Chessboard(document.getElementById('boardPuzzle') as HTMLElement, config);
+    this.board = await new Chessboard(document.getElementById('boardPuzzle') as HTMLElement, this.config);
 
     // Agregar evento de clic en casillas usando enableSquareSelect
     this.board.enableSquareSelect('pointerdown', (eventData: any) => {
@@ -47,6 +50,14 @@ export class BoardComponent implements OnInit {
         this.squareSelected.emit(eventData.square);
       }
     });
+  }
+
+  /**
+   * muestra u oculta las coordenadas del tablero
+   */
+  public toggleCoordinates(showCoordinates: boolean) {
+    this.config.style.showCoordinates = showCoordinates;
+    this.buildBoard();
   }
 
   /**

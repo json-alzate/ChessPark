@@ -188,11 +188,31 @@ export class CoordinatesPage {
    * Aplica las configuraciones del juego al tablero
    */
   applyGameSettings() {
-    if (this.boardComponent) {
-      // Nota: Las configuraciones se aplicarán cuando se reconstruya el tablero
-      // Por ahora, solo guardamos las preferencias
-      console.log('Configuraciones aplicadas:', this.gameSettings);
-    }
+    /**
+     * Espera a que el boardComponent y su instancia interna estén listos antes de aplicar la configuración.
+     * 
+     */
+    const waitForBoardReady = (retries = 20) => {
+      if (
+        this.boardComponent &&
+        (this.boardComponent as any).board &&
+        typeof (this.boardComponent as any).toggleCoordinates === 'function'
+      ) {
+        try {
+          // Aplicar configuración solo si el board está inicializado
+          console.log('Configuraciones aplicadas:', this.gameSettings);
+          this.boardComponent.toggleCoordinates(this.gameSettings.showCoordinates);
+        } catch (e) {
+          console.error('Error aplicando configuraciones al tablero:', e);
+        }
+      } else if (retries > 0) {
+        setTimeout(() => waitForBoardReady(retries - 1), 150);
+      } else {
+        console.warn('No se pudo aplicar la configuración: boardComponent o board no están disponibles.');
+      }
+    };
+    waitForBoardReady();
+
   }
 
   /**
