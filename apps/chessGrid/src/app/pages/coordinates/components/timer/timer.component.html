@@ -6,7 +6,7 @@
           'progress-warning': timeColor === 'warning',
           'progress-error': timeColor === 'danger'
         }"
-    [value]="progressValue * 100"
+    [value]="displayProgress"
     max="100"
   ></progress>
   <p
@@ -17,6 +17,6 @@
           'text-error': timeColor === 'danger'
         }"
   >
-    {{time | number:'1.0-0'}}
+    {{ displayTime }}
   </p>
 </div>

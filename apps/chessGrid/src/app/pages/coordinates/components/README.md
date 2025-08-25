@@ -38,6 +38,7 @@ Este directorio contiene los componentes auxiliares que han sido extraídos del 
   - Barra de progreso visual
   - Cambios de color según el tiempo restante
   - Formato de tiempo legible
+  - **NUEVO**: Soporte para modo infinito (∞)
 
 ### 6. `board-orientation-controls` - Controles de Orientación
 - **Propósito**: Permite cambiar la orientación del tablero
@@ -45,6 +46,18 @@ Este directorio contiene los componentes auxiliares que han sido extraídos del 
   - Botones para orientación blanca, negra o aleatoria
   - Solo visible cuando no se está jugando
   - Diseño responsive con DaisyUI
+
+### 7. `settings-side-menu` - Modal de Configuración 🆕
+- **Propósito**: Modal deslizante desde la derecha con configuraciones del juego
+- **Características**:
+  - **Toggle para coordenadas**: Mostrar/ocultar coordenadas del tablero
+  - **Toggle para piezas**: Mostrar/ocultar piezas de ajedrez
+  - **Toggle para modo infinito**: Jugar con o sin límite de tiempo
+  - **Botón de detener**: Para detener el juego en modo infinito
+  - **Información del estado**: Muestra la configuración actual
+  - **Footer con versión**: Muestra la versión de la app (v1.0.0)
+  - **Persistencia**: Las configuraciones se guardan en localStorage
+  - **Deslizamiento**: Se abre desde la derecha con animación suave
 
 ## Beneficios de la Refactorización
 
@@ -68,6 +81,12 @@ Este directorio contiene los componentes auxiliares que han sido extraídos del 
 - Mocks más simples y específicos
 - Mejor cobertura de código
 
+### ✅ **Configuración Avanzada** 🆕
+- Modal deslizante intuitivo y accesible
+- Configuraciones persistentes
+- Modo de juego infinito
+- Control total sobre la visualización del tablero
+
 ## Uso de los Componentes
 
 Todos los componentes son **standalone** y se importan directamente en el componente principal:
@@ -80,6 +99,7 @@ import {
   GameStatsComponent,
   TimerComponent,
   BoardOrientationControlsComponent,
+  SettingsSideMenuComponent,
 } from './components';
 ```
 
@@ -111,9 +131,30 @@ components/
 │   ├── board-orientation-controls.component.ts
 │   ├── board-orientation-controls.component.html
 │   └── board-orientation-controls.component.scss
+├── settings-side-menu/          🆕
+│   ├── settings-side-menu.component.ts
+│   ├── settings-side-menu.component.html
+│   └── settings-side-menu.component.scss
 ├── index.ts
 └── README.md
 ```
+
+## Funcionalidades del Modal de Configuración 🆕
+
+### 🎯 **Configuraciones del Tablero**
+- **Mostrar Coordenadas**: Toggle para mostrar/ocultar letras y números del tablero
+- **Mostrar Piezas**: Toggle para mostrar/ocultar piezas de ajedrez
+
+### ⏱️ **Configuraciones del Juego**
+- **Modo Infinito**: Toggle para jugar sin límite de tiempo
+- **Botón de Detener**: Visible solo cuando se juega en modo infinito
+
+### 📱 **Características del Modal**
+- **Lado derecho**: Se desliza desde la derecha
+- **Responsive**: Se adapta a diferentes tamaños de pantalla
+- **Persistente**: Las configuraciones se guardan automáticamente
+- **Información en tiempo real**: Muestra el estado actual de cada configuración
+- **Animación suave**: Deslizamiento con transición elegante
 
 ## Próximos Pasos
 
@@ -122,3 +163,5 @@ components/
 3. **Optimización**: Implementar OnPush change detection donde sea apropiado
 4. **Accesibilidad**: Mejorar la accesibilidad de cada componente
 5. **Internacionalización**: Preparar para múltiples idiomas
+6. **Integración con BoardComponent**: Implementar métodos para aplicar configuraciones al tablero
+7. **Animaciones**: Agregar transiciones suaves al menú lateral

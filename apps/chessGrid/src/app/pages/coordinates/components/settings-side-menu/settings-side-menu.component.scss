@@ -1,0 +1,124 @@
+// Estilos específicos para el modal de configuración (que simula un menú lateral)
+.settings-modal {
+  --width: 320px;
+  --height: 100%;
+  --border-radius: 0;
+  
+  @media (max-width: 768px) {
+    --width: 100%;
+  }
+}
+
+// Hacer que el modal se deslice desde la derecha
+ion-modal {
+  --backdrop-opacity: 0.3;
+  
+  &::part(content) {
+    border-radius: 0;
+    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.1);
+  }
+}
+
+ion-header {
+  ion-toolbar {
+    --background: hsl(var(--b1));
+    --color: hsl(var(--bc));
+    
+    ion-title {
+      font-weight: 600;
+    }
+    
+    ion-button {
+      --color: hsl(var(--bc));
+      --background: transparent;
+      
+      &:hover {
+        --background: hsl(var(--b3));
+      }
+    }
+  }
+}
+
+ion-content {
+  --background: hsl(var(--b2));
+  
+  h3 {
+    color: hsl(var(--bc));
+    margin-bottom: 0.5rem;
+  }
+}
+
+ion-list {
+  ion-item {
+    --background: transparent;
+    --border-color: hsl(var(--b3));
+    --color: hsl(var(--bc));
+    --padding-start: 1rem;
+    --padding-end: 1rem;
+    --min-height: 4rem;
+    
+    &:hover {
+      --background: hsl(var(--b3));
+    }
+    
+    ion-label {
+      span:first-child {
+        color: hsl(var(--bc));
+        font-weight: 500;
+      }
+      
+      span:last-child {
+        color: hsl(var(--bc) / 0.7);
+        margin-top: 0.25rem;
+      }
+    }
+  }
+}
+
+ion-footer {
+  ion-toolbar {
+    --background: hsl(var(--b1));
+    --color: hsl(var(--bc));
+    border-top: 1px solid hsl(var(--b3));
+  }
+}
+
+// Estilos para el modo infinito
+.bg-warning\/20 {
+  background-color: hsl(var(--wa) / 0.2);
+}
+
+.border-warning\/30 {
+  border-color: hsl(var(--wa) / 0.3);
+}
+
+.text-warning {
+  color: hsl(var(--wa));
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .settings-modal {
+    --width: 100%;
+  }
+  
+  .space-y-6 > * + * {
+    margin-top: 1.5rem;
+  }
+}
+
+// Animaciones para el modal
+ion-modal {
+  &::part(content) {
+    animation: slideInRight 0.3s ease-out;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}

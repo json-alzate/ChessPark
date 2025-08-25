@@ -29,6 +29,8 @@ import {
   GameStatsComponent,
   TimerComponent,
   BoardOrientationControlsComponent,
+  SettingsSideMenuComponent,
+  GameSettings,
 } from './components';
 
 addIcons({ settingsOutline });
@@ -53,6 +55,7 @@ addIcons({ settingsOutline });
     GameStatsComponent,
     TimerComponent,
     BoardOrientationControlsComponent,
+    SettingsSideMenuComponent,
   ],
 })
 export class CoordinatesPage {
@@ -81,6 +84,13 @@ export class CoordinatesPage {
     correctAnswers: 0,
     incorrectAnswers: 0,
     accuracy: 0,
+  };
+
+  // Configuraciones del juego
+  gameSettings: GameSettings = {
+    showCoordinates: false,
+    showPieces: false,
+    infiniteMode: false,
   };
 
   // Options
@@ -124,6 +134,7 @@ export class CoordinatesPage {
   ) {
     this.loadUserStats();
     this.loadBestScores();
+    this.loadGameSettings();
   }
 
   /**
@@ -151,6 +162,35 @@ export class CoordinatesPage {
       }));
 
     this.bestScores = topScores;
+  }
+
+  /**
+   * Carga las configuraciones del juego desde localStorage
+   */
+  loadGameSettings() {
+    const savedSettings = localStorage.getItem('chessGrid_gameSettings');
+    if (savedSettings) {
+      this.gameSettings = { ...this.gameSettings, ...JSON.parse(savedSettings) };
+    }
+    this.applyGameSettings();
+  }
+
+  /**
+   * Guarda las configuraciones del juego en localStorage
+   */
+  saveGameSettings() {
+    localStorage.setItem('chessGrid_gameSettings', JSON.stringify(this.gameSettings));
+  }
+
+  /**
+   * Aplica las configuraciones del juego al tablero
+   */
+  applyGameSettings() {
+    if (this.boardComponent) {
+      // Nota: Las configuraciones se aplicarán cuando se reconstruya el tablero
+      // Por ahora, solo guardamos las preferencias
+      console.log('Configuraciones aplicadas:', this.gameSettings);
+    }
   }
 
   /**
@@ -190,6 +230,30 @@ export class CoordinatesPage {
     return colorGames.length > 0
       ? Math.max(...colorGames.map((g) => g.score))
       : 0;
+  }
+
+  /**
+   * Abre el modal de configuración
+   */
+  openSettingsMenu() {
+    // El modal se abrirá automáticamente con el trigger
+    console.log('Abriendo modal de configuración...');
+  }
+
+  /**
+   * Maneja los cambios en las configuraciones del juego
+   */
+  onSettingsChange(newSettings: GameSettings) {
+    this.gameSettings = newSettings;
+    this.saveGameSettings();
+    this.applyGameSettings();
+  }
+
+  /**
+   * Detiene el juego manualmente
+   */
+  onStopGame() {
+    this.stopGame();
   }
 
   // Método para escuchar cuando se presiona una casilla en el tablero
@@ -239,12 +303,20 @@ export class CoordinatesPage {
   play() {
     this.puzzles = this.generatePuzzles(200);
     this.currentPuzzle = this.puzzles[0];
-    this.time = 60;
+    
+    // Configurar tiempo según el modo
+    if (this.gameSettings.infiniteMode) {
+      this.time = Infinity;
+      this.progressValue = 1;
+    } else {
+      this.time = 60;
+      this.progressValue = 1;
+    }
+    
     this.score = 0;
     this.squaresBad = [];
     this.squaresGood = [];
     this.timeColor = 'success';
-    this.progressValue = 1;
 
     // Reiniciar estadísticas del juego actual
     this.currentGameStats = {
@@ -270,7 +342,11 @@ export class CoordinatesPage {
     }
 
     this.isPlaying = true;
-    this.initInterval();
+    
+    // Solo iniciar el intervalo si no es modo infinito
+    if (!this.gameSettings.infiniteMode) {
+      this.initInterval();
+    }
   }
 
   initInterval() {
