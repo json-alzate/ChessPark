@@ -19,7 +19,7 @@ import {
 } from '../../services/storage.service';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { ConfettiService } from '@chesspark/common-utils';
+import { ConfettiService, RandomFENService } from '@chesspark/common-utils';
 
 // Importar componentes auxiliares
 import {
@@ -97,10 +97,6 @@ export class CoordinatesPage {
 
   // Options
   color: 'random' | 'white' | 'black' = 'random';
-  showCoordinates = false;
-  showPieces = false;
-  randomPosition = false;
-  currentFenInBoard = '8/8/8/8/8/8/8/8 w - - 0 1';
   currentColorInBoard: 'white' | 'black' = 'white';
 
   // Orientación del tablero
@@ -132,7 +128,8 @@ export class CoordinatesPage {
 
   constructor(
     private storageService: StorageService,
-    private confettiService: ConfettiService
+    private confettiService: ConfettiService,
+    private randomFENService: RandomFENService
   ) {
     this.loadUserStats();
     this.loadBestScores();
@@ -199,9 +196,18 @@ export class CoordinatesPage {
         typeof (this.boardComponent as any).toggleCoordinates === 'function'
       ) {
         try {
+          console.log('gameSettingsssssssss-',this.gameSettings);
           // Aplicar configuración solo si el board está inicializado
-          console.log('Configuraciones aplicadas:', this.gameSettings);
           this.boardComponent.toggleCoordinates(this.gameSettings.showCoordinates);
+          this.boardComponent.togglePieces(this.gameSettings.showPieces);
+          if(this.gameSettings.showPieces && this.gameSettings.showRandomPieces) {
+            console.log('showPieces && showRandomPieces');
+            
+            const randomFEN = this.randomFENService.generateRandomFEN();
+            console.log('randomFEN',randomFEN);
+            this.boardComponent.setPosition(randomFEN);
+          }
+          this.boardComponent.rebuildBoard();
         } catch (e) {
           console.error('Error aplicando configuraciones al tablero:', e);
         }
@@ -399,6 +405,10 @@ export class CoordinatesPage {
   nextPuzzle() {
     //TODO: si se completan lso puzzles cargar mas para que nunca se acaben
     if (this.score < this.puzzles.length) {
+      if(this.gameSettings.showCoordinates && this.gameSettings.showRandomPieces) {
+        this.boardComponent.setPosition(this.randomFENService.generateRandomFEN());
+        this.boardComponent.rebuildBoard();
+      }
       this.currentPuzzle = this.puzzles[this.score];
     } else {
       // Se acabaron los puzzles, el jugador ganó
