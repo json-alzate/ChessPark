@@ -55,8 +55,31 @@ export class BoardComponent implements OnInit {
    */
   public toggleCoordinates(showCoordinates: boolean) {
     this.config = { ...this.config, style: { ...this.config.style, showCoordinates } };
-console.log(this.board);
 
+    // Buscar el elemento SVG cm-chessboard
+    const boardElement = document.getElementById('boardPuzzle');
+    if (boardElement) {
+      const chessboardSVG = boardElement.querySelector('.cm-chessboard') as SVGElement;
+      
+      if (chessboardSVG) {
+        // Buscar el grupo de coordenadas dentro del SVG
+        const coordinatesGroup = chessboardSVG.querySelector('g.coordinates') as SVGElement;
+        
+        if (coordinatesGroup) {
+          if (showCoordinates) {
+            // Mostrar coordenadas
+            coordinatesGroup.style.display = 'block';
+          } else {
+            // Ocultar coordenadas
+            coordinatesGroup.style.display = 'none';
+          }
+        } else {
+          console.log('No se encontró el grupo de coordenadas');
+        }
+      } else {
+        console.log('No se encontró el elemento SVG cm-chessboard');
+      }
+    }
   }
 
 
@@ -92,12 +115,7 @@ console.log(this.board);
   }
 
 
-  /**
-   * Reconstruye el tablero
-   */
-  public rebuildBoard() {
-    this.buildBoard();
-  }
+
 
   /**
    * Obtiene la orientación actual del tablero
@@ -106,4 +124,27 @@ console.log(this.board);
   getOrientation(): 'w' | 'b' {
     return this.board ? this.board.getOrientation() : 'w';
   }
+
+  /**
+   * Verifica si las coordenadas están visibles
+   * @returns true si las coordenadas están visibles, false en caso contrario
+   */
+  areCoordinatesVisible(): boolean {
+    const boardElement = document.getElementById('boardPuzzle');
+    if (boardElement) {
+      const chessboardSVG = boardElement.querySelector('.cm-chessboard') as SVGElement;
+      
+      if (chessboardSVG) {
+        const coordinatesGroup = chessboardSVG.querySelector('g.coordinates') as SVGElement;
+        
+        if (coordinatesGroup) {
+          return coordinatesGroup.style.display !== 'none';
+        }
+      }
+    }
+    return this.config.style?.showCoordinates ?? false;
+  }
+
+
+
 }
