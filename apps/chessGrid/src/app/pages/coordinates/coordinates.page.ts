@@ -280,7 +280,6 @@ export class CoordinatesPage {
   // Método para escuchar cuando se presiona una casilla en el tablero
   onSquareSelected(square: string) {
     if (this.isPlaying && this.currentPuzzle) {
-      console.log('square',square);
       if (square === this.currentPuzzle) {
         // Coordenada correcta
         this.squaresGood.push(this.currentPuzzle);
@@ -416,8 +415,10 @@ export class CoordinatesPage {
     this.unsubscribeIntervalSeconds$.next();
     this.isPlaying = false;
 
-    // Guardar el resultado del juego
-    this.saveGameResult();
+    // Guardar el resultado del juego si no es modo infinito
+    if (!this.gameSettings.infiniteMode) {
+      this.saveGameResult();
+    }
 
     // Mostrar modal de resultados
     this.resultsModal.present();

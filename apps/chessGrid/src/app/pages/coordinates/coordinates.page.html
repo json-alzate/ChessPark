@@ -70,6 +70,14 @@
               [currentGameStats]="currentGameStats"
               [isPlaying]="isPlaying"
             ></app-game-stats>
+
+            @if (isPlaying && gameSettings.infiniteMode) {
+            <div class="flex justify-center" (click)="stopGame()">
+              <button class="btn  btn-error w-50" >
+                Detener juego
+              </button>
+            </div>
+            }
           </div>
         </ion-col>
       </ion-row>

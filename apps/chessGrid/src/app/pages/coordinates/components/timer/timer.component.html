@@ -6,7 +6,7 @@
           'progress-warning': timeColor === 'warning',
           'progress-error': timeColor === 'danger'
         }"
-    [value]="displayProgress"
+    [attr.value]="!isInfiniteMode ? displayProgress : null"
     max="100"
   ></progress>
   <p
