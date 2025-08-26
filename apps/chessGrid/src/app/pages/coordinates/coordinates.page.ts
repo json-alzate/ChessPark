@@ -269,13 +269,6 @@ export class CoordinatesPage {
     this.applyGameSettings();
   }
 
-  /**
-   * Detiene el juego manualmente
-   */
-  onStopGame() {
-    this.stopGame();
-  }
-
   // Método para escuchar cuando se presiona una casilla en el tablero
   onSquareSelected(square: string) {
     if (this.isPlaying && this.currentPuzzle) {
@@ -422,6 +415,10 @@ export class CoordinatesPage {
 
     // Mostrar modal de resultados
     this.resultsModal.present();
+    this.currentPuzzle = '';
+    this.time = 60;
+    this.progressValue = 1;
+    this.timeColor = 'success';
 
     // Recargar estadísticas
     this.loadUserStats();
