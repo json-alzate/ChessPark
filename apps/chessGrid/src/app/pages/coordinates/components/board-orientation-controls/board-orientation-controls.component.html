@@ -3,7 +3,7 @@
   <div class="join join-horizontal">
     <button
       class="join-item btn btn-sm"
-      [class.btn-soft]="boardOrientation === 'white'"
+      [class.btn-neutral]="boardOrientation === 'white'"
       [class.btn-ghost]="boardOrientation !== 'white'"
       (click)="onOrientationChange('white')"
     >
@@ -15,7 +15,7 @@
     </button>
     <button
       class="join-item btn btn-sm"
-      [class.btn-soft]="boardOrientation === 'random'"
+      [class.btn-neutral]="boardOrientation === 'random'"
       [class.btn-ghost]="boardOrientation !== 'random'"
       (click)="onOrientationChange('random')"
     >
@@ -24,7 +24,7 @@
 
     <button
       class="join-item btn btn-sm"
-      [class.btn-soft]="boardOrientation === 'black'"
+      [class.btn-neutral]="boardOrientation === 'black'"
       [class.btn-ghost]="boardOrientation !== 'black'"
       (click)="onOrientationChange('black')"
     >

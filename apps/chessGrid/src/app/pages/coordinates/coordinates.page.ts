@@ -96,7 +96,6 @@ export class CoordinatesPage {
   };
 
   // Options
-  color: 'random' | 'white' | 'black' = 'random';
   currentColorInBoard: 'white' | 'black' = 'white';
 
   // Orientación del tablero
@@ -346,9 +345,10 @@ export class CoordinatesPage {
       accuracy: 0,
     };
 
-    let orientation: 'w' | 'b' = this.color === 'white' ? 'w' : 'b';
+    let orientation: 'w' | 'b' = this.boardOrientation === 'white' ? 'w' : 'b';
 
-    if (this.color === 'random') {
+
+    if (this.boardOrientation === 'random') {
       orientation = Math.random() < 0.5 ? 'w' : 'b';
     }
 
