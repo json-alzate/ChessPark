@@ -1,7 +1,7 @@
 {
   "name": "chessGrid",
   "short_name": "chessGrid",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Entrenador de coordenadas de ajedrez",
   "icons": [
     {
@@ -17,8 +17,8 @@
       "purpose": "maskable"
     }
   ],
-  "theme_color": "#ffffff",
-  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "background_color": "#000000",
   "display": "standalone",
   "start_url": "/",
   "scope": "/",

@@ -5,3 +5,4 @@ export * from './date-utils.service';
 export * from './storage.service';
 export * from './random-fen.service';
 
+export * from './sounds/sounds.service';

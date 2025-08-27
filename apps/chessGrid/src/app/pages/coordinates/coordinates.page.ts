@@ -19,7 +19,7 @@ import {
 } from '../../services/storage.service';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { ConfettiService, RandomFENService } from '@chesspark/common-utils';
+import { ConfettiService, RandomFENService, SoundsService } from '@chesspark/common-utils';
 
 // Importar componentes auxiliares
 import {
@@ -128,7 +128,8 @@ export class CoordinatesPage {
   constructor(
     private storageService: StorageService,
     private confettiService: ConfettiService,
-    private randomFENService: RandomFENService
+    private randomFENService: RandomFENService,
+    private soundsService: SoundsService
   ) {
     this.loadUserStats();
     this.loadBestScores();
@@ -279,12 +280,18 @@ export class CoordinatesPage {
         this.currentGameStats.correctAnswers++;
         this.updateGameStats();
         this.nextPuzzle();
+        if(this.gameSettings.playSound) {
+          this.soundsService.playGood();
+        }
       } else {
         // Coordenada incorrecta
         this.squaresBad.push(this.currentPuzzle);
         this.currentGameStats.incorrectAnswers++;
         this.updateGameStats();
         this.timeColor = 'danger';
+        if(this.gameSettings.playSound) {
+          this.soundsService.playError();
+        }
         // Cambiar el color de vuelta después de un tiempo
         setTimeout(() => {
           this.timeColor = this.time > 15 ? 'success' : 'warning';

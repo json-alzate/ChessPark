@@ -50,7 +50,7 @@ export class SettingsSideMenuComponent {
     playSound: false,
     infiniteMode: false,
   };
-  @Input() appVersion = 'v1.0.1';
+  @Input() appVersion = 'v1.0.2';
 
   @Output() settingsChange = new EventEmitter<GameSettings>();
 

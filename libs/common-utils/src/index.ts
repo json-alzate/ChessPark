@@ -4,7 +4,7 @@ export * from './lib/notification.service';
 export * from './lib/date-utils.service';
 export * from './lib/storage.service';
 export * from './lib/random-fen.service'; // Servicio para generar posiciones FEN realistas de ajedrez
-
+export * from './lib/sounds/sounds.service';
 
 
 // Re-exportar tipos y interfaces
