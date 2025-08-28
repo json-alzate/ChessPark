@@ -1,0 +1,76 @@
+/* Estilos específicos para Angular Elements */
+
+/* Core CSS required for Ionic components to work properly */
+@import "@ionic/angular/css/core.css";
+
+/* Basic CSS for apps built with Ionic */
+@import "@ionic/angular/css/structure.css";
+@import "@ionic/angular/css/typography.css";
+@import "@ionic/angular/css/display.css";
+
+/* Optional CSS utils that can be commented out */
+@import "@ionic/angular/css/padding.css";
+@import "@ionic/angular/css/float-elements.css";
+@import "@ionic/angular/css/text-alignment.css";
+@import "@ionic/angular/css/text-transformation.css";
+@import "@ionic/angular/css/flex-utils.css";
+
+/* Tailwind CSS - Importado directamente */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* DaisyUI - Importado directamente */
+@import "daisyui/dist/full.css";
+
+/* Animaciones de navegación personalizadas */
+@import "./app/shared/styles/navigation-animations.scss";
+
+/* Estilos globales */
+.body-container{
+    min-height: 100vh;
+    height: 100%;
+}
+
+/* Estilos específicos para WebView */
+ion-app {
+    height: 100vh;
+    width: 100vw;
+}
+
+ion-page {
+    height: 100vh;
+    width: 100vw;
+}
+
+/* Asegurar que las animaciones funcionen en WebView */
+.navigation-back-exit {
+    animation: slideOutRight 0.3s cubic-bezier(0.4, 0.0, 0.2, 1) forwards !important;
+}
+
+.navigation-forward-enter {
+    animation: slideInRight 0.3s cubic-bezier(0.4, 0.0, 0.2, 1) forwards !important;
+}
+
+/* Keyframes para las animaciones */
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0.8;
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0.8;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+} 

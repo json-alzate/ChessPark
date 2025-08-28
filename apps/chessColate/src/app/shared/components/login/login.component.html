@@ -1,0 +1,223 @@
+<ion-content class="ion-padding">
+
+  <ion-fab *ngIf="showEmailPassword" vertical="top" horizontal="start" slot="fixed">
+    <ion-fab-button (click)="showEmailPassword = false" size="small">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <ion-fab vertical="top" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="close()" size="small">
+      <ion-icon name="close-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <div class="ion-hide-md-up" style="height: 25vh;">
+  </div>
+
+
+
+
+
+  <ng-container *ngIf="!showEmailPassword; else elseTemplateShowEmail">
+
+    <ion-row class="row-buttons-providers">
+      <ion-col size="12">
+        <ion-button class="btn-login" expand="block" color="dark" (click)="loginGoogle()">
+          <ion-icon slot="start" src="assets\images\logos\Google__G__Logo.svg"></ion-icon>
+          {{ 'LoginGoogle' | translate }}
+        </ion-button>
+      </ion-col>
+      <ion-col size="12">
+        <ion-button expand="block" fill="clear" (click)="showEmailPassword = true">
+          <ion-icon slot="start" name="mail-outline"></ion-icon>
+          {{ 'LoginEmailPassword' | translate }}
+        </ion-button>
+      </ion-col>
+    </ion-row>
+
+  </ng-container>
+  <ng-template #elseTemplateShowEmail>
+
+
+    <div class="div-container-forms">
+
+
+      <ng-container *ngIf="showResetPassword; else elseTemplateShowResetPassword">
+
+        <ion-segment value="resetPassword" class="ion-margin-bottom">
+          <ion-segment-button value="resetPassword">
+            <ion-label> {{ 'ResetPassword' | translate }} </ion-label>
+          </ion-segment-button>
+        </ion-segment>
+
+        <form [formGroup]="formResetPassword" (ngSubmit)="resetPassword($event)">
+
+          <ion-row>
+            <ion-col size="12">
+              <ion-item>
+                <ion-input [label]=" 'Email' | translate" labelPlacement="floating" [errorText]="(emailFieldSingUp?.hasError('required') ? 
+                ('LOGIN.ERRORS.EmailRequired' | translate) :
+         (emailFieldSingUp?.hasError('pattern') ? ('LOGIN.ERRORS.EmailInvalid' | translate) : ''))"
+                  formControlName="email" type="email" maxlength="100"></ion-input>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+
+          <ion-row>
+            <ion-col size="6">
+
+              <ion-button color="danger" (click)="showResetPassword = false" expand="block">
+                {{ 'Cancel' | translate }}
+              </ion-button>
+            </ion-col>
+            <ion-col size="6">
+              <ion-button expand="block" type="submit" [disabled]="!formResetPassword.valid">
+                {{ 'Send' | translate }}
+              </ion-button>
+            </ion-col>
+          </ion-row>
+
+        </form>
+
+
+
+
+      </ng-container>
+      <ng-template #elseTemplateShowResetPassword>
+
+
+        <ion-segment [value]="segmentEmailPassword" class="ion-margin-bottom" (ionChange)="segmentChanged($event)">
+          <ion-segment-button value="login">
+            <ion-label> {{ 'Login' | translate }} </ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="singUp">
+            <ion-label>{{ 'Register' | translate }}</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+
+        <span [ngSwitch]="segmentEmailPassword">
+          <span *ngSwitchCase="'login'">
+
+            <form [formGroup]="formLogin" (ngSubmit)="onSubmitLogin($event)">
+
+              <ion-row>
+                <ion-col size="12">
+                  <ion-item>
+                    <ion-input [label]=" 'Email' | translate" labelPlacement="floating" [errorText]="(emailFieldSingUp?.hasError('required') ? 
+                    ('LOGIN.ERRORS.EmailRequired' | translate) :
+             (emailFieldSingUp?.hasError('pattern') ? ('LOGIN.ERRORS.EmailInvalid' | translate) : ''))"
+                      formControlName="email" type="email" maxlength="100"></ion-input>
+                  </ion-item>
+                </ion-col>
+                <ion-col size="12">
+                  <ion-item>
+                    <ion-input [label]=" 'Password' | translate" labelPlacement="floating" [errorText]="(passwordFielSingUp?.hasError('required') ? ('LOGIN.ERRORS.PasswordRequired' | translate) : 
+                  (passwordFielSingUp?.hasError('minlength') ? ('LOGIN.ERRORS.PasswordMinLength' | translate) : '')) "
+                      formControlName="password" type="password" maxlength="100"></ion-input>
+                  </ion-item>
+                </ion-col>
+                <ion-col size="12">
+                  <ion-button (click)=" showResetPassword = true " expand="block" fill="clear">
+                    {{ 'ResetPassword' | translate }}
+                  </ion-button>
+                </ion-col>
+              </ion-row>
+
+              <ion-row>
+                <ion-col size="12">
+                  <ion-button type="submit" expand="block" [disabled]="!formLogin.valid">
+                    {{ 'Login' | translate }}
+                  </ion-button>
+                </ion-col>
+              </ion-row>
+
+            </form>
+
+
+            <ng-container *ngIf="showPasswordRestoreMessage; else elseTemplateShowPasswordRestoreMessage">
+
+              <div class="message-error" [class.active]="showPasswordRestoreMessage">
+                <ion-label>
+                  <ion-icon slot="start" name="alert-circle-outline"></ion-icon>
+                  <small>
+                    {{ 'PasswordRestoreMessage' | translate }}
+                  </small>
+                </ion-label>
+              </div>
+
+            </ng-container>
+            <ng-template #elseTemplateShowPasswordRestoreMessage>
+
+              <div class="message-error" [class.active]="errorLogin">
+                <ion-label color="danger">
+                  <ion-icon slot="start" name="alert-circle-outline" color="danger"></ion-icon>
+                  {{errorLogin}}
+                </ion-label>
+              </div>
+
+            </ng-template>
+
+
+            <div style="height: 1.5vh;"></div>
+
+          </span>
+          <span *ngSwitchCase="'singUp'">
+
+            <form [formGroup]="formSingUp" (ngSubmit)="onSubmitSingUp($event)">
+
+              <ion-row>
+                <ion-col size="12">
+                  <ion-item>
+                    <ion-input [label]=" 'Email' | translate" labelPlacement="floating" [errorText]="(emailFieldSingUp?.hasError('required') ? 
+                    ('LOGIN.ERRORS.EmailRequired' | translate) :
+             (emailFieldSingUp?.hasError('pattern') ? ('LOGIN.ERRORS.EmailInvalid' | translate) : ''))"
+                      formControlName="email" type="email" maxlength="100"></ion-input>
+                  </ion-item>
+                </ion-col>
+                <ion-col size="12">
+                  <ion-item>
+                    <ion-input [label]=" 'Password' | translate" labelPlacement="floating"
+                      [errorText]="(passwordFielSingUp?.hasError('required') ? ('LOGIN.ERRORS.PasswordRequired' | translate) : 
+                    (passwordFielSingUp?.hasError('minlength') ? ('LOGIN.ERRORS.PasswordMinLength' | translate) : '')) " formControlName="password" type="password"
+                      maxlength="100"></ion-input>
+                  </ion-item>
+                </ion-col>
+                <ion-col size="12">
+                  <ion-item>
+                    <ion-input [label]=" 'ConfirmPassword' | translate" labelPlacement="floating"
+                      [errorText]="(rePasswordFielSingUp?.hasError('required') ? ('LOGIN.ERRORS.ConfirmPasswordRequired' | translate) :
+                    (rePasswordFielSingUp?.value !== passwordFielSingUp?.value ? ('LOGIN.ERRORS.ConfirmPasswordNotMatch' | translate) : '')) " formControlName="rePassword" type="password"
+                      maxlength="100"></ion-input>
+                  </ion-item>
+                </ion-col>
+              </ion-row>
+
+              <ion-row>
+                <ion-col size="12">
+                  <ion-button type="submit" expand="block" [disabled]="!formSingUp.valid">
+                    {{ 'Register' | translate }}
+                  </ion-button>
+                </ion-col>
+              </ion-row>
+
+            </form>
+
+            <div class="message-error" [class.active]="errorSingUp">
+              <ion-label color="danger">
+                <ion-icon slot="start" name="alert-circle-outline" color="danger"></ion-icon>
+                {{errorSingUp}}
+              </ion-label>
+            </div>
+
+          </span>
+        </span>
+
+      </ng-template>
+    </div>
+  </ng-template>
+
+
+
+
+</ion-content>

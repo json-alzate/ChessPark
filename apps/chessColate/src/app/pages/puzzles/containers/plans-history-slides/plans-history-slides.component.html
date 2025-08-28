@@ -1,0 +1,49 @@
+<swiper-container [slidesPerView]="2.5" [spaceBetween]="0.1" [breakpoints]="breakpoints">
+  <swiper-slide *ngFor="let plan of plans; let i = index" [ngStyle]="{'margin-left': i === 0 ? '8px' : '0px'}"
+    (click)="goToPlanDetails(plan)">
+
+    <!--  -->
+    <div class="plan-history-card">
+
+      <div class="card-header">
+        <div class="title">
+          <ion-text color="dark">
+            <!-- Titulo del plan -->
+            {{ plan.title }}
+          </ion-text>
+        </div>
+        <img [src]="'assets/images/plan-icons/'+ plan.planType +'.png'" />
+      </div>
+
+      <div class="card-body">
+
+        <app-puzzles-played-preview [blocks]="plan.blocks"></app-puzzles-played-preview>
+
+        <ion-row class="ion-margin-top">
+          <ion-col size="12">
+            <ion-text color="medium">
+              <small>
+                <span class="ion-text-center ion-no-margin ion-no-padding">{{ plan.createdAt | ago }}</span>
+              </small>
+            </ion-text>
+
+          </ion-col>
+        </ion-row>
+      </div>
+
+      <div class="card-footer">
+      </div>
+
+    </div>
+
+  </swiper-slide>
+  <swiper-slide *ngIf="countAllPlans > 5">
+    <div class="more-button-container">
+
+      <ion-button expand="block" fill="clear" color="dark" (click)="goToHistoryPage()">
+        {{ 'PLANS_HISTORY.more' | translate }}
+        <!-- Ver más -->
+      </ion-button>
+    </div>
+  </swiper-slide>
+</swiper-container>

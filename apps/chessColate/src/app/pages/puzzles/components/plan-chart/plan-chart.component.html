@@ -1,0 +1,114 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar *ngIf="showEloPlanHeader" class="ion-no-border">
+
+    <ion-title>
+      <ion-text color="dark">
+        <h3 class="ion-text-center ion-no-margin ion-no-padding">{{ totalElo }}</h3>
+      </ion-text>
+    </ion-title>
+    <ion-buttons *ngIf="isModal" slot="end">
+      <ion-button (click)="close()">
+        <ion-icon slot="icon-only" name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <ion-toolbar class="ion-no-border">
+
+    <ion-buttons slot="start" *ngIf="segment === 'themesUp' || segment === 'themesDown' || segment === 'themesItems' ">
+      <ion-button fill="clear" [color]="segment === 'themesUp' ? 'primary' : ''" (click)="segment = 'themesUp'">
+        <ion-icon slot="icon-only" name="trending-up-outline"></ion-icon>
+      </ion-button>
+      <ion-button fill="clear" [color]="segment === 'themesDown' ? 'primary' : ''" (click)="segment = 'themesDown'">
+        <ion-icon slot="icon-only" name="trending-down-outline"></ion-icon>
+      </ion-button>
+      <ion-button fill="clear" [color]="segment === 'themesItems' ? 'primary' : ''" (click)="segment = 'themesItems'">
+        <ion-icon slot="icon-only" name="list-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+
+    <ion-buttons slot="start"
+      *ngIf="segment === 'openingsUp' || segment === 'openingsDown' || segment === 'openingsItems' ">
+      <ion-button fill="clear" [color]="segment === 'openingsUp' ? 'primary' : ''" (click)="segment = 'openingsUp'">
+        <ion-icon slot="icon-only" name="trending-up-outline"></ion-icon>
+      </ion-button>
+      <ion-button fill="clear" [color]="segment === 'openingsDown' ? 'primary' : ''" (click)="segment = 'openingsDown'">
+        <ion-icon slot="icon-only" name="trending-down-outline"></ion-icon>
+      </ion-button>
+      <ion-button fill="clear" [color]="segment === 'openingsItems' ? 'primary' : ''"
+        (click)="segment = 'openingsItems'">
+        <ion-icon slot="icon-only" name="list-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+    <ion-buttons slot="end">
+      <ion-button
+        [color]="(segment === 'themesUp' || segment === 'themesDown' || segment === 'themesItems') ? 'primary' : ''"
+        (click)="segment = 'themesUp'">
+        {{ 'PUZZLES.theme' | translate }}
+        <!-- Tema -->
+      </ion-button>
+      <ion-button
+        [color]="(segment === 'openingsUp' || segment === 'openingsDown' || segment === 'openingsItems') ? 'primary' : ''"
+        (click)="segment = 'openingsUp'">
+        {{ 'PUZZLES.opening' | translate }}
+        <!-- Apertura -->
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content *ngIf="isModal; else elseTemplate">
+  <ng-container *ngTemplateOutlet="content"></ng-container>
+
+</ion-content>
+
+<ng-template #elseTemplate>
+
+  <div class="div-container-no-modal">
+    <ng-container *ngTemplateOutlet="content"></ng-container>
+  </div>
+
+</ng-template>
+
+
+
+<ng-template #content>
+  <div class="div-chart-container">
+
+    <canvas [ngClass]="{ 'hide': segment !== 'themesUp'}" id="themesUpCanvas" #themesUpCanvas></canvas>
+    <canvas [ngClass]="{ 'hide': segment !== 'themesDown'}" id="themesDownCanvas" #themesDownCanvas></canvas>
+
+    <canvas [ngClass]="{ 'hide': segment !== 'openingsUp'}" id="openingsUpCanvas" #openingsUpCanvas></canvas>
+    <canvas [ngClass]="{ 'hide': segment !== 'openingsDown'}" id="openingsDownCanvas" #openingsDownCanvas></canvas>
+  </div>
+
+
+
+  <div *ngIf="segment === 'themesItems'">
+    <ion-item *ngFor="let elo of themesElos; let i = index">
+      <ion-label>
+        <h2>
+          {{ themesLabels[i] }}:
+        </h2>
+        <h4>
+          {{ elo }}
+        </h4>
+      </ion-label>
+    </ion-item>
+  </div>
+
+  <div *ngIf="segment === 'openingsItems'">
+    <ion-item *ngFor="let elo of openingsElos; let i = index">
+      <ion-label>
+        <h2>
+          {{ openingsLabels[i] }}:
+        </h2>
+        <h4>
+          {{ elo }}
+        </h4>
+      </ion-label>
+    </ion-item>
+  </div>
+</ng-template>

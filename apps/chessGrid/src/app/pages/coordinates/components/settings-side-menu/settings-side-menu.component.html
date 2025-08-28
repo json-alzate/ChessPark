@@ -1,0 +1,125 @@
+<ion-modal
+  #settingsModal
+  trigger="settings-trigger"
+  [presentingElement]="null"
+  [breakpoints]="[0, 0.6, 0.8]"
+  [initialBreakpoint]="0.6"
+  [backdropDismiss]="true"
+  class="settings-modal"
+>
+  <ng-template >
+
+
+    <ion-content>
+
+      <div data-theme="halloween" class="h-full">
+
+        <ion-header class="ion-no-border">
+          <ion-toolbar>
+            <ion-title class="text-center">
+              <ion-icon name="settings-outline" class="mr-2"></ion-icon>
+              Configuración
+            </ion-title>
+            <ion-button
+              fill="clear"
+              slot="end"
+              (click)="dismiss()"
+            >
+              <ion-icon name="close-outline"></ion-icon>
+            </ion-button>
+          </ion-toolbar>
+        </ion-header>
+
+      <div class="space-y-6 p-2">
+        <!-- Configuración del Tablero -->
+        <div class="space-y-4">
+
+          <ul class="list bg-base-100 rounded-box shadow-md">
+            <li class="list-row">
+              <div></div>
+              <div>
+                <div>Mostrar Coordenadas</div>
+                <div class="text-xs font-semibold opacity-60">Muestra las letras y números del tablero</div>
+              </div>
+              <input
+                type="checkbox"
+                [checked]="settings.showCoordinates"
+                class="toggle toggle-primary"
+                (change)="onCheckboxChange($event, 'showCoordinates')"              />
+            </li>
+
+            <li class="list-row">
+              <div></div>
+              <div>
+                <div>Mostrar Piezas</div>
+                <div class="text-xs font-semibold opacity-60">Muestra las piezas de ajedrez en el tablero</div>
+              </div>
+              <input
+                type="checkbox"
+                [checked]="settings.showPieces"
+                class="toggle toggle-primary"
+                (change)="onCheckboxChange($event, 'showPieces')"              />
+            </li>
+
+            <li class="list-row">
+              <div></div>
+              <div>
+                <div>Mostrar Piezas en Posiciones Aleatorias</div>
+                <div class="text-xs font-semibold opacity-60">Coloca las piezas en posiciones aleatorias del tablero</div>
+              </div>
+              <input
+                type="checkbox"
+                [checked]="settings.showRandomPieces"
+                [disabled]="!settings.showPieces"
+                class="toggle toggle-primary"
+                [class.opacity-50]="!settings.showPieces"
+                (change)="onCheckboxChange($event, 'showRandomPieces')"              />
+            </li>
+
+            <li class="list-row">
+              <div></div>
+              <div>
+                <div>Modo Infinito</div>
+                <div class="text-xs font-semibold opacity-60">Jugar sin límite de tiempo</div>
+              </div>
+              <input
+                type="checkbox"
+                [checked]="settings.infiniteMode"
+                class="toggle toggle-primary"
+                (change)="onCheckboxChange($event, 'infiniteMode')"              />
+            </li>
+
+            <li class="list-row">
+              <div></div>
+              <div>
+                <div>Reproducir Sonido</div>
+                <div class="text-xs font-semibold opacity-60">Reproduce un sonido cuando se toca una casilla</div>
+              </div>
+              <input
+                type="checkbox"
+                [checked]="settings.playSound"
+                class="toggle toggle-primary"
+                (change)="onCheckboxChange($event, 'playSound')"              />
+            </li>
+          </ul>
+
+  
+        </div>
+       
+      </div>
+
+
+
+      <ion-footer class="ion-no-border">
+        <ion-toolbar class="ion-padding-horizontal">
+          <div class="text-center w-full">
+            <p class="text-sm opacity-60">{{ appVersion }}</p>
+            <p class="text-xs opacity-40 mt-1">ChessGrid - ChessPark</p>
+          </div>
+        </ion-toolbar>
+      </ion-footer>
+    </div>
+    </ion-content>
+
+  </ng-template>
+</ion-modal>

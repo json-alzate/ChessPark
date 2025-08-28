@@ -1,0 +1,25 @@
+@if (isPlaying) {
+<!-- Tarjeta de estadísticas del juego actual -->
+<div class="stats stats-horizontal w-full">
+  <div class="stat place-items-center">
+    <div class="stat-title">Aciertos</div>
+    <div class="stat-value text-success">
+      {{ currentGameStats.correctAnswers }}
+    </div>
+  </div>
+
+  <div class="stat place-items-center">
+    <div class="stat-title">Errores</div>
+    <div class="stat-value text-error">
+      {{ currentGameStats.incorrectAnswers }}
+    </div>
+  </div>
+
+  <div class="stat place-items-center">
+    <div class="stat-title">Precisión</div>
+    <div class="stat-value text-info">
+      {{ currentGameStats.accuracy | number:'1.0-1' }}%
+    </div>
+  </div>
+</div>
+}

@@ -1,0 +1,135 @@
+<ion-app>
+
+  <!--Mobile-->
+  <ion-menu [swipeGesture]="false" side="start" menuId="first" contentId="main">
+    <ion-header class="ion-no-border">
+      <ion-toolbar>
+
+        <ng-container *ngIf="(profile$ | async) as profile; else elseTemplateLoginButton">
+
+          <ion-title>
+            <small>
+              {{ profile.email }}
+            </small>
+          </ion-title>
+
+          <ion-buttons slot="end" (click)="showProfile = !showProfile">
+            <ion-button [color]=" !showProfile ? 'dark' : 'primary'">
+              <ion-icon slot="icon-only" [ngStyle]="{ 'font-size': showProfile ? '2.5em' : '1.5em' }"
+                name="settings-outline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+
+        </ng-container>
+        <ng-template #elseTemplateLoginButton>
+
+          <ion-button (click)="presentModalLogin()" expand="block" fill="clear">
+            {{ 'LoginMenuBar' | translate }}
+          </ion-button>
+
+        </ng-template>
+
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+
+      <ng-container *ngIf="showProfile; else elseTemplateShowProfile">
+
+        <app-profile (closeProfile)="onLogout()"></app-profile>
+
+      </ng-container>
+      <ng-template #elseTemplateShowProfile>
+
+
+        <ion-menu-toggle>
+          <ion-item button (click)="goTo('/puzzles/training-menu')" detail="false">
+            <ion-icon name="home-outline" slot="start"></ion-icon>
+            <ion-label>
+              {{ 'MENU.home' | translate }}
+              <!-- Inicio -->
+            </ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+
+        <ion-menu-toggle>
+          <ion-item button (click)="goTo('/coordinates')" detail="false">
+            <ion-icon name="locate-outline" slot="start"></ion-icon>
+            {{ 'MENU.coordinates' | translate }}
+            <!-- Coordenadas -->
+          </ion-item>
+        </ion-menu-toggle>
+
+      </ng-template>
+
+
+
+
+    </ion-content>
+
+    <ion-footer class="ion-no-border">
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-menu-toggle>
+            <ion-button (click)="goTo('/privacy')">
+              <ion-icon slot="start" name="information-circle-outline"></ion-icon>
+              {{ 'MENU.privacy' | translate }}
+              <!-- Privacidad -->
+            </ion-button>
+          </ion-menu-toggle>
+        </ion-buttons>
+
+        <ion-buttons slot="end">
+          <ion-menu-toggle>
+            <ion-button color="medium" fill="clear">
+              V.{{ version }}
+            </ion-button>
+          </ion-menu-toggle>
+        </ion-buttons>
+
+
+
+      </ion-toolbar>
+    </ion-footer>
+
+  </ion-menu>
+  <!--End Mobile-->
+
+  <!--Web-->
+  <ion-menu [swipeGesture]="false" contentId="main" menuId="menu-profile" side="end" type="overlay">
+    <ion-header color="dark">
+      <ion-toolbar>
+
+        <ng-container *ngIf="(profile$ | async) as profile">
+
+          <ion-item>
+            <ion-label>
+              <ion-text color="primary">
+                <h2 class="ion-text-center">{{ profile.name }}</h2>
+              </ion-text>
+            </ion-label>
+          </ion-item>
+
+        </ng-container>
+
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <app-profile [currentLanguage]="currentLang" (closeProfile)="onLogout()"></app-profile>
+    </ion-content>
+    <ion-footer class="ion-no-border">
+      <ion-toolbar>
+
+        <ion-button color="medium" fill="clear" expand="block">
+          {{ version }}
+          <ion-icon slot="end" name="information-circle-outline"></ion-icon>
+        </ion-button>
+
+      </ion-toolbar>
+    </ion-footer>
+  </ion-menu>
+
+  <app-header-bar></app-header-bar>
+
+
+  <ion-router-outlet id="main"></ion-router-outlet>
+</ion-app>

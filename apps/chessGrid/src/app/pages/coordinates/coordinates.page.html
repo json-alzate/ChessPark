@@ -1,0 +1,108 @@
+<ion-content [fullscreen]="true" id="main-content">
+  <div id="theme-target" class="p-2 min-h-full" data-theme="halloween">
+
+    
+    <div class="sticky top-0 z-50 bg-base-100/100 backdrop-blur-sm w-full">
+      <div class="flex items-center justify-between">
+        <h1 class="text-2xl font-bold">Coordenadas de Ajedrez</h1>
+        <button class="btn btn-lg btn-ghost" id="settings-trigger">
+          <ion-icon name="settings-outline"></ion-icon>
+        </button>
+      </div>
+    </div>
+
+    <ion-grid class="ion-margin-top">
+      <ion-row>
+        <ion-col
+          size="12"
+          size-sm="12"
+          size-md="12"
+          size-lg="6"
+          size-xl="6"
+          offset-lg="2"
+          offset-xl="2"
+        >
+          <lib-board (squareSelected)="onSquareSelected($event)"></lib-board>
+          <h1 class="current-puzzle">{{ currentPuzzle }}</h1>
+
+          <!-- Componente Timer -->
+          <app-timer
+            [time]="time"
+            [progressValue]="progressValue"
+            [timeColor]="timeColor"
+            [infiniteMode]="gameSettings.infiniteMode"
+          ></app-timer>
+        </ion-col>
+
+        <ion-col size="12" size-sm="12" size-md="12" size-lg="4" size-xl="4">
+          <!-- Componente Controles de Orientación -->
+          <app-board-orientation-controls
+            [boardOrientation]="boardOrientation"
+            [isPlaying]="isPlaying"
+            (orientationChange)="changeBoardOrientation($event)"
+          ></app-board-orientation-controls>
+
+          @if (isPlaying) {
+          <!-- Componente Avatar del Rey -->
+          <app-king-avatar
+            [currentColorInBoard]="currentColorInBoard"
+            [showLabel]="true"
+            [showRecord]="true"
+            [bestScore]="getBestScoreByColor(currentColorInBoard === 'white' ? 'w' : 'b')"
+          ></app-king-avatar>
+          }
+
+          <div class="flex flex-col justify-center  gap-2 mt-2">
+            @if (!isPlaying) {
+            <button class="btn btn-lg btn-primary w-full" (click)="play()">
+              Jugar
+            </button>
+
+            <!-- Componente Scoreboard -->
+            <app-scoreboard
+              [bestScores]="bestScores"
+              [userStats]="userStats"
+            ></app-scoreboard>
+            }
+
+            <!-- Componente Estadísticas del Juego -->
+            <app-game-stats
+              [currentGameStats]="currentGameStats"
+              [isPlaying]="isPlaying"
+            ></app-game-stats>
+
+            @if (isPlaying && gameSettings.infiniteMode) {
+            <div class="flex justify-center" (click)="stopGame()">
+              <button class="btn  btn-error w-50" >
+                Detener juego
+              </button>
+            </div>
+            }
+          </div>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+
+  <!-- Componente Modal de Resultados -->
+  <app-game-results-modal
+    #resultsModal
+    [isNewRecord]="isNewRecord"
+    [recordType]="recordType"
+    [score]="score"
+    [squaresGood]="squaresGood"
+    [squaresBad]="squaresBad"
+    [currentColorInBoard]="currentColorInBoard"
+    [currentGameStats]="currentGameStats"
+    [bestScoreByColor]="getBestScoreByColor(currentColorInBoard === 'white' ? 'w' : 'b')"
+    (closeModal)="closeResultsModal()"
+  ></app-game-results-modal>
+
+  <!-- Componente Menú Lateral de Configuración -->
+  <app-settings-side-menu
+    [settings]="gameSettings"
+    [isPlaying]="isPlaying"
+    [appVersion]="'v1.0.2'"
+    (settingsChange)="onSettingsChange($event)"
+  ></app-settings-side-menu>
+</ion-content>

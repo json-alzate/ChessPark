@@ -1,0 +1,41 @@
+<div class="flex justify-center items-center p-4">
+  <div class="avatar">
+    <div
+      class="rounded-full ring ring-primary ring-offset-base-100"
+      [ngClass]="getRingSize()"
+    >
+      <img
+        [src]="currentColorInBoard === 'white' ? 'assets/images/pieces/cburnett/wK.svg' : 'assets/images/pieces/cburnett/bK.svg'"
+        [alt]="currentColorInBoard === 'white' ? 'Rey Blanco' : 'Rey Negro'"
+        class="w-full h-full p-2"
+        [ngClass]="getSizeClasses()"
+      />
+    </div>
+  </div>
+  
+  @if (showLabel) {
+  <div class="ml-3">
+    <p class="text-sm font-medium opacity-70">Jugando con</p>
+    <p class="text-lg font-bold">
+      {{ currentColorInBoard === 'white' ? 'Blancas' : 'Negras' }}
+    </p>
+
+    @if (showRecord && bestScore > 0) {
+    <div class="mt-2 p-2 bg-base-200 rounded-lg">
+      <p class="text-xs opacity-60">Récord actual:</p>
+      <p class="text-sm font-bold text-primary">
+        {{ bestScore }} puntos
+      </p>
+      <p class="text-xs opacity-50 mt-1">¡Supera tu récord!</p>
+    </div>
+    } @else if (showRecord) {
+    <div class="mt-2 p-2 bg-base-200 rounded-lg">
+      <p class="text-xs opacity-60">Primera vez</p>
+      <p class="text-sm font-bold text-success">
+        ¡Establece tu récord!
+      </p>
+    </div>
+    }
+  </div>
+  }
+</div>

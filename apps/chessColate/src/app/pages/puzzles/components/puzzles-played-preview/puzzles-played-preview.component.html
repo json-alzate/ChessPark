@@ -1,0 +1,17 @@
+<div class="board-preview" [id]="uidBoard">
+</div>
+
+<ion-row>
+    <ion-col size="12">
+        <ion-progress-bar [value]="winPercentage"></ion-progress-bar>
+    </ion-col>
+    <ion-col size="12" class="ion-text-center ion-margin-top">
+        <h2 class="ion-no-margin">{{ puzzlesToShow.length }} </h2>
+        <ion-text color="dark">
+            <small>
+                {{ 'PUZZLES.puzzles' | translate }}
+                <!-- Ejercicios -->
+            </small>
+        </ion-text>
+    </ion-col>
+</ion-row>

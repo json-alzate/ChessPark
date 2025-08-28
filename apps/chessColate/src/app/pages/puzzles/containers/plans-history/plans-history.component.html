@@ -1,0 +1,51 @@
+<ion-content class="ion-padding">
+
+  <ion-text color="primary">
+    <h2>
+      {{ "PLANS_HISTORY.title" | translate }}
+      <!-- Historial de planes -->
+    </h2>
+  </ion-text>
+
+  <div class="conteiner-cards">
+
+    <div *ngFor="let plan of plans; let i = index" (click)="goToPlanDetails(plan)" class="plan-history-card">
+
+      <div class="card-header">
+        <div class="title">
+          <ion-text color="dark">
+            <!-- Titulo del plan -->
+            {{ plan.title }}
+          </ion-text>
+        </div>
+        <img [src]="'assets/images/plan-icons/'+ plan.planType +'.png'" />
+      </div>
+
+      <div class="card-body">
+
+        <app-puzzles-played-preview [blocks]="plan.blocks"></app-puzzles-played-preview>
+
+        <ion-row class="ion-margin-top">
+          <ion-col size="12">
+            <ion-text color="medium">
+              <small>
+                <span class="ion-text-center ion-no-margin ion-no-padding">{{ plan.createdAt | ago }}</span>
+              </small>
+            </ion-text>
+
+          </ion-col>
+        </ion-row>
+      </div>
+
+      <div class="card-footer">
+      </div>
+
+    </div>
+
+  </div>
+
+  <ion-infinite-scroll (ionInfinite)="onIonInfinite($event)">
+    <ion-infinite-scroll-content></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+
+</ion-content>

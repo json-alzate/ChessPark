@@ -1,0 +1,13 @@
+.board-preview {
+    margin: 0 auto;
+    display: block;
+}
+
+ion-progress-bar {
+    --background: rgba(var(--ion-color-danger-rgb), 0.5);
+    --progress-background: var(--ion-color-success);
+}
+
+h2 {
+    color: #bf811c;
+}

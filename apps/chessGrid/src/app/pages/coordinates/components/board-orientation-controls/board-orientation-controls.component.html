@@ -1,0 +1,39 @@
+@if (!isPlaying) {
+<div class="flex justify-between items-center">
+  <div class="join join-horizontal">
+    <button
+      class="join-item btn btn-sm"
+      [class.btn-neutral]="boardOrientation === 'white'"
+      [class.btn-ghost]="boardOrientation !== 'white'"
+      (click)="onOrientationChange('white')"
+    >
+      <img
+        src="assets/images/pieces/cburnett/wK.svg"
+        alt="White King"
+        class="size-6"
+      />
+    </button>
+    <button
+      class="join-item btn btn-sm"
+      [class.btn-neutral]="boardOrientation === 'random'"
+      [class.btn-ghost]="boardOrientation !== 'random'"
+      (click)="onOrientationChange('random')"
+    >
+      <ion-icon name="shuffle-outline" class="size-6"></ion-icon>
+    </button>
+
+    <button
+      class="join-item btn btn-sm"
+      [class.btn-neutral]="boardOrientation === 'black'"
+      [class.btn-ghost]="boardOrientation !== 'black'"
+      (click)="onOrientationChange('black')"
+    >
+      <img
+        src="assets/images/pieces/cburnett/bK.svg"
+        alt="Black King"
+        class="size-6"
+      />
+    </button>
+  </div>
+</div>
+}

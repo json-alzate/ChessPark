@@ -1,0 +1,190 @@
+<ion-content class="ion-padding">
+
+  <ion-row>
+    <ion-col size-xs="12" size-sm="12" size-md="12" size-lg="4" size-xl="8" offset-lg="2" offset-xl="2">
+
+
+      <ion-row class="ion-hide-md-down">
+        <ion-col size-xs="12" size-sm="12" size-md="12" size-lg="4" size-xl="8" offset-lg="2" offset-xl="2">
+          <ion-button size="large" color="primary" expand="block" (click)="onPlayPlan()"
+            [disabled]="!plan || isLoadingToPlay">
+            <span *ngIf="!isLoadingToPlay">
+              {{ 'PLAN_PLAYED.playPlan' | translate }}
+              <!-- Jugar el plan -->
+            </span>
+            <span *ngIf="isLoadingToPlay">
+              <ion-spinner name="dots"></ion-spinner>
+            </span>
+          </ion-button>
+        </ion-col>
+      </ion-row>
+
+      <ng-container *ngIf="plan; else elseTemplate">
+        <ion-row>
+          <ion-col size="12">
+
+            <h4 class="ion-no-margin ion-margin-top">{{ plan.title }}</h4>
+            <h2 class="ion-no-margin ion-margin-bottom">
+              {{ 'PLAN_PLAYED.puzzlesPlayed' | translate }}
+              <!-- Ejercicios jugados: -->
+            </h2>
+
+          </ion-col>
+        </ion-row>
+
+        <ion-accordion-group class="ion-margin-bottom" multiple="true">
+
+          <ion-accordion *ngFor="let block of plan?.blocks; let i=index" [value]="i">
+            <ion-item slot="header" color="light">
+              <ion-label>
+                <h3 *ngIf="block.title">{{ block.title }}</h3>
+                <h3 *ngIf="block.theme">{{ appService.getNameThemePuzzleByValue(block.theme) }}</h3>
+                <h3 *ngIf="block.openingFamily">{{ appService.getNameOpeningByValue( block.openingFamily) }}</h3>
+                <p>
+                  {{ block.description }}
+                </p>
+              </ion-label>
+              <ion-badge color="medium">{{ block.puzzlesPlayed.length }}</ion-badge>
+
+            </ion-item>
+            <div class="ion-padding" slot="content">
+
+              <ion-row>
+                <ion-col size-xs="6" size-sm="6" size-md="6" size-lg="4" size-xl="3"
+                  *ngFor="let userPuzzle of userPuzzlesToShowInBoards[i]">
+
+                  <ion-card class="ion-no-margin">
+
+                    <ion-card-content class="ion-no-padding">
+
+                      <app-fen-board [setFen]="{ fen: userPuzzle.fenStartUserPuzzle, 
+                      firstMoveSquaresHighlight: userPuzzle.firstMoveSquaresHighlight,
+                      puzzle: userPuzzle.rawPuzzle
+                      }" (onPuzzleShowSolution)="onPuzzleShowSolution($event)"></app-fen-board>
+
+                    </ion-card-content>
+                    <div class="icon-puzzle-result" (click)="onPuzzleShowSolution(userPuzzle.rawPuzzle)">
+                      <ng-container *ngIf="userPuzzle.failByTime; else elseTemplateFailByTime">
+                        <img src="assets/images/icons/alarm.png" />
+                      </ng-container>
+                      <ng-template #elseTemplateFailByTime>
+                        <img *ngIf="userPuzzle.resolved" src="assets/images/icons/checkmark-circle.png" />
+                        <img *ngIf="!userPuzzle.resolved" src="assets/images/icons/close-circle.png" />
+                      </ng-template>
+                    </div>
+                  </ion-card>
+
+                </ion-col>
+              </ion-row>
+              <ion-button expand="block" fill="clear" *ngIf="showMoreButtons[i]" (click)="loadMorePuzzles(i)">
+                <!-- Cargar más -->
+                {{ 'PLAN_PLAYED.loadMore' | translate }}
+              </ion-button>
+            </div>
+          </ion-accordion>
+
+        </ion-accordion-group>
+
+        <ion-row>
+          <ion-col size="12">
+            <h2>
+              {{ 'PLAN_PLAYED.statistics' | translate }}
+              <!-- Estadísticas del plan -->
+            </h2>
+          </ion-col>
+        </ion-row>
+
+        <ion-item lines="none">
+          <ion-label>
+            <ion-text color="dark">
+              <h6>Elo total:</h6>
+            </ion-text>
+            <ion-text color="dark">
+              <h1>{{eloTotal}}</h1>
+            </ion-text>
+          </ion-label>
+          <ion-thumbnail slot="end">
+            <img [src]="'assets/images/plan-icons/'+ plan.planType +'.png'" />
+          </ion-thumbnail>
+        </ion-item>
+
+        <app-plan-chart *ngIf="plan && plan.planType" [plan]="plan" [showEloPlanHeader]="false"></app-plan-chart>
+      </ng-container>
+      <ng-template #elseTemplate>
+        <ion-progress-bar type="indeterminate"></ion-progress-bar>
+        <ion-row>
+          <ion-col size="12">
+            <h4 class="ion-no-margin ion-margin-top">
+              <ion-skeleton-text [animated]="true"></ion-skeleton-text>
+            </h4>
+            <h2 class="ion-no-margin ion-margin-bottom">
+              <ion-skeleton-text [animated]="true"></ion-skeleton-text>
+            </h2>
+          </ion-col>
+        </ion-row>
+        <ion-accordion-group class="ion-margin-bottom">
+
+          <ion-accordion *ngFor="let block of [1, 2,3];">
+            <ion-item slot="header" color="light">
+              <ion-label>
+                <h3> <ion-skeleton-text [animated]="true"></ion-skeleton-text></h3>
+                <p>
+                  <ion-skeleton-text [animated]="true"></ion-skeleton-text>
+                </p>
+              </ion-label>
+              <ion-badge color="medium">
+                <ion-skeleton-text [animated]="true"></ion-skeleton-text>
+              </ion-badge>
+
+            </ion-item>
+            <div class="ion-padding" slot="content">
+            </div>
+          </ion-accordion>
+
+        </ion-accordion-group>
+        <ion-row>
+          <ion-col size="12">
+            <h2>
+              <ion-skeleton-text [animated]="true"></ion-skeleton-text>
+            </h2>
+          </ion-col>
+        </ion-row>
+
+        <ion-item lines="none">
+          <ion-label>
+            <ion-text color="dark">
+              <h6> <ion-skeleton-text [animated]="true"></ion-skeleton-text></h6>
+            </ion-text>
+            <ion-text color="dark">
+              <h1> <ion-skeleton-text [animated]="true"></ion-skeleton-text></h1>
+            </ion-text>
+          </ion-label>
+          <ion-thumbnail slot="end">
+            <ion-skeleton-text [animated]="true"></ion-skeleton-text>
+          </ion-thumbnail>
+        </ion-item>
+      </ng-template>
+
+
+    </ion-col>
+  </ion-row>
+
+
+
+
+
+
+</ion-content>
+<ion-footer class="ion-hide-md-up">
+  <ion-toolbar>
+    <ion-button color="primary" expand="block" (click)="onPlayPlan()" [disabled]="!plan || isLoadingToPlay">
+      <span *ngIf="!isLoadingToPlay">
+        {{ 'PLAN_PLAYED.playPlan' | translate }}
+        <!-- Jugar el plan -->
+      </span>
+      <span *ngIf="isLoadingToPlay">
+        <ion-spinner name="dots"></ion-spinner>
+      </span>
+    </ion-button>
+  </ion-toolbar>
+</ion-footer>

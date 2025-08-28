@@ -1,0 +1,98 @@
+<ion-list>
+
+  <ion-accordion-group>
+    <ion-accordion value="first">
+      <ion-item slot="header">
+        <ion-icon slot="start" name="color-filter-outline"></ion-icon>
+        <ion-label>
+          {{ 'PROFILE.pieces' | translate }}
+          <!-- Piezas -->
+        </ion-label>
+      </ion-item>
+      <div class="ion-padding" slot="content">
+
+        <ion-list>
+
+          <ion-item button (click)="changePiecesStyle(piecesStyle.name)" *ngFor="let piecesStyle of piecesStylesInfo">
+
+            <ion-avatar slot="start">
+              <img alt="wK" [src]="piecesStyle.piecesPath+'wK.svg'" />
+            </ion-avatar>
+            <ion-label>{{ piecesStyle.name }}</ion-label>
+
+            <ion-icon color="primary" *ngIf="uiService.currentPiecesStyleSelected === piecesStyle.name" slot="end"
+              name="checkmark-outline"></ion-icon>
+
+
+          </ion-item>
+        </ion-list>
+
+      </div>
+    </ion-accordion>
+
+    <ion-accordion value="second">
+      <ion-item slot="header">
+        <ion-icon slot="start" name="grid-outline"></ion-icon>
+
+        <ion-label>
+          {{ 'PROFILE.board' | translate }}
+          <!-- Tablero -->
+        </ion-label>
+      </ion-item>
+      <div class="ion-padding" slot="content">
+
+        <ion-list>
+          <ion-item button *ngFor="let boardStyle of boardStylesInfo" (click)="changeBoardStyle(boardStyle.name)">
+            <ion-avatar slot="start"
+              [style]="'background-color: '+boardStyle.colorsSquares.light  +'; border-radius: 0;'">
+            </ion-avatar>
+            <ion-avatar slot="start"
+              [style]="'background-color: '+boardStyle.colorsSquares.dark  +'; border-radius: 0;'">
+            </ion-avatar>
+            <ion-icon color="primary" *ngIf="uiService.currentBoardStyleSelected.name === boardStyle.name" slot="end"
+              name="checkmark-outline"></ion-icon>
+          </ion-item>
+        </ion-list>
+
+      </div>
+    </ion-accordion>
+
+    <ion-accordion value="third">
+      <ion-item slot="header">
+        <ion-icon slot="start" name="language-outline"></ion-icon>
+        <ion-label>
+          {{ 'PROFILE.language' | translate }}
+          <!-- Idioma -->
+        </ion-label>
+      </ion-item>
+
+      <div class="ion-padding" slot="content">
+
+        <ion-list>
+          <ion-item button (click)="changeLanguage('es') ">
+            <ion-label>Español</ion-label>
+            <ion-icon color="primary" *ngIf="currentLanguage === 'es'" slot="end" name="checkmark-outline"></ion-icon>
+          </ion-item>
+          <ion-item button (click)="changeLanguage('en')">
+            <ion-label>English</ion-label>
+            <ion-icon color="primary" *ngIf="currentLanguage === 'en'" slot="end" name="checkmark-outline"></ion-icon>
+          </ion-item>
+        </ion-list>
+
+      </div>
+
+    </ion-accordion>
+
+  </ion-accordion-group>
+
+
+
+
+  <ion-item button detail="false" (click)="logout()">
+    <ion-icon name="log-out-outline" slot="start"></ion-icon>
+    <ion-label>
+      {{ 'PROFILE.exit' | translate }}
+      <!-- Salir -->
+    </ion-label>
+  </ion-item>
+</ion-list>

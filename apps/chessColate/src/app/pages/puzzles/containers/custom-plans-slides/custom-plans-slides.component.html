@@ -1,0 +1,32 @@
+<swiper-container [slidesPerView]="2.5" [spaceBetween]="0.1" [breakpoints]="breakpoints">
+  <swiper-slide *ngFor="let plan of plans; let i = index " [ngStyle]="{'margin-left': i === 0 ? '8px' : '0px'}"
+    (click)="onChoosePlan(plan, i)">
+
+    <!--  -->
+    <div class="plan-history-card">
+      <div class="card-container"
+        [style]="{'background-image': 'url(\'assets/images/custom-plans/bg_' + randomNumber[i] + '.svg\')'}">
+        <div class="card-body">
+
+          <h2 class="ion-text-center  ion-margin-top">
+            {{ plan.title }}
+          </h2>
+          <ion-note class="ion-text-center">
+            {{ plan.blocks.length }} {{ (plan.blocks.length === 1) ? ('Block' | translate) : ('Blocks' | translate) }}
+          </ion-note>
+          <ion-spinner style="width: 100%s;" *ngIf="slideLoading === i" name="dots"></ion-spinner>
+        </div>
+
+      </div>
+
+    </div>
+  </swiper-slide>
+  <!-- <swiper-slide>
+    <div class="more-button-container">
+
+      <ion-button expand="block" fill="clear" color="dark">
+        Ver más
+      </ion-button>
+    </div>
+  </swiper-slide> -->
+</swiper-container>

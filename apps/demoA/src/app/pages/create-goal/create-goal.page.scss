@@ -1,0 +1,143 @@
+
+
+
+
+swiper-container {
+  width: 100% !important;
+  min-height: 50px;
+  margin-bottom: 2rem;
+}
+
+h2 {
+  margin: 4px 0 0 0;
+}
+
+.goal-type-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 1rem 0;
+}
+
+.goal-type-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 1rem 0;
+}
+
+.goal-details-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 1rem 0;
+}
+
+.accounts-select {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 1rem 0;
+}
+.accounts-row {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+}
+.account-selector {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  // background: #f3f4f6;
+  border-radius: 1rem;
+  padding: 1rem;
+  min-width: 150px;
+}
+.account-selector label {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.summary-slide {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 1rem 0;
+}
+.summary-details {
+  width: 100%;
+  background: #f3f4f6;
+  border-radius: 1rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+.rule-card-horizontal {
+  width: 100%;
+  background: #e0e7ff;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.rule-title {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+.rule-desc {
+  font-size: 0.95rem;
+  color: #374151;
+}
+
+@media (max-width: 600px) {
+
+  .step-label {
+    font-size: 0.85rem;
+  }
+  .step {
+    min-width: 60px;
+    padding: 0.25rem 0.5rem;
+  }
+  .goal-type-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+  .accounts-row {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+.body-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 0 1rem;
+  box-sizing: border-box;
+}
+
+.card-wrapper {
+  width: 100%;
+  max-width: 600px;
+}
+
+.card {
+  width: 100%;
+}
+
+.card.selected {
+  border: 1px solid #3b82f6;
+  box-shadow: 0 0 0 1px #3b82f6;
+}
+
+@media (max-width: 600px) {
+  .body-container {
+    align-items: flex-start;
+  }
+}

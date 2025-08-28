@@ -1,0 +1,86 @@
+name: 🚀 Deploy to Firebase Hosting
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      app:
+        description: 'App to deploy (chesspark, chessCoordinatesTrainer, chessColate, or all)'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+        - all
+        - chesspark
+        - chessCoordinatesTrainer
+        - chessColate
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 🔄 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 📦 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        
+    - name: 📥 Install dependencies
+      run: npm ci
+      
+    - name: 🔐 Setup Firebase
+      uses: FirebaseExtended/action-hosting-deploy@v0
+      with:
+        repoToken: '${{ secrets.GITHUB_TOKEN }}'
+        firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
+        projectId: chesspark-53bce
+        channelId: live
+        
+    - name: 🏗️ Build applications
+      run: |
+        if [ "${{ github.event.inputs.app }}" = "chesspark" ] || [ "${{ github.event.inputs.app }}" = "all" ]; then
+          npx nx build chesspark
+        fi
+        
+        if [ "${{ github.event.inputs.app }}" = "chessCoordinatesTrainer" ] || [ "${{ github.event.inputs.app }}" = "all" ]; then
+          npx nx build chessCoordinatesTrainer
+        fi
+        
+        if [ "${{ github.event.inputs.app }}" = "chessColate" ] || [ "${{ github.event.inputs.app }}" = "all" ]; then
+          npx nx build chessColate
+        fi
+        
+    - name: 🚀 Deploy to Firebase
+      run: |
+        if [ "${{ github.event.inputs.app }}" = "chesspark" ]; then
+          firebase deploy --only hosting:chesspark
+        elif [ "${{ github.event.inputs.app }}" = "chessCoordinatesTrainer" ]; then
+          firebase deploy --only hosting:chessCoordinatesTrainer
+        elif [ "${{ github.event.inputs.app }}" = "chessColate" ]; then
+          firebase deploy --only hosting:chessColate
+        else
+          firebase deploy
+        fi
+      env:
+        FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        
+    - name: ✅ Deploy status
+      run: |
+        echo "🚀 Deployment completed successfully!"
+        echo "📱 Apps deployed:"
+        if [ "${{ github.event.inputs.app }}" = "chesspark" ] || [ "${{ github.event.inputs.app }}" = "all" ]; then
+          echo "  - chesspark: https://chesspark-app.web.app"
+        fi
+        if [ "${{ github.event.inputs.app }}" = "chessCoordinatesTrainer" ] || [ "${{ github.event.inputs.app }}" = "all" ]; then
+          echo "  - chessCoordinatesTrainer: https://chess-coordinates-trainer-app.web.app"
+        fi
+        if [ "${{ github.event.inputs.app }}" = "chessColate" ] || [ "${{ github.event.inputs.app }}" = "all" ]; then
+          echo "  - chessColate: https://chesscolate-app.web.app"
+        fi

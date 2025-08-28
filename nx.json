@@ -51,7 +51,7 @@
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"]
     },
-    "@angular-devkit/build-angular:application": {
+    "@nx/angular:ng-packagr-lite": {
       "cache": true,
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"]

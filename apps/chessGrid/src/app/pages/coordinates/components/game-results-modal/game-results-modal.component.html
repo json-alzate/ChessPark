@@ -1,0 +1,105 @@
+<ion-modal
+  #resultsModal
+  trigger="results-trigger"
+>
+  <ng-template>
+    <ion-header class="ion-no-border">
+      <ion-toolbar>
+        <ion-title class="text-center">
+          @if (isNewRecord) { 🏆 ¡NUEVO RÉCORD! 🏆 } @else { 🎯 Resultado del
+          Juego }
+        </ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="ion-padding">
+      <div class="text-center space-y-6">
+        <!-- Imagen del rey del color con el que se jugó -->
+        <div class="flex justify-center">
+          <div class="avatar">
+            <div
+              class="w-20 h-20 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2"
+            >
+              <img
+                [src]="currentColorInBoard === 'white' ? 'assets/images/pieces/cburnett/wK.svg' : 'assets/images/pieces/cburnett/bK.svg'"
+                [alt]="currentColorInBoard === 'white' ? 'Rey Blanco' : 'Rey Negro'"
+                class="w-full h-full p-3"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Información del juego -->
+        <div class="space-y-4">
+          <div class="stats stats-vertical w-full">
+            <div class="stat place-items-center">
+              <div class="stat-title">Puntaje Final</div>
+              <div class="stat-value text-4xl text-primary">{{ score }}</div>
+            </div>
+
+            <div class="stat place-items-center">
+              <div class="stat-title">Aciertos</div>
+              <div class="stat-value text-success">
+                {{ squaresGood.length }}
+              </div>
+            </div>
+
+            <div class="stat place-items-center">
+              <div class="stat-title">Errores</div>
+              <div class="stat-value text-error">{{ squaresBad.length }}</div>
+            </div>
+
+            <div class="stat place-items-center">
+              <div class="stat-title">Precisión</div>
+              <div class="stat-value text-info">
+                {{ currentGameStats.accuracy | number:'1.0-1' }}%
+              </div>
+            </div>
+          </div>
+
+          <!-- Información del récord -->
+          @if (isNewRecord) {
+          <div class="alert alert-success shadow-lg">
+            <ion-icon name="trophy" class="text-2xl"></ion-icon>
+            <div>
+              <h3 class="font-bold">¡Felicidades!</h3>
+              <div class="text-xs">
+                @if (recordType === 'both') { Has logrado un
+                <strong>DOBLE RÉCORD</strong> jugando con {{
+                currentColorInBoard === 'white' ? 'blancas' : 'negras' }}! }
+                @else if (recordType === 'overall') { ¡Nuevo
+                <strong>RÉCORD GENERAL</strong> jugando con {{
+                currentColorInBoard === 'white' ? 'blancas' : 'negras' }}! }
+                @else { ¡Nuevo <strong>RÉCORD</strong> jugando con {{
+                currentColorInBoard === 'white' ? 'blancas' : 'negras' }}! }
+              </div>
+            </div>
+          </div>
+          } @else {
+          <div class="alert alert-info shadow-lg">
+            <ion-icon name="information-circle" class="text-2xl"></ion-icon>
+            <div>
+              <h3 class="font-bold">Buen juego</h3>
+              <div class="text-xs">
+                Tu mejor puntaje con {{ currentColorInBoard === 'white' ?
+                'blancas' : 'negras' }} es {{ bestScoreByColor }} puntos.
+              </div>
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+    </ion-content>
+
+    <ion-footer class="ion-no-border">
+      <ion-toolbar class="ion-padding-horizontal">
+        <button
+          class="btn btn-lg btn-primary w-full"
+          (click)="onCloseModal()"
+        >
+          Continuar
+        </button>
+      </ion-toolbar>
+    </ion-footer>
+  </ng-template>
+</ion-modal>

@@ -1,0 +1,31 @@
+swiper-slide {
+    padding: 0px 4px;
+}
+
+ion-spinner {
+    width: 100%;
+}
+
+.plan-history-card {
+    border-radius: 11px;
+    background-color: var(--ion-color-light);
+    .card-container {
+        overflow: hidden;
+        padding: 6px;
+        display: flex;
+        flex-direction: column;
+
+        .card-body {
+            height: 215px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+    }
+}
+
+.more-button-container {
+    display: flex;
+    justify-content: center;
+    height: 25vh;
+}

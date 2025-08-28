@@ -1,0 +1,111 @@
+<ion-content>
+  <ion-grid class="ion-margin-top">
+    <ion-row>
+
+      <ion-col size="12" size-sm="12" size-md="12" size-lg="6" size-xl="6" offset-lg="2" offset-xl="2">
+        <ion-card class="ion-no-margin ion-no-padding">
+
+          <ion-card-content class="ion-no-margin ion-no-padding">
+            <div class="board" id="boardCoordinates">
+            </div>
+            <h1 class="current-puzzle">
+              {{ currentPuzzle }}
+            </h1>
+
+
+            <h2 class="ion-padding-horizontal">{{ time | number:'1.0-0' }}</h2>
+          </ion-card-content>
+          <ion-progress-bar [color]="timeColor" [value]="progressValue"></ion-progress-bar>
+        </ion-card>
+
+      </ion-col>
+
+      <ion-col size="12" size-sm="12" size-md="12" size-lg="4" size-xl="4" class="ion-padding-horizontal">
+
+        <ng-container *ngIf="!isPlaying; else elseTemplateIsPlaying">
+
+          <ion-list class="ion-no-margin ion-padding-vertical">
+
+            <ion-row>
+
+              <ion-col size="12">
+                <ion-buttons>
+                  <ion-button (click)="toggleBoardCoordinates()" [disabled]="isPlaying"
+                    [color]="showCoordinates ? 'dark' : 'medium'">
+                    {{ 'COORDINATES_PUZZLES.coordinates' | translate }}
+                    <!-- Coordenadas -->
+                    <ion-icon slot="end" [name]=" showCoordinates ? 'eye-outline' : 'eye-off-outline'"></ion-icon>
+                  </ion-button>
+                  <ion-button (click)="toggleShowPieces()" [disabled]="isPlaying"
+                    [color]=" showPieces ? 'dark' : 'medium'">
+                    {{ 'COORDINATES_PUZZLES.pieces' | translate }}
+                    <!-- Piezas -->
+                    <ion-icon slot="end" [name]=" showPieces ? 'eye-outline' : 'eye-off-outline'"></ion-icon>
+                  </ion-button>
+                  <ion-button (click)="toggleRandomPosition()" [disabled]="isPlaying || !showPieces"
+                    [color]=" randomPosition ? 'dark' : 'medium'">
+
+
+                    <ion-icon slot="icon-only" name="shuffle-outline"></ion-icon>
+
+                  </ion-button>
+                </ion-buttons>
+
+              </ion-col>
+
+            </ion-row>
+
+            <ion-row>
+              <ion-col size="4">
+                <ion-button size="large" expand="block" [color]=" color === 'white' ? 'primary' : 'medium' "
+                  (click)="color = 'white'; changeOrientation('w')">
+                  <ion-icon slot="icon-only" [src]="uiService.piecesPath+'wK.svg'"></ion-icon>
+                </ion-button>
+              </ion-col>
+              <ion-col size="4">
+                <ion-button size="large" expand="block" [color]=" color === 'random' ? 'primary' : 'medium' "
+                  (click)="color = 'random'" class="ion-no-padding">
+                  <ion-icon slot="icon-only" name="shuffle"></ion-icon>
+                </ion-button>
+              </ion-col>
+              <ion-col size="4">
+                <ion-button size="large" expand="block" [color]=" color === 'black' ? 'primary' : 'medium' "
+                  (click)="color = 'black'; changeOrientation('b')">
+                  <ion-icon slot="icon-only" [src]="uiService.piecesPath+'bK.svg'"></ion-icon>
+                </ion-button>
+              </ion-col>
+            </ion-row>
+          </ion-list>
+
+          <ion-row class="ion-margin-top">
+            <ion-col size="12">
+              <ion-button size="large" (click)="play()" expand="block">
+                {{ 'COORDINATES_PUZZLES.play' | translate }}
+                <!-- Jugar -->
+              </ion-button>
+            </ion-col>
+          </ion-row>
+
+          <div class="container-statics">
+            <app-statics></app-statics>
+          </div>
+
+
+        </ng-container>
+        <ng-template #elseTemplateIsPlaying>
+
+          <div class="div-score-container">
+            <img
+              [src]=" currentColorInBoard === 'white' ? uiService.piecesPath +'wK.svg' : uiService.piecesPath +'bK.svg'"
+              alt="King" class="img-current-king">
+            <h1>{{ score }}</h1>
+          </div>
+
+        </ng-template>
+
+      </ion-col>
+
+    </ion-row>
+  </ion-grid>
+
+</ion-content>

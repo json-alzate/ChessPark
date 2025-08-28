@@ -1,0 +1,70 @@
+.board {
+    max-height: 85vh;
+    max-width: 85vh;
+    margin: 0 auto;
+    display: block;
+}
+
+.current-puzzle {
+    position: absolute;
+    z-index: 9;
+    left: 36.5%;
+    top: 30%;
+    font-size: 28vh;
+    pointer-events: none;
+    color: var(--ion-color-dark);
+    text-shadow: 2px 2px var(--ion-color-dark-shade);
+}
+
+.img-current-king {
+    max-width: 10vw;
+    display: block;
+    margin: 0 auto;
+}
+
+.div-score-container {
+    position: relative;
+    padding-top: 20vh;
+    h1 {
+        font-size: 5em;
+        text-align: center;
+    }
+}
+
+.container-statics{
+    margin-top: 5vh;
+}
+
+/* Extra small devices (phones, 600px and down) */
+@media only screen and (max-width: 600px) {
+    .img-current-king {
+        max-width: 20vw;
+    }
+    .div-score-container {
+        padding-top: 0vh;
+        h1 {
+            font-size: 3em;
+        }
+    }
+    .current-puzzle{
+        left: 22.5%;
+        top: 20%;
+        font-size: 20vh;
+    }
+}
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (min-width: 600px) {
+}
+
+/* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (min-width: 768px) {
+}
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 992px) {
+    .container-statics{
+        margin-top: 12vh;
+    }
+}
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1200px) {
+}

@@ -1,0 +1,70 @@
+<!-- Mejores puntajes generales -->
+<div class="w-full">
+  <div class="space-y-2">
+    <ul class="list bg-base-100 rounded-box shadow-md">
+      <li class="p-4 pb-2 text-xs opacity-60 tracking-wide">
+        Mejores Puntajes
+      </li>
+
+      <li>
+        <div class="stats stats-horizontal w-full">
+          <div class="stat place-items-center">
+            <div class="stat-title">Blancas</div>
+            <div class="stat-value text-info">
+              {{ getBestScoreByColor('w') }}
+            </div>
+          </div>
+
+          <div class="stat place-items-center">
+            <div class="stat-title">Negras</div>
+            <div class="stat-value text-info">
+              {{ getBestScoreByColor('b') }}
+            </div>
+          </div>
+
+          <div class="stat place-items-center">
+            <div class="stat-title">Rondas</div>
+            <div class="stat-value">{{ userStats.totalGames }}</div>
+          </div>
+        </div>
+      </li>
+
+      @for (score of bestScores; track score; let i = $index) {
+      <li class="list-row">
+        <div class="text-4xl font-thin opacity-30 tabular-nums">
+          {{ i + 1 | number:'2.0-0' }}
+        </div>
+        <div>
+          <img
+            [src]="score.color === 'w' ? 'assets/images/pieces/cburnett/wK.svg' : 'assets/images/pieces/cburnett/bK.svg'"
+            [alt]="score.color === 'w' ? 'Rey Blanco' : 'Rey Negro'"
+            class="size-8 rounded-box drop-shadow-sm"
+          />
+        </div>
+        <div class="list-col-grow">
+          <div class="font-medium">{{ score.score }} puntos</div>
+        </div>
+        <div class="text-xs opacity-60 flex items-center gap-1">
+          <ion-icon
+            name="time-outline"
+            class="opacity-50"
+          ></ion-icon>
+          {{ score.timeAgo }}
+        </div>
+      </li>
+      }
+    </ul>
+    @if (bestScores.length === 0) {
+    <div
+      class="text-center text-sm text-base-content/70 py-8 bg-base-200 rounded-lg"
+    >
+      <ion-icon
+        name="trophy-outline"
+        class="text-4xl text-base-content/30 mb-2"
+      ></ion-icon>
+      <p>No hay puntajes aún.</p>
+      <p class="text-xs mt-1">¡Juega tu primera partida!</p>
+    </div>
+    }
+  </div>
+</div>
