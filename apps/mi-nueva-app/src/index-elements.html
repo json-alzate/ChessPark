@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>MiNuevaApp - Angular Elements</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <meta name="description" content="una prueba" />
+
+    <!-- Estilos para Angular Elements -->
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+          sans-serif;
+      }
+
+      /* Contenedor para la aplicación */
+      .app-container {
+        width: 100%;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      /* Estilos para el elemento personalizado */
+      mi-nueva-app-app {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+
+      mi-nueva-app-app-simple {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+
+      mi-nueva-app-app-enhanced {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-container">
+      <!-- Elemento principal de Angular Elements -->
+      <mi-nueva-app-app></mi-nueva-app-app>
+
+      <!-- Elemento simple de Angular Elements -->
+      <mi-nueva-app-app-simple></mi-nueva-app-app-simple>
+
+      <!-- Elemento mejorado de Angular Elements -->
+      <mi-nueva-app-app-enhanced></mi-nueva-app-app-enhanced>
+    </div>
+
+    <script>
+      // Esperar a que los elementos estén listos
+      window.addEventListener('mi-nueva-app-app-ready', () => {
+        console.log('🎉 MiNuevaApp App está listo!');
+      });
+
+      window.addEventListener('mi-nueva-app-app-simple-ready', () => {
+        console.log('🎉 MiNuevaApp App Simple está listo!');
+      });
+
+      window.addEventListener('mi-nueva-app-app-enhanced-ready', () => {
+        console.log('🎉 MiNuevaApp App Enhanced está listo!');
+      });
+    </script>
+  </body>
+</html>

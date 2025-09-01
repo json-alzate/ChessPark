@@ -1,9 +1,14 @@
 {
   "generators": {
     "create-model": {
-      "factory": "./src/generators/create-model/create-model",
-      "schema": "./src/generators/create-model/schema.json",
-      "description": "create-model generator"
+      "factory": "./src/create-model/create-model",
+      "schema": "./src/create-model/schema.json",
+      "description": "Genera modelos de datos para la aplicación"
+    },
+    "create-app": {
+      "factory": "./src/generators/create-app/create-app",
+      "schema": "./src/generators/create-app/schema.json",
+      "description": "Genera aplicaciones Angular completas incluyendo Ionic, Capacitor, Tailwind, DaisyUI y NgRx"
     }
   }
 }

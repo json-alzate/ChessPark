@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "$id": "CreateApp",
+  "title": "Create Application",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nombre de la aplicación (ej: myApp, dashboard, admin)",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      },
+      "x-prompt": "¿Qué nombre quieres usar para la aplicación?"
+    },
+    "description": {
+      "type": "string",
+      "description": "Descripción de la aplicación",
+      "x-prompt": "¿Puedes describir brevemente qué hace esta aplicación?"
+    },
+    "hasElements": {
+      "type": "boolean",
+      "description": "¿Incluir soporte para Angular Elements?",
+      "default": true,
+      "x-prompt": "¿Quieres incluir soporte para Angular Elements?"
+    },
+    "hasElementsSimple": {
+      "type": "boolean",
+      "description": "¿Incluir versión simple de Angular Elements?",
+      "default": true,
+      "x-prompt": "¿Quieres incluir la versión simple de Angular Elements?"
+    },
+    "hasElementsEnhanced": {
+      "type": "boolean",
+      "description": "¿Incluir versión mejorada de Angular Elements?",
+      "default": true,
+      "x-prompt": "¿Quieres incluir la versión mejorada de Angular Elements?"
+    },
+    "hasCapacitor": {
+      "type": "boolean",
+      "description": "¿Incluir configuración de Capacitor para móvil?",
+      "default": true,
+      "x-prompt": "¿Quieres incluir configuración de Capacitor para móvil?"
+    },
+    "hasIonic": {
+      "type": "boolean",
+      "description": "¿Incluir soporte para Ionic Framework?",
+      "default": true,
+      "x-prompt": "¿Quieres incluir soporte para Ionic Framework?"
+    },
+    "hasTailwind": {
+      "type": "boolean",
+      "description": "¿Incluir configuración de Tailwind CSS?",
+      "default": true,
+      "x-prompt": "¿Quieres incluir configuración de Tailwind CSS?"
+    },
+    "hasDaisyUI": {
+      "type": "boolean",
+      "description": "¿Incluir configuración de DaisyUI?",
+      "default": true,
+      "x-prompt": "¿Quieres incluir configuración de DaisyUI?"
+    },
+    "hasNgRx": {
+      "type": "boolean",
+      "description": "¿Incluir configuración de NgRx Store?",
+      "default": true,
+      "x-prompt": "¿Quieres incluir configuración de NgRx Store?"
+    },
+    "hasSwiper": {
+      "type": "boolean",
+      "description": "¿Incluir soporte para Swiper (carousel)?",
+      "default": true,
+      "x-prompt": "¿Quieres incluir soporte para Swiper (carousel)?"
+    },
+    "hasServiceWorker": {
+      "type": "boolean",
+      "description": "¿Incluir configuración de Service Worker?",
+      "default": true,
+      "x-prompt": "¿Quieres incluir configuración de Service Worker?"
+    },
+    "hasTests": {
+      "type": "boolean",
+      "description": "¿Incluir configuración de pruebas con Jest?",
+      "default": true,
+      "x-prompt": "¿Quieres incluir configuración de pruebas con Jest?"
+    },
+    "hasLint": {
+      "type": "boolean",
+      "description": "¿Incluir configuración de ESLint?",
+      "default": true,
+      "x-prompt": "¿Quieres incluir configuración de ESLint?"
+    }
+  },
+  "required": ["name"]
+}

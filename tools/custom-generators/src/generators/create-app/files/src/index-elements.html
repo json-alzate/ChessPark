@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title><%= classifyName %> - Angular Elements</title>
+  <base href="/"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <link rel="icon" type="image/x-icon" href="favicon.ico"/>
+  <meta name="description" content="<%= description || 'Una aplicación Angular Elements con Ionic' %>"/>
+  
+  <!-- Estilos para Angular Elements -->
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    
+    /* Contenedor para la aplicación */
+    .app-container {
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+    }
+    
+    /* Estilos para el elemento personalizado */
+    <%= name %>-app {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    
+    <%= name %>-app-simple {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    
+    <%= name %>-app-enhanced {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Elemento principal de Angular Elements -->
+    <<%= name %>-app></<%= name %>-app>
+    
+    <!-- Elemento simple de Angular Elements -->
+    <<%= name %>-app-simple></<%= name %>-app-simple>
+    
+    <!-- Elemento mejorado de Angular Elements -->
+    <<%= name %>-app-enhanced></<%= name %>-app-enhanced>
+  </div>
+  
+  <script>
+    // Esperar a que los elementos estén listos
+    window.addEventListener('<%= name %>-app-ready', () => {
+      console.log('🎉 <%= classifyName %> App está listo!');
+    });
+    
+    window.addEventListener('<%= name %>-app-simple-ready', () => {
+      console.log('🎉 <%= classifyName %> App Simple está listo!');
+    });
+    
+    window.addEventListener('<%= name %>-app-enhanced-ready', () => {
+      console.log('🎉 <%= classifyName %> App Enhanced está listo!');
+    });
+  </script>
+</body>
+</html>
