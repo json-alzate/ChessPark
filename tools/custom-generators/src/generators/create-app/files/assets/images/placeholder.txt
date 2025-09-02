@@ -1,0 +1,2 @@
+# Este directorio contiene las imágenes de la aplicación
+# Agrega aquí tus imágenes personalizadas

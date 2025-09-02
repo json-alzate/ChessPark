@@ -1,0 +1,4 @@
+{
+    "name": "<%= name %>",
+    "description": "<%= description || 'Una aplicación Angular con Ionic y Angular Elements' %>"
+}

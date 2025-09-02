@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "$id": "CreateApp",
+  "title": "Create Application",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nombre de la aplicación (ej: myApp, dashboard, admin)",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      },
+      "x-prompt": "¿Qué nombre quieres usar para la aplicación?"
+    },
+    "description": {
+      "type": "string",
+      "description": "Descripción de la aplicación",
+      "x-prompt": "¿Puedes describir brevemente qué hace esta aplicación?"
+    }
+  },
+  "required": ["name"]
+}
