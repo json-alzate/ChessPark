@@ -10,18 +10,16 @@ import { join } from 'path';
 
 export default async function (tree: Tree, options: CreateAppGeneratorSchema) {
   const appNames = names(options.name);
-  const hasElements = options.hasElements ?? true;
-  const hasElementsSimple = options.hasElementsSimple ?? true;
-  const hasElementsEnhanced = options.hasElementsEnhanced ?? true;
-  const hasCapacitor = options.hasCapacitor ?? true;
-  const hasIonic = options.hasIonic ?? true;
-  const hasTailwind = options.hasTailwind ?? true;
-  const hasDaisyUI = options.hasDaisyUI ?? true;
-  const hasNgRx = options.hasNgRx ?? true;
-  const hasSwiper = options.hasSwiper ?? true;
-  const hasServiceWorker = options.hasServiceWorker ?? true;
-  const hasTests = options.hasTests ?? true;
-  const hasLint = options.hasLint ?? true;
+  
+  // Configuración por defecto - todas las opciones están habilitadas
+  const hasCapacitor = true;
+  const hasIonic = true;
+  const hasTailwind = true;
+  const hasDaisyUI = true;
+  const hasSwiper = true;
+  const hasServiceWorker = true;
+  const hasTests = true;
+  const hasLint = true;
 
   // Generar archivos para la aplicación respetando la estructura de directorios
   const baseDir = 'apps';
@@ -35,14 +33,10 @@ export default async function (tree: Tree, options: CreateAppGeneratorSchema) {
       name: appNames.fileName,
       classifyName: appNames.className,
       description: options.description || '',
-      hasElements,
-      hasElementsSimple,
-      hasElementsEnhanced,
       hasCapacitor,
       hasIonic,
       hasTailwind,
       hasDaisyUI,
-      hasNgRx,
       hasSwiper,
       hasServiceWorker,
       hasTests,
@@ -60,14 +54,10 @@ export default async function (tree: Tree, options: CreateAppGeneratorSchema) {
       name: appNames.fileName,
       classifyName: appNames.className,
       description: options.description || '',
-      hasElements,
-      hasElementsSimple,
-      hasElementsEnhanced,
       hasCapacitor,
       hasIonic,
       hasTailwind,
       hasDaisyUI,
-      hasNgRx,
       hasSwiper,
       hasServiceWorker,
       hasTests,
@@ -85,14 +75,10 @@ export default async function (tree: Tree, options: CreateAppGeneratorSchema) {
       name: appNames.fileName,
       classifyName: appNames.className,
       description: options.description || '',
-      hasElements,
-      hasElementsSimple,
-      hasElementsEnhanced,
       hasCapacitor,
       hasIonic,
       hasTailwind,
       hasDaisyUI,
-      hasNgRx,
       hasSwiper,
       hasServiceWorker,
       hasTests,
@@ -110,14 +96,10 @@ export default async function (tree: Tree, options: CreateAppGeneratorSchema) {
       name: appNames.fileName,
       classifyName: appNames.className,
       description: options.description || '',
-      hasElements,
-      hasElementsSimple,
-      hasElementsEnhanced,
       hasCapacitor,
       hasIonic,
       hasTailwind,
       hasDaisyUI,
-      hasNgRx,
       hasSwiper,
       hasServiceWorker,
       hasTests,
@@ -135,14 +117,10 @@ export default async function (tree: Tree, options: CreateAppGeneratorSchema) {
       name: appNames.fileName,
       classifyName: appNames.className,
       description: options.description || '',
-      hasElements,
-      hasElementsSimple,
-      hasElementsEnhanced,
       hasCapacitor,
       hasIonic,
       hasTailwind,
       hasDaisyUI,
-      hasNgRx,
       hasSwiper,
       hasServiceWorker,
       hasTests,
@@ -161,14 +139,12 @@ export default async function (tree: Tree, options: CreateAppGeneratorSchema) {
         name: appNames.fileName,
         classifyName: appNames.className,
         description: options.description || '',
-        hasElements,
-        hasElementsSimple,
-        hasElementsEnhanced,
+
         hasCapacitor,
         hasIonic,
         hasTailwind,
         hasDaisyUI,
-        hasNgRx,
+
         hasSwiper,
         hasServiceWorker,
         hasTests,
@@ -188,14 +164,12 @@ export default async function (tree: Tree, options: CreateAppGeneratorSchema) {
         name: appNames.fileName,
         classifyName: appNames.className,
         description: options.description || '',
-        hasElements,
-        hasElementsSimple,
-        hasElementsEnhanced,
+
         hasCapacitor,
         hasIonic,
         hasTailwind,
         hasDaisyUI,
-        hasNgRx,
+
         hasSwiper,
         hasServiceWorker,
         hasTests,
@@ -214,14 +188,12 @@ export default async function (tree: Tree, options: CreateAppGeneratorSchema) {
         name: appNames.fileName,
         classifyName: appNames.className,
         description: options.description || '',
-        hasElements,
-        hasElementsSimple,
-        hasElementsEnhanced,
+
         hasCapacitor,
         hasIonic,
         hasTailwind,
         hasDaisyUI,
-        hasNgRx,
+
         hasSwiper,
         hasServiceWorker,
         hasTests,
@@ -240,14 +212,12 @@ export default async function (tree: Tree, options: CreateAppGeneratorSchema) {
         name: appNames.fileName,
         classifyName: appNames.className,
         description: options.description || '',
-        hasElements,
-        hasElementsSimple,
-        hasElementsEnhanced,
+
         hasCapacitor,
         hasIonic,
         hasTailwind,
         hasDaisyUI,
-        hasNgRx,
+
         hasSwiper,
         hasServiceWorker,
         hasTests,

@@ -8,7 +8,7 @@
     "create-app": {
       "factory": "./src/generators/create-app/create-app",
       "schema": "./src/generators/create-app/schema.json",
-      "description": "Genera aplicaciones Angular completas incluyendo Ionic, Capacitor, Tailwind, DaisyUI y NgRx"
+      "description": "Genera aplicaciones Angular completas con Ionic, Capacitor, Tailwind, DaisyUI, Swiper y Service Worker"
     }
   }
 }

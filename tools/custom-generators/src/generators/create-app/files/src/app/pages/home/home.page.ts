@@ -24,7 +24,7 @@ import { CommonModule } from '@angular/common';
 
       <div class="container">
         <h1>¡Bienvenido a <%= classifyName %>!</h1>
-        <p>Esta es una aplicación Angular con Ionic y Angular Elements.</p>
+        <p>Esta es una aplicación Angular con Ionic, Capacitor y Tailwind CSS.</p>
         
         <ion-card>
           <ion-card-header>
@@ -34,12 +34,11 @@ import { CommonModule } from '@angular/common';
             <ul>
               <li>Angular standalone components</li>
               <li>Ionic Framework</li>
-              <% if (hasElements) { %><li>Angular Elements</li><% } %>
-              <% if (hasCapacitor) { %><li>Capacitor para móvil</li><% } %>
-              <% if (hasTailwind) { %><li>Tailwind CSS</li><% } %>
-              <% if (hasDaisyUI) { %><li>DaisyUI</li><% } %>
-              <% if (hasNgRx) { %><li>NgRx Store</li><% } %>
-              <% if (hasSwiper) { %><li>Swiper carousel</li><% } %>
+              <li>Capacitor para móvil</li>
+              <li>Tailwind CSS</li>
+              <li>DaisyUI</li>
+              <li>Swiper carousel</li>
+              <li>Service Worker</li>
             </ul>
           </ion-card-content>
         </ion-card>

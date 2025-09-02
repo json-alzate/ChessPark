@@ -1,50 +1,44 @@
 # Generador de Aplicaciones
 
-Este generador crea automáticamente aplicaciones Angular completas con la misma estructura y configuración que `demoA`, incluyendo soporte para Ionic, Angular Elements, Capacitor, Tailwind CSS, DaisyUI, NgRx y más.
+Este generador crea automáticamente aplicaciones Angular completas con Ionic, Capacitor, Tailwind CSS, DaisyUI, Swiper y Service Worker. Todas las opciones están habilitadas por defecto para una experiencia de desarrollo completa.
 
 ## Uso
 
 ```bash
-nx generate @xerpa/custom-generators:create-app
+nx generate @chesspark/custom-generators:create-app
 ```
 
 ## Opciones
 
-- `name`: Nombre de la aplicación (ej: myApp, dashboard, admin)
-- `description`: Descripción de la aplicación
-- `hasElements`: ¿Incluir soporte para Angular Elements? (por defecto: true)
-- `hasElementsSimple`: ¿Incluir versión simple de Angular Elements? (por defecto: true)
-- `hasElementsEnhanced`: ¿Incluir versión mejorada de Angular Elements? (por defecto: true)
-- `hasCapacitor`: ¿Incluir configuración de Capacitor para móvil? (por defecto: true)
-- `hasIonic`: ¿Incluir soporte para Ionic Framework? (por defecto: true)
-- `hasTailwind`: ¿Incluir configuración de Tailwind CSS? (por defecto: true)
-- `hasDaisyUI`: ¿Incluir configuración de DaisyUI? (por defecto: true)
-- `hasNgRx`: ¿Incluir configuración de NgRx Store? (por defecto: true)
-- `hasSwiper`: ¿Incluir soporte para Swiper (carousel)? (por defecto: true)
-- `hasServiceWorker`: ¿Incluir configuración de Service Worker? (por defecto: true)
-- `hasTests`: ¿Incluir configuración de pruebas con Jest? (por defecto: true)
-- `hasLint`: ¿Incluir configuración de ESLint? (por defecto: true)
+- `name`: Nombre de la aplicación (ej: myApp, dashboard, admin) - **Requerido**
+- `description`: Descripción de la aplicación - **Opcional**
+
+## Características Incluidas por Defecto
+
+- ✅ **Ionic Framework** - Framework de UI para aplicaciones móviles
+- ✅ **Capacitor** - Configuración para aplicaciones móviles nativas
+- ✅ **Tailwind CSS** - Framework de CSS utilitario
+- ✅ **DaisyUI** - Componentes de UI para Tailwind
+- ✅ **Swiper** - Carousel y slider
+- ✅ **Service Worker** - Soporte para PWA
+- ✅ **Jest** - Configuración de pruebas
+- ✅ **ESLint** - Linting de código
 
 ## Ejemplos
 
 ### Crear aplicación básica
 ```bash
-nx generate @xerpa/custom-generators:create-app myApp --description="Mi aplicación personalizada"
+nx generate @chesspark/custom-generators:create-app myApp --description="Mi aplicación personalizada"
 ```
 
-### Crear aplicación sin Angular Elements
+### Crear aplicación con solo nombre
 ```bash
-nx generate @xerpa/custom-generators:create-app dashboard --hasElements=false --description="Dashboard administrativo"
+nx generate @chesspark/custom-generators:create-app dashboard
 ```
 
-### Crear aplicación solo para web
+### Crear aplicación para e-commerce
 ```bash
-nx generate @xerpa/custom-generators:create-app webapp --hasCapacitor=false --description="Aplicación solo para web"
-```
-
-### Crear aplicación minimalista
-```bash
-nx generate @xerpa/custom-generators:create-app simple --hasNgRx=false --hasSwiper=false --hasServiceWorker=false --description="Aplicación simple"
+nx generate @chesspark/custom-generators:create-app ecommerce --description="Aplicación de comercio electrónico con Ionic y Capacitor"
 ```
 
 ## Archivos Generados

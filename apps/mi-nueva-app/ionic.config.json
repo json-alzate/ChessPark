@@ -1,7 +1,0 @@
-{
-  "name": "mi-nueva-app",
-  "integrations": {
-    "capacitor": {}
-  },
-  "type": "angular"
-}
