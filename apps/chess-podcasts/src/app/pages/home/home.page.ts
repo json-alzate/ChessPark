@@ -11,11 +11,15 @@ import {
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 
+import {PrincipalSliderComponent} from './components/principal-slider/principal-slider.component';
+
 @Component({
   selector: 'app-home',
   standalone: true,
   imports: [
     CommonModule,
+    IonContent,
+    PrincipalSliderComponent
   ],
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
