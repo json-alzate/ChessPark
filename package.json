@@ -13,8 +13,10 @@
     "deploy:chessColate": "nx run deploy-chessColate",
     "serve:chesspark": "nx run chesspark:serve-static",
     "serve:chessGrid": "nx run chessGrid:serve-static",
+    "serve:chessColate": "nx run chessColate:serve-static",
     "build:chesspark": "nx build chesspark",
     "build:chessGrid": "nx build chessGrid",
+    "build:chessColate": "nx build chessColate",
     "firebase:init": "firebase init hosting",
     "firebase:deploy": "firebase deploy",
     "firebase:status": "firebase projects:list"
