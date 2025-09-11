@@ -1,0 +1,193 @@
+{
+  "name": "chess-podcasts",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/chess-podcasts/src",
+  "targets": {
+    "build": {
+      "executor": "@angular/build:application",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/chess-podcasts",
+        "browser": "apps/chess-podcasts/src/main.ts",
+        "polyfills": ["zone.js", "apps/chess-podcasts/src/polyfills.ts"],
+        "tsConfig": "apps/chess-podcasts/tsconfig.app.json",
+        "inlineStyleLanguage": "scss",
+        "assets": [
+          {
+            "glob": "**/*",
+            "input": "apps/chess-podcasts/src/assets",
+            "output": "assets"
+          }
+        ],
+        "styles": [
+          "apps/chess-podcasts/src/global.scss",
+          "apps/chess-podcasts/src/theme/variables.scss"
+        ],
+        "index": "apps/chess-podcasts/src/index.html"
+      },
+      "configurations": {
+        "production": {
+          "outputHashing": "all",
+          "fileReplacements": [
+            {
+              "replace": "apps/chess-podcasts/src/environments/environment.ts",
+              "with": "apps/chess-podcasts/src/environments/environment.prod.ts"
+            }
+          ]
+        },
+        "development": {
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve": {
+      "executor": "@angular/build:dev-server",
+      "configurations": {
+        "production": {
+          "buildTarget": "chess-podcasts:build:production"
+        },
+        "development": {
+          "buildTarget": "chess-podcasts:build:development"
+        }
+      },
+      "defaultConfiguration": "development"
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/chess-podcasts/jest.config.ts"
+      }
+    },
+    "build-elements": {
+      "executor": "@angular/build:application",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/chess-podcasts-elements",
+        "browser": "apps/chess-podcasts/src/main-elements.ts",
+        "polyfills": ["zone.js", "apps/chess-podcasts/src/polyfills.ts"],
+        "tsConfig": "apps/chess-podcasts/tsconfig.app.json",
+        "inlineStyleLanguage": "scss",
+        "assets": [
+          {
+            "glob": "**/*",
+            "input": "apps/chess-podcasts/src/assets",
+            "output": "assets"
+          }
+        ],
+        "styles": ["apps/chess-podcasts/src/styles-elements.scss"],
+        "index": "apps/chess-podcasts/src/index-elements.html"
+      },
+      "configurations": {
+        "production": {
+          "outputHashing": "none",
+          "fileReplacements": [
+            {
+              "replace": "apps/chess-podcasts/src/environments/environment.ts",
+              "with": "apps/chess-podcasts/src/environments/environment.prod.ts"
+            }
+          ]
+        },
+        "development": {
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve-elements": {
+      "executor": "@angular/build:dev-server",
+      "configurations": {
+        "production": {
+          "buildTarget": "chess-podcasts:build-elements:production"
+        },
+        "development": {
+          "buildTarget": "chess-podcasts:build-elements:development"
+        }
+      },
+      "defaultConfiguration": "development"
+    },
+    "build-elements-simple": {
+      "executor": "@angular/build:application",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/chess-podcasts-elements-simple",
+        "browser": "apps/chess-podcasts/src/main-elements-simple.ts",
+        "polyfills": ["zone.js", "apps/chess-podcasts/src/polyfills.ts"],
+        "tsConfig": "apps/chess-podcasts/tsconfig.app.json",
+        "inlineStyleLanguage": "scss",
+        "assets": [
+          {
+            "glob": "**/*",
+            "input": "apps/chess-podcasts/src/assets",
+            "output": "assets"
+          }
+        ],
+        "styles": ["apps/chess-podcasts/src/styles-elements.scss"],
+        "index": "apps/chess-podcasts/src/index-elements.html"
+      },
+      "configurations": {
+        "production": {
+          "outputHashing": "none",
+          "fileReplacements": [
+            {
+              "replace": "apps/chess-podcasts/src/environments/environment.ts",
+              "with": "apps/chess-podcasts/src/environments/environment.prod.ts"
+            }
+          ]
+        },
+        "development": {
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "build-elements-enhanced": {
+      "executor": "@angular/build:application",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/chess-podcasts-elements-enhanced",
+        "browser": "apps/chess-podcasts/src/main-elements-enhanced.ts",
+        "polyfills": ["zone.js", "apps/chess-podcasts/src/polyfills.ts"],
+        "tsConfig": "apps/chess-podcasts/tsconfig.app.json",
+        "inlineStyleLanguage": "scss",
+        "assets": [
+          {
+            "glob": "**/*",
+            "input": "apps/chess-podcasts/src/assets",
+            "output": "assets"
+          }
+        ],
+        "styles": ["apps/chess-podcasts/src/styles-elements.scss"],
+        "index": "apps/chess-podcasts/src/index-elements.html"
+      },
+      "configurations": {
+        "production": {
+          "outputHashing": "none",
+          "fileReplacements": [
+            {
+              "replace": "apps/chess-podcasts/src/environments/environment.ts",
+              "with": "apps/chess-podcasts/src/environments/environment.prod.ts"
+            }
+          ]
+        },
+        "development": {
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true
+        }
+      },
+      "defaultConfiguration": "production"
+    }
+  }
+}
