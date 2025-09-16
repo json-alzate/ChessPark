@@ -1,20 +1,20 @@
+// Angular
 import { Component } from '@angular/core';
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonButtons, IonMenuButton, IonThumbnail } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
+// Ionic
+import { IonContent } from '@ionic/angular/standalone';
+
+// Components
+import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [IonButtons,
-    IonHeader,
-    IonToolbar,
-    IonTitle,
+  imports: [
     IonContent,
-    IonCard,
-    IonCardHeader,
-    IonCardTitle,
-    IonCardContent,
-    CommonModule, IonMenuButton, IonThumbnail],
+    CommonModule,
+    NavbarComponent
+  ],
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
