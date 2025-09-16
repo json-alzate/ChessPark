@@ -1,0 +1,18 @@
+import { Component<% if (standalone) { %>, OnInit<% } %> } from '@angular/core';<% if (!standalone) { %>
+import { CommonModule } from '@angular/common';<% } %>
+
+@Component({
+  selector: 'app-<%= fileName %>',<% if (standalone) { %>
+  standalone: true,
+  imports: [CommonModule],<% } %>
+  templateUrl: './<%= fileName %>.component.html',
+  styleUrls: ['./<%= fileName %>.component.scss']
+})
+export class <%= className %>Component<% if (standalone) { %> implements OnInit<% } %> {
+
+  constructor() { }
+
+<% if (standalone) { %>  ngOnInit(): void {
+  }
+<% } %>
+}

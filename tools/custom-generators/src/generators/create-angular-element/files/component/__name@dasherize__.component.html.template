@@ -1,0 +1,3 @@
+<div class="<%= fileName %>-container">
+  <h2><%= className %> works!</h2>
+</div>
