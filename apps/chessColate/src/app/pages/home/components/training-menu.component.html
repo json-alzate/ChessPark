@@ -1,0 +1,23 @@
+<swiper-container slides-per-view="2.2" space-between="5" free-mode="true" class="ml-2">
+    <swiper-slide *ngFor="let plan of [5,10,20,30]">
+
+        <div>
+            <div class="card bg-base-100  shadow-sm">
+                <figure>
+                    <img src="assets/images/plan-icons/plan{{plan}}.png" alt="Shoes" />
+                </figure>
+                <div class="card-body p-2 flex flex-row justify-between  w-full">
+                    <div class="text-sm text-left">
+                        1500?
+                    </div>
+                    <div class="card-actions">
+                        <div class="flex  gap-1">
+                            {{plan}} <ion-icon name="timer-outline"></ion-icon>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </swiper-slide>
+</swiper-container>

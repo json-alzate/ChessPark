@@ -5,6 +5,7 @@ import { IonContent, IonLabel, IonCol, IonCard, IonRippleEffect, IonItem, IonImg
 
 // Components
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
+import { TrainingMenuComponent } from './components/training-menu.component';
 
 @Component({
   selector: 'app-home',
@@ -12,7 +13,8 @@ import { NavbarComponent } from '@shared/components/navbar/navbar.component';
   imports: [IonNote, IonButton, IonRow, IonIcon, IonImg, IonItem, IonRippleEffect, IonCard, IonCol, IonLabel, 
     IonContent,
     CommonModule,
-    NavbarComponent
+    NavbarComponent,
+    TrainingMenuComponent
   ],
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
