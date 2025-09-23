@@ -1,26 +1,274 @@
-<!-- <ion-header [translucent]="true">
-    <ion-toolbar>
-        <ion-buttons slot="start">
-            <ion-menu-button auto-hide="false"></ion-menu-button>
-        </ion-buttons>
-        <ion-title> ChessColate </ion-title>
-        <ion-thumbnail slot="end">
-            <img src="assets/images/home_icon.png" />
-        </ion-thumbnail>
-    </ion-toolbar>
-</ion-header> -->
-
 <ion-content [fullscreen]="true">
 
-  <div class="container" data-theme="halloween">
+  <div class="main-container" data-theme="halloween">
 
     <app-navbar></app-navbar>
 
     <div class="p-2"> 
 
-      <h2 class="text-2xl mb-4">
+      <h4 class="text-lg mb-4">
         Rutinas de entrenamiento
-      </h2>
+      </h4>
+
+          <!-- mobile -->
+
+    <ion-row class="ion-hide-md-up">
+      <ion-col size-xs="6" size-sm="6" size-md="6" offset-Lg="3" offset-xl="3" size-lg="3" size-xl="3"
+        class="ion-no-padding">
+
+        <ion-card button color="light" class="ion-activatable">
+          <ion-ripple-effect></ion-ripple-effect>
+          <div (click)="createPlan('plan5')">
+            <ion-item class="item-plan-description" lines="none">
+              <ion-label>
+                <b>
+                  {{generalEloPlan5}}
+                </b>
+              </ion-label>
+              <div slot="end">
+                <ion-note>
+                  5 <ion-icon name="timer-outline"></ion-icon>
+                </ion-note>
+              </div>
+            </ion-item>
+            <ion-img class="img-plan" src="assets/images/plan-icons/plan5.png" alt="rabbit" srcset=""></ion-img>
+          </div>
+
+
+        </ion-card>
+
+
+      </ion-col>
+      <ion-col size-xs="6" size-sm="6" size-md="6" size-lg="3" size-xl="3" class="ion-no-padding">
+
+        <ion-card button color="light" class="ion-activatable">
+          <ion-ripple-effect></ion-ripple-effect>
+          <div (click)="createPlan('plan10')">
+
+            <ion-item class="item-plan-description" lines="none">
+              <ion-label>
+                <b>
+                  {{generalEloPlan10}}
+                </b>
+              </ion-label>
+              <div slot="end">
+                <ion-note>
+                  10 <ion-icon name="timer-outline"></ion-icon>
+                </ion-note>
+              </div>
+            </ion-item>
+            <ion-img class="img-plan" src="assets/images/plan-icons/plan10.png" alt="horse" srcset=""></ion-img>
+
+          </div>
+        </ion-card>
+
+      </ion-col>
+
+    </ion-row>
+    <ion-row class="ion-hide-md-up">
+
+      <ion-col size-xs="6" size-sm="6" size-md="6" offset-Lg="3" offset-xl="3" size-lg="3" size-xl="3"
+        class="ion-no-padding">
+
+        <ion-card button color="light" class="ion-activatable">
+          <ion-ripple-effect></ion-ripple-effect>
+          <div (click)="createPlan('plan20')">
+
+            <ion-item class="item-plan-description" lines="none">
+              <ion-label>
+                <b>
+                  {{generalEloPlan20}}
+                </b>
+              </ion-label>
+              <div slot="end">
+                <ion-note>
+                  20 <ion-icon name="timer-outline"></ion-icon>
+                </ion-note>
+              </div>
+            </ion-item>
+            <ion-img class="img-plan" src="assets/images/plan-icons/plan20.png" alt="elephant" srcset=""></ion-img>
+
+          </div>
+        </ion-card>
+
+      </ion-col>
+      <ion-col size-xs="6" size-sm="6" size-md="6" size-lg="3" size-xl="3" class="ion-no-padding">
+
+        <ion-card button color="light" class="ion-activatable">
+          <ion-ripple-effect></ion-ripple-effect>
+          <div (click)="createPlan('plan30')">
+
+            <ion-item class="item-plan-description" lines="none">
+              <ion-label>
+                <b>
+                  {{generalEloPlan30}}
+                </b>
+              </ion-label>
+              <div slot="end">
+                <ion-note>
+                  30 <ion-icon name="timer-outline"></ion-icon>
+                </ion-note>
+              </div>
+            </ion-item>
+            <ion-img class="img-plan" src="assets/images/plan-icons/plan30.png" alt="turtle" srcset=""></ion-img>
+
+          </div>
+
+        </ion-card>
+
+      </ion-col>
+
+    </ion-row>
+    <!-- end mobile -->
+
+
+    <!-- web only -->
+    <div class="ion-padding ion-hide-md-down">
+      <ion-row class=" ion-margin-top">
+
+        <ion-col size-xs="12" size-sm="12" size-md="12" size-lg="3" size-xl="3" class="ion-no-padding">
+
+          <ng-container *ngIf="planBlood === 'warmup'">
+            <ion-button expand="block" color="light" (click)="createPlan('warmup')">
+              <img slot="start" class="btn-img-icon" src="assets/images/plan-icons/warmup.png">
+              Calentamiento
+      
+            </ion-button>
+          </ng-container>
+          <ng-container *ngIf="planBlood === 'backToCalm'">
+            <ion-button expand="block" color="light" (click)="createPlan('backToCalm')">
+              <img slot="start" class="btn-img-icon" src="assets/images/plan-icons/backToCalm.png">
+              Vuelta a la calma
+            </ion-button>
+          </ng-container>
+
+
+        </ion-col>
+
+        <ion-col size-xs="6" size-sm="6" size-md="6" size-lg="3" size-xl="3" class="ion-no-padding">
+          <ion-button expand="block" color="light" (click)="goToCustomPlanCreate()">
+            Rutina personalizada
+          </ion-button>
+        </ion-col>
+
+        <ion-col size-xs="6" size-sm="6" size-md="6" size-lg="3" size-xl="2" class="ion-no-padding">
+          <ion-button expand="block" color="light"
+            href="https://play.google.com/store/apps/details?id=com.jheison.chesscolate" target="_blank">
+            <ion-icon slot="start" name="logo-google-playstore"></ion-icon>
+            Rutina personalizada
+          </ion-button>
+        </ion-col>
+
+        <!-- <ion-col size="3" offset="3" class="ion-padding">
+        <ion-button expand="block" mode="ios" color="light">
+          <ion-icon slot="start" name="cube"></ion-icon>
+          Bloque
+        </ion-button>
+      </ion-col>-->
+
+
+      </ion-row>
+      <ion-row>
+        <ion-col size-xs="6" size-sm="6" size-md="6" size-lg="3" size-xl="3" class="ion-no-padding">
+
+          <ion-card button color="light" class="ion-activatable">
+            <ion-ripple-effect></ion-ripple-effect>
+            <div (click)="createPlan('plan5')">
+              <ion-item class="item-plan-description" lines="none">
+                <ion-label>
+                  <b>
+                    {{generalEloPlan5}}
+                  </b>
+                </ion-label>
+                <div slot="end" class="ion-hide-lg-down">
+                  5 <ion-icon name="timer-outline"></ion-icon>
+                </div>
+              </ion-item>
+              <ion-img class="img-plan" src="assets/images/plan-icons/plan5.png" alt="rabbit" srcset=""></ion-img>
+              
+            </div>
+
+
+          </ion-card>
+
+
+        </ion-col>
+        <ion-col size-xs="6" size-sm="6" size-md="6" size-lg="3" size-xl="3" class="ion-no-padding">
+
+          <ion-card button color="light" class="ion-activatable">
+            <ion-ripple-effect></ion-ripple-effect>
+            <div (click)="createPlan('plan10')">
+
+              <ion-item class="item-plan-description" lines="none">
+                <ion-label>
+                  <b>
+                    {{generalEloPlan10}}
+                  </b>
+                </ion-label>
+                <div slot="end" class="ion-hide-lg-down">
+                  10 <ion-icon name="timer-outline"></ion-icon>
+                </div>
+              </ion-item>
+              <ion-img class="img-plan" src="assets/images/plan-icons/plan10.png" alt="horse" srcset=""></ion-img>
+
+            </div>
+
+          </ion-card>
+
+        </ion-col>
+
+
+        <ion-col size-xs="6" size-sm="6" size-md="6" size-lg="3" size-xl="3" class="ion-no-padding">
+
+          <ion-card button color="light" class="ion-activatable">
+            <ion-ripple-effect></ion-ripple-effect>
+            <div (click)="createPlan( 'plan20')">
+
+              <ion-item class="item-plan-description" lines="none">
+                <ion-label>
+                  <b>
+                    {{generalEloPlan20}}
+                  </b>
+                </ion-label>
+                <div slot="end" class="ion-hide-lg-down">
+                  20 <ion-icon name="timer-outline"></ion-icon>
+                </div>
+              </ion-item>
+              <ion-img class="img-plan" src="assets/images/plan-icons/plan20.png" alt="elephant" srcset=""></ion-img>
+
+            </div>
+
+          </ion-card>
+
+        </ion-col>
+        <ion-col size-xs="6" size-sm="6" size-md="6" size-lg="3" size-xl="3" class="ion-no-padding">
+
+          <ion-card button color="light" class="ion-activatable">
+            <ion-ripple-effect></ion-ripple-effect>
+            <div (click)="createPlan('plan30')">
+
+              <ion-item class="item-plan-description" lines="none">
+                <ion-label>
+                  <b>
+                    {{generalEloPlan30}}
+                  </b>
+                </ion-label>
+                <div slot="end" class="ion-hide-lg-down">
+                  30 <ion-icon name="timer-outline"></ion-icon>
+                </div>
+              </ion-item>
+              <ion-img class="img-plan" src="assets/images/plan-icons/plan30.png" alt="turtle" srcset=""></ion-img>
+
+            </div>
+
+          </ion-card>
+
+        </ion-col>
+
+      </ion-row>
+    </div>
+
+    <!-- end web only -->
 
 
 

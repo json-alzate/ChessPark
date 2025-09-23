@@ -41,3 +41,7 @@
 @plugin "daisyui" {
   themes: all;
 }
+
+.main-container {
+  @apply min-h-screen flex flex-col bg-base-200;
+}
