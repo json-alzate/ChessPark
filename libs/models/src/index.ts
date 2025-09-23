@@ -1,1 +1,2 @@
-export * from './lib/models';
+export * from './lib/puzzle.model';
+export * from './lib/user-puzzles.model';
