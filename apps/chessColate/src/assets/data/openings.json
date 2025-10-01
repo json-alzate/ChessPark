@@ -1,0 +1,506 @@
+[
+    {
+        "nameEn": "Sicilian Defense",
+        "descriptionEn": "The Sicilian Defense, with the c5 move, aims to create an asymmetrical game and imbalances that allow Black to counter White's central control, leading to double-edged positions with winning chances for both sides.",
+        "nameEs": "Defensa Siciliana",
+        "descriptionEs": "La defensa siciliana, con el movimiento c5, busca crear un juego asimétrico e imbalances que permitan a las negras contrarrestar el control central de las blancas, llevando a posiciones de doble filo con posibilidades de victoria para ambos bandos.",
+        "value": "Sicilian_Defense",
+        "count": 136.137
+    },
+    {
+        "nameEn": "French Defense",
+        "descriptionEn": "In the French Defense, Black aims to stabilize the center with 1...e6 and d5, facing challenges like the immobilized c8 bishop and the potential for a symmetric, draw-prone position, while still presenting opportunities to pressure White's center and provoke instructive clashes.",
+        "nameEs": "Defensa Francesa",
+        "descriptionEs": "En la defensa francesa, las negras buscan estabilizar el centro con 1...e6 y d5, enfrentando desafíos como el alfil de c8 inmovilizado y el potencial de una posición simétrica, propensa a tablas, pero presentando oportunidades para presionar el centro de las blancas y provocar choques instructivos.",
+        "value": "French_Defense",
+        "count": 56.069
+    },
+    {
+        "nameEn": "Queen's Pawn Game",
+        "descriptionEn": "The Queen's Pawn Opening with 1. d4 is a popular chess strategy aimed at controlling the center and delaying the development of Black's pieces, especially by preventing the advance of ...e5 and the development of the knight from b8 to c6.",
+        "nameEs": "Peón de Dama",
+        "descriptionEs": "La apertura de peón de dama con 1. d4 es una estrategia popular en el ajedrez que busca controlar el centro y retrasar el desarrollo de las piezas negras, especialmente evitando el avance ...e5 y el desarrollo del caballo de b8 a c6",
+        "value": "Queens_Pawn_Game",
+        "count": 48.411
+    },
+    {
+        "nameEn": "Italian Game",
+        "descriptionEn": "",
+        "nameEs": "Italiana",
+        "descriptionEs": "",
+        "value": "Italian_Game",
+        "count": 47.878
+    },
+    {
+        "nameEn": "Caro-Kann Defense",
+        "descriptionEn": "",
+        "nameEs": "Defensa Caro-Kann",
+        "descriptionEs": "",
+        "value": "Caro-Kann_Defense",
+        "count": 41.565
+    },
+    {
+        "nameEn": "Scandinavian Defense",
+        "descriptionEn": "",
+        "nameEs": "Defensa Escandinava",
+        "descriptionEs": "",
+        "value": "Scandinavian_Defense",
+        "count": 33.440
+    },
+    {
+        "nameEn": "Queen's Gambit Declined",
+        "descriptionEn": "",
+        "nameEs": "Gambito de Dama Declinado",
+        "descriptionEs": "",
+        "value": "Queens_Gambit_Declined",
+        "count": 32.653
+    },
+    {
+        "nameEn": "English Opening",
+        "descriptionEn": "",
+        "nameEs": "Inglesa",
+        "descriptionEs": "",
+        "value": "English_Opening",
+        "count": 27.474
+    },
+    {
+        "nameEn": "Ruy Lopez",
+        "descriptionEn": "",
+        "nameEs": "Ruy López",
+        "descriptionEs": "",
+        "value": "Ruy_Lopez",
+        "count": 27.433
+    },
+    {
+        "nameEn": "Indian defense",
+        "descriptionEn": "",
+        "nameEs": "Defensa india",
+        "descriptionEs": "",
+        "value": "Indian_Defense",
+        "count": 26.966
+    },
+    {
+        "nameEn": "Scotch Game",
+        "descriptionEn": "",
+        "nameEs": "Escocesa",
+        "descriptionEs": "",
+        "value": "Scotch_Game",
+        "count": 23.119
+    },
+    {
+        "nameEn": "Russian Game",
+        "descriptionEn": "",
+        "nameEs": "Rusa",
+        "descriptionEs": "",
+        "value": "Russian_Game",
+        "count": 18.647
+    },
+    {
+        "nameEn": "Philidor Defense",
+        "descriptionEn": "",
+        "nameEs": "Defensa Philidor",
+        "descriptionEs": "",
+        "value": "Philidor_Defense",
+        "count": 17.451
+    },
+    {
+        "nameEn": "Modern Defense",
+        "descriptionEn": "",
+        "nameEs": "Defensa moderna",
+        "descriptionEs": "",
+        "value": "Modern_Defense",
+        "count": 13.304
+    },
+    {
+        "nameEn": "Four Knights Game",
+        "descriptionEn": "",
+        "nameEs": "Cuatro caballos",
+        "descriptionEs": "",
+        "value": "Four_Knights_Game",
+        "count": 13.180
+    },
+    {
+        "nameEn": "King's Gambit accepted",
+        "descriptionEn": "",
+        "nameEs": "Gambito de rey aceptado",
+        "descriptionEs": "",
+        "value": "Kings_Gambit_Accepted",
+        "count": 12.939
+    },
+    {
+        "nameEn": "Zukertort Opening",
+        "descriptionEn": "",
+        "nameEs": "Aperura Zukertort",
+        "descriptionEs": "",
+        "value": "Zukertort_Opening",
+        "count": 11.745
+    },
+    {
+        "nameEn": "Bishop's Opening",
+        "descriptionEn": "",
+        "nameEs": "Apertura del alfil",
+        "descriptionEs": "",
+        "value": "Bishops_Opening",
+        "count": 11.575
+    },
+    {
+        "nameEn": "Slav Defense",
+        "descriptionEn": "",
+        "nameEs": "Defensa Eslava",
+        "descriptionEs": "",
+        "value": "Slav_Defense",
+        "count": 11.411
+    },
+    {
+        "nameEn": "Pirc Defense",
+        "descriptionEn": "",
+        "nameEs": "Defensa Pirc",
+        "descriptionEs": "",
+        "value": "Pirc_Defense",
+        "count": 11.339
+    },
+    {
+        "nameEn": "King's Pawn Game",
+        "descriptionEn": "",
+        "nameEs": "Peon de rey",
+        "descriptionEs": "",
+        "value": "Kings_Pawn_Game",
+        "count": 10.991
+    },
+    {
+        "nameEn": "Vienna Game",
+        "descriptionEn": "",
+        "nameEs": "Apertura Viena",
+        "descriptionEs": "",
+        "value": "Vienna_Game",
+        "count": 10.746
+    },
+    {
+        "nameEn": "Queen's Gambit Accepted",
+        "descriptionEn": "",
+        "nameEs": "Gambito de Dama Aceptado",
+        "descriptionEs": "",
+        "value": "Queens_Gambit_Accepted",
+        "count": 8.983
+    },
+    {
+        "nameEn": "King's Indian Defense",
+        "descriptionEn": "",
+        "nameEs": "Defensa india de Rey",
+        "descriptionEs": "",
+        "value": "Kings_Indian_Defense",
+        "count": 8.471
+    },
+    {
+        "nameEn": "Benoni Defense",
+        "descriptionEn": "",
+        "nameEs": "Defensa Benoni",
+        "descriptionEs": "",
+        "value": "Benoni_Defense",
+        "count": 8.059
+    },
+    {
+        "nameEn": "Nimzowitsch Defense",
+        "descriptionEn": "",
+        "nameEs": "Defensa Nimzowitsch",
+        "descriptionEs": "",
+        "value": "Nimzowitsch_Defense",
+        "count": 7.367
+    },
+    {
+        "nameEn": "Alekhine Defense",
+        "descriptionEn": "",
+        "nameEs": "Defensa Alekhine",
+        "descriptionEs": "",
+        "value": "Alekhine_Defense",
+        "count": 7.293
+    },
+    {
+        "nameEn": "Nimzo-Larsen Attack",
+        "descriptionEn": "",
+        "nameEs": "Nimzo-Larsen Ataque",
+        "descriptionEs": "",
+        "value": "Nimzo-Larsen_Attack",
+        "count": 7.184
+    },
+    {
+        "nameEn": "Horwitz Defense",
+        "descriptionEn": "",
+        "nameEs": "Defensa Horwitz",
+        "descriptionEs": "",
+        "value": "Horwitz_Defense",
+        "count": 6.993
+    },
+    {
+        "nameEn": "King's Gambit Declined",
+        "descriptionEn": "",
+        "nameEs": "Gambito de Rey declinado",
+        "descriptionEs": "",
+        "value": "Kings_Gambit_Declined",
+        "count": 6.258
+    },
+    {
+        "nameEn": "Owen Defense",
+        "descriptionEn": "",
+        "nameEs": "Defensa Owen",
+        "descriptionEs": "",
+        "value": "Owen_Defense",
+        "count": 6.096
+    },
+    {
+        "nameEn": "Bird Opening",
+        "descriptionEn": "",
+        "nameEs": "Apertura Bird",
+        "descriptionEs": "",
+        "value": "Bird_Opening",
+        "count": 5.564
+    },
+    {
+        "nameEn": "Dutch Defense",
+        "descriptionEn": "",
+        "nameEs": "Defensa Holandesa",
+        "descriptionEs": "",
+        "value": "Dutch_Defense",
+        "count": 5.330
+    },
+    {
+        "nameEn": "Nimzo-Indian Defense",
+        "descriptionEn": "",
+        "nameEs": "Defensa Nimzo-India",
+        "descriptionEs": "",
+        "value": "Nimzo-Indian_Defense",
+        "count": 5.311
+    },
+    {
+        "nameEn": "Van't Kruijs Opening",
+        "descriptionEn": "",
+        "nameEs": "Apertura Van't Kruijs",
+        "descriptionEs": "",
+        "value": "Vant_Kruijs_Opening",
+        "count": 5.300
+    },
+    {
+        "nameEn": "Semi-Slav Defense",
+        "descriptionEn": "",
+        "nameEs": "Defensa Semi-Eslava",
+        "descriptionEs": "",
+        "value": "Semi-Slav_Defense",
+        "count": 4.502
+    },
+    {
+        "nameEn": "Center Game",
+        "descriptionEn": "",
+        "nameEs": "Juego de centro",
+        "descriptionEs": "",
+        "value": "Center_Game",
+        "count": 4.132
+    },
+    {
+        "nameEn": "Hungarian Opening",
+        "descriptionEn": "",
+        "nameEs": "Apertura Húngara",
+        "descriptionEs": "",
+        "value": "Hungarian_Opening",
+        "count": 4.024
+    },
+    {
+        "nameEn": "Englud Gambit Complex",
+        "descriptionEn": "",
+        "nameEs": "Complejo de Gambito de Englund",
+        "descriptionEs": "",
+        "value": "Englund_Gambit_Complex",
+        "count": 3.966
+    },
+    {
+        "nameEn": "Three Knights Opening",
+        "descriptionEn": "",
+        "nameEs": "Apertura 3 caballos",
+        "descriptionEs": "",
+        "value": "Three_Knights_Opening",
+        "count": 3.336
+    },
+    {
+        "nameEn": "Ponziani Opening",
+        "descriptionEn": "",
+        "nameEs": "Apertura Ponziani",
+        "descriptionEs": "",
+        "value": "Ponziani_Opening",
+        "count": 3.201
+    },
+    {
+        "nameEn": "Englund Gambit",
+        "descriptionEn": "",
+        "nameEs": "Gambito Englund",
+        "descriptionEs": "",
+        "value": "Englund_Gambit",
+        "count": 3.110
+    },
+    {
+        "nameEn": "Grünfeld Defense",
+        "descriptionEn": "",
+        "nameEs": "Defensa Grünfeld",
+        "descriptionEs": "",
+        "value": "Grunfeld_Defense",
+        "count": 3.015
+    },
+    {
+        "nameEn": "Blackmar-Diemer Gambit",
+        "descriptionEn": "",
+        "nameEs": "Gambito Blackmar-Diemer",
+        "descriptionEs": "",
+        "value": "Blackmar-Diemer_Gambit",
+        "count": 2.995
+    },
+    {
+        "nameEn": "Elephant Gambit",
+        "descriptionEn": "",
+        "nameEs": "Gambito Elefante",
+        "descriptionEs": "",
+        "value": "Elephant_Gambit",
+        "count": 2.934
+    },
+    {
+        "nameEn": "Polish Opening",
+        "descriptionEn": "",
+        "nameEs": "Apertura Polaca",
+        "descriptionEs": "",
+        "value": "Polish_Opening",
+        "count": 2.902
+    },
+    {
+        "nameEn": "Danish Gambit",
+        "descriptionEn": "",
+        "nameEs": "Gambito Danés",
+        "descriptionEs": "",
+        "value": "Danish_Gambit",
+        "count": 2.834
+    },
+    {
+        "nameEn": "King's Indian Attack",
+        "descriptionEn": "",
+        "nameEs": "Ataque indio de rey",
+        "descriptionEs": "",
+        "value": "Kings_Indian_Attack",
+        "count": 2.778
+    },
+    {
+        "nameEn": "Rat Defense",
+        "descriptionEn": "",
+        "nameEs": "Defensa Rata",
+        "descriptionEs": "",
+        "value": "Rat_Defense",
+        "count": 2.709
+    },
+    {
+        "nameEn": "King's Gambit",
+        "descriptionEn": "",
+        "nameEs": "Gambito de rey",
+        "descriptionEs": "",
+        "value": "Kings_Gambit",
+        "count": 2.681
+    },
+    {
+        "nameEn": "Trompowsky Attack",
+        "descriptionEn": "",
+        "nameEs": "Ataque Trompowsky",
+        "descriptionEs": "",
+        "value": "Trompowsky_Attack",
+        "count": 2.601
+    },
+    {
+        "nameEn": "English Defense",
+        "descriptionEn": "",
+        "nameEs": "Defensa Inglesa",
+        "descriptionEs": "",
+        "value": "English_Defense",
+        "count": 2.495
+    },
+    {
+        "nameEn": "Grob Opening",
+        "descriptionEn": "",
+        "nameEs": "Apertura Grob",
+        "descriptionEs": "",
+        "value": "Grob_Opening",
+        "count": 1.964
+    },
+    {
+        "nameEn": "Rapport-Jobava System",
+        "descriptionEn": "",
+        "nameEs": "Sistema Rapport-Jobava",
+        "descriptionEs": "",
+        "value": "Rapport-Jobava_System",
+        "count": 1.899
+    },
+    {
+        "nameEn": "King's Knight Opening",
+        "descriptionEn": "",
+        "nameEs": "Apertura del Caballo del Rey",
+        "descriptionEs": "",
+        "value": "Kings_Knight_Opening",
+        "count": 1.822
+    },
+    {
+        "nameEn": "Van Geet Opening",
+        "descriptionEn": "",
+        "nameEs": "Apertura de Van Geet",
+        "descriptionEs": "",
+        "value": "Van_Geet_Opening",
+        "count": 1.668
+    },
+    {
+        "nameEn": "Tarrasch Defense",
+        "descriptionEn": "",
+        "nameEs": "Defensa Tarrasch",
+        "descriptionEs": "",
+        "value": "Tarrasch_Defense",
+        "count": 1.652
+    },
+    {
+        "nameEn": "Old Indian Defense",
+        "descriptionEn": "",
+        "nameEs": "Antigua defensa india",
+        "descriptionEs": "",
+        "value": "Old_Indian_Defense",
+        "count": 1.582
+    },
+    {
+        "nameEn": "Danish Gambit Accepted",
+        "descriptionEn": "",
+        "nameEs": "Gambito danés aceptado",
+        "descriptionEs": "",
+        "value": "Danish_Gambit_Accepted",
+        "count": 1.582
+    },
+    {
+        "nameEn": "Catalan Opening",
+        "descriptionEn": "",
+        "nameEs": "Apertura Catalana",
+        "descriptionEs": "",
+        "value": "Catalan_Opening",
+        "count": 1.369
+    },
+    {
+        "nameEn": "Réti Opening",
+        "descriptionEn": "",
+        "nameEs": "Apertura Réti",
+        "descriptionEs": "",
+        "value": "Reti_Opening",
+        "count": 1.285
+    },
+    {
+        "nameEn": "Queen's Indian Defense",
+        "descriptionEn": "",
+        "nameEs": "Defensa India de Dama",
+        "descriptionEs": "",
+        "value": "Queens_Indian_Defense",
+        "count": 1.120
+    },
+    {
+        "nameEn": "London System",
+        "descriptionEn": "",
+        "nameEs": "Sistema Londres",
+        "descriptionEs": "",
+        "value": "London_System",
+        "count": 1.061
+    }
+]
