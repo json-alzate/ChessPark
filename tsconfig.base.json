@@ -18,6 +18,7 @@
       "@chesspark/board": ["libs/board/src/index.ts"],
       "@chesspark/common-utils": ["libs/common-utils/src/index.ts"],
       "@chesspark/custom-generators": ["tools/custom-generators/src/index.ts"],
+      "@chesspark/puzzles-provider": ["libs/puzzles-provider/src/index.ts"],
       "@cpark/models": ["libs/models/src/index.ts"],
       "@cpark/state": ["libs/state/src/index.ts"],
       "@cpark/widgets": ["libs/widgets/src/index.ts"]
