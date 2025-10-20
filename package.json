@@ -47,6 +47,7 @@
     "@ngrx/signals": "^19.2.1",
     "@ngrx/store": "^19.2.1",
     "@ngrx/store-devtools": "^19.2.1",
+    "@ngx-translate/core": "^17.0.0",
     "@nx/devkit": "21.2.1",
     "canvas-confetti": "^1.9.3",
     "chart.js": "^4.5.0",
