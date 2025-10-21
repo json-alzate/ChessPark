@@ -2,8 +2,33 @@
 // `ng build` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
+// Si quieres usar variables de entorno, descomenta esto y comenta la línea de abajo
+// export const environment = {
+//   production: false,
+//   environmentName: 'dev',
+//   firebase: {
+//     projectId: process?.env?.['FIREBASE_projectId'],
+//     appId: process?.env?.['FIREBASE_appId'],
+//     storageBucket: process?.env?.['FIREBASE_storageBucket'],
+//     locationId: process?.env?.['FIREBASE_locationId'],
+//     apiKey: process?.env?.['FIREBASE_apiKey'],
+//     authDomain: process?.env?.['FIREBASE_authDomain'],
+//     messagingSenderId: process?.env?.['FIREBASE_messagingSenderId'],
+//     measurementId: process?.env?.['FIREBASE_measurementId'],
+//   },
+//   apiPuzzlesUrl: 'http://[::1]:3000/puzzles/',
+//   version: '2.0.0'
+// };
+
+import { keys } from './private/keys';
+
 export const environment = {
   production: false,
+  environmentName: 'dev',
+  firebase: keys.firebase,
+  apiPuzzlesUrl: 'http://[::1]:3000/puzzles/',
+  // apiPuzzlesUrl: 'https://puzzles.chesscolate.com/puzzles/',
+  version: '2.0.0'
 };
 
 /*

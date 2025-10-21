@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 // Ionic
-import { IonContent, IonLabel, IonCol, IonCard, IonRippleEffect, IonItem, IonImg, IonIcon, IonRow, IonButton, IonNote } from '@ionic/angular/standalone';
+import { IonContent } from '@ionic/angular/standalone';
 
 // Components
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
@@ -10,12 +10,11 @@ import { TrainingMenuComponent } from './components/training-menu.component';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [IonNote, IonButton, IonRow, IonIcon, IonImg, IonItem, IonRippleEffect, IonCard, IonCol, IonLabel, 
+  imports: [
     IonContent,
     CommonModule,
     NavbarComponent,
-    TrainingMenuComponent
-  ],
+    TrainingMenuComponent],
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
@@ -27,9 +26,8 @@ export class HomePage {
   generalEloPlan20 = 1200;
   generalEloPlan25 = 1200;
   generalEloPlan30 = 1200;
-  constructor() {}
 
-  planBlood: string = 'warmup'; // 'warmup' | 'backToCalm' | null
+  planBlood = 'warmup'; // 'warmup' | 'backToCalm' | null
 
   createPlan(type: string) {
     console.log('Creating plan:', type);

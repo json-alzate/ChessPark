@@ -1,26 +1,76 @@
-    <div class="navbar">
-      <div class="navbar-start">
-        <div tabindex="0" role="button" class="btn btn-ghost btn-circle">
+<div class="navbar">
+  <div class="navbar-start">
+    <div tabindex="0" role="button" class="btn btn-ghost btn-circle">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+      </svg>
+    </div>
+  </div>
+
+  <div class="navbar-center">
+    <a class="text-xl font-bold">ChessColate</a>
+  </div>
+
+  <div class="navbar-end">
+    
+    <!-- Botones cuando NO está autenticado -->
+    <div class="mr-2 flex gap-2" *ngIf="!isAuthenticated">
+      <!-- Versión desktop -->
+      <div class="hidden lg:flex gap-2">
+        <button class="btn btn-outline btn-sm" (click)="openLoginModal()">
+          Ingresar
+        </button>
+        <button class="btn btn-primary btn-sm" (click)="openRegisterModal()">
+          Registrarse
+        </button>
+      </div>
+      
+      <!-- Versión mobile -->
+      <div class="lg:hidden">
+        <button class="btn btn-ghost btn-sm" (click)="openLoginModal()">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
           </svg>
-        </div>
-
-      </div>
-      <div class="navbar-center">
-        
-      </div>
-      <div class="navbar-end">
-
-        <button class="btn btn-ghost btn-circle">
-          <div class="indicator">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-            </svg>
-            <span class="badge badge-xs badge-primary indicator-item"></span>
-          </div>
         </button>
       </div>
     </div>
+
+    <!-- Usuario autenticado -->
+    <div class="mr-2" *ngIf="isAuthenticated">
+      <div class="dropdown dropdown-end">
+        <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+          <!-- Foto del usuario si existe -->
+          <div class="w-10 rounded-full" *ngIf="photoURL">
+            <img [alt]="displayName || displayEmail" [src]="photoURL" />
+          </div>
+          <!-- Avatar con iniciales si no hay foto -->
+          <div class="w-10 rounded-full bg-primary text-primary-content flex items-center justify-center" *ngIf="!photoURL">
+            <span class="text-lg font-bold">{{ getInitials() }}</span>
+          </div>
+        </div>
+        
+        <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+          <li class="menu-title">
+            <span class="font-semibold">{{ displayName || displayEmail }}</span>
+          </li>
+          <li><a>Perfil</a></li>
+          <li><a>Configuración</a></li>
+          <li><a (click)="logout()">Cerrar sesión</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Botón de notificaciones (opcional) -->
+    <button class="btn btn-ghost btn-circle" *ngIf="isAuthenticated">
+      <div class="indicator">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+        </svg>
+        <span class="badge badge-xs badge-primary indicator-item"></span>
+      </div>
+    </button>
+
+  </div>
+</div>

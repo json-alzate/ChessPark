@@ -46,3 +46,4 @@ Thumbs.db
 .angular
 libs/cp-ui/www/
 libs/cp-ui/.stencil/
+apps/chessColate/src/environments/private/keys.ts

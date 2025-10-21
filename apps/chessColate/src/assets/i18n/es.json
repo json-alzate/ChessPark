@@ -1,0 +1,162 @@
+{
+    "LoginMenuBar": "Ingresar / Registrarse",
+    "LoginGoogle": "Ingresar con Google",
+    "LoginEmailPassword": "Email y contraseña",
+    "Login": "Ingresar",
+    "Register": "Registro",
+    "Email": "Email",
+    "Password": "Contraseña",
+    "ConfirmPassword": "Confirmar contraseña",
+    "LoginError": "Error de inicio de sesión",
+    "RegisterError": "Error de registro",
+    "ResetPassword": "Restablecer contraseña",
+    "PasswordsNoMatch": "Las contraseñas no coinciden",
+    "EmailReadyInUse": "El correo ya está en uso",
+    "Cancel": "Cancelar",
+    "Send": "Enviar",
+    "PasswordRestoreMessage": "Correo enviado con instrucciones para la restablecer contraseña",
+    "PasswordRestoreTitle": "Enviaremos un correo electrónico con las instrucciones para recuperar tu contraseña.",
+    "loadingPuzzles": "Cargando ejercicios del entrenamiento...",
+    "Close": "Cerrar",
+    "English": "Inglés",
+    "Spanish": "Español",
+    "Block": "Bloque",
+    "Blocks": "Bloques",
+    "Whites": "Blancas",
+    "Blacks": "Negras",
+    "MENU": {
+        "home": "Inicio",
+        "training": "Entrenamiento",
+        "coordinates": "Coordenadas",
+        "squares": "Casillas",
+        "privacy": "Privacidad"
+    },
+    "LOGIN": {
+        "ERRORS": {
+            "EmailRequired": "El Email es requerido",
+            "EmailInvalid": "El Email no es valido",
+            "PasswordRequired": "La contraseña es requerida",
+            "PasswordMinLength": "La contraseña debe tener al menos 8 caracteres",
+            "ConfirmPasswordRequired": "La confirmación de contraseña es requerida",
+            "ConfirmPasswordNotMatch": "Las contraseñas no coinciden"
+        }
+    },
+    "PUZZLES": {
+        "MENU": {
+            "title": "Planes de entrenamiento",
+            "warmup": "Calentamiento",
+            "customTraining": "Rutina personalizada",
+            "history": "Historial"
+        },
+        "puzzles": "Ejercicios",
+        "total": "Total",
+        "start": "Empezar",
+        "score": "Puntaje",
+        "theme": "Tema",
+        "opening": "Apertura",
+        "randomThemeWith": "Tema Random con ",
+        "weaknessWith": "Debilidad con ",
+        "sameOpeningAndTheme": "Misma apertura y mismo tema",
+        "sameThemeLessTime": "Mismo tema menos tiempo",
+        "sameOpeningRandomThemeBlind": "Mismo tema random a ciegas",
+        "sameRandomTheme": "Mismo tema random",
+        "weaknessWithAnyColor": "Debilidades con cualquier color",
+        "randomThemeWithAnyColor": "Tema Random con cualquier color",
+        "randomOpening": "Apertura Random",
+        "randomTheme": "Tema Random",
+        "white": "Blancas",
+        "black": "Negras",
+        "continueTraining": "Continuar Entrenamiento",
+        "panel": "Panel",
+        "goshHelp": "Este ejercicio es a la ciegas, las piezas se harán transparentes cuando el",
+        "goshHelp2": "llegue a"
+    },
+    "TRAINING-MENU": {
+        "customTrainingSlideTitle": "Tus creaciones",
+        "Warmup": "Calentamiento",
+        "BackToCalm": "Vuelta a la calma",
+        "DownloadAPP": "Descarga la app",
+        "ExercisesFree": "Ejercicios gratuitos",
+        "LoginToStart": "Inicia sesión para registrar tu progreso",
+        "CountPlansEnded": "planes terminados en el último año"
+    },
+    "PLANS_HISTORY": {
+        "title": "Historial de planes",
+        "more": "Ver más"
+    },
+    "CUSTOM_TRAINING": {
+        "title": "Crea tu plan de entrenamiento",
+        "description1": "Un plan se compone de hasta 5 bloques.",
+        "description2": "Cada bloque puede contener una serie de ejercicios con los ajustes que definas.",
+        "withWhite": "Con blancas",
+        "withBlack": "Con negras",
+        "anyColor": "Cualquier color",
+        "addBlock": "Añadir bloque",
+        "saveAndPlay": "Guardar y jugar",
+        "FIELDS": {
+            "nameLabel": "Nombre del plan"
+        },
+        "ERRORS": {
+            "NameRequired": "El nombre es requerido",
+            "NameMaxLength": "El nombre Es muy largo"
+        }
+    },
+    "NEW_BLOCK": {
+        "title": "Nuevo bloque",
+        "duration": "Duración",
+        "min:sec": "min:seg",
+        "or": "ó",
+        "puzzles": "ejercicios",
+        "time": "tiempo",
+        "unlimited": "Ilimitado",
+        "puzzlesCount": "Cantidad de ejercicios",
+        "timeByPuzzle": "Tiempo por ejercicio",
+        "showSolution": "Mostrar solución",
+        "blind": "A ciegas",
+        "timeVisible": "Tiempo visible",
+        "theme": "Tema",
+        "random": "Aleatorio",
+        "randomDescription": "Un tema diferente cada vez que se juegue",
+        "weakness": "Debilidad",
+        "weaknessDescription": "El tema con el menor elo disponible en el plan",
+        "difficulty": "Dificultad",
+        "balanced": "Equilibrado",
+        "normal": "Normal",
+        "increase": "Aumenta",
+        "decrease": "Disminuye",
+        "add": "Añadir"
+    },
+    "PLAN_PLAYED": {
+        "puzzlesPlayed": "Ejercicios jugados",
+        "statistics": "Estadísticas del plan",
+        "playPlan": "Jugar el plan",
+        "loadMore": "Cargar más"
+    },
+    "COORDINATES_PUZZLES": {
+        "coordinates": "Coordenadas",
+        "pieces": "Piezas",
+        "play": "Jugar"
+    },
+    "SQUARES": {
+        "play": "Desliza para jugar"
+    },
+    "PROFILE": {
+        "pieces": "Piezas",
+        "board": "Tablero",
+        "language": "Idioma",
+        "exit": "Salir"
+    },
+    "PUZZLE-SOLUTION": {
+        "turn": "Tu turno",
+        "findBestMove": "Encuentra el mejor movimiento para las",
+        "goodDone": "Bien hecho!",
+        "goodMove": "El mejor movimiento!",
+        "continue": "Continua...",
+        "wrongMove": "Ups!, ese no es el mejor movimiento",
+        "tryAgain": "Prueba algo distinto...",
+        "clue": "Pedir una pista",
+        "solution": "Ver la solución",
+        "playAndClose": "Reproducir y cerrar",
+        "themes": "Temas"
+    }
+}
