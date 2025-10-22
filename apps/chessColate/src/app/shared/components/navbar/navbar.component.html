@@ -6,29 +6,34 @@
       </svg>
     </div>
 
-    <div class="flex gap-2" *ngIf="!isAuthenticated">
-      <button class="btn btn-outline btn-sm" (click)="openLoginModal()">
-        Ingresar / Registrarse
-      </button>
-    </div>
+    @if (!isAuthenticated) {
+      <div class="flex gap-2">
+        <button class="btn btn-outline btn-sm" (click)="openLoginModal()">
+          Ingresar / Registrarse
+        </button>
+      </div>
+    }
 
     <!-- Usuario autenticado -->
-    <div class="" *ngIf="isAuthenticated">
+    @if (isAuthenticated) {
+      <div class="">
 
       <div tabindex="0" class="btn btn-ghost btn-circle avatar">
         <!-- Foto del usuario si existe -->
-        <div class="w-10 rounded-full" *ngIf="photoURL">
-          <img [alt]="displayName || displayEmail" [src]="photoURL" />
-        </div>
+        @if (photoURL) {
+          <div class="w-10 rounded-full">
+            <img [alt]="displayName || displayEmail" [src]="photoURL" />
+          </div>
+        }
         <!-- Avatar con iniciales si no hay foto -->
-        <div class="w-8 rounded-full bg-primary text-primary-content flex items-center justify-center"
-          *ngIf="!photoURL">
-          <span class="text-lg font-bold">{{ getInitials() }}</span>
-        </div>
-       
-
+        @if (!photoURL) {
+          <div class="w-8 rounded-full bg-primary text-primary-content flex items-center justify-center">
+            <span class="text-lg font-bold">{{ getInitials() }}</span>
+          </div>
+        }
       </div>
-    </div>
+      </div>
+    }
   </div>
 
 
