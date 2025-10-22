@@ -83,14 +83,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
     }).then(modal => modal.present());
   }
 
-  openRegisterModal() {
-    this.modalController.create({
-      component: LoginComponent,
-      componentProps: {
-        segmentEmailPassword: 'singUp'
-      }
-    }).then(modal => modal.present());
-  }
 
   logout() {
     this.authService.logout().subscribe(() => {

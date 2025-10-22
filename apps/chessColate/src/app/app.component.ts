@@ -5,6 +5,7 @@ import { initializeApp } from 'firebase/app';
 // Services
 import { AuthService } from '@services/auth.service';
 import { ProfileService } from '@services/profile.service';
+import { FirestoreService } from '@services/firestore.service';
 
 // Environment
 import { environment } from '@environments/environment';
@@ -20,7 +21,7 @@ export class AppComponent implements OnInit {
 
   authService = inject(AuthService);
   profileService = inject(ProfileService);
-
+  firestoreService = inject(FirestoreService);
   constructor() {
     this.initApp();
   }
@@ -40,8 +41,8 @@ export class AppComponent implements OnInit {
     // Inicializar el servicio de autenticación
     await this.authService.init();
     
-    // TODO: Inicializar Firestore cuando se migre
-    // await this.firestoreService.init();
+    // Inicializar Firestore
+    await this.firestoreService.init();
     
     // Escuchar el estado del usuario - login/logout
     this.authService.getAuthState().subscribe((dataAuth) => {

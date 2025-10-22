@@ -5,3 +5,7 @@ export * from './lib/opening.models';
 export * from './lib/user.model';
 export * from './lib/profile.model';
 export * from './lib/ui.model';
+export * from './lib/plan.model';
+export * from './lib/block.model';
+export * from './lib/coordinates-puzzles.model';
+export * from './lib/planElos.model';

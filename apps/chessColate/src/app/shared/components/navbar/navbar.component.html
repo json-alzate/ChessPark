@@ -5,10 +5,17 @@
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
       </svg>
     </div>
+
+    <div class="flex gap-2">
+      <button class="btn btn-outline btn-sm" (click)="openLoginModal()">
+        Ingresar / Registrarse
+      </button>
+    </div>
+
   </div>
 
   <div class="navbar-center">
-    <a class="text-xl font-bold">ChessColate</a>
+   
   </div>
 
   <div class="navbar-end">
@@ -19,9 +26,6 @@
       <div class="hidden lg:flex gap-2">
         <button class="btn btn-outline btn-sm" (click)="openLoginModal()">
           Ingresar
-        </button>
-        <button class="btn btn-primary btn-sm" (click)="openRegisterModal()">
-          Registrarse
         </button>
       </div>
       
@@ -61,7 +65,7 @@
     </div>
 
     <!-- Botón de notificaciones (opcional) -->
-    <button class="btn btn-ghost btn-circle" *ngIf="isAuthenticated">
+    <button class="btn btn-ghost btn-circle" >
       <div class="indicator">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
           stroke="currentColor">

@@ -17,9 +17,11 @@ import {
 
 // models
 import { Profile } from '@cpark/models';
+import { User as FirebaseUser } from 'firebase/auth';
+
 
 // services
-// import { FirestoreService } from './firestore.service';
+import { FirestoreService } from './firestore.service';
 import { AppService } from './app.service';
 
 // utils
@@ -38,7 +40,7 @@ export class ProfileService implements IProfileService {
   constructor(
     private store: Store<AuthState>,
     private appService: AppService,
-    // private firestoreService: FirestoreService
+    private firestoreService: FirestoreService
   ) {
     // Inicializar el observable del perfil
     this.profile$ = this.store.pipe(select(getProfile));
@@ -69,14 +71,13 @@ export class ProfileService implements IProfileService {
    *
    * @param dataAuth
    */
-  async checkProfile(_dataAuth: unknown) {
-    // TODO: Implementar cuando se tenga el FirestoreService
-    // const profile = await this.firestoreService.getProfile(dataAuth?.uid);
-    // if (profile) {
-    //   this.setProfile(profile);
-    // } else {
-    //   this.setInitialProfile(dataAuth);
-    // }
+  async checkProfile(dataAuth: FirebaseUser) {
+    const profile = await this.firestoreService.getProfile(dataAuth?.uid);
+    if (profile) {
+      this.setProfile(profile);
+    } else {
+      this.setInitialProfile(dataAuth);
+    }
   }
 
   // request update profile
