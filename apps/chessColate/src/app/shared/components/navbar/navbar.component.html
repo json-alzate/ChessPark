@@ -6,7 +6,13 @@
       </svg>
     </div>
 
-    @if (!isAuthenticated) {
+    @if (!isInitialized) {
+      <!-- Estado de carga durante inicialización -->
+      <div class="flex items-center gap-2">
+        <span class="loading loading-spinner loading-sm"></span>
+        <span class="text-sm text-gray-500">Cargando...</span>
+      </div>
+    } @else if (!isAuthenticated) {
       <div class="flex gap-2">
         <button class="btn btn-outline btn-sm" (click)="openLoginModal()">
           Ingresar / Registrarse
@@ -15,7 +21,7 @@
     }
 
     <!-- Usuario autenticado -->
-    @if (isAuthenticated) {
+    @if (isInitialized && isAuthenticated) {
       <div class="">
 
       <div tabindex="0" class="btn btn-ghost btn-circle avatar">

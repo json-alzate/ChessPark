@@ -23,7 +23,7 @@ import {
 import { getApp } from 'firebase/app';
 
 // rxjs
-import { from, Subject } from 'rxjs';
+import { from, Subject, BehaviorSubject } from 'rxjs';
 
 // State management
 import { 
@@ -39,6 +39,8 @@ import {
 export class AuthService implements IAuthService {
 
   private auth!: Auth;
+  private _isInitialized = new BehaviorSubject<boolean>(false);
+  private _hasBeenInitialized = false;
 
   constructor(
     private platform: Platform,
@@ -47,6 +49,24 @@ export class AuthService implements IAuthService {
 
   init() {
     this.auth = this.setAuth();
+    // El estado de inicialización se marcará como true después del primer auth state
+  }
+
+  /**
+   * Observable para saber si el servicio de auth está inicializado
+   */
+  get isInitialized$() {
+    return this._isInitialized.asObservable();
+  }
+
+  /**
+   * Marca el servicio como inicializado (llamado después del primer auth state)
+   */
+  markAsInitialized() {
+    if (!this._hasBeenInitialized) {
+      this._hasBeenInitialized = true;
+      this._isInitialized.next(true);
+    }
   }
 
   // actions

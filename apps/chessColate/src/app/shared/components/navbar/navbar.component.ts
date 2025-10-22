@@ -23,13 +23,21 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   profile: Profile | null = null;
   isAuthenticated = false;
+  isInitialized = false;
   displayName = '';
   displayEmail = '';
   photoURL = '';
 
   private profileSubscription?: Subscription;
+  private authInitSubscription?: Subscription;
 
   ngOnInit(): void {
+    // Suscribirse al estado de inicialización del auth
+    this.authInitSubscription = this.authService.isInitialized$.subscribe(initialized => {
+      this.isInitialized = initialized;
+    });
+
+    // Suscribirse al perfil del usuario
     this.profileSubscription = this.profileService.profile$.subscribe(profile => {
       this.profile = profile;
       this.isAuthenticated = !!profile;
@@ -48,6 +56,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.profileSubscription?.unsubscribe();
+    this.authInitSubscription?.unsubscribe();
   }
 
   /**
