@@ -88,73 +88,26 @@ export class AppComponent implements OnInit, OnDestroy {
 
   // Opciones del menú
   menuOptions: MenuOption[] = [
-    {
-      title: 'Inicio',
-      icon: 'home-outline',
-      route: '/home',
-      enabled: true
-    },
-    {
-      title: 'Puzzles',
-      icon: 'extension-puzzle-outline',
-      route: '/puzzles',
-      enabled: true
-    },
-    {
-      title: 'Entrenamiento',
-      icon: 'fitness-outline',
-      route: '/training',
-      enabled: true
-    },
-    {
-      title: 'Perfil',
-      icon: 'person-outline',
-      route: '/profile',
-      enabled: true
-    },
-    {
-      title: 'Configuración',
-      icon: 'settings-outline',
-      route: '/settings',
-      enabled: true
-    },
-    {
-      title: 'Acerca de',
-      icon: 'information-circle-outline',
-      route: '/about',
-      enabled: true
-    }
+    // {
+    //   title: 'Inicio',
+    //   icon: 'home-outline',
+    //   route: '/home',
+    //   enabled: true
+    // },
   ];
 
   // Notificaciones
   notifications: Notification[] = [
-    {
-      id: '1',
-      title: 'Nuevo puzzle disponible',
-      message: 'Se ha agregado un nuevo puzzle de nivel intermedio',
-      icon: 'extension-puzzle-outline',
-      color: 'primary',
-      time: 'Hace 2 horas',
-      read: false
-    },
-    {
-      id: '2',
-      title: 'Logro desbloqueado',
-      message: '¡Has completado 10 puzzles consecutivos!',
-      icon: 'trophy-outline',
-      color: 'warning',
-      time: 'Hace 1 día',
-      read: false
-    },
-    {
-      id: '3',
-      title: 'Actualización disponible',
-      message: 'Nueva versión de ChessColate disponible',
-      icon: 'download-outline',
-      color: 'secondary',
-      time: 'Hace 3 días',
-      read: true
-    }
+    // {
+    //   id: '1',
+    //   title: 'Nuevo puzzle disponible',
+    //   message: 'Se ha agregado un nuevo puzzle de nivel intermedio',
+    //   icon: 'extension-puzzle-outline',
+    //   color: 'primary',
+    //   time: 'Hace 2 horas',
+    //   read: false
+    // },
+
   ];
 
   private profileSubscription?: Subscription;

@@ -37,7 +37,7 @@
       <div class="user-info guest">
         <div class="user-avatar">
           <div class="avatar-initials guest">
-            <ion-icon name="person-outline"></ion-icon>
+            <!-- <ion-icon name="person-outline"></ion-icon> -->
           </div>
         </div>
         
@@ -70,7 +70,7 @@
     @if (isAuthenticated) {
       <ion-list>
         <ion-item button (click)="logout()" class="menu-item logout-item">
-          <ion-icon name="log-out-outline" slot="start" class="menu-icon logout-icon"></ion-icon>
+          <!-- <ion-icon name="log-out-outline" slot="start" class="menu-icon logout-icon"></ion-icon> -->
           <ion-label class="menu-label logout-label">Cerrar Sesión</ion-label>
         </ion-item>
       </ion-list>
@@ -90,7 +90,7 @@
       <ion-title>Notificaciones</ion-title>
       <ion-buttons slot="end">
         <ion-button (click)="closeNotificationsMenu()">
-          <ion-icon name="close"></ion-icon>
+          <!-- <ion-icon name="close"></ion-icon> -->
         </ion-button>
       </ion-buttons>
     </ion-toolbar>
@@ -108,7 +108,7 @@
             <p class="notification-time">{{ notification.time }}</p>
           </ion-label>
           <ion-button fill="clear" slot="end" (click)="markAsRead(notification.id)">
-            <ion-icon name="checkmark-circle-outline"></ion-icon>
+            <!-- <ion-icon name="checkmark-circle-outline"></ion-icon> -->
           </ion-button>
         </ion-item>
       }
@@ -117,7 +117,7 @@
     <!-- Estado vacío -->
     @if (notifications.length === 0) {
       <div class="empty-state">
-        <ion-icon name="notifications-off-outline" class="empty-icon"></ion-icon>
+        <!-- <ion-icon name="notifications-off-outline" class="empty-icon"></ion-icon> -->
         <h3>No hay notificaciones</h3>
         <p>Te notificaremos cuando tengas nuevas actividades</p>
       </div>
@@ -127,7 +127,7 @@
     @if (notifications.length > 0) {
       <div class="notifications-actions">
         <ion-button expand="block" fill="outline" (click)="markAllAsRead()">
-          <ion-icon name="checkmark-done-outline" slot="start"></ion-icon>
+          <!-- <ion-icon name="checkmark-done-outline" slot="start"></ion-icon> -->
           Marcar todas como leídas
         </ion-button>
       </div>
