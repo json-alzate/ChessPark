@@ -16,3 +16,8 @@ export const getErrorRegister = createSelector(
     authState => authState.errorRegister
 );
 
+export const getIsInitialized = createSelector(
+    getAuthState,
+    authState => authState.isInitialized
+);
+

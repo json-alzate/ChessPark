@@ -50,3 +50,8 @@ export const logOut = createAction(
     '[Auth] logOut'
 );
 
+export const setInitialized = createAction(
+    '[Auth] setInitialized',
+    props<{ isInitialized: boolean }>()
+);
+

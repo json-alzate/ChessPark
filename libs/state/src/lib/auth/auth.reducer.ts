@@ -5,13 +5,15 @@ import {
     setErrorRegister,
     setProfile,
     updateProfile,
-    logOut
+    logOut,
+    setInitialized
 } from './auth.actions';
 
 export const initialState: AuthState = {
     profile: null,
     errorLogin: null,
-    errorRegister: null
+    errorRegister: null,
+    isInitialized: false
 };
 
 export const iauthReducer = createReducer(
@@ -31,7 +33,12 @@ export const iauthReducer = createReducer(
         { ...state, errorRegister: error }
     )),
 
-    on(logOut, () => initialState)
+    on(logOut, () => initialState),
+
+    on(setInitialized, (state, { isInitialized }) => ({
+        ...state,
+        isInitialized
+    }))
 );
 
 export const authReducer = (state: AuthState | undefined, action: Action) => iauthReducer(state, action);

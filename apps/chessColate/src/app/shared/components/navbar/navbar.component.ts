@@ -7,6 +7,8 @@ import { LoginComponent } from '../login/login.component';
 import { ProfileService } from '@services/profile.service';
 import { AuthService } from '@services/auth.service';
 import { Profile } from '@cpark/models';
+import { Store, select } from '@ngrx/store';
+import { AuthState, getIsInitialized } from '@cpark/state';
 
 @Component({
   selector: 'app-navbar',
@@ -20,6 +22,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   modalController = inject(ModalController);
   profileService = inject(ProfileService);
   authService = inject(AuthService);
+  store = inject(Store<AuthState>);
 
   profile: Profile | null = null;
   isAuthenticated = false;
@@ -29,11 +32,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
   photoURL = '';
 
   private profileSubscription?: Subscription;
-  private authInitSubscription?: Subscription;
+  private initSubscription?: Subscription;
 
   ngOnInit(): void {
-    // Suscribirse al estado de inicialización del auth
-    this.authInitSubscription = this.authService.isInitialized$.subscribe(initialized => {
+    // Suscribirse al estado de inicialización desde Redux
+    this.initSubscription = this.store.pipe(select(getIsInitialized)).subscribe(initialized => {
       this.isInitialized = initialized;
     });
 
@@ -56,7 +59,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.profileSubscription?.unsubscribe();
-    this.authInitSubscription?.unsubscribe();
+    this.initSubscription?.unsubscribe();
   }
 
   /**
