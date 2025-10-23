@@ -1,5 +1,5 @@
 <!-- Menú lateral izquierdo (navegación principal) -->
-<ion-menu side="start" menuId="side-menu" contentId="main-content">
+<ion-menu [swipeGesture]="false" side="start" menuId="side-menu" contentId="main-content">
   <ion-header>
     <ion-toolbar color="primary">
       <ion-title>ChessColate</ion-title>
@@ -84,7 +84,7 @@
 </ion-menu>
 
 <!-- Menú lateral derecho (notificaciones) -->
-<ion-menu side="end" menuId="notifications-menu" contentId="main-content">
+<ion-menu [swipeGesture]="false" side="end" menuId="notifications-menu" contentId="main-content">
   <ion-header>
     <ion-toolbar color="secondary">
       <ion-title>Notificaciones</ion-title>
