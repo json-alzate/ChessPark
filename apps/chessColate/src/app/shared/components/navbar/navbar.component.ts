@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ModalController } from '@ionic/angular/standalone';
+import { ModalController, MenuController } from '@ionic/angular/standalone';
 import { Subscription } from 'rxjs';
 
 import { LoginComponent } from '../login/login.component';
@@ -20,6 +20,7 @@ import { AuthState, getIsInitialized } from '@cpark/state';
 export class NavbarComponent implements OnInit, OnDestroy {
 
   modalController = inject(ModalController);
+  menuController = inject(MenuController);
   profileService = inject(ProfileService);
   authService = inject(AuthService);
   store = inject(Store<AuthState>);
@@ -100,5 +101,19 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.authService.logout().subscribe(() => {
       console.log('Sesión cerrada');
     });
+  }
+
+  /**
+   * Abre el menú lateral
+   */
+  openSideMenu() {
+    this.menuController.open('side-menu');
+  }
+
+  /**
+   * Abre el menú de notificaciones
+   */
+  openNotificationsMenu() {
+    this.menuController.open('notifications-menu');
   }
 }

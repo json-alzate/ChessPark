@@ -1,0 +1,139 @@
+<!-- Menú lateral izquierdo (navegación principal) -->
+<ion-menu side="start" menuId="side-menu" contentId="main-content">
+  <ion-header>
+    <ion-toolbar color="primary">
+      <ion-title>ChessColate</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content>
+    <!-- Información del usuario -->
+    @if (isAuthenticated) {
+      <div class="user-info">
+        <div class="user-avatar">
+          <!-- Foto del usuario si existe -->
+          @if (photoURL) {
+            <div class="avatar-photo">
+              <img [alt]="displayName || displayEmail" [src]="photoURL" />
+            </div>
+          }
+          <!-- Avatar con iniciales si no hay foto -->
+          @if (!photoURL) {
+            <div class="avatar-initials">
+              <span class="initials">{{ getInitials() }}</span>
+            </div>
+          }
+        </div>
+        
+        <div class="user-details">
+          <h3 class="user-name">{{ displayName || 'Usuario' }}</h3>
+          <p class="user-email">{{ displayEmail }}</p>
+        </div>
+      </div>
+    }
+
+    <!-- Usuario no autenticado -->
+    @if (!isAuthenticated) {
+      <div class="user-info guest">
+        <div class="user-avatar">
+          <div class="avatar-initials guest">
+            <ion-icon name="person-outline"></ion-icon>
+          </div>
+        </div>
+        
+        <div class="user-details">
+          <h3 class="user-name">Invitado</h3>
+          <p class="user-email">Inicia sesión para más opciones</p>
+        </div>
+      </div>
+    }
+
+    <!-- Opciones del menú -->
+    <ion-list>
+      @for (option of menuOptions; track option.title) {
+        <ion-item 
+          button 
+          (click)="navigateTo(option.route)"
+          [disabled]="!option.enabled"
+          class="menu-item">
+          <ion-icon 
+            [name]="option.icon" 
+            slot="start" 
+            class="menu-icon">
+          </ion-icon>
+          <ion-label class="menu-label">{{ option.title }}</ion-label>
+        </ion-item>
+      }
+    </ion-list>
+
+    <!-- Opción de cerrar sesión (solo si está autenticado) -->
+    @if (isAuthenticated) {
+      <ion-list>
+        <ion-item button (click)="logout()" class="menu-item logout-item">
+          <ion-icon name="log-out-outline" slot="start" class="menu-icon logout-icon"></ion-icon>
+          <ion-label class="menu-label logout-label">Cerrar Sesión</ion-label>
+        </ion-item>
+      </ion-list>
+    }
+
+    <!-- Información de versión -->
+    <div class="version-info">
+      <p class="version-text">Versión {{ version }}</p>
+    </div>
+  </ion-content>
+</ion-menu>
+
+<!-- Menú lateral derecho (notificaciones) -->
+<ion-menu side="end" menuId="notifications-menu" contentId="main-content">
+  <ion-header>
+    <ion-toolbar color="secondary">
+      <ion-title>Notificaciones</ion-title>
+      <ion-buttons slot="end">
+        <ion-button (click)="closeNotificationsMenu()">
+          <ion-icon name="close"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content>
+    <!-- Lista de notificaciones -->
+    <ion-list>
+      @for (notification of notifications; track notification.id) {
+        <ion-item class="notification-item">
+          <ion-icon [name]="notification.icon" slot="start" [color]="notification.color"></ion-icon>
+          <ion-label>
+            <h3>{{ notification.title }}</h3>
+            <p>{{ notification.message }}</p>
+            <p class="notification-time">{{ notification.time }}</p>
+          </ion-label>
+          <ion-button fill="clear" slot="end" (click)="markAsRead(notification.id)">
+            <ion-icon name="checkmark-circle-outline"></ion-icon>
+          </ion-button>
+        </ion-item>
+      }
+    </ion-list>
+
+    <!-- Estado vacío -->
+    @if (notifications.length === 0) {
+      <div class="empty-state">
+        <ion-icon name="notifications-off-outline" class="empty-icon"></ion-icon>
+        <h3>No hay notificaciones</h3>
+        <p>Te notificaremos cuando tengas nuevas actividades</p>
+      </div>
+    }
+
+    <!-- Botón para marcar todas como leídas -->
+    @if (notifications.length > 0) {
+      <div class="notifications-actions">
+        <ion-button expand="block" fill="outline" (click)="markAllAsRead()">
+          <ion-icon name="checkmark-done-outline" slot="start"></ion-icon>
+          Marcar todas como leídas
+        </ion-button>
+      </div>
+    }
+  </ion-content>
+</ion-menu>
+
+<!-- Contenido principal -->
+<ion-router-outlet id="main-content"></ion-router-outlet>
