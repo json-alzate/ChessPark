@@ -3,9 +3,16 @@ import { CommonModule } from '@angular/common';
 // Ionic
 import { IonContent } from '@ionic/angular/standalone';
 
+import { Block, PlanTypes } from '@cpark/models';
+
+// Services
+import { BlockService } from '@services/block.service';
+
 // Components
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 import { TrainingMenuComponent } from './components/training-menu.component';
+
+
 
 @Component({
   selector: 'app-home',
@@ -20,18 +27,24 @@ import { TrainingMenuComponent } from './components/training-menu.component';
 })
 export class HomePage {
 
-  generalEloPlan5 = 1200;
-  generalEloPlan10 = 1200;
-  generalEloPlan15 = 1200;
-  generalEloPlan20 = 1200;
-  generalEloPlan25 = 1200;
-  generalEloPlan30 = 1200;
+  constructor(private blockService: BlockService) {
+    // setTimeout(() => {
+    //   this.createPlan('plan5');
+    // }, 2000);
+  }
 
-  planBlood = 'warmup'; // 'warmup' | 'backToCalm' | null
 
-  createPlan(type: string) {
-    console.log('Creating plan:', type);
-    // Aquí iría la lógica para crear el plan según el tipo seleccionado
+  async createPlan(planType: PlanTypes) {
+    const blocks: Block[] = await this.blockService.generateBlocksForPlan(planType);
+
+    // se recorre cada bloque para generar los puzzles
+    for (const block of blocks) {
+      block.puzzles = await this.blockService.getPuzzlesForBlock(block);
+    }
+
+    console.log(blocks);
+    
+
   }
 
   goToCustomPlanCreate() {

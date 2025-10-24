@@ -6,13 +6,23 @@ export interface Puzzle {
   fen: string;
   moves: string;
   rating: number;
-  ratingDeviation?: number;
-  popularity?: number;
-  nbPlays?: number;
-  themes?: string[];
-  gameUrl?: string;
-  openingFamily?: string;
-  openingVariation?: string;
+  ratingDeviation: number;
+  popularity: number;
+  randomNumberQuery: number;
+  nbPlays: number;
+  themes: string[];
+  gameUrl: string;
+  openingFamily: string;
+  openingVariation: string;
+  times?: {
+    warningOn: number;
+    dangerOn: number;
+    total: number;
+  };
+  timeUsed?: number;
+  goshPuzzleTime?: number;
+  fenStartUserPuzzle?: string;
+  firstMoveSquaresHighlight?: string[];
 }
 
 /**
@@ -20,7 +30,7 @@ export interface Puzzle {
  */
 export interface PuzzleQueryOptions {
   /** Nivel de ELO del puzzle (por defecto: 1500) */
-  elo?: number;
+  elo: number;
   /** Tema del puzzle (opcional, si no se especifica se elige uno aleatorio) */
   theme?: string;
   /** Familia de apertura (opcional) */

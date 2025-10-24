@@ -67,8 +67,8 @@ export class PuzzlesProvider {
    * });
    * ```
    */
-  async getPuzzles(options: PuzzleQueryOptions = {}): Promise<Puzzle[]> {
-    const elo = normalizeElo(options.elo ?? ELO_CONSTANTS.DEFAULT_ELO);
+  async getPuzzles(options: PuzzleQueryOptions): Promise<Puzzle[]> {
+    const elo = normalizeElo(options.elo);
     const count = limitPuzzleCount(options.count);
     const color = options.color ?? 'N/A';
 
@@ -176,14 +176,42 @@ export class PuzzlesProvider {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const puzzles = await response.json();
-      return Array.isArray(puzzles) ? puzzles : [];
+      const rawPuzzles = await response.json();
+      const puzzles = Array.isArray(rawPuzzles) ? rawPuzzles : [];
+      
+      // Convertir los puzzles del CDN al formato completo esperado
+      return puzzles.map((puzzle: any) => this.enrichPuzzle(puzzle));
     } catch (error) {
       if (error instanceof TypeError && error.message.includes('fetch')) {
         throw new Error('Error de red al obtener puzzles. Verifica tu conexión.');
       }
       throw error;
     }
+  }
+
+  /**
+   * Enriquece un puzzle con las propiedades faltantes
+   */
+  private enrichPuzzle(rawPuzzle: any): Puzzle {
+    return {
+      uid: rawPuzzle.uid || '',
+      fen: rawPuzzle.fen || '',
+      moves: rawPuzzle.moves || '',
+      rating: rawPuzzle.rating || 1500,
+      ratingDeviation: rawPuzzle.ratingDeviation || 0,
+      popularity: rawPuzzle.popularity || 0,
+      randomNumberQuery: Math.random(),
+      nbPlays: rawPuzzle.nbPlays || 0,
+      themes: rawPuzzle.themes || [],
+      gameUrl: rawPuzzle.gameUrl || '',
+      openingFamily: rawPuzzle.openingFamily || '',
+      openingVariation: rawPuzzle.openingVariation || '',
+      times: rawPuzzle.times,
+      timeUsed: rawPuzzle.timeUsed,
+      goshPuzzleTime: rawPuzzle.goshPuzzleTime,
+      fenStartUserPuzzle: rawPuzzle.fenStartUserPuzzle,
+      firstMoveSquaresHighlight: rawPuzzle.firstMoveSquaresHighlight
+    };
   }
 
   /**

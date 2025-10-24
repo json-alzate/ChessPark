@@ -12,6 +12,20 @@ export interface User {
         warmup?: {
             [key: string]: number;
         };
+        plan1Total?: number;
+        plan1?: {
+            [key: string]: number;
+        };
+        plan1Openings?: {
+            [key: string]: number;
+        };
+        plan3Total?: number;
+        plan3?: {
+            [key: string]: number;
+        };
+        plan3Openings?: {
+            [key: string]: number;
+        };
         plan5Total?: number;
         plan5?: {
             [key: string]: number;

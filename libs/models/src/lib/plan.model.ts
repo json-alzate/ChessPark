@@ -1,7 +1,7 @@
 import { Block } from './block.model';
 
 
-export type PlanTypes = 'warmup' | 'plan5' | 'plan10' | 'plan20' | 'plan30' | 'backToCalm' | 'custom';
+export type PlanTypes = 'warmup' | 'plan1' | 'plan3' | 'plan5' | 'plan10' | 'plan20' | 'plan30' | 'backToCalm' | 'custom';
 
 export interface Plan {
     uid: string;
