@@ -1,0 +1,33 @@
+.row-buttons-providers {
+  margin-top: 2rem;
+}
+
+.divider {
+  margin: 2rem 0;
+}
+
+.validator-hint {
+  display: block;
+  min-height: 1.25rem;
+  font-size: 0.75rem;
+  color: rgb(239 68 68);
+  padding-top: 0.25rem;
+}
+
+.message-error,
+.message-info {
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  pointer-events: none;
+  
+  &.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+.div-container-forms {
+  max-width: 500px;
+  margin: 0 auto;
+}
+

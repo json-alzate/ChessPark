@@ -1,0 +1,77 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "type": "object",
+  "properties": {
+    "projectType": {
+      "type": "string",
+      "enum": ["app", "lib"],
+      "description": "¿Es una aplicación o una librería?",
+      "x-prompt": {
+        "message": "¿Dónde quieres generar el elemento?",
+        "type": "list",
+        "items": [
+          { "value": "app", "label": "En una aplicación" },
+          { "value": "lib", "label": "En una librería" }
+        ]
+      }
+    },
+    "projectName": {
+      "type": "string",
+      "description": "Nombre del proyecto donde generar el elemento",
+      "x-prompt": {
+        "message": "Selecciona el proyecto:",
+        "type": "list"
+      }
+    },
+    "elementType": {
+      "type": "string",
+      "enum": ["component", "service", "guard", "directive", "pipe"],
+      "description": "Tipo de elemento Angular a generar",
+      "x-prompt": {
+        "message": "¿Qué tipo de elemento quieres generar?",
+        "type": "list",
+        "items": [
+          { "value": "component", "label": "Componente" },
+          { "value": "service", "label": "Servicio" },
+          { "value": "guard", "label": "Guard" },
+          { "value": "directive", "label": "Directiva" },
+          { "value": "pipe", "label": "Pipe" }
+        ]
+      }
+    },
+    "path": {
+      "type": "string",
+      "description": "Ruta relativa dentro del proyecto (ej: pages/home/)",
+      "default": "",
+      "x-prompt": {
+        "message": "Introduce la ruta relativa donde generar el elemento (opcional):"
+      }
+    },
+    "name": {
+      "type": "string",
+      "description": "Nombre del elemento",
+      "x-prompt": {
+        "message": "¿Cuál es el nombre del elemento?"
+      }
+    },
+    "standalone": {
+      "type": "boolean",
+      "description": "¿Generar como standalone component? (solo para componentes)",
+      "default": true,
+      "x-prompt": {
+        "message": "¿Generar como standalone component?",
+        "type": "confirmation"
+      }
+    },
+    "skipTests": {
+      "type": "boolean",
+      "description": "¿Omitir la generación de archivos de test?",
+      "default": false,
+      "x-prompt": {
+        "message": "¿Omitir archivos de test?",
+        "type": "confirmation"
+      }
+    }
+  },
+  "required": ["projectType", "projectName", "elementType", "name"]
+}

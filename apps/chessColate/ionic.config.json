@@ -1,0 +1,7 @@
+{
+  "name": "chessColate",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

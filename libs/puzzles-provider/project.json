@@ -1,0 +1,26 @@
+{
+  "name": "puzzles-provider",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/puzzles-provider/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/puzzles-provider",
+        "main": "libs/puzzles-provider/src/index.ts",
+        "tsConfig": "libs/puzzles-provider/tsconfig.lib.json",
+        "assets": ["libs/puzzles-provider/*.md"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/puzzles-provider/jest.config.ts"
+      }
+    }
+  }
+}

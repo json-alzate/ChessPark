@@ -45,37 +45,7 @@ import { CommonModule } from '@angular/common';
       </div>
     </ion-content>
   `,
-  styles: [`
-    .container {
-      padding: 20px;
-      text-align: center;
-    }
-    
-    h1 {
-      color: var(--ion-color-primary);
-      margin-bottom: 20px;
-    }
-    
-    p {
-      font-size: 18px;
-      margin-bottom: 30px;
-    }
-    
-    ion-card {
-      max-width: 600px;
-      margin: 0 auto;
-    }
-    
-    ul {
-      text-align: left;
-      padding-left: 20px;
-    }
-    
-    li {
-      margin-bottom: 10px;
-      font-size: 16px;
-    }
-  `]
+  styles: [``]
 })
 export class HomePage {
   constructor() {}

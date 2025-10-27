@@ -1,15 +1,11 @@
 $darkenCoordinates: 8%;
 
-@mixin cm-chessboard-theme(
-  $name,
-  $light,
-  $dark,
-  $coordinates-light: mix(black, $dark, $darkenCoordinates),
-  $coordinates-dark: mix(white, $light, $darkenCoordinates),
-  $coordinates-frame: mix(black, $dark, $darkenCoordinates),
-  $border: $dark,
-  $frame-bg: $light
-) {
+@mixin cm-chessboard-theme($name,
+$light, $dark,
+$coordinates-light: mix(black, $dark, $darkenCoordinates),
+$coordinates-dark: mix(white, $light, $darkenCoordinates),
+$coordinates-frame:  mix(black, $dark, $darkenCoordinates),
+$border: $dark, $frame-bg: $light) {
   .cm-chessboard.#{$name} {
     .board {
       .square {

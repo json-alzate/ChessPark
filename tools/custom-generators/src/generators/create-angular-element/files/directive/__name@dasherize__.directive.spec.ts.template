@@ -1,0 +1,10 @@
+import { TestBed } from '@angular/core/testing';
+
+import { <%= className %>Directive } from './<%= fileName %>.directive';
+
+describe('<%= className %>Directive', () => {
+  it('should create an instance', () => {
+    const directive = new <%= className %>Directive();
+    expect(directive).toBeTruthy();
+  });
+});

@@ -1,0 +1,66 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "target": "es2022",
+    "moduleResolution": "bundler",
+    "isolatedModules": true,
+    "emitDecoratorMetadata": false,
+    "module": "preserve",
+    "baseUrl": ".",
+    "paths": {
+      "@chesspark/board": ["../../libs/board/src/index.ts"],
+      "@chesspark/common-utils": ["../../libs/common-utils/src/index.ts"],
+      "@chesspark/custom-generators": ["../../tools/custom-generators/src/index.ts"],
+      "@chesspark/puzzles-provider": ["../../libs/puzzles-provider/src/index.ts"],
+      "@cpark/models": ["../../libs/models/src/index.ts"],
+      "@cpark/state": ["../../libs/state/src/index.ts"],
+      "@cpark/widgets": ["../../libs/widgets/src/index.ts"],
+      "@environments/*": [
+        "src/environments/*"
+      ],
+      "@pages/*": [
+        "src/app/pages/*"
+      ],
+      "@guards/*": [
+        "src/app/guards/*"
+      ],
+      "@utils/*": [
+        "src/app/utils/*"
+      ],
+      "@redux/*": [
+        "src/app/redux/*"
+      ],
+      "@models/*": [
+        "src/app/models/*"
+      ],
+      "@services/*": [
+        "src/app/services/*"
+      ],
+      "@shared/*": [
+        "src/app/shared/*"
+      ]
+    }
+  },
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "typeCheckHostBindings": true,
+    "strictTemplates": true
+  },
+  "files": [],
+  "include": [],
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.spec.json"
+    }
+  ]
+}

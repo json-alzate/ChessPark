@@ -1,7 +1,8 @@
-@import 'chessboard-theme';
+@import "chessboard-theme";
 
 // define markers (for all themes)
 .cm-chessboard {
+
   .board {
     &.input-enabled {
       .square {
@@ -10,10 +11,7 @@
     }
   }
 
-  .coordinates,
-  .markers-layer,
-  .pieces-layer,
-  .markers-top-layer {
+  .coordinates, .markers-layer, .pieces-layer, .markers-top-layer {
     pointer-events: none;
   }
 }
@@ -34,6 +32,7 @@
 }
 
 .cm-chessboard-content {
+
   .list-inline {
     padding-left: 0;
     list-style: none;
@@ -61,64 +60,37 @@
 
 // define themes
 @include cm-chessboard-theme(
-  'default',
-  // name
-  #ecdab9,
-  #c5a076 // squares
+                "default", // name
+                #ecdab9, #c5a076 // squares
 );
 @include cm-chessboard-theme(
-  'default-contrast',
-  // name
-  #ecdab9,
-  #c5a076,
-  // squares
-  #333,
-  #333,
-  // coordinates in squares (white, black)
+                "default-contrast", // name
+                #ecdab9, #c5a076, // squares
+                #333, #333, // coordinates in squares (white, black)
 );
 @include cm-chessboard-theme(
-  'green',
-  // name
-  #e0ddcc,
-  #4c946a // squares
+                "green", // name
+                #E0DDCC, #4c946a // squares
 );
 @include cm-chessboard-theme(
-  'blue',
-  // name
-  #d8ecfb,
-  #86afcf // squares
+                "blue", // name
+                #d8ecfb, #86afcf // squares
 );
 @include cm-chessboard-theme(
-  'chess-club',
-  // name
-  #e6d3b1,
-  #af6b3f,
-  // squares
-  #af6b3f,
-  #e6d3b1,
-  // coordinates in squares (white, black)
-  #e6d3b1,
-  // coordinates in frame-mode
-  #692e2b,
-  #692e2b // border and frame background
+                "chess-club", // name
+                #E6D3B1, #AF6B3F, // squares
+                #AF6B3F, #E6D3B1, // coordinates in squares (white, black)
+                #E6D3B1, // coordinates in frame-mode
+                #692e2b, #692e2b // border and frame background
 );
 @include cm-chessboard-theme(
-  'chessboard-js',
-  // name
-  #f0d9b5,
-  #b58863,
-  // squares
-  #b58863,
-  #f0d9b5,
-  // coordinates in squares (white, black)
-  #404040,
-  // coordinates in frame-mode
-  #404040,
-  #f0d9b5 // border and frame background
+                "chessboard-js", // name
+                #f0d9b5, #b58863, // squares
+                #b58863, #f0d9b5, // coordinates in squares (white, black)
+                #404040, // coordinates in frame-mode
+                #404040, #f0d9b5 // border and frame background
 );
 @include cm-chessboard-theme(
-  'black-and-white',
-  // name
-  #ffffff,
-  #9c9c9c // squares
+                "black-and-white", // name
+                #ffffff, #9c9c9c // squares
 );

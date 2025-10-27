@@ -1,0 +1,225 @@
+<ion-content class="ion-padding">
+
+  <ion-fab vertical="top" horizontal="start" slot="fixed">
+    <ion-fab-button (click)="close()" size="small">
+      <ion-icon name="close-outline" color="danger"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <div class="ion-hide-md-up" style="height: 25vh;"></div>
+
+  <ion-row class="row-buttons-providers">
+    <ion-col size="12" class="ion-text-center">
+      <button class="btn btn-lg bg-white text-black border-[#e5e5e5]" (click)="loginGoogle()">
+        <svg aria-label="Google logo" width="32" height="32" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+          <g>
+            <path d="m0 0H512V512H0" fill="#fff"></path>
+            <path fill="#34a853" d="M153 292c30 82 118 95 171 60h62v48A192 192 0 0190 341"></path>
+            <path fill="#4285f4" d="m386 400a140 175 0 0053-179H260v74h102q-7 37-38 57"></path>
+            <path fill="#fbbc02" d="m90 341a208 200 0 010-171l63 49q-12 37 0 73"></path>
+            <path fill="#ea4335" d="m153 219c22-69 116-109 179-50l55-54c-78-75-230-72-297 55"></path>
+          </g>
+        </svg>
+        Ingresa con Google
+      </button>
+    </ion-col>
+  </ion-row>
+
+  <div class="divider">O</div>
+
+  <div class="div-container-forms">
+
+    @if (showResetPassword) {
+    <ion-segment value="resetPassword" class="ion-margin-bottom">
+      <ion-segment-button value="resetPassword" class="normal-case">
+        <ion-label> Restablecer contraseña </ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    <form [formGroup]="formResetPassword" (ngSubmit)="resetPassword($event)">
+      <ion-row>
+        <ion-col size="12" class="ion-padding-horizontal pt-4">
+          <label class="input input-lg validator w-full">
+            <ion-icon name="mail-outline"></ion-icon>
+            <input formControlName="email" type="email" required placeholder="Correo electrónico" maxlength="100" />
+          </label>
+          <span class="validator-hint ion-no-margin">
+            @if(emailFieldResetPassword?.hasError('required')) {
+            El email es requerido
+            } @else if (emailFieldResetPassword?.hasError('pattern')) {
+            El email no es válido
+            } @else {
+            &nbsp;
+            }
+          </span>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col size="6" class="ion-padding-horizontal">
+          <button class="btn btn-error btn-wide" (click)="showResetPassword = false">Cancelar</button>
+        </ion-col>
+        <ion-col size="6" class="ion-padding-horizontal">
+          <button class="btn btn-primary btn-wide" type="submit" [disabled]="!formResetPassword.valid">Enviar</button>
+        </ion-col>
+      </ion-row>
+    </form>
+
+    } @else {
+
+    <ion-segment [value]="segmentEmailPassword" class="ion-margin-bottom" (ionChange)="segmentChanged($event)">
+      <ion-segment-button value="login" class="normal-case">
+        <ion-label> Iniciar con email </ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="singUp" class="normal-case">
+        <ion-label> Registrarte con tu email</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    @if (segmentEmailPassword === 'login') {
+
+    <form [formGroup]="formLogin" (ngSubmit)="onSubmitLogin($event)">
+      <ion-row>
+        <ion-col size="12" class="ion-padding-horizontal pt-4">
+          <label class="input input-lg validator w-full">
+            <ion-icon name="mail-outline"></ion-icon>
+            <input formControlName="email" type="email" required placeholder="Correo electrónico" maxlength="100" />
+          </label>
+          <span class="validator-hint ion-no-margin pt-1">
+            @if(emailFieldLogin?.hasError('required')) {
+            El email es requerido
+            } @else if (emailFieldLogin?.hasError('pattern')) {
+            El email no es válido
+            } @else {
+            &nbsp;
+            }
+          </span>
+        </ion-col>
+        <ion-col size="12" class="ion-padding-horizontal pt-4">
+          <label class="input input-lg validator w-full">
+            <ion-icon name="key-outline"></ion-icon>
+            <input formControlName="password" type="password" placeholder="Contraseña" maxlength="100" />
+          </label>
+          <span class="validator-hint ion-no-margin">
+            @if( passwordFieldLogin?.touched && passwordFieldLogin?.hasError('required')) {
+            La contraseña es requerida
+            } @else if (passwordFieldLogin?.hasError('minlength')) {
+            La contraseña debe tener al menos 8 caracteres
+            } @else {
+            &nbsp;
+            }
+          </span>
+        </ion-col>
+        <ion-col size="12" class="ion-text-end ion-padding-horizontal pb-4">
+          <button class="btn btn-link btn-sm" (click)="showResetPassword = true"> Restablecer contraseña</button>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col size="12" class="ion-text-center ion-padding-horizontal">
+          <button class="btn btn-primary btn-wide" type="submit" [disabled]="!formLogin.valid">Iniciar sesión</button>
+        </ion-col>
+      </ion-row>
+    </form>
+
+    @if (showPasswordRestoreMessage) {
+    <div class="message-info" [class.active]="showPasswordRestoreMessage">
+      <div class="toast toast-bottom toast-center">
+        <div class="alert alert-info">
+          <span>Se ha enviado un correo para restablecer la contraseña</span>
+        </div>
+      </div>
+    </div>
+    } @else {
+    <div class="message-error" [class.active]="errorLogin">
+      <div class="toast toast-bottom toast-center">
+        <div class="alert alert-error">
+          <span>{{errorLogin}}</span>
+        </div>
+      </div>
+    </div>
+    }
+
+    <div style="height: 1.5vh;"></div>
+
+    } @else if (segmentEmailPassword === 'singUp') {
+
+    <form [formGroup]="formSingUp" (ngSubmit)="onSubmitSingUp($event)">
+      <ion-row>
+        <ion-col size="12" class="ion-padding-horizontal pt-4">
+          <label class="input input-lg validator w-full">
+            <ion-icon name="mail-outline"></ion-icon>
+            <input formControlName="email" type="email" required placeholder="Correo electrónico" maxlength="100" />
+          </label>
+          <span class="validator-hint ion-no-margin">
+            @if(emailFieldSingUp?.hasError('required')) {
+            El email es requerido
+            } @else if (emailFieldSingUp?.hasError('pattern')) {
+            El email no es válido
+            } @else {
+            &nbsp;
+            }
+          </span>
+        </ion-col>
+        <ion-col size="12" class="ion-padding-horizontal pt-4">
+          <label class="input input-lg validator w-full">
+            <ion-icon name="lock-closed-outline"></ion-icon>
+            <input formControlName="password" type="password" placeholder="Crea una contraseña" maxlength="100"
+              minlength="8" />
+          </label>
+          <span class="validator-hint ion-no-margin">
+            @if (passwordFieldSingUp?.hasError('required')) {
+            La contraseña es requerida
+            } @else if (passwordFieldSingUp?.hasError('minlength')) {
+            La contraseña debe tener al menos 8 caracteres
+            } @else {
+            &nbsp;
+            }
+          </span>
+        </ion-col>
+        <ion-col size="12" class="ion-padding-horizontal pt-4">
+          <label class="input input-lg validator w-full">
+            <ion-icon name="key-outline"></ion-icon>
+            <input formControlName="rePassword" type="password" required placeholder="Confirma la contraseña"
+              maxlength="100" minlength="8" />
+          </label>
+          <span class="text-xs text-red-400 ion-no-margin">
+            @if ( rePasswordFieldSingUp?.touched && rePasswordFieldSingUp?.hasError('required')) {
+            La confirmación de la contraseña es requerida
+            } @else if ( rePasswordFieldSingUp?.hasError('notMatch')) {
+            Las contraseñas no coinciden
+            } @else {
+            &nbsp;
+            }
+          </span>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col size="12" class="ion-padding-horizontal">
+          <small>Al registrarte, aceptas nuestras Condiciones de servicio y Política de privacidad.</small>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col size="12" class="ion-text-center ion-padding-horizontal pt-4">
+          <button type="submit" class="btn btn-primary btn-wide" [disabled]="!formSingUp.valid">Registrarse</button>
+        </ion-col>
+      </ion-row>
+    </form>
+
+    <div class="message-error" [class.active]="errorSingUp">
+      <div class="toast toast-bottom toast-center">
+        <div class="alert alert-error">
+          <span>{{errorSingUp}}</span>
+        </div>
+      </div>
+    </div>
+
+    }
+
+    }
+  </div>
+
+</ion-content>
+
