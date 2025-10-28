@@ -43,7 +43,7 @@
       "loginButton": "Sign in",
       "segments": {
         "loginSegment": "Login with email",
-        "registerSegment": "Sign up with your email"
+        "registerSegment": "Sign up"
       },
       "resetPasswordButton": "Reset password",
       "passwordResetTitle": "Reset Password",

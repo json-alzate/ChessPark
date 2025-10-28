@@ -1,14 +1,24 @@
-<ion-content class="ion-padding">
+<ion-content [fullscreen]="true">
+
+  <div class="main-container" data-theme="halloween">
 
   <ion-fab vertical="top" horizontal="start" slot="fixed">
-    <ion-fab-button (click)="close()" size="small">
-      <ion-icon name="close-outline" color="danger"></ion-icon>
+    <ion-fab-button (click)="close()" size="small" color="light">
+      <ion-icon name="close-outline"></ion-icon>
     </ion-fab-button>
   </ion-fab>
 
 
   <ion-row class="row-buttons-providers">
-    <ion-col size="12" class="ion-text-center">
+
+    <ion-col size="12" class="ion-margin-bottom">
+      <div  class="flex justify-center">
+        <img src="assets/images/home_icon.png" alt="Home icon" />
+      </div>
+    </ion-col>
+
+
+    <ion-col size="12" class="ion-text-center ion-margin-top">
       <button class="btn btn-lg bg-white text-black border-[#e5e5e5]" (click)="loginGoogle()">
         <svg aria-label="Google logo" width="32" height="32" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
           <g>
@@ -40,7 +50,8 @@
         <ion-col size="12" class="ion-padding-horizontal pt-4">
           <label class="input input-lg validator w-full">
             <ion-icon name="mail-outline"></ion-icon>
-            <input formControlName="email" type="email" required [placeholder]="'AUTH.register.emailPlaceholder' | transloco" maxlength="100" />
+            <input formControlName="email" type="email" required
+              [placeholder]="'AUTH.register.emailPlaceholder' | transloco" maxlength="100" />
           </label>
           <span class="validator-hint ion-no-margin">
             @if(emailFieldResetPassword?.hasError('required')) {
@@ -56,10 +67,12 @@
 
       <ion-row>
         <ion-col size="6" class="ion-padding-horizontal">
-          <button class="btn btn-error btn-wide" (click)="showResetPassword = false">{{ 'COMMON.actions.cancel' | transloco }}</button>
+          <button class="btn btn-error btn-wide" (click)="showResetPassword = false">{{ 'COMMON.actions.cancel' |
+            transloco }}</button>
         </ion-col>
         <ion-col size="6" class="ion-padding-horizontal">
-          <button class="btn btn-primary btn-wide" type="submit" [disabled]="!formResetPassword.valid">{{ 'COMMON.actions.send' | transloco }}</button>
+          <button class="btn btn-primary btn-wide" type="submit" [disabled]="!formResetPassword.valid">{{
+            'COMMON.actions.send' | transloco }}</button>
         </ion-col>
       </ion-row>
     </form>
@@ -82,7 +95,8 @@
         <ion-col size="12" class="ion-padding-horizontal pt-4">
           <label class="input input-lg validator w-full">
             <ion-icon name="mail-outline"></ion-icon>
-            <input formControlName="email" type="email" required [placeholder]="'AUTH.register.emailPlaceholder' | transloco" maxlength="100" />
+            <input formControlName="email" type="email" required
+              [placeholder]="'AUTH.register.emailPlaceholder' | transloco" maxlength="100" />
           </label>
           <span class="validator-hint ion-no-margin pt-1">
             @if(emailFieldLogin?.hasError('required')) {
@@ -97,7 +111,8 @@
         <ion-col size="12" class="ion-padding-horizontal pt-4">
           <label class="input input-lg validator w-full">
             <ion-icon name="key-outline"></ion-icon>
-            <input formControlName="password" type="password" [placeholder]="'AUTH.login.passwordPlaceholder' | transloco" maxlength="100" />
+            <input formControlName="password" type="password"
+              [placeholder]="'AUTH.login.passwordPlaceholder' | transloco" maxlength="100" />
           </label>
           <span class="validator-hint ion-no-margin">
             @if( passwordFieldLogin?.touched && passwordFieldLogin?.hasError('required')) {
@@ -110,13 +125,15 @@
           </span>
         </ion-col>
         <ion-col size="12" class="ion-text-end ion-padding-horizontal pb-4">
-          <button class="btn btn-link btn-sm" (click)="showResetPassword = true">{{ 'AUTH.login.resetPasswordButton' | transloco }}</button>
+          <button class="btn btn-link btn-sm btn-info" (click)="showResetPassword = true">{{ 'AUTH.login.resetPasswordButton' |
+            transloco }}</button>
         </ion-col>
       </ion-row>
 
       <ion-row>
         <ion-col size="12" class="ion-text-center ion-padding-horizontal">
-          <button class="btn btn-primary btn-wide" type="submit" [disabled]="!formLogin.valid">{{ 'AUTH.login.loginButton' | transloco }}</button>
+          <button class="btn btn-primary btn-wide" type="submit" [disabled]="!formLogin.valid">{{
+            'AUTH.login.loginButton' | transloco }}</button>
         </ion-col>
       </ion-row>
     </form>
@@ -148,7 +165,8 @@
         <ion-col size="12" class="ion-padding-horizontal pt-4">
           <label class="input input-lg validator w-full">
             <ion-icon name="mail-outline"></ion-icon>
-            <input formControlName="email" type="email" required [placeholder]="'AUTH.register.emailPlaceholder' | transloco" maxlength="100" />
+            <input formControlName="email" type="email" required
+              [placeholder]="'AUTH.register.emailPlaceholder' | transloco" maxlength="100" />
           </label>
           <span class="validator-hint ion-no-margin">
             @if(emailFieldSingUp?.hasError('required')) {
@@ -163,8 +181,8 @@
         <ion-col size="12" class="ion-padding-horizontal pt-4">
           <label class="input input-lg validator w-full">
             <ion-icon name="lock-closed-outline"></ion-icon>
-            <input formControlName="password" type="password" [placeholder]="'AUTH.register.createPasswordPlaceholder' | transloco" maxlength="100"
-              minlength="8" />
+            <input formControlName="password" type="password"
+              [placeholder]="'AUTH.register.createPasswordPlaceholder' | transloco" maxlength="100" minlength="8" />
           </label>
           <span class="validator-hint ion-no-margin">
             @if (passwordFieldSingUp?.hasError('required')) {
@@ -179,8 +197,8 @@
         <ion-col size="12" class="ion-padding-horizontal pt-4">
           <label class="input input-lg validator w-full">
             <ion-icon name="key-outline"></ion-icon>
-            <input formControlName="rePassword" type="password" required [placeholder]="'AUTH.register.confirmPasswordPlaceholder' | transloco"
-              maxlength="100" minlength="8" />
+            <input formControlName="rePassword" type="password" required
+              [placeholder]="'AUTH.register.confirmPasswordPlaceholder' | transloco" maxlength="100" minlength="8" />
           </label>
           <span class="text-xs text-red-400 ion-no-margin">
             @if ( rePasswordFieldSingUp?.touched && rePasswordFieldSingUp?.hasError('required')) {
@@ -202,7 +220,8 @@
 
       <ion-row>
         <ion-col size="12" class="ion-text-center ion-padding-horizontal pt-4">
-          <button type="submit" class="btn btn-primary btn-wide" [disabled]="!formSingUp.valid">{{ 'AUTH.register.registerButton' | transloco }}</button>
+          <button type="submit" class="btn btn-primary btn-wide" [disabled]="!formSingUp.valid">{{
+            'AUTH.register.registerButton' | transloco }}</button>
         </ion-col>
       </ion-row>
     </form>
@@ -220,5 +239,6 @@
     }
   </div>
 
-</ion-content>
+  </div>
 
+</ion-content>
