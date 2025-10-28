@@ -4,20 +4,7 @@ import { initializeApp } from 'firebase/app';
 import { Subscription } from 'rxjs';
 
 // Ionic imports
-import { 
-  IonMenu, 
-  IonHeader, 
-  IonToolbar, 
-  IonTitle, 
-  IonContent, 
-  IonList, 
-  IonItem, 
-  IonIcon, 
-  IonLabel, 
-  IonRouterOutlet,
-  IonButtons,
-  IonButton
-} from '@ionic/angular/standalone';
+import { IonMenu, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonIcon, IonLabel, IonRouterOutlet, IonButtons, IonButton, IonAvatar, IonMenuToggle, ModalController } from '@ionic/angular/standalone';
 
 // Transloco
 import { TranslocoPipe } from '@jsverse/transloco';
@@ -35,6 +22,7 @@ import { switchMap } from 'rxjs/operators';
 
 // Environment
 import { environment } from '@environments/environment';
+import { LoginComponent } from '@shared/components/login/login.component';
 
 interface MenuOption {
   title: string;
@@ -56,21 +44,20 @@ interface Notification {
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [
-    IonMenu, 
-    IonHeader, 
-    IonToolbar, 
-    IonTitle, 
-    IonContent, 
-    IonList, 
-    IonItem, 
-    IonIcon, 
-    IonLabel, 
+  imports: [IonAvatar,
+    IonMenu,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonList,
+    IonItem,
+    IonIcon,
+    IonLabel,
     IonRouterOutlet,
     IonButtons,
     IonButton,
-    TranslocoPipe
-  ],
+    TranslocoPipe, IonMenuToggle],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
@@ -81,7 +68,7 @@ export class AppComponent implements OnInit, OnDestroy {
   authService = inject(AuthService);
   profileService = inject(ProfileService);
   firestoreService = inject(FirestoreService);
-
+  modalController = inject(ModalController);
   // Datos del usuario
   profile: Profile | null = null;
   isAuthenticated = false;
@@ -92,12 +79,12 @@ export class AppComponent implements OnInit, OnDestroy {
 
   // Opciones del menú
   menuOptions: MenuOption[] = [
-    // {
-    //   title: 'Inicio',
-    //   icon: 'home-outline',
-    //   route: '/home',
-    //   enabled: true
-    // },
+    {
+      title: 'Inicio',
+      icon: 'home-outline',
+      route: '/home',
+      enabled: true
+    },
   ];
 
   // Notificaciones
@@ -202,6 +189,16 @@ export class AppComponent implements OnInit, OnDestroy {
       return this.displayEmail.charAt(0).toUpperCase();
     }
     return '?';
+  }
+
+
+  openLoginModal() {
+    this.modalController.create({
+      component: LoginComponent,
+      componentProps: {
+        segmentEmailPassword: 'login'
+      }
+    }).then(modal => modal.present());
   }
 
   /**

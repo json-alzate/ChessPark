@@ -22,22 +22,27 @@
 
     <!-- Usuario autenticado -->
     @if (isInitialized && isAuthenticated) {
-      <div class="">
+      <div class="flex items-center gap-2">
 
-      <div tabindex="0" class="btn btn-ghost btn-circle avatar">
-        <!-- Foto del usuario si existe -->
-        @if (photoURL) {
-          <div class="w-10 rounded-full">
-            <img [alt]="displayName || displayEmail" [src]="photoURL" />
-          </div>
-        }
-        <!-- Avatar con iniciales si no hay foto -->
-        @if (!photoURL) {
-          <div class="w-8 rounded-full bg-primary text-primary-content flex items-center justify-center">
-            <span class="text-lg font-bold">{{ getInitials() }}</span>
-          </div>
-        }
-      </div>
+        <div tabindex="0" class="btn btn-ghost btn-circle avatar">
+          <!-- Foto del usuario si existe -->
+          @if (photoURL) {
+            <div class="w-10 rounded-full">
+              <img [alt]="displayName || displayEmail" [src]="photoURL" />
+            </div>
+          }
+          <!-- Avatar con iniciales si no hay foto -->
+          @if (!photoURL) {
+            <div class="w-8 rounded-full bg-primary text-primary-content flex items-center justify-center">
+              <span class="text-lg font-bold">{{ getInitials() }}</span>
+            </div>
+          }
+        </div>
+
+        <div class="max-w-[110px] truncate text-sm font-medium" [title]="displayName || displayEmail">
+          {{ (displayName || displayEmail) || '' }}
+        </div>
+        
       </div>
     }
   </div>

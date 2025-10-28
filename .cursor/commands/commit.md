@@ -1,4 +1,4 @@
-Tu trabajo es generar un commit con un mensaje claro según los cambios realizados. al inicio del mensaje eligiras un emoji para adicionar y seguirás la siguiente convención y guía.
+Tu trabajo es generar un commit con un mensaje claro según todos los cambios realizados. al inicio del mensaje eligiras un emoji para adicionar y seguirás la siguiente convención y guía.
 
 # 📘 Convención de Commits con Gitmoji
 
