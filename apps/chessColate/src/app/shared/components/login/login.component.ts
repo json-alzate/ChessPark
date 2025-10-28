@@ -14,6 +14,8 @@ import {
   lockClosedOutline, keyOutline 
 } from 'ionicons/icons';
 
+// Transloco
+import { TranslocoPipe } from '@jsverse/transloco';
 
 // services
 import { AuthService } from '@services/auth.service';
@@ -34,7 +36,8 @@ import { AuthService } from '@services/auth.service';
     IonFabButton,
     IonContent,
     IonLabel,
-    IonIcon
+    IonIcon,
+    TranslocoPipe
   ]
 })
 export class LoginComponent implements OnInit {
@@ -126,19 +129,21 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  onSubmitLogin($event: Event) {
+  async onSubmitLogin($event: Event) {
     $event.preventDefault();
     if (this.formLogin.valid) {
       const credentials = {
         email: this.emailFieldLogin?.value,
         password: this.passwordFieldLogin?.value
       };
-      this.authService.signInWithEmailAndPassword(credentials.email, credentials.password).then((data) => {
+      try {
+        const data = await this.authService.signInWithEmailAndPassword(credentials.email, credentials.password);
         console.log('Login exitoso', data);
-      }).catch((error) => {
+      } catch (error) {
         console.error('Error en login', error);
-        this.errorLogin = 'Error al iniciar sesión. Verifica tus credenciales.';
-      });
+        // El mensaje de error ahora viene de las traducciones en el HTML
+        this.errorLogin = 'error'; // Solo marcamos que hay un error
+      }
     } else {
       this.emailFieldLogin?.markAsDirty();
       this.passwordFieldLogin?.markAsDirty();
@@ -161,11 +166,11 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  onSubmitSingUp($event: Event) {
+  async onSubmitSingUp($event: Event) {
     $event.preventDefault();
     if (this.formSingUp.valid) {
       if (this.passwordFieldSingUp?.value !== this.rePasswordFieldSingUp?.value) {
-        this.errorSingUp = 'Las contraseñas no coinciden';
+        this.errorSingUp = 'passwordsNoMatch'; // Error para las traducciones
         return;
       } else {
         const credentials = {
@@ -173,13 +178,14 @@ export class LoginComponent implements OnInit {
           password: this.passwordFieldSingUp?.value,
           rePassword: this.rePasswordFieldSingUp?.value
         };
-        this.authService.createUserWithEmailAndPassword(credentials.email, credentials.password).then((data) => {
+        try {
+          const data = await this.authService.createUserWithEmailAndPassword(credentials.email, credentials.password);
           console.log('Registro exitoso', data);
           this.formSingUp.reset();
-        }).catch((error) => {
+        } catch (error) {
           console.error('Error en registro', error);
-          this.errorSingUp = 'Error al registrarse. Intenta con otro email.';
-        });
+          this.errorSingUp = 'registerFailed'; // Error para las traducciones
+        }
       }
     } else {
       this.emailFieldSingUp?.markAsDirty();

@@ -1,160 +1,270 @@
 {
-    "LoginMenuBar": "Login / Sing up",
-    "LoginGoogle": "Login with Google",
-    "LoginEmailPassword": "Email and Password",
-    "Login": "Login",
-    "Register": "Register",
-    "Email": "Email",
-    "Password": "Password",
-    "ConfirmPassword": "Confirm Password",
-    "LoginError": "Login Error",
-    "RegisterError": "Register Error",
-    "ResetPassword": "Reset Password",
-    "PasswordsNoMatch": "Passwords do not match",
-    "EmailReadyInUse": "Email is already in use",
-    "Cancel": "Cancel",
-    "Send": "Send",
-    "Close": "Close",
-    "PasswordRestoreMessage": "Email sent with password reset instructions",
-    "PasswordRestoreTittle": "We sent you an email with instructions on how to reset your password",
-    "loadingPuzzles": "Loading puzzles...",
-    "English": "English",
-    "Spanish": "Spanish",
-    "Block": "Block",
-    "Blocks": "Blocks",
-    "MENU": {
-        "home": "Home",
-        "training": "Training",
-        "coordinates": "Coordinates",
-        "squares": "Squares",
-        "privacy": "Privacy"
+  "COMMON": {
+    "actions": {
+      "cancel": "Cancel",
+      "send": "Send",
+      "close": "Close",
+      "add": "Add",
+      "save": "Save",
+      "login": "Login",
+      "register": "Register"
     },
-    "LOGIN": {
-        "ERRORS": {
-            "EmailRequired": "Email is required",
-            "EmailInvalid": "The email is not valid",
-            "PasswordRequired": "The password is required",
-            "PasswordMinLength": "The password must have at least 8 characters",
-            "ConfirmPasswordRequired": "Password confirmation is required",
-            "ConfirmPasswordNotMatch": "Passwords do not match"
-        }
+    "time": {
+      "unlimited": "Unlimited",
+      "duration": "Duration",
+      "minSec": "min:sec"
     },
-    "PUZZLES": {
-        "MENU": {
-            "title": "Training Plans",
-            "warmup": "Warmup",
-            "customTraining": "Custom Training",
-            "history": "History"
-        },
-        "puzzles": "Puzzles",
-        "total": "Total",
-        "start": "Start",
-        "score": "Score",
-        "theme": "Theme",
-        "opening": "Opening",
-        "randomThemeWith": "Random theme with ",
-        "weaknessWith": "Weakness with ",
-        "sameOpeningAndTheme": "Same opening and theme",
-        "sameThemeLessTime": "Same theme less time",
-        "sameOpeningRandomThemeBlind": "Same opening random theme blindfold",
-        "sameRandomTheme": "Same random theme",
-        "weaknessWithAnyColor": "Weakness with any color",
-        "randomThemeWithAnyColor": "Random theme with any color",
-        "randomOpening": "Random opening",
-        "randomTheme": "Random theme",
-        "white": "White",
-        "black": "Black",
-        "continueTraining": "Continue training",
-        "panel": "Panel",
-        "goshHelp": "This puzzle is blindfold, the pieces will become transparent when",
-        "goshHelp2": "reaches"
+    "chess": {
+      "whites": "Whites",
+      "blacks": "Blacks",
+      "block": "Block",
+      "blocks": "Blocks",
+      "puzzles": "Puzzles",
+      "total": "Total",
+      "start": "Start",
+      "score": "Score",
+      "theme": "Theme",
+      "opening": "Opening",
+      "panel": "Panel"
     },
-    "TRAINING-MENU": {
-        "customTrainingSlideTitle": "Your custom plans",
-        "Warmup": "Warmup",
-        "BackToCalm": "Back to calm",
-        "DownloadAPP": "Download the app",
-        "ExercisesFree": "Exercises free",
-        "LoginToStart": "Log in to register your progress",
-        "CountPlansEnded": "plans completed in the last year"
-    },
-    "PLANS_HISTORY": {
-        "title": "Plans history",
-        "more": "All history"
-    },
-    "CUSTOM_TRAINING": {
-        "title": "Create your training plan",
-        "description1": "A plan consists of up to 5 blocks.",
-        "description2": "Each block can contain a series of exercises with the adjustments you define.",
-        "withWhite": "With white",
-        "withBlack": "With black",
-        "anyColor": "Any color",
-        "addBlock": "Add block",
-        "saveAndPlay": "Save and play",
-        "FIELDS": {
-            "nameLabel": "Name of the plan"
-        },
-        "ERRORS": {
-            "NameRequired": "The name is required",
-            "NameMaxLength": "The name is too long"
-        }
-    },
-    "NEW_BLOCK": {
-        "title": "New block",
-        "duration": "Duration",
-        "min:sec": "min:sec",
-        "or": "or",
-        "puzzles": "Puzzles",
-        "time": "time",
-        "unlimited": "Unlimited",
-        "puzzlesCount": "Number of puzzles",
-        "timeByPuzzle": "Time by puzzle",
-        "showSolution": "Show solution",
-        "blind": "Blindfold",
-        "timeVisible": "Time visible",
-        "theme": "Theme",
-        "random": "Random",
-        "randomDescription": "A different topic every time you play",
-        "weakness": "Weakness",
-        "weaknessDescription": "The topic with the least elo Available in the Plan",
-        "difficulty": "Difficulty",
-        "balanced": "Balanced",
-        "normal": "Normal",
-        "increase": "Increase",
-        "decrease": "Decrease",
-        "add": "Add"
-    },
-    "PLAN_PLAYED": {
-        "puzzlesPlayed": "Puzzles played",
-        "statistics": "Statistics of the plan",
-        "playPlan": "Play the plan",
-        "loadMore": "Load more"
-    },
-    "COORDINATES_PUZZLES": {
-        "coordinates": "Coordinates",
-        "pieces": "Pieces",
-        "play": "Play"
-    },
-    "SQUARES": {
-        "play": "Slide to play"
-    },
-    "PROFILE": {
-        "pieces": "Pieces",
-        "board": "Board",
-        "language": "Language",
-        "exit": "Logout"
-    },
-    "PUZZLE-SOLUTION": {
-        "turn": "Your turn",
-        "findBestMove": "Find the best move for the",
-        "goodDone": "Good done!",
-        "goodMove": "The best move!",
-        "continue": "Continue...",
-        "wrongMove": "Ups!, that's not the best move",
-        "tryAgain": "Try something different...",
-        "clue": "Ask a clue",
-        "solution": "See the solution",
-        "playAndClose": "Play and close",
-        "themes": "Themes"
+    "languages": {
+      "english": "English",
+      "spanish": "Spanish"
     }
+  },
+  "AUTH": {
+    "login": {
+      "menuBar": "Login / Sing up",
+      "withGoogle": "Login with Google",
+      "emailPassword": "Email and Password",
+      "emailPlaceholder": "Email",
+      "emailInput": "Login with email",
+      "passwordPlaceholder": "Password",
+      "loginButton": "Sign in",
+      "segments": {
+        "loginSegment": "Login with email",
+        "registerSegment": "Sign up with your email"
+      },
+      "resetPasswordButton": "Reset password",
+      "passwordResetTitle": "Reset Password",
+      "passwordResetEmailSent": "An email has been sent to reset your password"
+    },
+    "register": {
+      "emailPlaceholder": "Email",
+      "registerInput": "Sign up with your email",
+      "createPasswordPlaceholder": "Create a password",
+      "confirmPasswordPlaceholder": "Confirm password",
+      "registerButton": "Sign up",
+      "passwordRequired": "Password is required",
+      "confirmPasswordRequired": "Password confirmation is required",
+      "passwordsDoNotMatch": "Passwords do not match",
+      "termsAndConditions": "By signing up, you agree to our Terms of Service and Privacy Policy."
+    },
+    "resetPassword": {
+      "title": "Reset Password",
+      "message": "Email sent with password reset instructions",
+      "instructions": "We sent you an email with instructions on how to reset your password",
+      "button": "Reset password",
+      "emailLabel": "Email address",
+      "emailSentMessage": "An email has been sent to reset your password"
+    },
+    "errors": {
+      "loginError": "Login Error",
+      "loginFailed": "Failed to sign in. Please check your credentials.",
+      "registerError": "Register Error",
+      "registerFailed": "Error signing up. Please try with another email.",
+      "passwordsNoMatch": "Passwords do not match",
+      "emailInUse": "Email is already in use",
+      "emailRequired": "Email is required",
+      "emailInvalid": "The email is not valid",
+      "passwordRequired": "Password is required",
+      "passwordMinLength": "Password must have at least 8 characters",
+      "confirmPasswordRequired": "Password confirmation is required",
+      "confirmPasswordNotMatch": "Passwords do not match"
+    },
+    "divider": "OR"
+  },
+  "MENU": {
+    "navigation": {
+      "home": "Home",
+      "training": "Training",
+      "coordinates": "Coordinates",
+      "squares": "Squares",
+      "privacy": "Privacy"
+    }
+  },
+  "PUZZLES": {
+    "menu": {
+      "title": "Training Plans",
+      "warmup": "Warmup",
+      "customTraining": "Custom Training",
+      "history": "History"
+    },
+    "general": {
+      "puzzles": "Puzzles",
+      "total": "Total",
+      "start": "Start",
+      "score": "Score",
+      "theme": "Theme",
+      "opening": "Opening",
+      "panel": "Panel",
+      "continueTraining": "Continue training"
+    },
+    "colors": {
+      "white": "White",
+      "black": "Black",
+      "anyColor": "Any color"
+    },
+    "modes": {
+      "randomThemeWith": "Random theme with ",
+      "weaknessWith": "Weakness with ",
+      "sameOpeningAndTheme": "Same opening and theme",
+      "sameThemeLessTime": "Same theme less time",
+      "sameOpeningRandomThemeBlind": "Same opening random theme blindfold",
+      "sameRandomTheme": "Same random theme",
+      "weaknessWithAnyColor": "Weakness with any color",
+      "randomThemeWithAnyColor": "Random theme with any color",
+      "randomOpening": "Random opening",
+      "randomTheme": "Random theme"
+    },
+    "descriptions": {
+      "randomDescription": "A different topic every time you play",
+      "weaknessDescription": "The topic with the least elo Available in the Plan"
+    },
+    "help": {
+      "gosh": "This puzzle is blindfold, the pieces will become transparent when",
+      "gosh2": "reaches"
+    }
+  },
+  "TRAINING": {
+    "menu": {
+      "customTrainingSlideTitle": "Your custom plans",
+      "warmup": "Warmup",
+      "backToCalm": "Back to calm"
+    },
+    "messages": {
+      "downloadApp": "Download the app",
+      "exercisesFree": "Exercises free",
+      "loginToStart": "Log in to register your progress",
+      "countPlansEnded": "plans completed in the last year",
+      "loadingPuzzles": "Loading puzzles..."
+    }
+  },
+  "CUSTOM_TRAINING": {
+    "form": {
+      "title": "Create your training plan",
+      "description1": "A plan consists of up to 5 blocks.",
+      "description2": "Each block can contain a series of exercises with the adjustments you define."
+    },
+    "colors": {
+      "withWhite": "With white",
+      "withBlack": "With black",
+      "anyColor": "Any color"
+    },
+    "fields": {
+      "nameLabel": "Name of the plan"
+    },
+    "errors": {
+      "nameRequired": "The name is required",
+      "nameMaxLength": "The name is too long"
+    },
+    "actions": {
+      "addBlock": "Add block",
+      "saveAndPlay": "Save and play"
+    }
+  },
+  "NEW_BLOCK": {
+    "form": {
+      "title": "New block",
+      "duration": "Duration",
+      "or": "or"
+    },
+    "fields": {
+      "minSec": "min:sec",
+      "puzzles": "Puzzles",
+      "time": "time",
+      "unlimited": "Unlimited",
+      "puzzlesCount": "Number of puzzles",
+      "timeByPuzzle": "Time by puzzle"
+    },
+    "options": {
+      "showSolution": "Show solution",
+      "blind": "Blindfold",
+      "timeVisible": "Time visible"
+    },
+    "theme": {
+      "theme": "Theme",
+      "random": "Random",
+      "weakness": "Weakness",
+      "randomDescription": "A different topic every time you play",
+      "weaknessDescription": "The topic with the least elo Available in the Plan",
+      "difficulty": "Difficulty"
+    },
+    "difficulty": {
+      "balanced": "Balanced",
+      "normal": "Normal",
+      "increase": "Increase",
+      "decrease": "Decrease"
+    },
+    "actions": {
+      "add": "Add"
+    }
+  },
+  "PLAN_PLAYED": {
+    "stats": {
+      "puzzlesPlayed": "Puzzles played",
+      "statistics": "Statistics of the plan",
+      "playPlan": "Play the plan",
+      "loadMore": "Load more"
+    }
+  },
+  "PLANS_HISTORY": {
+    "title": "Plans history",
+    "more": "All history"
+  },
+  "COORDINATES_PUZZLES": {
+    "coordinates": "Coordinates",
+    "pieces": "Pieces",
+    "play": "Play"
+  },
+  "SQUARES": {
+    "play": "Slide to play"
+  },
+  "PROFILE": {
+    "settings": {
+      "pieces": "Pieces",
+      "board": "Board",
+      "language": "Language",
+      "exit": "Logout"
+    }
+  },
+  "PUZZLE_SOLUTION": {
+    "game": {
+      "turn": "Your turn",
+      "findBestMove": "Find the best move for the",
+      "continue": "Continue..."
+    },
+    "feedback": {
+      "goodDone": "Good done!",
+      "goodMove": "The best move!",
+      "wrongMove": "Ups!, that's not the best move",
+      "tryAgain": "Try something different..."
+    },
+    "actions": {
+      "clue": "Ask a clue",
+      "solution": "See the solution",
+      "playAndClose": "Play and close"
+    },
+    "themes": "Themes"
+  },
+  "APP": {
+    "user": {
+      "guest": "Guest",
+      "user": "Usuario",
+      "signInMessage": "Inicia sesión para más opciones"
+    },
+    "menu": {
+      "logout": "Cerrar Sesión"
+    }
+  }
 }

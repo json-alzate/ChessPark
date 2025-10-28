@@ -1,7 +1,8 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 import { lastValueFrom, take } from 'rxjs';
+import { TranslocoService } from '@jsverse/transloco';
 
 import {
   Opening,
@@ -20,8 +21,7 @@ export class AppService {
 
   openingsList: Opening[] = [];
 
-  // Idioma por defecto - TODO: usar TranslateService cuando se configure
-  private currentLang = 'es';
+  private translocoService = inject(TranslocoService);
 
   constructor(
     private httpClient: HttpClient
@@ -48,9 +48,8 @@ export class AppService {
   }
 
   getNameThemePuzzleByValue(value: string, lang?: string) {
-    // TODO: usar TranslateService.currentLang cuando se configure
     if (!lang) {
-      lang = this.currentLang;
+      lang = this.translocoService.getActiveLang();
     }
     if (lang === 'es') {
       return this.getThemePuzzleByValue(value)?.nameEs || '';
@@ -60,8 +59,7 @@ export class AppService {
   }
 
   getDescriptionThemePuzzleByValue(value: string) {
-    // TODO: usar TranslateService.currentLang cuando se configure
-    const lang = this.currentLang;
+    const lang = this.translocoService.getActiveLang();
     if (lang === 'es') {
       return this.getThemePuzzleByValue(value)?.descriptionEs || '';
     } else {
@@ -91,8 +89,7 @@ export class AppService {
   }
 
   getNameOpeningByValue(value: string) {
-    // TODO: usar TranslateService.currentLang cuando se configure
-    const lang = this.currentLang;
+    const lang = this.translocoService.getActiveLang();
     if (lang === 'es') {
       return this.getOpeningByValue(value).nameEs;
     } else {
@@ -101,8 +98,7 @@ export class AppService {
   }
 
   getDescriptionOpeningByValue(value: string) {
-    // TODO: usar TranslateService.currentLang cuando se configure
-    const lang = this.currentLang;
+    const lang = this.translocoService.getActiveLang();
     if (lang === 'es') {
       return this.getOpeningByValue(value).descriptionEs;
     } else {

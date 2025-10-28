@@ -16,6 +16,10 @@ import { provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 
+// Transloco
+import { TranslocoHttpLoader } from './transloco-loader';
+import { provideTransloco } from '@jsverse/transloco';
+
 // State
 import { 
   authReducer, 
@@ -50,6 +54,17 @@ bootstrapApplication(AppComponent, {
     provideIonicAngular(),
     provideRouter(routes, withPreloading(PreloadAllModules)),
     provideHttpClient(),
+    
+    // Transloco (antes de los servicios para que puedan usarlo)
+    provideTransloco({
+      config: {
+        availableLangs: ['en', 'es'],
+        defaultLang: 'en',
+        reRenderOnLangChange: true,
+        prodMode: environment.production
+      },
+      loader: TranslocoHttpLoader
+    }),
     
     // Servicios de autenticación (DEBEN estar ANTES de los Effects)
     AuthService,
