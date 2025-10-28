@@ -19,6 +19,9 @@ import {
   IonButton
 } from '@ionic/angular/standalone';
 
+// Transloco
+import { TranslocoPipe } from '@jsverse/transloco';
+
 // Services
 import { AuthService } from '@services/auth.service';
 import { ProfileService } from '@services/profile.service';
@@ -65,7 +68,8 @@ interface Notification {
     IonLabel, 
     IonRouterOutlet,
     IonButtons,
-    IonButton
+    IonButton,
+    TranslocoPipe
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
