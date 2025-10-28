@@ -23,6 +23,7 @@ import { User as FirebaseUser } from 'firebase/auth';
 // services
 import { FirestoreService } from './firestore.service';
 import { AppService } from './app.service';
+import { LanguageService } from './language.service';
 
 // utils
 // import { calculateElo } from '@utils/calculate-elo';
@@ -40,7 +41,8 @@ export class ProfileService implements IProfileService {
   constructor(
     private store: Store<AuthState>,
     private appService: AppService,
-    private firestoreService: FirestoreService
+    private firestoreService: FirestoreService,
+    private languageService: LanguageService
   ) {
     // Inicializar el observable del perfil
     this.profile$ = this.store.pipe(select(getProfile));
@@ -119,8 +121,7 @@ export class ProfileService implements IProfileService {
         ...changes
       } as Profile;
     }
-    // TODO: Implementar cuando se tenga el FirestoreService
-    // return this.firestoreService.updateProfile(changes);
+    return this.firestoreService.updateProfile(changes);
   }
 
   /**
@@ -129,15 +130,11 @@ export class ProfileService implements IProfileService {
    * @param nickname string
    */
   checkNickNameExist(_nickname: string): Promise<string[]> {
-    // TODO: Implementar cuando se tenga el FirestoreService
-    // return this.firestoreService.checkNickname(nickname);
-    return Promise.resolve([]);
+    return this.firestoreService.checkNickname(_nickname);
   }
 
-  addNewNickName(_nickname: string, _uidUser: string) {
-    // TODO: Implementar cuando se tenga el FirestoreService
-    // return this.firestoreService.addNewNickName(nickname, uidUser);
-    return Promise.resolve();
+  addNewNickName(_nickname: string, _uidUser: string): Promise<void> {
+    return this.firestoreService.addNewNickName(_nickname, _uidUser).then(() => {}).catch(() => { throw new Error('Error al agregar nuevo nickname'); });
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -147,12 +144,11 @@ export class ProfileService implements IProfileService {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       email: dataAuth.email!,
       elo: 1500,
-      lang: 'es', // TODO: Detectar idioma del navegador o usar TranslateService.currentLang
+      lang: this.languageService.getCurrentLang(),
       createAt: new Date().getTime()
     };
 
-    // TODO: Implementar cuando se tenga el FirestoreService
-    // await this.firestoreService.createProfile(profileForSet);
+    await this.firestoreService.createProfile(profileForSet);
     this.setProfile(profileForSet);
   }
 }

@@ -1,6 +1,5 @@
 import { Injectable, inject } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
-import { ProfileService } from './profile.service';
 
 export type SupportedLang = 'en' | 'es';
 
@@ -10,7 +9,6 @@ export type SupportedLang = 'en' | 'es';
 export class LanguageService {
 
   private translocoService = inject(TranslocoService);
-  private profileService = inject(ProfileService);
 
   constructor() {}
 
@@ -26,12 +24,6 @@ export class LanguageService {
    */
   async setLanguage(lang: SupportedLang): Promise<void> {
     await this.translocoService.setActiveLang(lang);
-    
-    // Actualizar el perfil si el usuario está autenticado
-    // const profile = this.profileService.getCurrentProfile();
-    // if (profile) {
-    //   await this.profileService.updateProfile({ lang });
-    // }
   }
 
   /**

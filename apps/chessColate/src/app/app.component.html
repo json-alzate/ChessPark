@@ -1,52 +1,54 @@
 <!-- Menú lateral izquierdo (navegación principal) -->
 <ion-menu [swipeGesture]="false" side="start" menuId="side-menu" contentId="main-content">
-  <ion-header>
-    <ion-toolbar color="primary">
-      <ion-title>ChessColate</ion-title>
+
+<div class="main-container" data-theme="halloween">
+
+
+
+  <ion-header class="ion-no-border">
+    <ion-toolbar color="light">
+      <!-- Información del usuario autenticado -->
+      @if (isAuthenticated) {
+        <ion-item lines="none" class="user-info" style="--background: transparent;">
+          <ion-avatar slot="start">
+            @if (photoURL) {
+              <img [alt]="displayName || displayEmail" [src]="photoURL" />
+            } @else {
+              <ion-label>
+                <span class="initials">{{ getInitials() }}</span>
+              </ion-label>
+            }
+          </ion-avatar>
+          <ion-label>
+            <h3 class="user-name" class="ion-no-margin">
+              {{ displayName || ('APP.user.user' | transloco) }}
+            </h3>
+            <p class="user-email" class="ion-no-margin">
+              {{ displayEmail }}
+            </p>
+          </ion-label>
+        </ion-item>
+      }
+
+      <!-- Usuario no autenticado -->
+      @if (!isAuthenticated) {
+        <div class="flex justify-center w-full">
+          <ion-menu-toggle>
+            <button
+              class="btn btn-wide btn-outline btn-primary"
+              type="button"
+              (click)="openLoginModal()"
+            >
+              Ingresar / Registrarse
+            </button>
+          </ion-menu-toggle>
+        </div>
+      }
     </ion-toolbar>
   </ion-header>
 
   <ion-content>
-    <!-- Información del usuario -->
-    @if (isAuthenticated) {
-      <div class="user-info">
-        <div class="user-avatar">
-          <!-- Foto del usuario si existe -->
-          @if (photoURL) {
-            <div class="avatar-photo">
-              <img [alt]="displayName || displayEmail" [src]="photoURL" />
-            </div>
-          }
-          <!-- Avatar con iniciales si no hay foto -->
-          @if (!photoURL) {
-            <div class="avatar-initials">
-              <span class="initials">{{ getInitials() }}</span>
-            </div>
-          }
-        </div>
-        
-        <div class="user-details">
-          <h3 class="user-name">{{ displayName || 'APP.user.user' | transloco }}</h3>
-          <p class="user-email">{{ displayEmail }}</p>
-        </div>
-      </div>
-    }
 
-    <!-- Usuario no autenticado -->
-    @if (!isAuthenticated) {
-      <div class="user-info guest">
-        <div class="user-avatar">
-          <div class="avatar-initials guest">
-            <!-- <ion-icon name="person-outline"></ion-icon> -->
-          </div>
-        </div>
-        
-        <div class="user-details">
-          <h3 class="user-name">{{ 'APP.user.guest' | transloco }}</h3>
-          <p class="user-email">{{ 'APP.user.signInMessage' | transloco }}</p>
-        </div>
-      </div>
-    }
 
     <!-- Opciones del menú -->
     <ion-list>
@@ -81,6 +83,8 @@
       <p class="version-text">Versión {{ version }}</p>
     </div>
   </ion-content>
+
+</div>
 </ion-menu>
 
 <!-- Menú lateral derecho (notificaciones) -->
