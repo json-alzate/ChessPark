@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { PlanState } from './plan.state';
-
-import { loadPlan, clearPlanError, updatePlan } from './plan.actions';
-import { getPlanState } from './plan.state';
 import { map } from 'rxjs/operators';
+
+import { Plan } from '@cpark/models';
+import { PlanState, getPlanState } from './plan.state';
+import { loadPlan, clearPlanError, updatePlan } from './plan.actions';
 
 @Injectable({ providedIn: 'root' })
 export class PlanFacadeService {
@@ -19,14 +19,13 @@ export class PlanFacadeService {
     this.store.dispatch(clearPlanError());
   }
 
-  updatePlan(data: any) {
-    // Reemplazar 'any' con el tipo específico
-    this.store.dispatch(updatePlan({ data }));
+  updatePlan(plan: Plan) {
+    this.store.dispatch(updatePlan({ plan }));
   }
 
   // Selectores
   getPlan$() {
-    return this.store.select(getPlanState).pipe(map((state) => state.data));
+    return this.store.select(getPlanState).pipe(map((state) => state.plan || null));
   }
 
   getLoadingPlan$() {

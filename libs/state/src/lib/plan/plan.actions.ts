@@ -1,10 +1,11 @@
 import { createAction, props } from '@ngrx/store';
 
+import { Plan } from '@cpark/models';
 export const loadPlan = createAction('[Plan] Load Plan');
 
 export const loadPlanSuccess = createAction(
   '[Plan] Load Plan Success',
-  props<{ data: any }>() // Reemplazar 'any' con el tipo específico
+  props<{ plan: Plan }>()
 );
 
 export const loadPlanFailure = createAction(
@@ -16,5 +17,5 @@ export const clearPlanError = createAction('[Plan] Clear Error');
 
 export const updatePlan = createAction(
   '[Plan] Update Plan',
-  props<{ data: any }>() // Reemplazar 'any' con el tipo específico
+  props<{ plan: Plan }>()
 );

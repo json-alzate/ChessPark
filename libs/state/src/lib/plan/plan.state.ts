@@ -1,8 +1,8 @@
 import { createFeatureSelector } from '@ngrx/store';
+import { Plan } from '@cpark/models';
 
 export interface PlanState {
-  data: any; // TODO: Reemplazar 'any' con el tipo específico cuando se cree el modelo
-
+  plan: Plan | null;
   loadingPlan: boolean;
   error: string | null;
 }

@@ -3,7 +3,7 @@ import { getPlanState } from './plan.state';
 
 export const getPlanData = createSelector(
   getPlanState,
-  (planState) => planState.data
+  (planState) => planState.plan || null
 );
 
 export const getPlanLoading = createSelector(

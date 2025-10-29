@@ -10,7 +10,7 @@ import {
 } from './plan.actions';
 
 export const initialPlanState: PlanState = {
-  data: null,
+  plan: null,
   loadingPlan: false,
   error: null,
 };
@@ -18,9 +18,9 @@ export const initialPlanState: PlanState = {
 const _planReducer = createReducer(
   initialPlanState,
   on(loadPlan, (state) => ({ ...state, loadingPlan: true, error: null })),
-  on(loadPlanSuccess, (state, { data }) => ({
+  on(loadPlanSuccess, (state, { plan }) => ({
     ...state,
-    data,
+    plan,
     loadingPlan: false,
   })),
   on(loadPlanFailure, (state, { error }) => ({
@@ -29,7 +29,7 @@ const _planReducer = createReducer(
     error,
   })),
   on(clearPlanError, (state) => ({ ...state, error: null })),
-  on(updatePlan, (state, { data }) => ({ ...state, data }))
+  on(updatePlan, (state, { plan }) => ({ ...state, plan }))
 );
 
 export function planReducer(state: PlanState | undefined, action: Action) {
