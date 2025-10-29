@@ -22,8 +22,8 @@ import { provideTransloco } from '@jsverse/transloco';
 
 // State
 import { 
-  authReducer, 
-  AuthEffects, 
+  appReducers,
+  EFFECTS,
   AUTH_SERVICE_TOKEN, 
   PROFILE_SERVICE_TOKEN 
 } from '@cpark/state';
@@ -33,7 +33,6 @@ import { AuthService } from './app/services/auth.service';
 import { ProfileService } from './app/services/profile.service';
 
 import { register } from 'swiper/element/bundle';
-import { importProvidersFrom } from '@angular/core';
 register();
 
 import { routes } from './app/app.routes';
@@ -73,12 +72,10 @@ bootstrapApplication(AppComponent, {
     { provide: PROFILE_SERVICE_TOKEN, useExisting: ProfileService },
     
     // NgRx Store
-    provideStore({ 
-      auth: authReducer 
-    }),
+    provideStore(appReducers),
     
     // NgRx Effects (DESPUÉS de proveer los servicios)
-    provideEffects([AuthEffects]),
+    provideEffects(EFFECTS),
     
     // NgRx DevTools (solo en desarrollo)
     provideStoreDevtools({ 

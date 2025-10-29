@@ -1,0 +1,55 @@
+import { Injectable, inject } from '@angular/core';
+import { Actions, ofType, createEffect } from '@ngrx/effects';
+import { of } from 'rxjs';
+import { switchMap, map, catchError } from 'rxjs/operators';
+<% if (entityType === 'list') { %>
+import { load<%= classifyName %>, load<%= classifyName %>Success, load<%= classifyName %>Failure } from './<%= name %>.actions';
+<% if (createModel) { %>
+import { <%= classifyName %> } from '@cpark/models';
+<% } %>
+
+@Injectable()
+export class <%= classifyName %>Effects {
+  private actions$ = inject(Actions);
+
+  load<%= classifyName %>$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(load<%= classifyName %>),
+      switchMap(() => {
+        // Simulación de llamada a API
+        // Reemplazar por llamada real a servicio
+        <% if (createModel) { %>return of([] as <%= classifyName %>[]).pipe(
+          map((<%= propertyName %>) => load<%= classifyName %>Success({ <%= propertyName %> })),
+          catchError((error) => of(load<%= classifyName %>Failure({ error: error.message || 'Error al cargar <%= name %>' })))
+        );
+        <% } else { %>return of([]).pipe(
+          map((<%= propertyName %>) => load<%= classifyName %>Success({ <%= propertyName %> })),
+          catchError((error) => of(load<%= classifyName %>Failure({ error: error.message || 'Error al cargar <%= name %>' })))
+        );
+        <% } %>
+      })
+    )
+  );
+}
+<% } else { %>
+import { load<%= classifyName %>, load<%= classifyName %>Success, load<%= classifyName %>Failure } from './<%= name %>.actions';
+
+@Injectable()
+export class <%= classifyName %>Effects {
+  private actions$ = inject(Actions);
+
+  load<%= classifyName %>$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(load<%= classifyName %>),
+      switchMap(() => {
+        // Simulación de llamada a API
+        // Reemplazar por llamada real a servicio
+        return of(null).pipe(
+          map((data) => load<%= classifyName %>Success({ data })),
+          catchError((error) => of(load<%= classifyName %>Failure({ error: error.message || 'Error al cargar <%= name %>' })))
+        );
+      })
+    )
+  );
+}
+<% } %>

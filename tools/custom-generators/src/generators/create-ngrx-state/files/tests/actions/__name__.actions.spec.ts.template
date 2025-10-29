@@ -1,0 +1,98 @@
+import { <%= classifyName %>State } from '../../lib/<%= name %>/<%= name %>.state';
+<% if (entityType === 'list') { %>
+<% if (createModel) { %>
+import { Xerpa<%= classifyName %> } from '@xerpa/models';
+<% } else { %>
+// TODO: Importar el modelo cuando se cree
+// import { Xerpa<%= classifyName %> } from '@xerpa/models';
+interface Xerpa<%= classifyName %> {
+  id: string;
+  name: string;
+  description?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+<% } %>
+<% } %>
+import {
+<% if (entityType === 'list') { %>
+  load<%= classifyName %>,
+  load<%= classifyName %>Success,
+  load<%= classifyName %>Failure,
+  clear<%= classifyName %>Error,
+  add<%= classifyName %>,
+  update<%= classifyName %>,
+  delete<%= classifyName %>,
+<% } else { %>
+  load<%= classifyName %>,
+  load<%= classifyName %>Success,
+  load<%= classifyName %>Failure,
+  clear<%= classifyName %>Error,
+  update<%= classifyName %>,
+<% } %>
+} from '../../lib/<%= name %>/<%= name %>.actions';
+
+describe('<%= classifyName %> Actions', () => {
+  it('should create load<%= classifyName %> action', () => {
+    const action = load<%= classifyName %>();
+    expect(action.type).toBe('[<%= classifyName %>] Load <%= classifyName %>');
+  });
+
+  it('should create load<%= classifyName %>Success action', () => {
+<% if (entityType === 'list') { %>
+    const <%= propertyName %>: Xerpa<%= classifyName %>[] = [
+      { id: '1', name: 'Test <%= classifyName %>', description: 'Test', createdAt: new Date(), updatedAt: new Date() }
+    ];
+    const action = load<%= classifyName %>Success({ <%= propertyName %> });
+    expect(action.type).toBe('[<%= classifyName %>] Load <%= classifyName %> Success');
+    expect(action.<%= propertyName %>).toEqual(<%= propertyName %>);
+<% } else { %>
+    const data = { id: '1', name: 'Test <%= classifyName %>' };
+    const action = load<%= classifyName %>Success({ data });
+    expect(action.type).toBe('[<%= classifyName %>] Load <%= classifyName %> Success');
+    expect(action.data).toEqual(data);
+<% } %>
+  });
+
+  it('should create load<%= classifyName %>Failure action', () => {
+    const error = 'Error message';
+    const action = load<%= classifyName %>Failure({ error });
+    expect(action.type).toBe('[<%= classifyName %>] Load <%= classifyName %> Failure');
+    expect(action.error).toBe(error);
+  });
+
+  it('should create clear<%= classifyName %>Error action', () => {
+    const action = clear<%= classifyName %>Error();
+    expect(action.type).toBe('[<%= classifyName %>] Clear Error');
+  });
+
+<% if (entityType === 'list') { %>
+  it('should create add<%= classifyName %> action', () => {
+    const <%= propertyName %>: Xerpa<%= classifyName %> = { id: '1', name: 'New <%= classifyName %>', description: 'New', createdAt: new Date(), updatedAt: new Date() };
+    const action = add<%= classifyName %>({ <%= propertyName %> });
+    expect(action.type).toBe('[<%= classifyName %>] Add <%= classifyName %>');
+    expect(action.<%= propertyName %>).toEqual(<%= propertyName %>);
+  });
+
+  it('should create update<%= classifyName %> action', () => {
+    const <%= propertyName %>: Xerpa<%= classifyName %> = { id: '1', name: 'Updated <%= classifyName %>', description: 'Updated', createdAt: new Date(), updatedAt: new Date() };
+    const action = update<%= classifyName %>({ <%= propertyName %> });
+    expect(action.type).toBe('[<%= classifyName %>] Update <%= classifyName %>');
+    expect(action.<%= propertyName %>).toEqual(<%= propertyName %>);
+  });
+
+  it('should create delete<%= classifyName %> action', () => {
+    const id = '1';
+    const action = delete<%= classifyName %>({ id });
+    expect(action.type).toBe('[<%= classifyName %>] Delete <%= classifyName %>');
+    expect(action.id).toBe(id);
+  });
+<% } else { %>
+  it('should create update<%= classifyName %> action', () => {
+    const data = { id: '1', name: 'Updated <%= classifyName %>' };
+    const action = update<%= classifyName %>({ data });
+    expect(action.type).toBe('[<%= classifyName %>] Update <%= classifyName %>');
+    expect(action.data).toEqual(data);
+  });
+<% } %>
+});

@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "$id": "CreateNgrxState",
+  "title": "Create NgRx State",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nombre de la entidad (ej: puzzles, games, moves)",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      },
+      "x-prompt": "¿Qué nombre quieres usar para la entidad?"
+    },
+    "entityType": {
+      "type": "string",
+      "description": "Tipo de entidad",
+      "enum": ["list", "single"],
+      "default": "list",
+      "x-prompt": "¿Qué tipo de entidad quieres crear?",
+      "x-prompt-items": [
+        {
+          "label": "Lista (ej: puzzles, games, moves) - múltiples elementos",
+          "value": "list"
+        },
+        {
+          "label": "Individual (ej: player, analysis, settings) - un solo elemento",
+          "value": "single"
+        }
+      ]
+    },
+    "description": {
+      "type": "string",
+      "description": "Descripción de la entidad",
+      "x-prompt": "¿Puedes describir brevemente qué representa esta entidad?"
+    },
+    "hasEffects": {
+      "type": "boolean",
+      "description": "¿Incluir efectos para llamadas a API?",
+      "default": true,
+      "x-prompt": "¿Quieres incluir efectos para llamadas a API?"
+    },
+    "hasFacade": {
+      "type": "boolean",
+      "description": "¿Incluir facade service?",
+      "default": true,
+      "x-prompt": "¿Quieres incluir un facade service?"
+    },
+    "hasTests": {
+      "type": "boolean",
+      "description": "¿Incluir estructura básica de pruebas?",
+      "default": true,
+      "x-prompt": "¿Quieres incluir estructura básica de pruebas?"
+    },
+    "createModel": {
+      "type": "boolean",
+      "description": "¿Crear modelo en la librería de modelos?",
+      "x-prompt": "¿Quieres crear un modelo en la librería de modelos?"
+    }
+  },
+  "required": ["name", "entityType"]
+}

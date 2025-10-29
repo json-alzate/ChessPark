@@ -1,0 +1,123 @@
+import { <%= classifyName %>State } from '../../lib/<%= name %>/<%= name %>.state';
+<% if (entityType === 'list') { %>
+<% if (createModel) { %>
+import { Xerpa<%= classifyName %> } from '@xerpa/models';
+<% } else { %>
+// TODO: Importar el modelo cuando se cree
+// import { Xerpa<%= classifyName %> } from '@xerpa/models';
+interface Xerpa<%= classifyName %> {
+  id: string;
+  name: string;
+  description?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+<% } %>
+<% } %>
+import {
+<% if (entityType === 'list') { %>
+  load<%= classifyName %>,
+  load<%= classifyName %>Success,
+  load<%= classifyName %>Failure,
+  clear<%= classifyName %>Error,
+  add<%= classifyName %>,
+  update<%= classifyName %>,
+  delete<%= classifyName %>,
+<% } else { %>
+  load<%= classifyName %>,
+  load<%= classifyName %>Success,
+  load<%= classifyName %>Failure,
+  clear<%= classifyName %>Error,
+  update<%= classifyName %>,
+<% } %>
+} from '../../lib/<%= name %>/<%= name %>.actions';
+import { <%= name %>Reducer, initial<%= classifyName %>State } from '../../lib/<%= name %>/<%= name %>.reducer';
+
+describe('<%= classifyName %> Reducer', () => {
+  let initialState: <%= classifyName %>State;
+
+  beforeEach(() => {
+    initialState = { ...initial<%= classifyName %>State };
+  });
+
+  it('should return the initial state', () => {
+    const action = { type: 'unknown' };
+    const state = <%= name %>Reducer(undefined, action);
+    expect(state).toEqual(initial<%= classifyName %>State);
+  });
+
+  it('should handle load<%= classifyName %>', () => {
+    const action = load<%= classifyName %>();
+    const state = <%= name %>Reducer(initialState, action);
+    expect(state.loading<%= classifyName %>).toBe(true);
+    expect(state.error).toBe(null);
+  });
+
+  it('should handle load<%= classifyName %>Success', () => {
+<% if (entityType === 'list') { %>
+    const <%= propertyName %>: Xerpa<%= classifyName %>[] = [
+      { id: '1', name: 'Test <%= classifyName %>', description: 'Test', createdAt: new Date(), updatedAt: new Date() }
+    ];
+    const action = load<%= classifyName %>Success({ <%= propertyName %> });
+    const state = <%= name %>Reducer(initialState, action);
+    expect(state.<%= propertyName %>).toEqual(<%= propertyName %>);
+    expect(state.loading<%= classifyName %>).toBe(false);
+<% } else { %>
+    const data = { id: '1', name: 'Test <%= classifyName %>' };
+    const action = load<%= classifyName %>Success({ data });
+    const state = <%= name %>Reducer(initialState, action);
+    expect(state.data).toEqual(data);
+<% } %>
+  });
+
+  it('should handle load<%= classifyName %>Failure', () => {
+    const error = 'Error message';
+    const action = load<%= classifyName %>Failure({ error });
+    const state = <%= name %>Reducer(initialState, action);
+    expect(state.error).toBe(error);
+    expect(state.loading<%= classifyName %>).toBe(false);
+  });
+
+  it('should handle clear<%= classifyName %>Error', () => {
+    initialState.error = 'Some error';
+    const action = clear<%= classifyName %>Error();
+    const state = <%= name %>Reducer(initialState, action);
+    expect(state.error).toBe(null);
+  });
+
+<% if (entityType === 'list') { %>
+  it('should handle add<%= classifyName %>', () => {
+    const new<%= classifyName %>: Xerpa<%= classifyName %> = { id: '2', name: 'New <%= classifyName %>', description: 'New', createdAt: new Date(), updatedAt: new Date() };
+    const action = add<%= classifyName %>({ <%= propertyName %>: new<%= classifyName %> });
+    const state = <%= name %>Reducer(initialState, action);
+    expect(state.<%= propertyName %>).toContain(new<%= classifyName %>);
+  });
+
+  it('should handle update<%= classifyName %>', () => {
+    initialState.<%= propertyName %> = [
+      { id: '1', name: 'Original', description: 'Original', createdAt: new Date(), updatedAt: new Date() }
+    ];
+    const updated<%= classifyName %>: Xerpa<%= classifyName %> = { id: '1', name: 'Updated', description: 'Updated', createdAt: new Date(), updatedAt: new Date() };
+    const action = update<%= classifyName %>({ <%= propertyName %>: updated<%= classifyName %> });
+    const state = <%= name %>Reducer(initialState, action);
+    expect(state.<%= propertyName %>.find(item => item.id === '1')).toEqual(updated<%= classifyName %>);
+  });
+
+  it('should handle delete<%= classifyName %>', () => {
+    initialState.<%= propertyName %> = [
+      { id: '1', name: 'To Delete', description: 'To Delete', createdAt: new Date(), updatedAt: new Date() }
+    ];
+    const action = delete<%= classifyName %>({ id: '1' });
+    const state = <%= name %>Reducer(initialState, action);
+    expect(state.<%= propertyName %>.length).toBe(0);
+    expect(state.<%= propertyName %>.find(item => item.id === '1')).toBeUndefined();
+  });
+<% } else { %>
+  it('should handle update<%= classifyName %>', () => {
+    const data = { id: '1', name: 'Updated <%= classifyName %>' };
+    const action = update<%= classifyName %>({ data });
+    const state = <%= name %>Reducer(initialState, action);
+    expect(state.data).toEqual(data);
+  });
+<% } %>
+});

@@ -1,0 +1,68 @@
+import { createReducer, on, Action } from '@ngrx/store';
+import { <%= classifyName %>State } from './<%= name %>.state';
+<% if (entityType === 'list') { %>
+import { 
+  load<%= classifyName %>, 
+  load<%= classifyName %>Success, 
+  load<%= classifyName %>Failure, 
+  clear<%= classifyName %>Error, 
+  add<%= classifyName %>, 
+  update<%= classifyName %>, 
+  delete<%= classifyName %> 
+} from './<%= name %>.actions';
+
+export const initial<%= classifyName %>State: <%= classifyName %>State = {
+  <%= propertyName %>: [],
+  loading<%= classifyName %>: false,
+  error: null
+};
+
+const _<%= name %>Reducer = createReducer(
+  initial<%= classifyName %>State,
+  on(load<%= classifyName %>, (state) => ({ ...state, loading<%= classifyName %>: true, error: null })),
+  on(load<%= classifyName %>Success, (state, { <%= propertyName %> }) => ({ ...state, <%= propertyName %>, loading<%= classifyName %>: false })),
+  on(load<%= classifyName %>Failure, (state, { error }) => ({ ...state, loading<%= classifyName %>: false, error })),
+  on(clear<%= classifyName %>Error, (state) => ({ ...state, error: null })),
+  on(add<%= classifyName %>, (state, { <%= propertyName %>: new<%= classifyName %> }) => ({ 
+    ...state, 
+    <%= propertyName %>: [...state.<%= propertyName %>, new<%= classifyName %>] 
+  })),
+  on(update<%= classifyName %>, (state, { <%= propertyName %>: updated<%= classifyName %> }) => ({
+    ...state,
+    <%= propertyName %>: state.<%= propertyName %>.map(item => 
+      item.id === updated<%= classifyName %>.id ? updated<%= classifyName %> : item
+    )
+  })),
+  on(delete<%= classifyName %>, (state, { id }) => ({
+    ...state,
+    <%= propertyName %>: state.<%= propertyName %>.filter(item => item.id !== id)
+  }))
+);
+<% } else { %>
+import { 
+  load<%= classifyName %>, 
+  load<%= classifyName %>Success, 
+  load<%= classifyName %>Failure, 
+  clear<%= classifyName %>Error, 
+  update<%= classifyName %> 
+} from './<%= name %>.actions';
+
+export const initial<%= classifyName %>State: <%= classifyName %>State = {
+  data: null,
+  loading<%= classifyName %>: false,
+  error: null
+};
+
+const _<%= name %>Reducer = createReducer(
+  initial<%= classifyName %>State,
+  on(load<%= classifyName %>, (state) => ({ ...state, loading<%= classifyName %>: true, error: null })),
+  on(load<%= classifyName %>Success, (state, { data }) => ({ ...state, data, loading<%= classifyName %>: false })),
+  on(load<%= classifyName %>Failure, (state, { error }) => ({ ...state, loading<%= classifyName %>: false, error })),
+  on(clear<%= classifyName %>Error, (state) => ({ ...state, error: null })),
+  on(update<%= classifyName %>, (state, { data }) => ({ ...state, data }))
+);
+<% } %>
+
+export function <%= name %>Reducer(state: <%= classifyName %>State | undefined, action: Action) {
+  return _<%= name %>Reducer(state, action);
+}

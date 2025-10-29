@@ -1,0 +1,28 @@
+import { createFeatureSelector } from '@ngrx/store';
+<% if (createModel) { %>
+import { <%= classifyName %> } from '@cpark/models';
+<% } %>
+
+<% if (entityType === 'list') { %>
+export interface <%= classifyName %>State {
+  <% if (createModel) { %>
+  <%= propertyName %>: <%= classifyName %>[];
+  <% } else { %>
+  <%= propertyName %>: any[]; // TODO: Reemplazar 'any' con el tipo específico cuando se cree el modelo
+  <% } %>
+  loading<%= classifyName %>: boolean;
+  error: string | null;
+}
+<% } else { %>
+export interface <%= classifyName %>State {
+  <% if (createModel) { %>
+  data: <%= classifyName %>; // Reemplazar con el tipo específico de tu entidad
+  <% } else { %>
+  data: any; // TODO: Reemplazar 'any' con el tipo específico cuando se cree el modelo
+  <% } %>
+  loading<%= classifyName %>: boolean;
+  error: string | null;
+}
+<% } %>
+
+export const get<%= classifyName %>State = createFeatureSelector<<%= classifyName %>State>('<%= name %>');
