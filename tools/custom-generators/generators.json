@@ -14,6 +14,11 @@
       "factory": "./src/generators/create-angular-element/create-angular-element",
       "schema": "./src/generators/create-angular-element/schema.json",
       "description": "Genera elementos Angular (componentes, servicios, guards, directivas, pipes) en apps o librerías"
+    },
+    "create-ngrx-state": {
+      "factory": "./src/generators/create-ngrx-state/create-ngrx-state",
+      "schema": "./src/generators/create-ngrx-state/schema.json",
+      "description": "Genera estructura completa de NgRx (state, actions, reducers, selectors, effects, facades) para la librería de estados"
     }
   }
 }

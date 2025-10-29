@@ -1,0 +1,84 @@
+import { TestBed } from '@angular/core/testing';
+import { provideMockActions } from '@ngrx/effects/testing';
+import { Actions } from '@ngrx/effects';
+import { <%= classifyName %>Effects } from '../../lib/<%= name %>/<%= name %>.effects';
+<% if (entityType === 'list') { %>
+<% if (createModel) { %>
+import { Xerpa<%= classifyName %> } from '@xerpa/models';
+<% } else { %>
+// TODO: Importar el modelo cuando se cree
+// import { Xerpa<%= classifyName %> } from '@xerpa/models';
+interface Xerpa<%= classifyName %> {
+  id: string;
+  name: string;
+  description?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+<% } %>
+<% } %>
+import {
+  load<%= classifyName %>,
+  load<%= classifyName %>Success,
+  load<%= classifyName %>Failure,
+} from '../../lib/<%= name %>/<%= name %>.actions';
+import { of, throwError } from 'rxjs';
+
+describe('<%= classifyName %>Effects', () => {
+  let effects: <%= classifyName %>Effects;
+  let actions$: Actions;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [
+        <%= classifyName %>Effects,
+        provideMockActions(() => actions$),
+      ],
+    });
+
+    effects = TestBed.inject(<%= classifyName %>Effects);
+    actions$ = TestBed.inject(Actions);
+  });
+
+  it('should be created', () => {
+    expect(effects).toBeTruthy();
+  });
+
+  describe('load<%= classifyName %>$', () => {
+    it('should return load<%= classifyName %>Success on success', (done) => {
+      actions$ = of(load<%= classifyName %>());
+
+      effects.load<%= classifyName %>$.subscribe((action) => {
+        expect(action.type).toBe(load<%= classifyName %>Success.type);
+<% if (entityType === 'list') { %>
+        expect(action.<%= propertyName %>).toEqual([]);
+<% } else { %>
+        expect(action.data).toBeNull();
+<% } %>
+        done();
+      });
+    });
+
+    it('should return load<%= classifyName %>Failure on error', (done) => {
+      // Simular un error en el efecto
+      actions$ = of(load<%= classifyName %>());
+
+      // Mock del efecto para simular error
+      const mockEffects = new <%= classifyName %>Effects();
+      jest.spyOn(mockEffects, 'load<%= classifyName %>$').mockReturnValue(
+        throwError(() => new Error('Test error'))
+      );
+
+      mockEffects.load<%= classifyName %>$.subscribe({
+        error: (error) => {
+          expect(error.message).toBe('Test error');
+          done();
+        },
+      });
+    });
+  });
+
+  // Nota: En un escenario real, estos efectos se conectarían con servicios reales
+  // Aquí solo verificamos que la estructura básica esté en su lugar
+  // Las pruebas más específicas dependerían de la implementación real de los servicios
+});

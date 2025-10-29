@@ -1,0 +1,97 @@
+import { Injectable } from '@angular/core';
+import { Store } from '@ngrx/store';
+import { <%= classifyName %>State } from './<%= name %>.state';
+<% if (entityType === 'list') { %>
+import { 
+  load<%= classifyName %>, 
+  clear<%= classifyName %>Error, 
+  add<%= classifyName %>, 
+  update<%= classifyName %>, 
+  delete<%= classifyName %> 
+} from './<%= name %>.actions';
+import { get<%= classifyName %>State } from './<%= name %>.state';
+import { map } from 'rxjs/operators';
+
+// Models
+<% if (createModel) { %>
+import { <%= classifyName %> } from '@cpark/models';
+<% } %>
+
+@Injectable({ providedIn: 'root' })
+export class <%= classifyName %>FacadeService {
+  constructor(private store: Store<<%= classifyName %>State>) {}
+
+  // Acciones
+  load<%= classifyName %>() {
+    this.store.dispatch(load<%= classifyName %>());
+  }
+
+  clearError() {
+    this.store.dispatch(clear<%= classifyName %>Error());
+  }
+
+  add<%= classifyName %>(<%= propertyName %>: <% if (createModel) { %><%= classifyName %><% } else { %>any<% } %>) {
+    this.store.dispatch(add<%= classifyName %>({ <%= propertyName %> }));
+  }
+
+  update<%= classifyName %>(<%= propertyName %>: <% if (createModel) { %><%= classifyName %><% } else { %>any<% } %>) {
+    this.store.dispatch(update<%= classifyName %>({ <%= propertyName %> }));
+  }
+
+  delete<%= classifyName %>(id: string) {
+    this.store.dispatch(delete<%= classifyName %>({ id }));
+  }
+
+  // Selectores
+  get<%= classifyName %>$() {
+    return this.store.select(get<%= classifyName %>State).pipe(map(state => state.<%= propertyName %>));
+  }
+
+  getLoading<%= classifyName %>$() {
+    return this.store.select(get<%= classifyName %>State).pipe(map(state => state.loading<%= classifyName %>));
+  }
+
+  getError$() {
+    return this.store.select(get<%= classifyName %>State).pipe(map(state => state.error));
+  }
+}
+<% } else { %>
+import { 
+  load<%= classifyName %>, 
+  clear<%= classifyName %>Error, 
+  update<%= classifyName %> 
+} from './<%= name %>.actions';
+import { get<%= classifyName %>State } from './<%= name %>.state';
+import { map } from 'rxjs/operators';
+
+@Injectable({ providedIn: 'root' })
+export class <%= classifyName %>FacadeService {
+  constructor(private store: Store<<%= classifyName %>State>) {}
+
+  // Acciones
+  load<%= classifyName %>() {
+    this.store.dispatch(load<%= classifyName %>());
+  }
+
+  clearError() {
+    this.store.dispatch(clear<%= classifyName %>Error());
+  }
+
+  update<%= classifyName %>(data: any) { // Reemplazar 'any' con el tipo específico
+    this.store.dispatch(update<%= classifyName %>({ data }));
+  }
+
+  // Selectores
+  get<%= classifyName %>$() {
+    return this.store.select(get<%= classifyName %>State).pipe(map(state => state.data));
+  }
+
+  getLoading<%= classifyName %>$() {
+    return this.store.select(get<%= classifyName %>State).pipe(map(state => state.loading<%= classifyName %>));
+  }
+
+  getError$() {
+    return this.store.select(get<%= classifyName %>State).pipe(map(state => state.error));
+  }
+}
+<% } %>

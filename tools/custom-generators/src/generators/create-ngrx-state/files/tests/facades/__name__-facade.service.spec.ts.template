@@ -1,0 +1,110 @@
+import { TestBed } from '@angular/core/testing';
+import { provideMockStore, MockStore } from '@ngrx/store/testing';
+import { <%= classifyName %>FacadeService } from '../../lib/<%= name %>/<%= name %>-facade.service';
+import { <%= classifyName %>State } from '../../lib/<%= name %>/<%= name %>.state';
+<% if (entityType === 'list') { %>
+<% if (createModel) { %>
+import { Xerpa<%= classifyName %> } from '@xerpa/models';
+<% } else { %>
+// TODO: Importar el modelo cuando se cree
+// import { Xerpa<%= classifyName %> } from '@xerpa/models';
+interface Xerpa<%= classifyName %> {
+  id: string;
+  name: string;
+  description?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+<% } %>
+<% } %>
+import {
+<% if (entityType === 'list') { %>
+  load<%= classifyName %>,
+  clear<%= classifyName %>Error,
+  add<%= classifyName %>,
+  update<%= classifyName %>,
+  delete<%= classifyName %>,
+<% } else { %>
+  load<%= classifyName %>,
+  clear<%= classifyName %>Error,
+  update<%= classifyName %>,
+<% } %>
+} from '../../lib/<%= name %>/<%= name %>.actions';
+
+describe('<%= classifyName %>FacadeService', () => {
+  let service: <%= classifyName %>FacadeService;
+  let store: MockStore<<%= classifyName %>State>;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [
+        <%= classifyName %>FacadeService,
+        provideMockStore({
+          initialState: {
+<% if (entityType === 'list') { %>
+            <%= propertyName %>: [],
+            loading<%= classifyName %>: false,
+            error: null,
+<% } else { %>
+            data: null,
+            loading<%= classifyName %>: false,
+            error: null,
+<% } %>
+          },
+        }),
+      ],
+    });
+
+    service = TestBed.inject(<%= classifyName %>FacadeService);
+    store = TestBed.inject(MockStore);
+  });
+
+  it('should be created', () => {
+    expect(service).toBeTruthy();
+  });
+
+  it('should dispatch load<%= classifyName %>', () => {
+    const spy = jest.spyOn(store, 'dispatch');
+    service.load<%= classifyName %>();
+    expect(spy).toHaveBeenCalledWith(load<%= classifyName %>());
+  });
+
+  it('should dispatch clear<%= classifyName %>Error', () => {
+    const spy = jest.spyOn(store, 'dispatch');
+    service.clearError();
+    expect(spy).toHaveBeenCalledWith(clear<%= classifyName %>Error());
+  });
+
+<% if (entityType === 'list') { %>
+  it('should dispatch add<%= classifyName %>', () => {
+    const <%= propertyName %>: Xerpa<%= classifyName %> = { id: '1', name: 'Test <%= classifyName %>', description: 'Test', createdAt: new Date(), updatedAt: new Date() };
+    const spy = jest.spyOn(store, 'dispatch');
+    service.add<%= classifyName %>(<%= propertyName %>);
+    expect(spy).toHaveBeenCalledWith(add<%= classifyName %>({ <%= propertyName %> }));
+  });
+
+  it('should dispatch update<%= classifyName %>', () => {
+    const <%= propertyName %>: Xerpa<%= classifyName %> = { id: '1', name: 'Updated <%= classifyName %>', description: 'Updated', createdAt: new Date(), updatedAt: new Date() };
+    const spy = jest.spyOn(store, 'dispatch');
+    service.update<%= classifyName %>(<%= propertyName %>);
+    expect(spy).toHaveBeenCalledWith(update<%= classifyName %>({ <%= propertyName %> }));
+  });
+
+  it('should dispatch delete<%= classifyName %>', () => {
+    const id = '1';
+    const spy = jest.spyOn(store, 'dispatch');
+    service.delete<%= classifyName %>(id);
+    expect(spy).toHaveBeenCalledWith(delete<%= classifyName %>({ id }));
+  });
+<% } else { %>
+  it('should dispatch update<%= classifyName %>', () => {
+    const data = { id: '1', name: 'Updated <%= classifyName %>' };
+    const spy = jest.spyOn(store, 'dispatch');
+    service.update<%= classifyName %>(data);
+    expect(spy).toHaveBeenCalledWith(update<%= classifyName %>({ data }));
+  });
+<% } %>
+
+  // Nota: Las pruebas de selectores se pueden agregar aquí si es necesario
+  // Dependiendo de la implementación específica del facade
+});

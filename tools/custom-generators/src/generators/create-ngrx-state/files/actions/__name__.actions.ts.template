@@ -1,0 +1,54 @@
+import { createAction, props } from '@ngrx/store';
+<% if (entityType === 'list') { %>
+<% if (createModel) { %>
+import { <%= classifyName %> } from '@cpark/models';
+<% } %>
+
+export const load<%= classifyName %> = createAction('[<%= classifyName %>] Load <%= classifyName %>');
+
+export const load<%= classifyName %>Success = createAction(
+  '[<%= classifyName %>] Load <%= classifyName %> Success',
+  props<{ <%= propertyName %>: <% if (createModel) { %><%= classifyName %>[]<% } else { %>any[]<% } %> }>()
+);
+
+export const load<%= classifyName %>Failure = createAction(
+  '[<%= classifyName %>] Load <%= classifyName %> Failure',
+  props<{ error: string }>()
+);
+
+export const clear<%= classifyName %>Error = createAction('[<%= classifyName %>] Clear Error');
+
+export const add<%= classifyName %> = createAction(
+  '[<%= classifyName %>] Add <%= classifyName %>',
+  props<{ <%= propertyName %>: <% if (createModel) { %><%= classifyName %><% } else { %>any<% } %> }>()
+);
+
+export const update<%= classifyName %> = createAction(
+  '[<%= classifyName %>] Update <%= classifyName %>',
+  props<{ <%= propertyName %>: <% if (createModel) { %><%= classifyName %><% } else { %>any<% } %> }>()
+);
+
+export const delete<%= classifyName %> = createAction(
+  '[<%= classifyName %>] Delete <%= classifyName %>',
+  props<{ id: string }>()
+);
+<% } else { %>
+export const load<%= classifyName %> = createAction('[<%= classifyName %>] Load <%= classifyName %>');
+
+export const load<%= classifyName %>Success = createAction(
+  '[<%= classifyName %>] Load <%= classifyName %> Success',
+  props<{ data: any }>() // Reemplazar 'any' con el tipo específico
+);
+
+export const load<%= classifyName %>Failure = createAction(
+  '[<%= classifyName %>] Load <%= classifyName %> Failure',
+  props<{ error: string }>()
+);
+
+export const clear<%= classifyName %>Error = createAction('[<%= classifyName %>] Clear Error');
+
+export const update<%= classifyName %> = createAction(
+  '[<%= classifyName %>] Update <%= classifyName %>',
+  props<{ data: any }>() // Reemplazar 'any' con el tipo específico
+);
+<% } %>

@@ -1,0 +1,34 @@
+import { createSelector } from '@ngrx/store';
+import { get<%= classifyName %>State } from './<%= name %>.state';
+
+<% if (entityType === 'list') { %>
+export const get<%= classifyName %> = createSelector(
+  get<%= classifyName %>State,
+  <%= name %>State => <%= name %>State.<%= propertyName %>
+);
+
+export const get<%= classifyName %>ById = (id: string) => createSelector(
+  get<%= classifyName %>State,
+  <%= name %>State => <%= name %>State.<%= propertyName %>.find(item => item.id === id)
+);
+
+export const get<%= classifyName %>Count = createSelector(
+  get<%= classifyName %>State,
+  <%= name %>State => <%= name %>State.<%= propertyName %>.length
+);
+<% } else { %>
+export const get<%= classifyName %>Data = createSelector(
+  get<%= classifyName %>State,
+  <%= name %>State => <%= name %>State.data
+);
+<% } %>
+
+export const get<%= classifyName %>Loading = createSelector(
+  get<%= classifyName %>State,
+  <%= name %>State => <%= name %>State.loading<%= classifyName %>
+);
+
+export const get<%= classifyName %>Error = createSelector(
+  get<%= classifyName %>State,
+  <%= name %>State => <%= name %>State.error
+);
