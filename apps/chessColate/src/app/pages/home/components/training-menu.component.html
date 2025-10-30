@@ -1,10 +1,11 @@
 <swiper-container slides-per-view="2.7" space-between="5" free-mode="true" class="ml-2">
-    <swiper-slide *ngFor="let plan of [1,3,5,10,20,30]">
+    <swiper-slide *ngFor="let plan of [1,3,5,10,20,30]" (click)="createPlan(plan)">
 
-        <div>
-            <div class="card bg-base-100  shadow-sm">
+        <div class="ion-activatable  ripple-parent rectangle">
+            <ion-ripple-effect></ion-ripple-effect>
+            <div class="card bg-base-100">
                 <figure class="p-2">
-                    <img src="assets/images/plan-icons/plan{{plan}}.png" alt="Shoes" />
+                    <img src="assets/images/plan-icons/plan{{plan}}.png" alt="plan{{plan}}" />
                 </figure>
                 <div class="card-body p-2 flex flex-row justify-between  w-full">
                     <div class="text-sm text-left">

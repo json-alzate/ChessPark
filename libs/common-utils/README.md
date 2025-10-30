@@ -7,12 +7,11 @@ Una librería Angular completa de utilidades comunes para el proyecto ChessPark.
 - **Confetti Service**: Efectos de confetti personalizables para celebraciones
 - **Notification Service**: Sistema de notificaciones reactivo
 - **Date Utils Service**: Utilidades para manejo de fechas y tiempo
-- **Array Utils Service**: Funciones avanzadas para manipulación de arrays
 - **Storage Service**: Almacenamiento local con encriptación y TTL
-- **Validation Service**: Validaciones comunes para formularios
-- **Number Utils Service**: Utilidades para números y matemáticas
-- **String Utils Service**: Manipulación y formateo de strings
-- **Object Utils Service**: Utilidades para objetos y clonación profunda
+- **Random FEN Service**: Generación de posiciones FEN realistas de ajedrez
+- **Elo Calculator Service**: Cálculo de ELO y sistemas de clasificación
+- **Uid Generator Service**: Generación de identificadores únicos
+- **Random Number Service**: Utilidades para números aleatorios y distribuciones
 
 ## 📦 Instalación
 
@@ -118,6 +117,105 @@ const exists = this.storage.has('user');
 
 // Limpiar almacenamiento
 this.storage.clear('local', 'user_');
+```
+
+### Random FEN Service
+
+```typescript
+import { RandomFENService } from '@chesspark/common-utils';
+
+constructor(private randomFEN: RandomFENService) {}
+
+// Generar posición FEN aleatoria
+const fen = this.randomFEN.generateRandomFEN();
+
+// Generar posición realista
+const realisticFEN = this.randomFEN.generateRealisticFEN();
+
+// Generar final de partida
+const endgame = this.randomFEN.generateEndgameFEN();
+
+// Validar posición
+const isValid = this.randomFEN.isValidFEN(fen);
+
+// Analizar posición
+const stats = this.randomFEN.analyzeFEN(fen);
+```
+
+### Elo Calculator Service
+
+```typescript
+import { EloCalculatorService } from '@chesspark/common-utils';
+
+constructor(private eloCalculator: EloCalculatorService) {}
+
+// Calcular nuevo ELO
+const result = this.eloCalculator.calculateElo(1500, 1600, 1, { kFactor: 32 });
+console.log(`Nuevo ELO: ${result.newElo}, Cambio: ${result.change}`);
+
+// Calcular expectativa de resultado
+const expected = this.eloCalculator.calculateExpectedOutcome(1500, 1600);
+
+// Determinar categoría
+const category = this.eloCalculator.getEloCategory(1800); // "Clase B"
+
+// Promedio de ELOs
+const avgElo = this.eloCalculator.calculateAverageElo([1500, 1600, 1700]);
+```
+
+### Uid Generator Service
+
+```typescript
+import { UidGeneratorService } from '@chesspark/common-utils';
+
+constructor(private uidGenerator: UidGeneratorService) {}
+
+// Generar UID simple (compatible con versión anterior)
+const simpleUid = this.uidGenerator.generateSimpleUid();
+
+// Generar UID con opciones
+const uid = this.uidGenerator.generateUid({ 
+  prefix: 'user',
+  includeTimestamp: true 
+});
+
+// Generar UID corto
+const shortUid = this.uidGenerator.generateShortUid(8);
+
+// Generar UID largo
+const longUid = this.uidGenerator.generateLongUid();
+
+// Generar múltiples UIDs únicos
+const uids = this.uidGenerator.generateMultipleUids(10);
+```
+
+### Random Number Service
+
+```typescript
+import { RandomNumberService } from '@chesspark/common-utils';
+
+constructor(private randomNumber: RandomNumberService) {}
+
+// Generar número simple (compatible con versión anterior)
+const number = this.randomNumber.generateRandomNumber();
+
+// Generar número en rango
+const random = this.randomNumber.generateInRange(1, 100);
+
+// Generar decimal
+const decimal = this.randomNumber.generateDecimal(0, 1, 2);
+
+// Generar múltiples números únicos
+const uniqueNums = this.randomNumber.generateUnique(10, 1, 100);
+
+// Generar color aleatorio
+const color = this.randomNumber.generateColor(); // "#a3f5c2"
+
+// Seleccionar elemento aleatorio
+const randomItem = this.randomNumber.pickRandom([1, 2, 3, 4, 5]);
+
+// Mezclar array
+const shuffled = this.randomNumber.shuffle([1, 2, 3, 4, 5]);
 ```
 
 ### Validation Service
