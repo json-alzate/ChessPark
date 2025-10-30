@@ -94,8 +94,8 @@ export class BlockService {
       const defaultEloStart = 800;
       const defaultElo = 1500;
 
-      const whiteColorText = this.translocoService.translate('PUZZLES.general.white');
-      const blackColorText = this.translocoService.translate('PUZZLES.general.black');
+      const whiteColorText = this.translocoService.translate('PUZZLES.colors.white');
+      const blackColorText = this.translocoService.translate('PUZZLES.colors.black');
 
       // Nota: si el tiempo del puzzle es mayor que el tiempo del bloque, el tiempo restante
       // para el puzzle se convierte en el tiempo restante del bloque
@@ -163,7 +163,8 @@ export class BlockService {
           */
           const color5 = Math.random() > 0.5 ? 'white' : 'black';
           // obtener el tema random , asignando una posición aleatoria de un array
-          const themeRandom5 = this.appService.getThemesPuzzlesList[
+          const themeRandom5 =
+           this.appService.getThemesPuzzlesList[
             Math.floor(Math.random() * this.appService.getThemesPuzzlesList.length)
           ].value;
           if (!themeRandom5) {

@@ -130,6 +130,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   async initApp() {
+    // Inicializar Firebase
     await this.initFirebase();
   }
 

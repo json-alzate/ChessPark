@@ -26,7 +26,9 @@ export class TrainingMenuComponent {
     addIcons({ timerOutline });
   }
 
-  async createPlan(planType: PlanTypes) {
+  async createPlan(planNumber: number) {
+    const planType = `plan${planNumber}` as PlanTypes;
+
     this.showLoading();
     const blocks: Block[] = await this.blockService.generateBlocksForPlan(planType);
 
@@ -36,6 +38,8 @@ export class TrainingMenuComponent {
     }
 
     const newPlan: Plan = await this.planService.newPlan(blocks, planType);
+    console.log('newPlan', newPlan);
+    
     this.hideLoading();
   }
 
