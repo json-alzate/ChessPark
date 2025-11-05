@@ -16,6 +16,7 @@ export class PuzzlesCacheService {
   constructor(enableCache = true, cacheExpirationMs = 7 * 24 * 60 * 60 * 1000) {
     this.enableCache = enableCache;
     this.cacheExpirationMs = cacheExpirationMs;
+    console.log('[PuzzlesCacheService] Constructor - enableCache:', enableCache, 'expiration:', cacheExpirationMs);
   }
 
   /**
@@ -25,7 +26,8 @@ export class PuzzlesCacheService {
     if (!this.enableCache) return;
 
     if (typeof indexedDB === 'undefined') {
-      console.warn('IndexedDB no está disponible, el caché estará deshabilitado');
+      console.warn('[PuzzlesCacheService] IndexedDB no está disponible, el caché estará deshabilitado');
+      this.enableCache = false;
       return;
     }
 
@@ -33,12 +35,14 @@ export class PuzzlesCacheService {
       const request = indexedDB.open(this.DB_NAME, this.DB_VERSION);
 
       request.onerror = () => {
-        console.error('Error al abrir IndexedDB:', request.error);
+        console.error('[PuzzlesCacheService] Error al abrir IndexedDB:', request.error);
+        this.enableCache = false;
         reject(request.error);
       };
 
       request.onsuccess = () => {
         this.db = request.result;
+        console.log('[PuzzlesCacheService] IndexedDB inicializada correctamente:', this.DB_NAME);
         resolve();
       };
 
@@ -63,7 +67,10 @@ export class PuzzlesCacheService {
    * Verifica si un archivo está en caché y no ha expirado
    */
   async isFileCached(url: string): Promise<boolean> {
-    if (!this.enableCache || !this.db) return false;
+    if (!this.enableCache || !this.db) {
+      console.log('[PuzzlesCacheService] isFileCached: cache deshabilitado o DB no inicializada');
+      return false;
+    }
 
     try {
       const transaction = this.db.transaction([this.STORE_NAME], 'readonly');
@@ -84,9 +91,11 @@ export class PuzzlesCacheService {
           
           if (isExpired) {
             // Eliminar entrada expirada
+            console.log('[PuzzlesCacheService] Entrada expirada, eliminando:', url);
             this.deleteCachedPuzzles(url).catch(console.error);
             resolve(false);
           } else {
+            console.log('[PuzzlesCacheService] Archivo encontrado en caché:', url);
             resolve(true);
           }
         };
@@ -126,9 +135,11 @@ export class PuzzlesCacheService {
           const isExpired = now - entry.timestamp > this.cacheExpirationMs;
           
           if (isExpired) {
+            console.log('[PuzzlesCacheService] Puzzles expirados, eliminando:', url);
             this.deleteCachedPuzzles(url).catch(console.error);
             resolve(null);
           } else {
+            console.log('[PuzzlesCacheService] Obteniendo puzzles del caché:', url, 'count:', entry.puzzles.length);
             resolve(entry.puzzles);
           }
         };
@@ -148,7 +159,10 @@ export class PuzzlesCacheService {
    * Cachea puzzles en IndexedDB
    */
   async cachePuzzles(url: string, puzzles: Puzzle[]): Promise<void> {
-    if (!this.enableCache || !this.db) return;
+    if (!this.enableCache || !this.db) {
+      console.log('[PuzzlesCacheService] cachePuzzles: cache deshabilitado o DB no inicializada');
+      return;
+    }
 
     try {
       const entry: CacheEntry = {
@@ -167,9 +181,12 @@ export class PuzzlesCacheService {
       indexStore.put({ key: url, timestamp: entry.timestamp });
 
       return new Promise((resolve, reject) => {
-        transaction.oncomplete = () => resolve();
+        transaction.oncomplete = () => {
+          console.log('[PuzzlesCacheService] Puzzles cacheados exitosamente:', url, 'count:', puzzles.length);
+          resolve();
+        };
         transaction.onerror = () => {
-          console.error('Error al cachear puzzles:', transaction.error);
+          console.error('[PuzzlesCacheService] Error al cachear puzzles:', transaction.error);
           reject(transaction.error);
         };
       });

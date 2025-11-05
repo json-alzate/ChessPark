@@ -136,12 +136,13 @@ export class PuzzlesProvider {
 
     // Intentar obtener desde caché
     if (this.config.enableCache) {
+      console.log(`[PuzzlesProvider] Verificando caché para ELO ${elo}: ${url}`);
       const isCached = await this.cacheService.isFileCached(url);
       
       if (isCached) {
         const cached = await this.cacheService.getCachedPuzzles(url);
         if (cached) {
-          console.log(`Usando puzzles cacheados para ELO ${elo}`);
+          console.log(`[PuzzlesProvider] Usando puzzles cacheados para ELO ${elo}, count: ${cached.length}`);
           return cached;
         }
       }

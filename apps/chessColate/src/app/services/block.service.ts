@@ -18,30 +18,14 @@ import { PuzzlesProvider } from '@chesspark/puzzles-provider';
   providedIn: 'root'
 })
 export class BlockService {
-  private puzzlesProvider: PuzzlesProvider;
   private translocoService = inject(TranslocoService);
 
   constructor(
     private profileService: ProfileService,
-    private appService: AppService
+    private appService: AppService,
+    private puzzlesProvider: PuzzlesProvider
     // private plansElosService: PlansElosService
-  ) {
-    this.puzzlesProvider = new PuzzlesProvider();
-  }
-
-  /**
-   * Inicializa el proveedor de puzzles
-   */
-  async init(): Promise<void> {
-    await this.puzzlesProvider.init();
-  }
-
-  /**
-   * Cierra el proveedor de puzzles
-   */
-  close(): void {
-    this.puzzlesProvider.close();
-  }
+  ) {}
 
   /**
    * Implementación temporal del método getWeakness
@@ -163,13 +147,13 @@ export class BlockService {
           */
           const color5 = Math.random() > 0.5 ? 'white' : 'black';
           // obtener el tema random , asignando una posición aleatoria de un array
-          const themeRandom5 =
-           this.appService.getThemesPuzzlesList[
-            Math.floor(Math.random() * this.appService.getThemesPuzzlesList.length)
-          ].value;
-          if (!themeRandom5) {
-            reject('No se pudo obtener el tema random themeRandom5');
-          }
+          const themeRandom5 = 'queensideAttack';
+          //  this.appService.getThemesPuzzlesList[
+          //   Math.floor(Math.random() * this.appService.getThemesPuzzlesList.length)
+          // ].value;
+          // if (!themeRandom5) {
+          //   reject('No se pudo obtener el tema random themeRandom5');
+          // }
           // se busca el elo del usuario según el string del temaRandom5
           const themeRandomElo5 = profile?.elos?.plan5 ? profile?.elos?.plan5[themeRandom5] : undefined;
           // se elige el elo mas bajo que el usuario tenga en el plan5, sino se asigna el elo por defecto

@@ -34,6 +34,7 @@ import { AuthService } from './app/services/auth.service';
 import { ProfileService } from './app/services/profile.service';
 import { LanguageService } from './app/services/language.service';
 import { AppService } from './app/services/app.service';
+import { PuzzlesProvider } from '@chesspark/puzzles-provider';
 
 import { register } from 'swiper/element/bundle';
 register();
@@ -46,6 +47,7 @@ import { environment } from './environments/environment';
 async function initializeApp(): Promise<void> {
   const languageService = inject(LanguageService);
   const appService = inject(AppService);
+  const puzzlesProvider = inject(PuzzlesProvider);
   
   // Inicializar el idioma primero (esto cargará y esperará las traducciones)
   await languageService.initializeLanguage();
@@ -53,6 +55,9 @@ async function initializeApp(): Promise<void> {
   // Cargar datos de temas y aperturas
   await appService.loadThemesPuzzle();
   await appService.loadOpenings();
+  
+  // Inicializar el proveedor de puzzles (caché)
+  await puzzlesProvider.init();
 }
 
 if (environment.production) {
@@ -88,6 +93,11 @@ bootstrapApplication(AppComponent, {
     AppService,
     { provide: AUTH_SERVICE_TOKEN, useExisting: AuthService },
     { provide: PROFILE_SERVICE_TOKEN, useExisting: ProfileService },
+    // Puzzles Provider como singleton
+    {
+      provide: PuzzlesProvider,
+      useFactory: () => new PuzzlesProvider()
+    },
     // Inicializar idioma y datos antes del bootstrap
     provideAppInitializer(initializeApp),
     
