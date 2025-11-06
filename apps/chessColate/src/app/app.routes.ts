@@ -6,6 +6,10 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/home/home.page').then((m) => m.HomePage),
   },
+  // {
+  //   path: 'puzzles',
+  //   loadComponent: () => import('./pages/puzzles/puzzles.page').then(m => m.PuzzlesPage)
+  // },
   {
     path: '',
     redirectTo: 'home',

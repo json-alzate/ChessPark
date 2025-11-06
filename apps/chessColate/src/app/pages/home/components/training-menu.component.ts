@@ -10,6 +10,7 @@ import { PlanService } from '@services/plan.service';
 import { addIcons } from 'ionicons';
 import { timerOutline} from 'ionicons/icons';
 import { Block, Plan, PlanTypes } from '@cpark/models';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-training-menu',
@@ -21,7 +22,7 @@ import { Block, Plan, PlanTypes } from '@cpark/models';
 export class TrainingMenuComponent {
   private blockService = inject(BlockService);
   private planService = inject(PlanService);
-
+  private router = inject(Router);
   constructor(private loadingController: LoadingController) {
     addIcons({ timerOutline });
   }
@@ -41,17 +42,20 @@ export class TrainingMenuComponent {
     console.log('newPlan', newPlan);
     
     this.hideLoading();
+
+    this.router.navigate(['/puzzles/training']);
   }
 
-  showLoading() {
+  async showLoading() {
     console.log('showLoading');
-    this.loadingController.create({
+    const loader = await this.loadingController.create({
       message: 'Creating plan...',
     });
+     loader.present();
   }
 
-  hideLoading() {
+  async hideLoading() {
     console.log('hideLoading');
-    this.loadingController.dismiss();
+    await this.loadingController.dismiss();
   }
 }
