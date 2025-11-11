@@ -42,6 +42,9 @@
   themes: all;
 }
 
+/* Importar estilos de cm-chessboard */
+@import 'cm-chessboard/assets/chessboard.scss';
+
 .main-container {
   @apply min-h-screen flex flex-col bg-base-200;
 }
