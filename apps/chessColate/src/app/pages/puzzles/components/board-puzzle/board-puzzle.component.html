@@ -1,0 +1,50 @@
+<ion-card class="ion-no-margin ion-no-padding">
+
+  <ion-card-content class="ion-no-margin ion-no-padding">
+
+    <div class="board" id="boardPuzzle">
+    </div>
+    <ion-item lines="none">
+      <ion-label *ngIf="(showTimer && isPlaying)" [color]="timeColor">{{ time | secondsToMinutesSeconds }}</ion-label>
+
+      <ion-buttons slot="end">
+        <ion-button *ngIf="puzzle?.goshPuzzleTime" size="large" fill="clear" color="dark">
+
+          <span>
+            <ion-icon [name]="goshPuzzleTime > 0 ? 'eye-outline' : 'eye-off-outline'"></ion-icon>
+            {{ goshPuzzleTime | secondsToMinutesSeconds }}
+          </span>
+
+        </ion-button>
+        <ion-button fill="clear" color="dark" (click)="turnRoundBoard()">
+          <ion-icon slot="icon-only" name="swap-vertical-outline"></ion-icon>
+        </ion-button>
+        <ion-button *ngIf="!isPlaying" fill="clear" color="dark"
+          [disabled]="!allowMoveArrows || currentMoveNumber === 0" (click)="starPosition()">
+          <ion-icon slot="icon-only" name="play-back-outline"></ion-icon>
+        </ion-button>
+        <ion-button *ngIf="!isPlaying" fill="clear" color="dark"
+          [disabled]="!allowMoveArrows  || currentMoveNumber === 0" (click)="backMove()">
+          <ion-icon slot="icon-only" name="play-skip-back-outline"></ion-icon>
+        </ion-button>
+
+        <ion-button *ngIf="!isPlaying" fill="clear" color="dark"
+          [disabled]="!allowMoveArrows || currentMoveNumber === totalMoves" (click)="nextMove()">
+          <ion-icon slot="icon-only" name="play-skip-forward-outline"></ion-icon>
+        </ion-button>
+        <ion-button *ngIf="!isPlaying" fill="clear" color="dark"
+          [disabled]="!allowMoveArrows || currentMoveNumber >= totalMoves" (click)="moveToEnd()">
+          <ion-icon slot="icon-only" name="play-forward-outline"></ion-icon>
+        </ion-button>
+
+      </ion-buttons>
+
+      <!-- <ion-thumbnail *ngIf="piecePathKingTurn" slot="end">
+        <img [src]="uiService.piecesPath + piecePathKingTurn" />
+      </ion-thumbnail> -->
+
+    </ion-item>
+
+  </ion-card-content>
+  <ion-progress-bar *ngIf="showTimer" [color]="timeColor" buffer></ion-progress-bar>
+</ion-card>

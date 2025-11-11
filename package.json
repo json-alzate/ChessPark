@@ -58,6 +58,7 @@
     "firebase": "^10.12.0",
     "howler": "^2.2.4",
     "ionicons": "^8.0.13",
+    "lodash": "^4.17.21",
     "rxjs": "~7.8.0",
     "swiper": "^11.2.10",
     "zone.js": "~0.15.0"
@@ -98,6 +99,7 @@
     "@tailwindcss/postcss": "^4.1.11",
     "@types/canvas-confetti": "^1.9.0",
     "@types/jest": "^29.5.12",
+    "@types/lodash": "^4.17.20",
     "@types/node": "^24.0.4",
     "@typescript-eslint/utils": "^8.29.0",
     "angular-eslint": "^19.2.0",
