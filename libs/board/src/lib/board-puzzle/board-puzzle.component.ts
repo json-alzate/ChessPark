@@ -15,7 +15,7 @@ import { IonCardContent, IonItem, IonCard, IonLabel, IonButtons, IonButton, IonI
 // import { MARKER_TYPE, Markers } from 'cm-chessboard/src/extensions/markers/markers';
 // import { ARROW_TYPE, Arrows } from 'cm-chessboard/src/extensions/arrows/arrows';
 // import { PromotionDialog } from 'cm-chessboard/src/extensions/promotion-dialog/PromotionDialog';
-import Chess from 'chess.js';
+import { Chess } from 'chess.js';
 
 // rxjs
 import { interval, Subject, Observable, Subscription, merge } from 'rxjs';
@@ -76,7 +76,7 @@ export class BoardPuzzleComponent implements OnInit {
   timeUsed = 0;
   goshPuzzleTime = 0;
   // board;
-  chessInstance = new (Chess as any)();
+  chessInstance = new Chess();
 
 
   constructor(
