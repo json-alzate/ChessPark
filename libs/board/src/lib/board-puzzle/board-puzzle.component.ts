@@ -117,6 +117,7 @@ export class BoardPuzzleComponent implements OnInit {
     } else {
       this.buildBoard(this.puzzle.fen);
     }
+    console.log('puzzle: ', this.puzzle);
     this.chessInstance.load(this.puzzle.fen);
     this.fenToCompareAndPlaySound = this.puzzle.fen;
     // Se cambia el color porque luego se realizara automáticamente la jugada inicial de la maquina
@@ -130,8 +131,11 @@ export class BoardPuzzleComponent implements OnInit {
     // se construye un arreglo con los fen de la solución
     this.arrayMovesSolution = this.puzzle.moves.split(' ');
     this.arrayFenSolution.push(this.chessInstance.fen());
+   
+    
+
     for (const move of this.arrayMovesSolution) {
-      this.chessInstance.move(move, { strict: true });
+      this.chessInstance.move(move);
       const fen = this.chessInstance.fen();
       this.arrayFenSolution.push(fen);
     }
@@ -186,74 +190,84 @@ export class BoardPuzzleComponent implements OnInit {
       ]
     });
 
-    console.log('board construido', this.board);
+
     
 
-    // this.board.enableMoveInput((event) => {
+    this.board.enableMoveInput((event) => {
 
-    //   // handle user input here
-    //   switch (event.type) {
+      // handle user input here
+      switch (event.type) {
 
-    //     case 'moveInputStarted':
-    //       this.removeMarkerNotLastMove(event.square);
-    //       this.board.removeArrows();
+        case 'moveInputStarted':
+          if (event.square) {
+            this.removeMarkerNotLastMove(event.square);
+          }
+          this.board.removeArrows();
 
-    //       // mostrar indicadores para donde se puede mover la pieza
-    //       if (this.chessInstance.moves({ square: event.square }).length > 0) {
-    //         // adiciona el marcador para la casilla seleccionada
-    //         const markerSquareSelected = { class: 'marker-square-green', slice: 'markerSquare' };
-    //         this.board.addMarker(markerSquareSelected, event.square);
-    //         const possibleMoves = this.chessInstance.moves({ square: event.square, verbose: true });
-    //         for (const move of possibleMoves) {
-    //           const markerDotMove = { class: 'marker-dot-green', slice: 'markerDot' };
-    //           this.board.addMarker(markerDotMove, move.to);
-    //         }
-    //       }
-    //       return true;
-    //     case 'validateMoveInput':
+          // mostrar indicadores para donde se puede mover la pieza
+          if (event.square && this.chessInstance.moves({ square: event.square as any }).length > 0) {
+            // adiciona el marcador para la casilla seleccionada
+            const markerSquareSelected = { class: 'marker-square-green', slice: 'markerSquare' };
+            this.board.addMarker(markerSquareSelected, event.square);
+            const possibleMoves = this.chessInstance.moves({ square: event.square as any, verbose: true });
+            for (const move of possibleMoves) {
+              const markerDotMove = { class: 'marker-dot-green', slice: 'markerDot' };
+              this.board.addMarker(markerDotMove, move.to);
+            }
+          }
+          return true;
+        case 'validateMoveInput':
 
+          if (event.squareTo && event.piece && 
+              (event.squareTo.charAt(1) === '8' || event.squareTo.charAt(1) === '1') && 
+              event.piece.charAt(1) === 'p') {
 
-    //       if ((event?.squareTo?.charAt(1) === '8' || event?.squareTo?.charAt(1) === '1') && event?.piece?.charAt(1) === 'p') {
+            const colorToShow = event.piece.charAt(0) === 'w' ? COLOR.white : COLOR.black;
+            // FIXME: se puede promocionar  si se toma un peon y se lleva con el mause a la ultima fila
+            this.board.showPromotionDialog(event.squareTo, colorToShow, (result) => {
+              if (result && result.piece && event.squareFrom && event.squareTo) {
+                // FIXME: No valida la coronación con chess.js
+                this.board.setPiece(result.square, result.piece, true);
+                // remover la piece de la casilla de origen
+                this.board.setPiece(event.squareFrom, undefined, true);
+                const objectMovePromotion = { 
+                  from: event.squareFrom, 
+                  to: event.squareTo, 
+                  promotion: result.piece.charAt(1) 
+                };
+                const theMovePromotion = this.chessInstance.move(objectMovePromotion);
+                if (theMovePromotion) {
+                  this.validateMove();
+                }
+              } else {
+                console.log('Promotion canceled');
+              }
+            });
+          }
 
-    //         const colorToShow = event.piece.charAt(0) === 'w' ? COLOR.white : COLOR.black;
-    //         // FIXME: se puede promocionar  si se toma un peon y se lleva con el mause a la ultima fila
-    //         this.board.showPromotionDialog(event.squareTo, colorToShow, (result) => {
-    //           if (result && result.piece) {
-    //             // FIXME: No valida la coronación con chess.js
-    //             this.board.setPiece(result.square, result.piece, true);
-    //             // remover la piece de la casilla de origen
-    //             this.board.setPiece(event.squareFrom, undefined, true);
-    //             const objectMovePromotion = { from: event.squareFrom, to: event.squareTo, promotion: result.piece.charAt(1) };
-    //             const theMovePromotion = this.chessInstance.move(objectMovePromotion);
-    //             if (theMovePromotion) {
-    //               this.validateMove();
-    //             }
-    //           } else {
-    //             console.log('Promotion canceled');
-    //           }
-    //         });
-    //       }
+          if (event.squareFrom && event.squareTo) {
+            const objectMove = { from: event.squareFrom, to: event.squareTo };
+            const theMove = this.chessInstance.move(objectMove);
 
-    //       const objectMove = { from: event.squareFrom, to: event.squareTo };
-    //       const theMove = this.chessInstance.move(objectMove);
+            if (theMove) {
+              this.board.removeArrows();
+              this.showLastMove();
+              this.validateMove();
+            }
+            // return true, if input is accepted/valid, `false` takes the move back
+            return theMove ? true : false;
+          }
+          return false;
+        case 'moveInputCanceled':
+          // hide the indicators
+          return true;
+        case 'moveInputFinished':
 
-    //       if (theMove) {
-    //         this.board.removeArrows();
-    //         this.showLastMove();
-    //         this.validateMove();
-    //       }
-    //       // return true, if input is accepted/valid, `false` takes the move back
-    //       return theMove;
-    //     case 'moveInputCanceled':
-    //       // hide the indicators
-    //       return true;
-    //     case 'moveInputFinished':
-
-    //       return true;
-    //     default:
-    //       return true;
-    //   }
-    // });
+          return true;
+        default:
+          return true;
+      }
+    });
 
 
     // let startSquare;
@@ -481,7 +495,7 @@ export class BoardPuzzleComponent implements OnInit {
     if (
       this.chessInstance.history({ verbose: true }).slice(-1)[0]?.flags.includes('k') ||
       this.chessInstance.history({ verbose: true }).slice(-1)[0]?.flags.includes('q')) {
-      // this.board.setPosition(this.chessInstance.fen());
+      this.board.setPosition(this.chessInstance.fen());
     }
   }
 

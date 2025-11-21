@@ -15,14 +15,44 @@ declare module 'cm-chessboard' {
     [key: string]: any;
   }
 
+  export interface MoveInputEvent {
+    type: 'moveInputStarted' | 'validateMoveInput' | 'moveInputCanceled' | 'moveInputIllegal' | 'moveInputDone' | 'moveInputFinished';
+    square?: string;
+    squareFrom?: string;
+    squareTo?: string;
+    piece?: string;
+    mouseEvent?: MouseEvent;
+  }
+
+  export interface PromotionResult {
+    square: string;
+    piece: string;
+  }
+
+  export interface MarkerType {
+    class?: string;
+    slice?: string;
+    id?: string;
+    position?: string;
+  }
+
   export class Chessboard {
     constructor(element: HTMLElement, config?: ChessboardConfig);
 
     setPosition(fen: string, animated?: boolean): void;
     getPosition(): string;
-    enableMoveInput(callback?: (from: string, to: string) => boolean): void;
+    enableMoveInput(callback?: (event: MoveInputEvent) => boolean | any): void;
     disableMoveInput(): void;
     destroy(): void;
+    
+    // Extension methods
+    removeArrows(): void;
+    addMarker(marker: MarkerType, square: string): void;
+    removeMarkers(marker?: MarkerType, square?: string): void;
+    getMarkers(marker?: MarkerType, square?: string): any[];
+    addArrow(arrow: any, from: string, to: string): void;
+    showPromotionDialog(square: string, color: any, callback: (result: PromotionResult | null) => void): void;
+    setPiece(square: string, piece: string | undefined, animated?: boolean): void;
   }
 
   export const COLOR: any;
