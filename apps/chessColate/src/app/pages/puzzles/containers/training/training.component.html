@@ -61,9 +61,9 @@
           </ion-col>
     
           <ion-col class="ion-no-padding ion-margin-top" size-xs="12" size-sm="12" size-md="12" size-lg="6" size-xl="6">
-            <app-board-puzzle [setPuzzle]="puzzleToPlay" [setForceStopTimer]="forceStopTimerInPuzzleBoard"
+            <lib-board-puzzle [setPuzzle]="puzzleToPlay" [setForceStopTimer]="forceStopTimerInPuzzleBoard"
               (puzzleCompleted)="onPuzzleCompleted($any($event), 'good')" (puzzleFailed)="onPuzzleCompleted($any($event), 'bad')"
-              (puzzleEndByTime)="onPuzzleCompleted($any($event), 'timeOut')"></app-board-puzzle>
+              (puzzleEndByTime)="onPuzzleCompleted($any($event), 'timeOut')"></lib-board-puzzle>
           </ion-col>
           @if (isGoshHelperShow) {
             <ion-col size-xs="12" size-sm="12" size-md="12" size-lg="6" size-xl="6" offset-lg="3" offset-xl="3">

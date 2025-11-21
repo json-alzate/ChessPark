@@ -23,14 +23,14 @@ import { timerOutline} from 'ionicons/icons';
 import { Block, Plan, PlanTypes, Puzzle, UserPuzzle } from '@cpark/models';
 
 
-import { BoardComponent } from '@chesspark/board';
+import { BoardPuzzleComponent } from '@chesspark/board';
 
 import { BlockPresentationComponent } from '../../components/block-presentation/block-presentation.component';
 import { SoundsService, SecondsToMinutesSecondsPipe } from '@chesspark/common-utils';
 
 @Component({
   selector: 'app-training',
-  imports: [CommonModule, IonRippleEffect, BoardComponent, SecondsToMinutesSecondsPipe, TranslocoPipe],
+  imports: [CommonModule, IonRippleEffect, BoardPuzzleComponent, SecondsToMinutesSecondsPipe, TranslocoPipe],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './training.component.html',
   styleUrl: './training.component.scss',

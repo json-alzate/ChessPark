@@ -30,4 +30,24 @@ declare module 'cm-chessboard' {
     export const MOVE_INPUT_MODE: any;
     export const SQUARE_SELECT_TYPE: any;
     export const BORDER_TYPE: any;
+}
+
+declare module 'cm-chessboard/src/extensions/markers/Markers.js' {
+    export const MARKER_TYPE: any;
+    export class Markers {
+        constructor();
+    }
+}
+
+declare module 'cm-chessboard/src/extensions/arrows/Arrows.js' {
+    export const ARROW_TYPE: any;
+    export class Arrows {
+        constructor();
+    }
+}
+
+declare module 'cm-chessboard/src/extensions/promotion-dialog/PromotionDialog.js' {
+    export class PromotionDialog {
+        constructor();
+    }
 } 

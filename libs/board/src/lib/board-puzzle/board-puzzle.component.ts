@@ -2,19 +2,17 @@ import { Component, OnInit, Input, Output, EventEmitter, Renderer2 } from '@angu
 
 import { IonCardContent, IonItem, IonCard, IonLabel, IonButtons, IonButton, IonIcon, IonProgressBar } from '@ionic/angular/standalone';
 
-// import {
-//   COLOR,
-//   INPUT_EVENT_TYPE,
-//   MOVE_INPUT_MODE,
-//   SQUARE_SELECT_TYPE,
-//   Chessboard,
-//   BORDER_TYPE
-// } from 'cm-chessboard';
-// import { MARKER_TYPE, Markers } from 'cm-chessboard/src/extensions/markers/markers';
-// import { MARKER_TYPE, Markers } from 'src/lib/cm-chessboard/src/extensions/markers/markers';
-// import { MARKER_TYPE, Markers } from 'cm-chessboard/src/extensions/markers/markers';
-// import { ARROW_TYPE, Arrows } from 'cm-chessboard/src/extensions/arrows/arrows';
-// import { PromotionDialog } from 'cm-chessboard/src/extensions/promotion-dialog/PromotionDialog';
+import {
+  COLOR,
+  INPUT_EVENT_TYPE,
+  MOVE_INPUT_MODE,
+  SQUARE_SELECT_TYPE,
+  Chessboard,
+  BORDER_TYPE
+} from 'cm-chessboard';
+import { MARKER_TYPE, Markers } from 'cm-chessboard/src/extensions/markers/Markers.js';
+import { ARROW_TYPE, Arrows } from 'cm-chessboard/src/extensions/arrows/Arrows.js';
+import { PromotionDialog } from 'cm-chessboard/src/extensions/promotion-dialog/PromotionDialog.js';
 import { Chess } from 'chess.js';
 
 // rxjs
@@ -75,7 +73,7 @@ export class BoardPuzzleComponent implements OnInit {
 
   timeUsed = 0;
   goshPuzzleTime = 0;
-  // board;
+  board!: Chessboard;
   chessInstance = new Chess();
 
 
@@ -100,23 +98,25 @@ export class BoardPuzzleComponent implements OnInit {
   }
 
   ngOnInit() {
-    //   if (!this.board) {
-    //     this.buildBoard('8/8/8/8/8/8/8/8 w - - 0 1');
-    // }
+    console.log('ngOnInit para construir el tablero');
+    
+      if (!this.board) {
+        this.buildBoard('8/8/8/8/8/8/8/8 w - - 0 1');
+    }
   }
 
 
   initPuzzle() {
-    // if (this.board) {
+    if (this.board) {
       // en caso de que se haya jugado un puzzle a ciegas anteriormente, se muestra las piezas
       const pieces = document.querySelectorAll('#boardPuzzle .pieces');;
       if (pieces.length > 0) {
         this.renderer.setStyle(pieces[0], 'opacity', '1');
       }
-      // this.board.setPosition(this.puzzle.fen);
-    // } else {
-    //   this.buildBoard(this.puzzle.fen);
-    // }
+      this.board.setPosition(this.puzzle.fen);
+    } else {
+      this.buildBoard(this.puzzle.fen);
+    }
     this.chessInstance.load(this.puzzle.fen);
     this.fenToCompareAndPlaySound = this.puzzle.fen;
     // Se cambia el color porque luego se realizara automáticamente la jugada inicial de la maquina
@@ -131,7 +131,7 @@ export class BoardPuzzleComponent implements OnInit {
     this.arrayMovesSolution = this.puzzle.moves.split(' ');
     this.arrayFenSolution.push(this.chessInstance.fen());
     for (const move of this.arrayMovesSolution) {
-      this.chessInstance.move(move, { sloppy: true });
+      this.chessInstance.move(move, { strict: true });
       const fen = this.chessInstance.fen();
       this.arrayFenSolution.push(fen);
     }
@@ -158,33 +158,36 @@ export class BoardPuzzleComponent implements OnInit {
   /**
    * Build board ui
    */
-  buildBoard(fen: string) {
+  async buildBoard(fen: string) {
 
     // Se configura la ruta de las piezas con un timestamp para que no se guarde en cache (assetsCache: false, no se ven bien las piezas)
-    // const uniqueTimestamp = new Date().getTime();
+    const uniqueTimestamp = new Date().getTime();
     // const piecesPath = `${this.uiService.pieces}?t=${uniqueTimestamp}`;
 
     // const cssClass = this.uiService.currentBoardStyleSelected.name !== 'default' ? this.uiService.currentBoardStyleSelected.name : null;
 
 
-    // this.board = new Chessboard(document.getElementById('boardPuzzle'), {
-    //   responsive: true,
-    //   position: fen,
-    //   assetsUrl: '/assets/cm-chessboard/',
-    //   assetsCache: true,
-    //   style: {
-    //     cssClass,
-    //     borderType: BORDER_TYPE.thin,
-    //     pieces: {
-    //       file: piecesPath
-    //     }
-    //   },
-    //   extensions: [
-    //     { class: Markers },
-    //     { class: Arrows },
-    //     { class: PromotionDialog }
-    //   ]
-    // });
+    this.board = await new Chessboard(document.getElementById('boardPuzzle') as HTMLElement, {
+      responsive: true,
+      position: fen,
+      assetsUrl: 'assets/cm-chessboard/assets/',
+      assetsCache: true,
+      style: {
+        cssClass: 'chessboard-js',
+        borderType: BORDER_TYPE.thin,
+        pieces: {
+          file: 'pieces/standard.svg',
+        }
+      },
+      extensions: [
+        { class: Markers },
+        { class: Arrows },
+        { class: PromotionDialog }
+      ]
+    });
+
+    console.log('board construido', this.board);
+    
 
     // this.board.enableMoveInput((event) => {
 
@@ -463,7 +466,7 @@ export class BoardPuzzleComponent implements OnInit {
     // this.toolsService.determineChessMoveType(this.fenToCompareAndPlaySound, fenChessInstance);
 
     this.currentMoveNumber++;
-    if (fenChessInstance === this.arrayFenSolution[this.currentMoveNumber] || this.chessInstance.in_checkmate()) {
+    if (fenChessInstance === this.arrayFenSolution[this.currentMoveNumber] || this.chessInstance.isCheckmate()) {
       this.puzzleMoveResponse();
     } else {
       this.puzzleFailed.emit({
