@@ -39,17 +39,15 @@ interface UISettings {
 // import { ToolsService } from '@services/tools.service';
 
 // Utils
-import { UidGeneratorService } from '@chesspark/common-utils';
-import { SecondsToMinutesSecondsPipe } from '@shared/pipes/seconds-to-minutes-seconds.pipe';
-import { BoardComponent } from "@chesspark/board";
+import { UidGeneratorService, SecondsToMinutesSecondsPipe } from '@chesspark/common-utils';
 
 // Components
 
 @Component({
-  selector: 'app-board-puzzle',
+  selector: 'lib-board-puzzle',
   templateUrl: './board-puzzle.component.html',
   styleUrls: ['./board-puzzle.component.scss'],
-  imports: [IonCard, IonCardContent, IonItem, IonLabel, IonButtons, IonButton, IonIcon, IonProgressBar, SecondsToMinutesSecondsPipe, BoardComponent],
+  imports: [IonCard, IonCardContent, IonItem, IonLabel, IonButtons, IonButton, IonIcon, IonProgressBar, SecondsToMinutesSecondsPipe],
 })
 export class BoardPuzzleComponent implements OnInit {
 

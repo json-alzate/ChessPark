@@ -17,5 +17,13 @@
   "include": [
     "src/**/*.ts",
     "types/cm-chessboard.d.ts"
+  ],
+  "references": [
+    {
+      "path": "../models/tsconfig.lib.json"
+    },
+    {
+      "path": "../common-utils/tsconfig.lib.json"
+    }
   ]
 }

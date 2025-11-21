@@ -26,8 +26,7 @@ import { Block, Plan, PlanTypes, Puzzle, UserPuzzle } from '@cpark/models';
 import { BoardComponent } from '@chesspark/board';
 
 import { BlockPresentationComponent } from '../../components/block-presentation/block-presentation.component';
-import { SecondsToMinutesSecondsPipe } from '../../../../shared/pipes/seconds-to-minutes-seconds.pipe';
-import { SoundsService } from '@chesspark/common-utils';
+import { SoundsService, SecondsToMinutesSecondsPipe } from '@chesspark/common-utils';
 
 @Component({
   selector: 'app-training',

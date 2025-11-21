@@ -3,8 +3,9 @@
   <ion-card-content class="ion-no-margin ion-no-padding">
 
  
-    <lib-board></lib-board>
-    
+
+    <div class="board" id="boardPuzzle">
+    </div>
 
     <ion-item lines="none">
       <ion-label *ngIf="(showTimer && isPlaying)" [color]="timeColor">{{ time | secondsToMinutesSeconds }}</ion-label>

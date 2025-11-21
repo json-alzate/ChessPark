@@ -9,6 +9,8 @@ export * from './lib/uid-generator.service'; // Servicio para generar identifica
 export * from './lib/random-number.service'; // Servicio para generar números aleatorios
 export * from './lib/sounds/sounds.service';
 
+// Pipes
+export * from './lib/pipes/seconds-to-minutes-seconds.pipe';
 
 // Re-exportar tipos y interfaces
 export type {
