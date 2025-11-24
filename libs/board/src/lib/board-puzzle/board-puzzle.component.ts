@@ -1,6 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter, Renderer2, Injectable, inject } from '@angular/core';
 
-import { IonCardContent, IonItem, IonCard, IonLabel, IonButtons, IonButton, IonIcon, IonProgressBar } from '@ionic/angular/standalone';
 
 import {
   COLOR,
@@ -46,7 +45,7 @@ import { UidGeneratorService, SecondsToMinutesSecondsPipe, SoundsService } from 
   selector: 'lib-board-puzzle',
   templateUrl: './board-puzzle.component.html',
   styleUrls: ['./board-puzzle.component.scss'],
-  imports: [IonCard, IonCardContent, IonItem, IonLabel, IonButtons, IonButton, IonIcon, IonProgressBar, SecondsToMinutesSecondsPipe],
+  imports: [SecondsToMinutesSecondsPipe],
 })
 export class BoardPuzzleComponent implements OnInit {
 
@@ -433,7 +432,7 @@ export class BoardPuzzleComponent implements OnInit {
         this.timeColor = 'warning';
       }
       if (this.time === dangerColorOn) {
-        this.timeColor = 'danger';
+        this.timeColor = 'error';
       }
     });
   }
