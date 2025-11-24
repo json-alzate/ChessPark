@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, Renderer2 } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, Renderer2, Injectable, inject } from '@angular/core';
 
 import { IonCardContent, IonItem, IonCard, IonLabel, IonButtons, IonButton, IonIcon, IonProgressBar } from '@ionic/angular/standalone';
 
@@ -36,11 +36,12 @@ interface UISettings {
 // import { UiService } from '@services/ui.service';
 // import { ToolsService } from '@services/tools.service';
 
+
 // Utils
-import { UidGeneratorService, SecondsToMinutesSecondsPipe } from '@chesspark/common-utils';
+import { UidGeneratorService, SecondsToMinutesSecondsPipe, SoundsService } from '@chesspark/common-utils';
 
 // Components
-
+@Injectable()
 @Component({
   selector: 'lib-board-puzzle',
   templateUrl: './board-puzzle.component.html',
@@ -48,6 +49,8 @@ import { UidGeneratorService, SecondsToMinutesSecondsPipe } from '@chesspark/com
   imports: [IonCard, IonCardContent, IonItem, IonLabel, IonButtons, IonButton, IonIcon, IonProgressBar, SecondsToMinutesSecondsPipe],
 })
 export class BoardPuzzleComponent implements OnInit {
+
+  soundsService = inject(SoundsService);
 
   @Output() puzzleCompleted = new EventEmitter<Puzzle>();
   @Output() puzzleFailed = new EventEmitter<Puzzle>();
@@ -353,39 +356,39 @@ export class BoardPuzzleComponent implements OnInit {
 
   removeMarkerNotLastMove(square?: string) {
 
-    // let markersOnSquare = [];
-    // if (square) {
-    //   markersOnSquare = this.board.getMarkers(undefined, square);
-    // } else {
-    //   markersOnSquare = this.board.getMarkers();
-    // }
-    // markersOnSquare.forEach(marker => {
-    //   if (marker.type.id !== 'lastMove') {
-    //     this.board.removeMarkers(marker.type, square);
-    //   }
-    // });
+    let markersOnSquare = [];
+    if (square) {
+      markersOnSquare = this.board.getMarkers(undefined, square);
+    } else {
+      markersOnSquare = this.board.getMarkers();
+    }
+    markersOnSquare.forEach(marker => {
+      if (marker.type.id !== 'lastMove') {
+        this.board.removeMarkers(marker.type, square);
+      }
+    });
 
   }
 
   // Muestra la ultima jugada utilizando marcadores
   showLastMove(from?: string, to?: string) {
-    // this.board.removeMarkers();
-    // if (!from && !to) {
-    //   // eslint-disable-next-line max-len
-    //   from = this.chessInstance.history({ verbose: true }).slice(-1)[0]?.from;
-    //   to = this.chessInstance.history({ verbose: true }).slice(-1)[0]?.to;
+    this.board.removeMarkers();
+    if (!from && !to) {
+      // eslint-disable-next-line max-len
+      from = this.chessInstance.history({ verbose: true }).slice(-1)[0]?.from;
+      to = this.chessInstance.history({ verbose: true }).slice(-1)[0]?.to;
 
-    //   if (!from || !to) {
-    //     from = this.arrayMovesSolution[this.currentMoveNumber - 1]?.slice(0, 2);
-    //     to = this.arrayMovesSolution[this.currentMoveNumber - 1]?.slice(2, 4);
-    //   }
+      if (!from || !to) {
+        from = this.arrayMovesSolution[this.currentMoveNumber - 1]?.slice(0, 2);
+        to = this.arrayMovesSolution[this.currentMoveNumber - 1]?.slice(2, 4);
+      }
 
-    // }
-    // if (from && to) {
-    //   const marker = { id: 'lastMove', class: 'marker-square-green', slice: 'markerSquare' };
-    //   this.board.addMarker(marker, from);
-    //   this.board.addMarker(marker, to);
-    // }
+    }
+    if (from && to) {
+      const marker = { id: 'lastMove', class: 'marker-square-green', slice: 'markerSquare' };
+      this.board.addMarker(marker, from);
+      this.board.addMarker(marker, to);
+    }
 
   }
 
@@ -477,7 +480,7 @@ export class BoardPuzzleComponent implements OnInit {
   validateMove() {
     const fenChessInstance = this.chessInstance.fen();
 
-    // this.toolsService.determineChessMoveType(this.fenToCompareAndPlaySound, fenChessInstance);
+    this.soundsService.determineChessMoveType(this.fenToCompareAndPlaySound, fenChessInstance);
 
     this.currentMoveNumber++;
     if (fenChessInstance === this.arrayFenSolution[this.currentMoveNumber] || this.chessInstance.isCheckmate()) {
@@ -526,12 +529,12 @@ export class BoardPuzzleComponent implements OnInit {
 
       this.chessInstance.load(this.arrayFenSolution[this.currentMoveNumber]);
       const fen = this.chessInstance.fen();
-      // this.toolsService.determineChessMoveType(this.fenToCompareAndPlaySound, fen);
+      this.soundsService.determineChessMoveType(this.fenToCompareAndPlaySound, fen);
       this.fenToCompareAndPlaySound = fen;
-      // this.board.removeMarkers();
-      // this.board.removeArrows();
+      this.board.removeMarkers();
+      this.board.removeArrows();
 
-      // await this.board.setPosition(fen, true);
+      await this.board.setPosition(fen, true);
       const from = this.arrayMovesSolution[this.currentMoveNumber - 1].slice(0, 2);
       const to = this.arrayMovesSolution[this.currentMoveNumber - 1].slice(2, 4);
       this.showLastMove(from, to);
@@ -552,22 +555,22 @@ export class BoardPuzzleComponent implements OnInit {
    */
   turnRoundBoard(orientation?: 'w' | 'b') {
     if (orientation) {
-      // this.board.setOrientation(orientation);
+      this.board.setOrientation(orientation);
     } else {
-      // if (this.board.getOrientation() === 'w') {
-      //   this.board.setOrientation('b');
-      // } else {
-      //   this.board.setOrientation('w');
-      // }
+      if (this.board.getOrientation() === 'w') {
+        this.board.setOrientation('b');
+      } else {
+        this.board.setOrientation('w');
+      }
     }
   }
 
   // Arrows
 
   starPosition() {
-    // this.board.removeArrows();
-    // this.board.removeMarkers();
-    // this.board.setPosition(this.puzzle.fen, true);
+    this.board.removeArrows();
+    this.board.removeMarkers();
+    this.board.setPosition(this.puzzle.fen, true);
     this.chessInstance.load(this.puzzle.fen);
     this.fenToCompareAndPlaySound = this.chessInstance.fen();
     this.currentMoveNumber = 0;
@@ -584,11 +587,11 @@ export class BoardPuzzleComponent implements OnInit {
     } else {
       this.currentMoveNumber--;
     }
-    // this.board.removeMarkers();
-    // this.board.removeArrows();
-    // this.toolsService.determineChessMoveType(this.fenToCompareAndPlaySound, this.chessInstance.fen());
+    this.board.removeMarkers();
+    this.board.removeArrows();
+    this.soundsService.determineChessMoveType(this.fenToCompareAndPlaySound, this.chessInstance.fen());
     this.chessInstance.load(this.arrayFenSolution[this.currentMoveNumber]);
-    // this.board.setPosition(this.arrayFenSolution[this.currentMoveNumber], true);
+    this.board.setPosition(this.arrayFenSolution[this.currentMoveNumber], true);
     this.showLastMove();
   }
 
@@ -603,10 +606,10 @@ export class BoardPuzzleComponent implements OnInit {
     } else {
       this.currentMoveNumber++;
     }
-    // this.board.removeMarkers();
-    // this.board.removeArrows();
-    // this.toolsService.determineChessMoveType(this.fenToCompareAndPlaySound, this.chessInstance.fen());
-    // this.board.setPosition(this.arrayFenSolution[this.currentMoveNumber], true);
+    this.board.removeMarkers();
+    this.board.removeArrows();
+    this.soundsService.determineChessMoveType(this.fenToCompareAndPlaySound, this.chessInstance.fen());
+    this.board.setPosition(this.arrayFenSolution[this.currentMoveNumber], true);
     this.chessInstance.load(this.arrayFenSolution[this.currentMoveNumber]);
     this.fenToCompareAndPlaySound = this.chessInstance.fen();
     this.showLastMove();
@@ -614,9 +617,9 @@ export class BoardPuzzleComponent implements OnInit {
 
   moveToEnd() {
     this.currentMoveNumber = this.totalMoves;
-    // this.board.removeMarkers();
-    // this.board.removeArrows();
-    // this.board.setPosition(this.arrayFenSolution[this.currentMoveNumber], true);
+    this.board.removeMarkers();
+    this.board.removeArrows();
+    this.board.setPosition(this.arrayFenSolution[this.currentMoveNumber], true);
     this.chessInstance.load(this.arrayFenSolution[this.currentMoveNumber]);
     this.fenToCompareAndPlaySound = this.chessInstance.fen();
     this.showLastMove();

@@ -45,6 +45,10 @@ declare module 'cm-chessboard' {
         disableMoveInput(): void;
         destroy(): void;
         
+        // Orientation methods
+        setOrientation(orientation: 'w' | 'b'): void;
+        getOrientation(): 'w' | 'b';
+        
         // Extension methods
         removeArrows(): void;
         addMarker(marker: MarkerType, square: string): void;
