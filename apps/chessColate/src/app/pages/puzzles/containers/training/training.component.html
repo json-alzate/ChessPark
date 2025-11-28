@@ -1,80 +1,105 @@
+
 <ion-content [fullscreen]="true">
 
     <div class="main-container" data-theme="halloween">
 
-      
+      <div class="navbar bg-base-100 shadow-sm">
+        <div class="flex-1">
+          <div class="flex items-center gap-2">
+            <div class="dropdown dropdown-bottom" [class.dropdown-open]="isDropdownOpen">
+              <div tabindex="0" role="button" class="btn btn-ghost btn-sm" (click)="isDropdownOpen = !isDropdownOpen" (blur)="closeDropdown()">
+                <ion-icon name="chevron-down-outline" class="h-4 w-4"></ion-icon>
+              </div>
+              <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-64 p-2 shadow-lg max-h-96 overflow-y-auto">
+                @for (block of ($any(plan)?.blocks ?? []); track $index; let i = $index) {
+                  <li>
+                    <a class="flex items-center justify-between" [class.active]="i === currentIndexBlock" [class.disabled]="i > currentIndexBlock">
+                      <div class="flex flex-col">
+                        @if (block.title) {
+                          <span class="font-semibold">{{ block.title }}</span>
+                        }
+                        @if (block.theme) {
+                          <span class="text-sm text-base-content/70">{{ appService.getNameThemePuzzleByValue(block.theme) }}</span>
+                        }
+                        @if (block.openingFamily) {
+                          <span class="text-sm text-base-content/70">{{ appService.getNameOpeningByValue(block.openingFamily ?? '') }}</span>
+                        }
+                      </div>
+                      <div class="flex items-center gap-2">
+                        @if (i < currentIndexBlock) {
+                          <ion-icon name="checkmark-circle-outline" color="success" class="h-5 w-5"></ion-icon>
+                        } @else if (i === currentIndexBlock) {
+                          <ion-icon name="remove-circle-outline" color="primary" class="h-5 w-5"></ion-icon>
+                        } @else {
+                          <ion-icon name="ellipse-outline" class="h-5 w-5"></ion-icon>
+                        }
+                      </div>
+                    </a>
+                  </li>
+                }
+              </ul>
+            </div>
+            <div class="flex flex-col">
+              <div class="flex items-center gap-2">
+                @if (($any(plan)?.blocks?.[currentIndexBlock])) {
+                  @if (plan.blocks[currentIndexBlock].title) {
+                    <span class="font-semibold text-lg">{{ plan.blocks[currentIndexBlock].title }}</span>
+                  }
+                  @if (showBlockTimer) {
+                    <div class="flex items-center gap-1">
+                      <ion-icon name="time-outline" class="h-4 w-4"></ion-icon>
+                      <span class="font-mono text-sm">{{ timeLeftBlock | secondsToMinutesSeconds }}</span>
+                    </div>
+                  }
+                  @if (totalPuzzlesInBlock > 0 && !showBlockTimer) {
+                    <div class="flex items-center gap-1">
+                      <span class="font-semibold text-sm">{{ countPuzzlesPlayedBlock }} / {{ totalPuzzlesInBlock }}</span>
+                    </div>
+                  }
+                }
+              </div>
+              @if (($any(plan)?.blocks?.[currentIndexBlock])) {
+                @if (plan.blocks[currentIndexBlock].theme) {
+                  <span class="text-sm text-base-content/70">{{ appService.getNameThemePuzzleByValue(plan.blocks[currentIndexBlock].theme) }}</span>
+                }
+                @if (plan.blocks[currentIndexBlock].openingFamily) {
+                  <span class="text-sm text-base-content/70">{{ appService.getNameOpeningByValue(plan.blocks[currentIndexBlock].openingFamily ?? '') }}</span>
+                }
+              }
+            </div>
+          </div>
+        </div>
+        <div class="flex-none gap-2 flex items-center">
+          @if (totalPuzzlesInBlock > 0 && showBlockTimer) {
+            <div class="flex items-center gap-2">
+              <span class="font-semibold">{{ countPuzzlesPlayedBlock }} / {{ totalPuzzlesInBlock }}</span>
+            </div>
+          }
+          <button class="btn btn-square btn-ghost btn-error" (click)="onExitTraining()">
+            <ion-icon name="close-outline" class="h-5 w-5"></ion-icon>
+          </button>
+        </div>
+      </div>
   
-      <ion-grid>
         <ion-row>
     
-          <ion-col size-xs="12" size-sm="12" size-md="12" size-lg="3" size-xl="3" class="ion-margin-top">
-
-            <ion-list>
-              @for (block of ($any(plan)?.blocks ?? []); track $index; let i = $index) {
-                <div>
-                  @if (i === currentIndexBlock) {
-                    <ion-item class="item-block-training-info" lines="none">
-                      <ion-label>
-                        @if (block.title) {
-                          <h6>{{ block.title }}</h6>
-                        }
-                        @if (block.theme) {
-                          <h6>{{ appService.getNameThemePuzzleByValue(block.theme) }}</h6>
-                        }
-                        @if (block.openingFamily) {
-                          <h6>{{ appService.getNameOpeningByValue(block.openingFamily) }}</h6>
-                        }
-                      </ion-label>
-                      @if (showBlockTimer) {
-                        <div slot="end">{{ timeLeftBlock | secondsToMinutesSeconds }}</div>
-                      }
-                      @if (totalPuzzlesInBlock > 0) {
-                        <div slot="end"> {{ countPuzzlesPlayedBlock }} / {{ totalPuzzlesInBlock }}</div>
-                      }
-                    </ion-item>
-                  } @else {
-                    <ion-item class="item-block-training-info ion-hide-lg-down" lines="none" disabled>
-                      <ion-label>
-                        @if (block.title) {
-                          <h6>{{ block.title }}</h6>
-                        }
-                        @if (block.theme) {
-                          <h6>{{ appService.getNameThemePuzzleByValue(block.theme) }}</h6>
-                        }
-                        @if (block.openingFamily) {
-                          <h6>{{ appService.getNameOpeningByValue(block.openingFamily) }}</h6>
-                        }
-                      </ion-label>
-                      @if (i < currentIndexBlock) {
-                        <ion-icon color="success" slot="end" name="checkmark-done-outline"></ion-icon>
-                      }
-                      @if (i > currentIndexBlock) {
-                        <ion-icon slot="end" name="checkmark-outline"></ion-icon>
-                      }
-                    </ion-item>
-                  }
-                </div>
-              }
-
-            </ion-list>
-    
+          <ion-col class=" ion-margin-top" size-xs="12" size-sm="12" size-md="12" size-lg="6" size-xl="6" style="padding: 1.5px;">
+        
+              <lib-board-puzzle [setPuzzle]="puzzleToPlay" [setForceStopTimer]="forceStopTimerInPuzzleBoard"
+                (puzzleCompleted)="onPuzzleCompleted($any($event), 'good')" (puzzleFailed)="onPuzzleCompleted($any($event), 'bad')"
+                (puzzleEndByTime)="onPuzzleCompleted($any($event), 'timeOut')"></lib-board-puzzle>
+     
           </ion-col>
-    
-          <ion-col class="ion-no-padding ion-margin-top" size-xs="12" size-sm="12" size-md="12" size-lg="6" size-xl="6">
-            <lib-board-puzzle [setPuzzle]="puzzleToPlay" [setForceStopTimer]="forceStopTimerInPuzzleBoard"
-              (puzzleCompleted)="onPuzzleCompleted($any($event), 'good')" (puzzleFailed)="onPuzzleCompleted($any($event), 'bad')"
-              (puzzleEndByTime)="onPuzzleCompleted($any($event), 'timeOut')"></lib-board-puzzle>
-          </ion-col>
-          @if (isGoshHelperShow) {
+  
             <ion-col size-xs="12" size-sm="12" size-md="12" size-lg="6" size-xl="6" offset-lg="3" offset-xl="3">
               <ion-note>
                 {{ 'PUZZLES.help.gosh' | transloco}} <ion-icon [name]="'eye-outline'"></ion-icon> {{ 'PUZZLES.help.gosh2' |
                 transloco}} 00:00
               </ion-note>
             </ion-col>
-          }
+        
         </ion-row>
-      </ion-grid>
+
   
     </div>
   </ion-content>

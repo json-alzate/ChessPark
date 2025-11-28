@@ -8,7 +8,7 @@ import { takeUntil } from 'rxjs/operators';
 // Transloco
 import { TranslocoPipe } from '@jsverse/transloco';
 
-import { IonRippleEffect, LoadingController, ModalController } from '@ionic/angular/standalone';
+import { IonRippleEffect, LoadingController, ModalController, IonIcon } from '@ionic/angular/standalone';
 
 // services
 import { AppService } from '@services/app.service';
@@ -17,20 +17,29 @@ import { ProfileService } from '@services/profile.service';
 import { PlanFacadeService } from '@cpark/state';
 import { UidGeneratorService } from '@chesspark/common-utils';
 import { addIcons } from 'ionicons';
-import { timerOutline} from 'ionicons/icons';
+import { 
+  timerOutline,
+  chevronDownOutline,
+  checkmarkCircleOutline,
+  removeCircleOutline,
+  ellipseOutline,
+  timeOutline,
+  closeOutline
+} from 'ionicons/icons';
 
 // models
 import { Block, Plan, PlanTypes, Puzzle, UserPuzzle } from '@cpark/models';
 
 
 import { BoardPuzzleComponent } from '@chesspark/board';
+import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 
 import { BlockPresentationComponent } from '../../components/block-presentation/block-presentation.component';
 import { SoundsService, SecondsToMinutesSecondsPipe } from '@chesspark/common-utils';
 
 @Component({
   selector: 'app-training',
-  imports: [CommonModule, IonRippleEffect, BoardPuzzleComponent, SecondsToMinutesSecondsPipe, TranslocoPipe],
+  imports: [CommonModule, BoardPuzzleComponent, SecondsToMinutesSecondsPipe, TranslocoPipe, IonIcon],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './training.component.html',
   styleUrl: './training.component.scss',
@@ -59,9 +68,18 @@ export class TrainingComponent implements OnInit {
 
 
   isGoshHelperShow = false;
+  isDropdownOpen = false;
 
   constructor(private modalController: ModalController) {
-    addIcons({ timerOutline });
+    addIcons({ 
+      timerOutline,
+      chevronDownOutline,
+      checkmarkCircleOutline,
+      removeCircleOutline,
+      ellipseOutline,
+      timeOutline,
+      closeOutline
+    });
   }
 
   ngOnInit() {
@@ -396,6 +414,18 @@ export class TrainingComponent implements OnInit {
     // this.planService.setPlanAction(this.plan);
     // this.navController.navigateRoot('/puzzles/plan-played');
     // TODO: Track end plan
+  }
+
+  onExitTraining() {
+    this.stopPlanTimer();
+    this.forceStopTimerInPuzzleBoard = true;
+    this.router.navigate(['/home']);
+  }
+
+  closeDropdown() {
+    setTimeout(() => {
+      this.isDropdownOpen = false;
+    }, 200);
   }
 
 
