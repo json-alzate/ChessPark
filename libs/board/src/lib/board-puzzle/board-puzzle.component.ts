@@ -18,6 +18,19 @@ import { Chess } from 'chess.js';
 import { interval, Subject, Observable, Subscription, merge } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
+// Ionic
+import { IonIcon } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import {
+  eyeOutline,
+  eyeOffOutline,
+  swapHorizontalOutline,
+  playSkipBackOutline,
+  chevronBackOutline,
+  chevronForwardOutline,
+  playSkipForwardOutline
+} from 'ionicons/icons';
+
 // models
 import { Puzzle } from '@cpark/models';
 
@@ -45,7 +58,7 @@ import { UidGeneratorService, SecondsToMinutesSecondsPipe, SoundsService } from 
   selector: 'lib-board-puzzle',
   templateUrl: './board-puzzle.component.html',
   styleUrls: ['./board-puzzle.component.scss'],
-  imports: [SecondsToMinutesSecondsPipe],
+  imports: [SecondsToMinutesSecondsPipe, IonIcon],
 })
 export class BoardPuzzleComponent implements OnInit {
 
@@ -72,6 +85,8 @@ export class BoardPuzzleComponent implements OnInit {
   timeColor = 'success';
   subsSeconds!: Observable<number>;
   timerUnsubscribe$ = new Subject<void>();
+  smoothProgress = 0; // Progreso suave para la barra (actualizado cada 100ms)
+  timerStartTime = 0; // Timestamp de inicio del timer para calcular progreso suave
 
   timeUsed = 0;
   goshPuzzleTime = 0;
@@ -84,7 +99,18 @@ export class BoardPuzzleComponent implements OnInit {
       // public uiService: UiService,
       // private toolsService: ToolsService,
     private uidGenerator: UidGeneratorService
-  ) { }
+  ) {
+    // Registrar iconos de Ionic
+    addIcons({
+      eyeOutline,
+      eyeOffOutline,
+      swapHorizontalOutline,
+      playSkipBackOutline,
+      chevronBackOutline,
+      chevronForwardOutline,
+      playSkipForwardOutline
+    });
+  }
   @Input() set setPuzzle(data: Puzzle) {
     if (data) {
       this.puzzle = data;
@@ -407,6 +433,11 @@ export class BoardPuzzleComponent implements OnInit {
     }
     this.timerUnsubscribe$ = new Subject<void>();
 
+    // Guardar el tiempo de inicio para calcular el progreso suave
+    this.timerStartTime = Date.now();
+    this.smoothProgress = this.puzzle?.times?.total || 0;
+
+    // Timer principal en segundos (mantiene toda la lógica original)
     this.subsSeconds = interval(1000);
     this.subsSeconds.pipe(
       takeUntil(this.timerUnsubscribe$)
@@ -435,6 +466,19 @@ export class BoardPuzzleComponent implements OnInit {
         this.timeColor = 'error';
       }
     });
+
+    // Timer suave para actualizar la barra de progreso cada 100ms
+    if (this.puzzle?.times?.total) {
+      const smoothTimer = interval(100);
+      smoothTimer.pipe(
+        takeUntil(this.timerUnsubscribe$)
+      ).subscribe(() => {
+        if (this.puzzle?.times?.total) {
+          const elapsed = (Date.now() - this.timerStartTime) / 1000; // Tiempo transcurrido en segundos
+          this.smoothProgress = Math.max(0, this.puzzle.times.total - elapsed);
+        }
+      });
+    }
   }
 
   initGoshTimer() {
@@ -473,6 +517,9 @@ export class BoardPuzzleComponent implements OnInit {
       this.timerUnsubscribe$.next();
       this.timerUnsubscribe$.complete();
     }
+    // Resetear el progreso suave
+    this.smoothProgress = 0;
+    this.timerStartTime = 0;
   }
 
 
