@@ -21,32 +21,8 @@
             </button>
           }
           <button class="btn btn-ghost btn-square" (click)="turnRoundBoard()">
-            <ion-icon name="swap-horizontal-outline" class="text-lg"></ion-icon>
+            <ion-icon name="swap-vertical-outline" class="text-lg"></ion-icon>
           </button>
-          @if (!isPlaying) {
-            <button class="btn btn-ghost btn-square"
-              [disabled]="!allowMoveArrows || currentMoveNumber === 0" (click)="starPosition()">
-              <ion-icon name="play-skip-back-outline" class="text-lg"></ion-icon>
-            </button>
-          }
-          @if (!isPlaying) {
-            <button class="btn btn-ghost btn-square"
-              [disabled]="!allowMoveArrows || currentMoveNumber === 0" (click)="backMove()">
-              <ion-icon name="chevron-back-outline" class="text-lg"></ion-icon>
-            </button>
-          }
-          @if (!isPlaying) {
-            <button class="btn btn-ghost btn-square"
-              [disabled]="!allowMoveArrows || currentMoveNumber === totalMoves" (click)="nextMove()">
-              <ion-icon name="chevron-forward-outline" class="text-lg"></ion-icon>
-            </button>
-          }
-          @if (!isPlaying) {
-            <button class="btn btn-ghost btn-square"
-              [disabled]="!allowMoveArrows || currentMoveNumber >= totalMoves" (click)="moveToEnd()">
-              <ion-icon name="play-skip-forward-outline" class="text-lg"></ion-icon>
-            </button>
-          }
         </div>
       </div>
       @if (showTimer && puzzle && puzzle.times && puzzle.times.total) {

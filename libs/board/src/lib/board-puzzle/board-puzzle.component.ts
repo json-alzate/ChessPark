@@ -24,7 +24,7 @@ import { addIcons } from 'ionicons';
 import {
   eyeOutline,
   eyeOffOutline,
-  swapHorizontalOutline,
+  swapVerticalOutline,
   playSkipBackOutline,
   chevronBackOutline,
   chevronForwardOutline,
@@ -104,7 +104,7 @@ export class BoardPuzzleComponent implements OnInit {
     addIcons({
       eyeOutline,
       eyeOffOutline,
-      swapHorizontalOutline,
+      swapVerticalOutline,
       playSkipBackOutline,
       chevronBackOutline,
       chevronForwardOutline,
@@ -611,64 +611,6 @@ export class BoardPuzzleComponent implements OnInit {
     }
   }
 
-  // Arrows
-
-  starPosition() {
-    this.board.removeArrows();
-    this.board.removeMarkers();
-    this.board.setPosition(this.puzzle.fen, true);
-    this.chessInstance.load(this.puzzle.fen);
-    this.fenToCompareAndPlaySound = this.chessInstance.fen();
-    this.currentMoveNumber = 0;
-  }
-
-  /**
-   * Navega a la anterior jugada en el tablero
-   * Navigate to the previous play on the board
-   *
-   */
-  backMove() {
-    if (this.currentMoveNumber <= 0) {
-      return;
-    } else {
-      this.currentMoveNumber--;
-    }
-    this.board.removeMarkers();
-    this.board.removeArrows();
-    this.soundsService.determineChessMoveType(this.fenToCompareAndPlaySound, this.chessInstance.fen());
-    this.chessInstance.load(this.arrayFenSolution[this.currentMoveNumber]);
-    this.board.setPosition(this.arrayFenSolution[this.currentMoveNumber], true);
-    this.showLastMove();
-  }
-
-  /**
-   * Navega a la siguiente jugada en el tablero
-   * Navigate to the next play on the board
-   *
-   */
-  nextMove() {
-    if (this.currentMoveNumber >= this.totalMoves) {
-      return;
-    } else {
-      this.currentMoveNumber++;
-    }
-    this.board.removeMarkers();
-    this.board.removeArrows();
-    this.soundsService.determineChessMoveType(this.fenToCompareAndPlaySound, this.chessInstance.fen());
-    this.board.setPosition(this.arrayFenSolution[this.currentMoveNumber], true);
-    this.chessInstance.load(this.arrayFenSolution[this.currentMoveNumber]);
-    this.fenToCompareAndPlaySound = this.chessInstance.fen();
-    this.showLastMove();
-  }
-
-  moveToEnd() {
-    this.currentMoveNumber = this.totalMoves;
-    this.board.removeMarkers();
-    this.board.removeArrows();
-    this.board.setPosition(this.arrayFenSolution[this.currentMoveNumber], true);
-    this.chessInstance.load(this.arrayFenSolution[this.currentMoveNumber]);
-    this.fenToCompareAndPlaySound = this.chessInstance.fen();
-    this.showLastMove();
-  }
+ 
 
 }
