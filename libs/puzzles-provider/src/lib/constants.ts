@@ -144,7 +144,7 @@ export const DEFAULT_CONFIG = {
   GITHUB_USER: 'json-alzate',
   ENABLE_CACHE: true,
   CACHE_EXPIRATION_MS: 7 * 24 * 60 * 60 * 1000, // 7 días
-  DEFAULT_PUZZLE_COUNT: 200,
+  DEFAULT_PUZZLE_COUNT: 50,
   MAX_PUZZLE_COUNT: 200,
 } as const;
 
