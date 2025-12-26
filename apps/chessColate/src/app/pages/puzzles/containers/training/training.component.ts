@@ -399,8 +399,10 @@ export class TrainingComponent implements OnInit {
 
     this.stopPlanTimer();
     this.forceStopTimerInPuzzleBoard = true;
-    if (this.plan.planType !== 'custom') {
-      // this.plan = { ...this.plan, eloTotal: this.profileService.getProfile?.elos[this.plan.planType + 'Total'] };
+    if (this.plan.planType !== 'custom' && this.profileService.getProfile?.elos) {
+      const eloKey = `${this.plan.planType}Total` as keyof NonNullable<typeof this.profileService.getProfile.elos>;
+      const eloValue = this.profileService.getProfile.elos[eloKey];
+      this.plan = { ...this.plan, eloTotal: typeof eloValue === 'number' ? eloValue : undefined };
     }
 
     if (this.profileService.getProfile?.uid) {
