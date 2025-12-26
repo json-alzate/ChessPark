@@ -246,36 +246,67 @@ export class BoardPuzzleComponent implements OnInit {
           return true;
         case 'validateMoveInput':
 
-          if (event.squareTo && event.piece && 
+          if (event.squareTo && event.piece && event.squareFrom &&
               (event.squareTo.charAt(1) === '8' || event.squareTo.charAt(1) === '1') && 
               event.piece.charAt(1) === 'p') {
 
-            const colorToShow = event.piece.charAt(0) === 'w' ? COLOR.white : COLOR.black;
-            // FIXME: se puede promocionar  si se toma un peon y se lleva con el mause a la ultima fila
-            this.board.showPromotionDialog(event.squareTo, colorToShow, (result) => {
-              if (result && result.piece && event.squareFrom && event.squareTo) {
-                // FIXME: No valida la coronación con chess.js
-                this.board.setPiece(result.square, result.piece, true);
-                // remover la piece de la casilla de origen
-                this.board.setPiece(event.squareFrom, undefined, true);
-                const objectMovePromotion = { 
-                  from: event.squareFrom, 
-                  to: event.squareTo, 
-                  promotion: result.piece.charAt(1) 
-                };
-                try {
-                  const theMovePromotion = this.chessInstance.move(objectMovePromotion);
-                  if (theMovePromotion) {
-                    this.validateMove();
-                  }
-                } catch (error) {
-                  // Movimiento de promoción inválido, no hacer nada
-                  console.log('Invalid promotion move:', error);
-                }
-              } else {
-                console.log('Promotion canceled');
+            // Validar primero si el movimiento básico del peón es válido
+            try {
+              // Verificar que hay movimientos posibles desde la casilla de origen
+              const possibleMoves = this.chessInstance.moves({ 
+                square: event.squareFrom as any, 
+                verbose: true 
+              });
+              
+              const isValidPawnMove = possibleMoves.some(move => move.to === event.squareTo);
+              
+              if (!isValidPawnMove) {
+                // El movimiento del peón no es válido, rechazar
+                return false;
               }
-            });
+
+              const colorToShow = event.piece.charAt(0) === 'w' ? COLOR.white : COLOR.black;
+              // Mostrar diálogo de promoción solo si el movimiento básico es válido
+              this.board.showPromotionDialog(event.squareTo, colorToShow, (result) => {
+                if (result && result.piece && event.squareFrom && event.squareTo) {
+                  const objectMovePromotion = { 
+                    from: event.squareFrom, 
+                    to: event.squareTo, 
+                    promotion: result.piece.charAt(1) 
+                  };
+                  
+                  // Validar primero con chess.js antes de actualizar el tablero
+                  try {
+                    const theMovePromotion = this.chessInstance.move(objectMovePromotion);
+                    
+                    if (theMovePromotion) {
+                      // Solo si el movimiento es válido, sincronizar el tablero con el estado de chess.js
+                      this.board.setPosition(this.chessInstance.fen(), false);
+                      
+                      this.board.removeArrows();
+                      this.showLastMove();
+                      this.validateMove();
+                    } else {
+                      // Movimiento inválido, restaurar posición original
+                      this.board.setPosition(this.chessInstance.fen(), false);
+                    }
+                  } catch (error) {
+                    // Movimiento de promoción inválido, restaurar posición original
+                    this.board.setPosition(this.chessInstance.fen(), false);
+                    console.log('Invalid promotion move:', error);
+                  }
+                } else {
+                  // Usuario canceló la promoción, restaurar posición original
+                  this.board.setPosition(this.chessInstance.fen(), false);
+                }
+              });
+              
+              // Retornar true para aceptar el movimiento pendiente de promoción
+              return true;
+            } catch (error) {
+              // Error al validar el movimiento básico
+              return false;
+            }
           }
 
 
