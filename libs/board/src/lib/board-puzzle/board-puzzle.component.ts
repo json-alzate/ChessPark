@@ -263,9 +263,14 @@ export class BoardPuzzleComponent implements OnInit {
                   to: event.squareTo, 
                   promotion: result.piece.charAt(1) 
                 };
-                const theMovePromotion = this.chessInstance.move(objectMovePromotion);
-                if (theMovePromotion) {
-                  this.validateMove();
+                try {
+                  const theMovePromotion = this.chessInstance.move(objectMovePromotion);
+                  if (theMovePromotion) {
+                    this.validateMove();
+                  }
+                } catch (error) {
+                  // Movimiento de promoción inválido, no hacer nada
+                  console.log('Invalid promotion move:', error);
                 }
               } else {
                 console.log('Promotion canceled');
@@ -273,19 +278,27 @@ export class BoardPuzzleComponent implements OnInit {
             });
           }
 
+
+
           if (event.squareFrom && event.squareTo) {
             const objectMove = { from: event.squareFrom, to: event.squareTo };
-            const theMove = this.chessInstance.move(objectMove);
+            try {
+              const theMove = this.chessInstance.move(objectMove);
 
-            if (theMove) {
-              this.board.removeArrows();
-              this.showLastMove();
-              this.validateMove();
+              if (theMove) {
+                this.board.removeArrows();
+                this.showLastMove();
+                this.validateMove();
+              }
+              // return true, if input is accepted/valid, `false` takes the move back
+              return theMove ? true : false;
+            } catch (error) {
+              // Movimiento inválido, retornar false para rechazar el movimiento
+              return false;
             }
-            // return true, if input is accepted/valid, `false` takes the move back
-            return theMove ? true : false;
           }
           return false;
+
         case 'moveInputCanceled':
           // hide the indicators
           return true;
