@@ -218,7 +218,8 @@ export class BoardPuzzleComponent implements OnInit {
       ]
     });
 
-
+    console.log('buildBoard', fen);
+    
     
 
     this.board.enableMoveInput((event) => {

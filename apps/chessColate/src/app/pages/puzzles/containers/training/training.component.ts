@@ -31,7 +31,7 @@ import {
 import { Block, Plan, PlanTypes, Puzzle, UserPuzzle } from '@cpark/models';
 
 
-import { BoardPuzzleComponent } from '@chesspark/board';
+import { BoardPuzzleComponent, BoardPuzzleSolutionComponent } from '@chesspark/board';
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 
 import { BlockPresentationComponent } from '../../components/block-presentation/block-presentation.component';
@@ -376,20 +376,28 @@ export class TrainingComponent implements OnInit {
       this.pauseBlockTimer();
     }
 
-    // const modal = await this.modalController.create({
-    //   component: PuzzleSolutionComponent,
-    //   componentProps: {
-    //     puzzle: this.puzzleToPlay
-    //   }
-    // });
-    // await modal.present();
-    // modal.onDidDismiss().then((data) => {
-    //   this.forceStopTimerInPuzzleBoard = false;
-    //   this.selectPuzzleToPlay();
-    //   if (this.plan.blocks[this.currentIndexBlock].time !== -1) {
-    //     this.resumeBlockTimer();
-    //   }
-    // });
+    // Calcular temas traducidos
+    const themesTranslated = this.puzzleToPlay.themes.map(theme => 
+      this.appService.getNameThemePuzzleByValue(theme)
+    );
+
+    const modal = await this.modalController.create({
+      component: BoardPuzzleSolutionComponent,
+      componentProps: {
+        puzzle: this.puzzleToPlay,
+        themesTranslated
+      }
+    });
+    
+    await modal.present();
+    
+    modal.onDidDismiss().then((data) => {
+      this.forceStopTimerInPuzzleBoard = false;
+      this.selectPuzzleToPlay();
+      if (this.plan.blocks[this.currentIndexBlock].time !== -1) {
+        this.resumeBlockTimer();
+      }
+    });
 
   }
 

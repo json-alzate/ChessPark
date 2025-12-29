@@ -1,0 +1,147 @@
+<div class="flex flex-col h-full bg-base-100 overflow-hidden">
+  <!-- Header con botón cerrar y rating -->
+  <div class="flex items-center justify-between p-2 flex-shrink-0">
+    <button class="btn btn-ghost btn-square" (click)="closeModal()">
+      <ion-icon name="close-outline" class="text-lg"></ion-icon>
+    </button>
+    <span class="badge badge-lg">{{ puzzle.rating }}</span>
+  </div>
+
+  <!-- Tablero de ajedrez -->
+  <div class="flex justify-center p-2 w-full flex-shrink-0">
+    <div id="boardPuzzleSolution" class="board-puzzle-solution"></div>
+  </div>
+
+  <!-- Controles de navegación -->
+  <div class="flex items-center justify-between px-4 pb-4 gap-2 flex-shrink-0">
+    <div class="flex items-center gap-2">
+      <button 
+        class="btn btn-ghost btn-square" 
+        (click)="turnRoundBoard()"
+        [attr.aria-label]="'Rotate board'">
+        <ion-icon name="swap-vertical-outline" class="text-lg"></ion-icon>
+      </button>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <button 
+        class="btn btn-ghost btn-square" 
+        [disabled]="!allowMoveArrows || currentMoveNumber === 0"
+        (click)="starPosition()"
+        [attr.aria-label]="'Start position'">
+        <ion-icon name="play-back-outline" class="text-lg"></ion-icon>
+      </button>
+      <button 
+        class="btn btn-ghost btn-square" 
+        [disabled]="!allowMoveArrows || currentMoveNumber === 0"
+        (click)="backMove()"
+        [attr.aria-label]="'Previous move'">
+        <ion-icon name="chevron-back-outline" class="text-lg"></ion-icon>
+      </button>
+      <button 
+        class="btn btn-ghost btn-square" 
+        [disabled]="!allowMoveArrows || currentMoveNumber >= totalMoves"
+        (click)="nextMove()"
+        [attr.aria-label]="'Next move'">
+        <ion-icon name="chevron-forward-outline" class="text-lg"></ion-icon>
+      </button>
+      <button 
+        class="btn btn-ghost btn-square" 
+        [disabled]="!allowMoveArrows || currentMoveNumber >= totalMoves"
+        (click)="moveToEnd()"
+        [attr.aria-label]="'Move to end'">
+        <ion-icon name="play-forward-outline" class="text-lg"></ion-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Footer con información del turno/estado - Scrollable -->
+  <div class="flex flex-col flex-1 overflow-y-auto p-2 min-h-0">
+    <!-- Información del turno/estado -->
+    <div class="card bg-base-200 mb-4">
+      <div class="card-body p-4">
+        <div class="flex items-center gap-4">
+          <div class="avatar">
+            <!-- <div class="w-16 rounded">
+              <img [src]="'assets/cm-chessboard/assets/pieces/standard/' + piecePathKingTurn" [alt]="'King piece'" />
+            </div> -->
+          </div>
+          <div class="flex-1">
+            @if (allowMoveArrows) {
+              <h2 class="text-success text-xl font-semibold">
+                {{ 'PUZZLE_SOLUTION.feedback.goodDone' | transloco }}
+              </h2>
+            } @else {
+              @if (!okTextShow && !wrongTextShow) {
+                <h2 class="text-lg font-semibold">
+                  {{ 'PUZZLE_SOLUTION.game.turn' | transloco }}
+                </h2>
+                <p class="text-base-content/70">
+                  {{ 'PUZZLE_SOLUTION.game.findBestMove' | transloco }}
+                  @if (piecePathKingTurn === 'wK.svg') {
+                    <strong>{{ 'PUZZLES.colors.whites' | transloco }}</strong>
+                  } @else {
+                    <strong>Negras</strong>
+                  }
+                </p>
+              } @else {
+                @if (okTextShow) {
+                  <h2 class="text-success text-lg font-semibold">
+                    {{ 'PUZZLE_SOLUTION.feedback.goodMove' | transloco }}
+                  </h2>
+                  <p class="text-base-content/70">
+                    {{ 'PUZZLE_SOLUTION.feedback.continue' | transloco }}
+                  </p>
+                } @else {
+                  <h2 class="text-error text-lg font-semibold">
+                    {{ 'PUZZLE_SOLUTION.feedback.wrongMove' | transloco }}
+                  </h2>
+                  <p class="text-base-content/70">
+                    {{ 'PUZZLE_SOLUTION.feedback.tryAgain' | transloco }}
+                  </p>
+                }
+              }
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="flex flex-col gap-2 mb-4">
+      <button 
+        class="btn btn-primary btn-block" 
+        [disabled]="isClueActive || allowMoveArrows"
+        (click)="showClue()">
+        {{ 'PUZZLE_SOLUTION.actions.clue' | transloco }}
+      </button>
+      <button 
+        class="btn btn-primary btn-block" 
+        [disabled]="allowMoveArrows"
+        (click)="puzzleMoveResponse('user')">
+        {{ 'PUZZLE_SOLUTION.actions.solution' | transloco }}
+      </button>
+    </div>
+
+    <!-- Timer y botón reproducir -->
+    <div class="flex flex-col items-center gap-4">
+      <h1 class="text-4xl font-bold text-center">{{ time | secondsToMinutesSeconds }}</h1>
+      <button 
+        class="btn btn-primary" 
+        (click)="startMoves()">
+        {{ 'PUZZLE_SOLUTION.actions.playAndClose' | transloco }}
+      </button>
+    </div>
+
+    <!-- Temas del puzzle -->
+    <div class="mt-4">
+      <h3 class="text-lg font-medium mb-2">{{ 'PUZZLE_SOLUTION.themes' | transloco }}</h3>
+      <div class="flex flex-wrap gap-2">
+        @for (theme of themesTranslated; track theme) {
+          <div class="badge badge-ghost">{{ theme }}</div>
+        }
+      </div>
+    </div>
+  </div>
+</div>
+
