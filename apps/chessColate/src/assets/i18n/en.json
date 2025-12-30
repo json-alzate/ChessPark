@@ -211,12 +211,10 @@
     }
   },
   "PLAN_PLAYED": {
-    "stats": {
       "puzzlesPlayed": "Puzzles played",
       "statistics": "Statistics of the plan",
       "playPlan": "Play the plan",
       "loadMore": "Load more"
-    }
   },
   "PLANS_HISTORY": {
     "title": "Plans history",

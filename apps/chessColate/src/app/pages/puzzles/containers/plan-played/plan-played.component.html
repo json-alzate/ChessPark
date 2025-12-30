@@ -1,17 +1,18 @@
-<div class="container mx-auto px-4 py-6" data-theme="halloween">
-  <!-- Botón jugar plan - Desktop -->
-  <div class="hidden md:block mb-6">
-    <button 
-      class="btn btn-primary btn-lg w-full" 
-      (click)="onPlayPlan()"
-      [disabled]="!plan || isLoadingToPlay">
-      @if (!isLoadingToPlay) {
-        <span>{{ 'PLAN_PLAYED.playPlan' | transloco }}</span>
-      } @else {
-        <span class="loading loading-spinner"></span>
-      }
-    </button>
-  </div>
+<ion-content [fullscreen]="true">
+  <div class="container mx-auto px-4 py-6" data-theme="halloween">
+    <!-- Botón jugar plan - Desktop -->
+    <div class="hidden md:block mb-6">
+      <button 
+        class="btn btn-primary btn-lg w-full" 
+        (click)="onPlayPlan()"
+        [disabled]="!plan || isLoadingToPlay">
+        @if (!isLoadingToPlay) {
+          <span>{{ 'PLAN_PLAYED.playPlan' | transloco }}</span>
+        } @else {
+          <span class="loading loading-spinner"></span>
+        }
+      </button>
+    </div>
 
   @if (plan && !isLoadingToPlay) {
     <div class="space-y-6">
@@ -128,19 +129,22 @@
       }
     </div>
   }
-</div>
+  </div>
+</ion-content>
 
 <!-- Botón jugar plan - Mobile -->
-<div class="md:hidden fixed bottom-0 left-0 right-0 p-4 bg-base-100 border-t border-base-300 shadow-lg">
-  <button 
-    class="btn btn-primary btn-lg w-full" 
-    (click)="onPlayPlan()"
-    [disabled]="!plan || isLoadingToPlay">
-    @if (!isLoadingToPlay) {
-      <span>{{ 'PLAN_PLAYED.playPlan' | transloco }}</span>
-    } @else {
-      <span class="loading loading-spinner"></span>
-    }
-  </button>
-</div>
+<ion-footer class="md:hidden">
+  <ion-toolbar>
+    <button 
+      class="btn btn-primary btn-lg w-full" 
+      (click)="onPlayPlan()"
+      [disabled]="!plan || isLoadingToPlay">
+      @if (!isLoadingToPlay) {
+        <span>{{ 'PLAN_PLAYED.playPlan' | transloco }}</span>
+      } @else {
+        <span class="loading loading-spinner"></span>
+      }
+    </button>
+  </ion-toolbar>
+</ion-footer>
 

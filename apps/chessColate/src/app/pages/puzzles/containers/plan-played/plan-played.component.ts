@@ -2,7 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
-import { ModalController } from '@ionic/angular/standalone';
+import { ModalController, IonContent, IonFooter, IonToolbar } from '@ionic/angular/standalone';
 
 import { TranslocoPipe } from '@jsverse/transloco';
 
@@ -22,7 +22,7 @@ import { PlanChartComponent } from '@pages/puzzles/components/plan-chart/plan-ch
 @Component({
   selector: 'app-plan-played',
   standalone: true,
-  imports: [CommonModule, TranslocoPipe, FenBoardComponent, PlanChartComponent],
+  imports: [CommonModule, TranslocoPipe, FenBoardComponent, PlanChartComponent, IonContent, IonFooter, IonToolbar],
   templateUrl: './plan-played.component.html',
   styleUrl: './plan-played.component.scss',
 })
