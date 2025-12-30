@@ -247,6 +247,7 @@
     "feedback": {
       "goodDone": "Good done!",
       "goodMove": "The best move!",
+      "continue": "Continue...",
       "wrongMove": "Ups!, that's not the best move",
       "tryAgain": "Try something different..."
     },

@@ -421,8 +421,11 @@ export class TrainingComponent implements OnInit {
 
     console.log('Plan finalizado ', this.plan);
 
-    // this.planService.setPlanAction(this.plan);
-    // this.navController.navigateRoot('/puzzles/plan-played');
+    // Actualizar el plan en Redux
+    this.planFacade.updatePlan(this.plan);
+    
+    // Navegar a la pantalla de plan jugado
+    this.router.navigate(['/puzzles/plan-played']);
     // TODO: Track end plan
   }
 

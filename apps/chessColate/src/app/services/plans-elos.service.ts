@@ -1,9 +1,15 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { PlanElos } from '@cpark/models';
+import { FirestoreService } from '@services/firestore.service';
+import { ProfileService } from '@services/profile.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PlansElosService {
+  private firestoreService = inject(FirestoreService);
+  private profileService = inject(ProfileService);
+
   constructor() {}
 
   getWeakness(planElos: { [key: string]: number }): string | null {
@@ -30,6 +36,14 @@ export class PlansElosService {
     );
     
     return strongest[0];
+  }
+
+  async getOnePlanElo(planUid: string): Promise<PlanElos> {
+    const profile = this.profileService.getProfile;
+    if (!profile?.uid) {
+      return {} as unknown as PlanElos;
+    }
+    return await this.firestoreService.getPlanElos(planUid, profile.uid);
   }
 }
 

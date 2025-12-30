@@ -15,6 +15,10 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/puzzles/containers/training/training.component').then(m => m.TrainingComponent),
   },
   {
+    path: 'puzzles/plan-played',
+    loadComponent: () => import('./pages/puzzles/containers/plan-played/plan-played.component').then(m => m.PlanPlayedComponent),
+  },
+  {
     path: '',
     redirectTo: 'home',
     pathMatch: 'full',
