@@ -11,5 +11,6 @@ export interface Plan {
     blocks: Block[];
     createdAt: number;
     planType: PlanTypes;
+    isFinished?: boolean;
     uidCustomPlan?: string; // en caso de que el plan sea creado por el usuario , se utiliza para obtener los elos
 };

@@ -218,6 +218,10 @@
       "loadMore": "Cargar más"
     
   },
+  "PLAN_CHART": {
+    "themes": "Temas",
+    "openings": "Aperturas"
+  },
   "PLANS_HISTORY": {
     "title": "Historial de planes",
     "more": "Ver más"

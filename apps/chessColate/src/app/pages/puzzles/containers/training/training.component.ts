@@ -91,7 +91,10 @@ export class TrainingComponent implements OnInit {
       }
       this.plan = { ...plan };
       console.log('Plan ', this.plan);
-      this.playNextBlock();
+      if (!this.plan.isFinished) {
+        this.playNextBlock();
+        return;
+      }
     });
   }
 
@@ -404,7 +407,7 @@ export class TrainingComponent implements OnInit {
 
   endPlan() {
     // this.showEndPlan = true;
-
+    this.plan = { ...this.plan, isFinished: true };
     this.stopPlanTimer();
     this.forceStopTimerInPuzzleBoard = true;
     if (this.plan.planType !== 'custom' && this.profileService.getProfile?.elos) {

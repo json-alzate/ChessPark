@@ -11,13 +11,13 @@
       class="tab"
       [class.tab-active]="segment === 'themesUp' || segment === 'themesDown' || segment === 'themesItems'"
       (click)="setSegment('themesUp')">
-      {{ 'PUZZLES.theme' | transloco }}
+      {{ 'PLAN_CHART.themes' | transloco }}
     </button>
     <button 
       class="tab"
       [class.tab-active]="segment === 'openingsUp' || segment === 'openingsDown' || segment === 'openingsItems'"
       (click)="setSegment('openingsUp')">
-      {{ 'PUZZLES.opening' | transloco }}
+      {{ 'PLAN_CHART.openings' | transloco }}
     </button>
   </div>
 
