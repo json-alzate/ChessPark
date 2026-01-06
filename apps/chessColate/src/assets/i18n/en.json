@@ -211,12 +211,15 @@
     }
   },
   "PLAN_PLAYED": {
-    "stats": {
-      "puzzlesPlayed": "Puzzles played",
-      "statistics": "Statistics of the plan",
+    "puzzlesPlayed": "Puzzles played",
+    "statistics": "Statistics of the plan",
+
       "playPlan": "Play the plan",
       "loadMore": "Load more"
-    }
+  },
+  "PLAN_CHART": {
+    "themes": "Themes",
+    "openings": "Openings"
   },
   "PLANS_HISTORY": {
     "title": "Plans history",
@@ -247,6 +250,7 @@
     "feedback": {
       "goodDone": "Good done!",
       "goodMove": "The best move!",
+      "continue": "Continue...",
       "wrongMove": "Ups!, that's not the best move",
       "tryAgain": "Try something different..."
     },

@@ -42,6 +42,133 @@
   themes: all;
 }
 
+/* Importar estilos de cm-chessboard */
+// cm-chessboard
+@import 'assets/cm-chessboard/assets/chessboard.scss';
+@import 'assets/cm-chessboard/assets/extensions/arrows/arrows.scss';
+@import 'assets/cm-chessboard/assets/extensions/markers/markers.scss';
+@import 'assets/cm-chessboard/assets/extensions/promotion-dialog/promotion-dialog.scss';
+
+// markers
+.cm-chessboard .markers .marker.marker-circle-green {
+    stroke: green;
+    stroke-width: 3px;
+    opacity: 0.6;
+}
+
+.cm-chessboard .markers .marker.marker-circle-yellow {
+    stroke: yellow;
+    stroke-width: 3px;
+    opacity: 0.6;
+}
+
+.cm-chessboard .markers .marker.marker-circle-blue {
+    stroke: blue;
+    stroke-width: 3px;
+    opacity: 0.6;
+}
+
+.cm-chessboard .markers .marker.marker-circle-red {
+    stroke: red;
+    stroke-width: 3px;
+    opacity: 0.6;
+}
+
+.cm-chessboard .markers .marker.marker-square-green {
+    fill: green;
+    opacity: 0.2;
+}
+
+.cm-chessboard .markers .marker.marker-square-clue {
+    fill: #46b0e0;
+    opacity: 0.8;
+}
+
+.cm-chessboard .markers .marker.marker-square-stockfish-best-move {
+    fill: #7974ff;
+    opacity: 0.8;
+}
+
+.cm-chessboard .markers .marker.marker-dot-green {
+    fill: green;
+    opacity: 0.2;
+}
+
+// Arrows
+.cm-chessboard .arrow-green .arrow-head {
+    fill: green;
+    fill-rule: nonzero;
+    fill-opacity: 1;
+}
+
+.cm-chessboard .arrow-green .arrow-line {
+    stroke: green;
+    stroke-linecap: round;
+    opacity: 0.5;
+}
+
+.cm-chessboard .arrow-yellow .arrow-head {
+    fill: yellow;
+    fill-rule: nonzero;
+    fill-opacity: 1;
+}
+
+.cm-chessboard .arrow-yellow .arrow-line {
+    stroke: yellow;
+    stroke-linecap: round;
+    opacity: 0.5;
+}
+
+.cm-chessboard .arrow-blue .arrow-head {
+    fill: blue;
+    fill-rule: nonzero;
+    fill-opacity: 1;
+}
+
+.cm-chessboard .arrow-blue .arrow-line {
+    stroke: blue;
+    stroke-linecap: round;
+    opacity: 0.5;
+}
+
+.cm-chessboard .arrow-red .arrow-head {
+    fill: red;
+    fill-rule: nonzero;
+    fill-opacity: 1;
+}
+
+.cm-chessboard .arrow-red .arrow-line {
+    stroke: red;
+    stroke-linecap: round;
+    opacity: 0.5;
+}
+
+.cm-chessboard .arrow-stockfish-best-move .arrow-head {
+    fill: #7974ff;
+    fill-rule: nonzero;
+    fill-opacity: 1;
+}
+
+.cm-chessboard .arrow-stockfish-best-move .arrow-line {
+    stroke: #7974ff;
+    stroke-linecap: round;
+    opacity: 0.5;
+}
+
+.cm-chessboard .arrow-stockfish-ponder-move .arrow-head {
+    fill: orange;
+    fill-rule: nonzero;
+    fill-opacity: 1;
+}
+
+.cm-chessboard .arrow-stockfish-ponder-move .arrow-line {
+    stroke: orange;
+    stroke-linecap: round;
+    opacity: 0.5;
+}
+
+// end cm-chessboard
+
 .main-container {
   @apply min-h-screen flex flex-col bg-base-200;
 }

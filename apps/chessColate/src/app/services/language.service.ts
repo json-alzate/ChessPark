@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
+import { firstValueFrom } from 'rxjs';
 
 export type SupportedLang = 'en' | 'es';
 
@@ -23,7 +24,10 @@ export class LanguageService {
    * Cambia el idioma de la aplicación
    */
   async setLanguage(lang: SupportedLang): Promise<void> {
-    await this.translocoService.setActiveLang(lang);
+    // Simply set the active language - Transloco will load translations automatically
+    this.translocoService.setActiveLang(lang);
+    // Wait for the translation to be loaded
+    await firstValueFrom(this.translocoService.selectTranslate('COMMON.actions.cancel', {}, lang));
   }
 
   /**

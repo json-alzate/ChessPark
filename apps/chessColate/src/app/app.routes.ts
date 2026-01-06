@@ -6,6 +6,18 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/home/home.page').then((m) => m.HomePage),
   },
+  // {
+  //   path: 'puzzles',
+  //   loadComponent: () => import('./pages/puzzles/puzzles.page').then(m => m.PuzzlesPage)
+  // },
+  {
+    path: 'puzzles/training',
+    loadComponent: () => import('./pages/puzzles/containers/training/training.component').then(m => m.TrainingComponent),
+  },
+  {
+    path: 'puzzles/plan-played',
+    loadComponent: () => import('./pages/puzzles/containers/plan-played/plan-played.component').then(m => m.PlanPlayedComponent),
+  },
   {
     path: '',
     redirectTo: 'home',

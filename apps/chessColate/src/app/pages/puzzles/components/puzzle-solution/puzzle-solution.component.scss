@@ -1,0 +1,50 @@
+.boardPuzzleSolution {
+    max-width: 67vh;
+    margin: 0 auto;
+    display: block;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    .board-container {
+        .sf-Label-container {
+            display: flex;
+            justify-content: end;
+
+            .loader {
+                display: flex;
+                align-items: center;
+                margin-right: 2px;
+            }
+        }
+    }
+
+    .footer-content {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        justify-content: space-between;
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            margin-top: 16px;
+        }
+
+        .timer {
+            h1 {
+                font-size: 42px;
+            }
+
+            display: flex;
+            flex: 1;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+
+    }
+}

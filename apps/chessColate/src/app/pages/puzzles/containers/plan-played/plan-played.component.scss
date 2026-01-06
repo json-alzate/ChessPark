@@ -1,0 +1,21 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+ion-content {
+  --padding-bottom: 80px; // Espacio para el botón móvil fijo
+}
+
+@media (min-width: 768px) {
+  ion-content {
+    --padding-bottom: 0;
+  }
+}
+
+// Asegurar que los acordeones puedan hacer scroll interno
+.collapse-content {
+  max-height: none;
+  overflow: visible;
+}
+

@@ -40,6 +40,8 @@ export class BoardComponent implements OnInit {
 
   async buildBoard() {
 
+    console.log('buildBoard');
+
     this.board = await new Chessboard(document.getElementById('boardPuzzle') as HTMLElement, this.config);
 
     // Agregar evento de clic en casillas usando enableSquareSelect

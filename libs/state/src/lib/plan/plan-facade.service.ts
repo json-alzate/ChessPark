@@ -4,7 +4,13 @@ import { map } from 'rxjs/operators';
 
 import { Plan } from '@cpark/models';
 import { PlanState, getPlanState } from './plan.state';
-import { loadPlan, clearPlanError, updatePlan } from './plan.actions';
+import {
+  loadPlan,
+  loadPlanSuccess,
+  loadPlanFailure,
+  clearPlanError,
+  updatePlan,
+} from './plan.actions';
 
 @Injectable({ providedIn: 'root' })
 export class PlanFacadeService {
@@ -21,6 +27,14 @@ export class PlanFacadeService {
 
   updatePlan(plan: Plan) {
     this.store.dispatch(updatePlan({ plan }));
+  }
+
+  setPlan(plan: Plan) {
+    this.store.dispatch(loadPlanSuccess({ plan }));
+  }
+
+  setPlanError(error: string) {
+    this.store.dispatch(loadPlanFailure({ error }));
   }
 
   // Selectores

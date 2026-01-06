@@ -13,52 +13,21 @@ import { PuzzleQueryOptions } from '@cpark/models';
 import { ProfileService } from '@services/profile.service';
 import { AppService } from '@services/app.service';
 import { PuzzlesProvider } from '@chesspark/puzzles-provider';
+import { PlansElosService } from '@services/plans-elos.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BlockService {
-  private puzzlesProvider: PuzzlesProvider;
   private translocoService = inject(TranslocoService);
-
+  private plansElosService = inject(PlansElosService);
   constructor(
     private profileService: ProfileService,
-    private appService: AppService
+    private appService: AppService,
+    private puzzlesProvider: PuzzlesProvider
     // private plansElosService: PlansElosService
-  ) {
-    this.puzzlesProvider = new PuzzlesProvider();
-  }
+  ) { }
 
-  /**
-   * Inicializa el proveedor de puzzles
-   */
-  async init(): Promise<void> {
-    await this.puzzlesProvider.init();
-  }
-
-  /**
-   * Cierra el proveedor de puzzles
-   */
-  close(): void {
-    this.puzzlesProvider.close();
-  }
-
-  /**
-   * Implementación temporal del método getWeakness
-   * TODO: Implementar o migrar desde PlansElosService
-   */
-  private getWeakness(planElos: { [key: string]: number }): string | null {
-    if (!planElos || Object.keys(planElos).length === 0) {
-      return null;
-    }
-    
-    const entries = Object.entries(planElos);
-    const weakest = entries.reduce((min, current) => 
-      current[1] < min[1] ? current : min
-    );
-    
-    return weakest[0];
-  }
 
   async getPuzzlesForBlock(blockSettings: Block): Promise<Puzzle[]> {
 
@@ -94,8 +63,8 @@ export class BlockService {
       const defaultEloStart = 800;
       const defaultElo = 1500;
 
-      const whiteColorText = this.translocoService.translate('PUZZLES.general.white');
-      const blackColorText = this.translocoService.translate('PUZZLES.general.black');
+      const whiteColorText = this.translocoService.translate('PUZZLES.colors.white');
+      const blackColorText = this.translocoService.translate('PUZZLES.colors.black');
 
       // Nota: si el tiempo del puzzle es mayor que el tiempo del bloque, el tiempo restante
       // para el puzzle se convierte en el tiempo restante del bloque
@@ -152,20 +121,74 @@ export class BlockService {
           ];
           resolve(blocks0);
           break;
-        case 'plan1':
-            break;
-        case 'plan3':
-            break;
-          case 'plan5':
+        case 'plan1': // No muestra soluciones / un mismo color / 1 minuto de short
+          const color1 = Math.random() > 0.5 ? 'white' : 'black';
+          const shortElo1 = profile?.elos?.plan1 ? profile?.elos?.plan1['short'] : undefined;
+
+          const block1: Block[] = [
+            {
+              time: 60,
+              puzzlesCount: 0,
+              theme: 'short',
+              description: (color1 === 'white' ? whiteColorText : blackColorText),
+              elo: shortElo1 || defaultElo,
+              color: color1,
+              puzzleTimes: {
+                warningOn: 6,
+                dangerOn: 3,
+                total: 10
+              },
+              puzzlesPlayed: [],
+              nextPuzzleImmediately: true
+            }
+          ];
+          resolve(block1);
+          break;
+          break;
+        case 'plan3': // No muestra soluciones / un mismo color / 3 minutos del tema mas fuerte del plan3
+          const color3 = Math.random() > 0.5 ? 'white' : 'black';
+
+
+          // se elige el elo mas fuerte que el usuario tenga en el plan3, sino se asigna el elo por defecto
+          let themeStrong3;
+
+          if (profile?.elos?.plan3) {
+            themeStrong3 = this.plansElosService.getStrongestTheme(profile?.elos?.plan3);
+          }
+
+          if (!themeStrong3) {
+            themeStrong3 = this.getRandomTheme();
+          }
+
+          const eloThemeStrong3 = profile?.elos?.plan3 ? profile?.elos?.plan3[themeStrong3] : undefined;
+
+          const block3: Block[] = [
+            {
+              time: 180,
+              puzzlesCount: 0,
+              theme: themeStrong3,
+              description: (color3 === 'white' ? whiteColorText : blackColorText),
+              elo: eloThemeStrong3 || defaultElo,
+              color: color3,
+              puzzleTimes: {
+                warningOn: 12,
+                dangerOn: 6,
+                total: 20
+              },
+              puzzlesPlayed: [],
+              nextPuzzleImmediately: true
+            }
+          ];
+          resolve(block3);
+          break;
+        case 'plan5':
           /* No Muestra soluciones / un mismo color
               - tema random = t 2.5 minutos / 15 segundos por puzzle
               - tema debilidades (elo - 200) = t 2.5 minutos / 30 segundos por puzzle
           */
           const color5 = Math.random() > 0.5 ? 'white' : 'black';
           // obtener el tema random , asignando una posición aleatoria de un array
-          const themeRandom5 = this.appService.getThemesPuzzlesList[
-            Math.floor(Math.random() * this.appService.getThemesPuzzlesList.length)
-          ].value;
+          const themeRandom5 = this.getRandomTheme();
           if (!themeRandom5) {
             reject('No se pudo obtener el tema random themeRandom5');
           }
@@ -175,7 +198,7 @@ export class BlockService {
           let themeWeakness5;
 
           if (profile?.elos?.plan5) {
-            themeWeakness5 = this.getWeakness(profile?.elos?.plan5);
+            themeWeakness5 = this.plansElosService.getWeakness(profile?.elos?.plan5);
           }
 
           if (!themeWeakness5) {
@@ -752,7 +775,7 @@ export class BlockService {
     });
     // se elige el tema con el elo mas bajo que el usuario tenga en el plan,
     // sino elige un tema random de la lista de temas
-    let theme = this.getWeakness(planElosFiltered);
+    let theme = this.plansElosService.getWeakness(planElosFiltered);
     if (!theme) {
       theme = this.appService.getThemesPuzzlesList[
         Math.floor(Math.random() * this.appService.getThemesPuzzlesList.length)
@@ -779,7 +802,7 @@ export class BlockService {
     });
     // se elige la apertura con el elo mas bajo que el usuario tenga en el plan,
     // sino elige una apertura random de la lista de aperturas
-    let opening = this.getWeakness(planOpeningsFiltered);
+    let opening = this.plansElosService.getWeakness(planOpeningsFiltered);
     if (!opening) {
       opening = this.appService.getOpeningsList[
         Math.floor(Math.random() * this.appService.getOpeningsList.length)
