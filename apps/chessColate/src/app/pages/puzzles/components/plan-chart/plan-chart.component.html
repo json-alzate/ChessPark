@@ -74,22 +74,16 @@
   }
 
   <!-- Gráficos -->
-  @if (segment === 'themesUp' || segment === 'themesDown' || segment === 'openingsUp' || segment === 'openingsDown') {
-  <div class="relative" style="height: 400px;">
-    <canvas #themesUpCanvas [class.hidden]="segment !== 'themesUp'" class="absolute inset-0">
-    </canvas>
-    <canvas #themesDownCanvas [class.hidden]="segment !== 'themesDown'" class="absolute inset-0">
-    </canvas>
-    <canvas #openingsUpCanvas [class.hidden]="segment !== 'openingsUp'" class="absolute inset-0">
-    </canvas>
-    <canvas #openingsDownCanvas [class.hidden]="segment !== 'openingsDown'" class="absolute inset-0">
-    </canvas>
+  <div class="div-chart-container" [ngClass]="{ 'hide': segment === 'themesItems' || segment === 'openingsItems' }">
+    <canvas #themesUpCanvas [ngClass]="{ 'hide': segment !== 'themesUp' }"></canvas>
+    <canvas #themesDownCanvas [ngClass]="{ 'hide': segment !== 'themesDown' }"></canvas>
+    <canvas #openingsUpCanvas [ngClass]="{ 'hide': segment !== 'openingsUp' }"></canvas>
+    <canvas #openingsDownCanvas [ngClass]="{ 'hide': segment !== 'openingsDown' }"></canvas>
   </div>
-  }
 
   <!-- Lista de temas -->
   @if (segment === 'themesItems') {
-  <div class="space-y-2">
+  <div class="overflow-y-auto max-h-96 space-y-2">
     @for (elo of themesElos; track $index; let i = $index) {
     <div class="card bg-base-200">
       <div class="card-body py-3">
@@ -105,7 +99,7 @@
 
   <!-- Lista de aperturas -->
   @if (segment === 'openingsItems') {
-  <div class="space-y-2">
+  <div class="overflow-y-auto max-h-96 space-y-2">
     @for (elo of openingsElos; track $index; let i = $index) {
     <div class="card bg-base-200">
       <div class="card-body py-3">
