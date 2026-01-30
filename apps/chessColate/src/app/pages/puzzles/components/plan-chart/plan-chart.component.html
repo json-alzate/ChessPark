@@ -1,20 +1,18 @@
 <div class="space-y-4">
   @if (showEloPlanHeader) {
-    <div class="text-center">
-      <h3 class="text-2xl font-bold">{{ totalElo }}</h3>
-    </div>
+  <div class="text-center">
+    <h3 class="text-2xl font-bold">{{ totalElo }}</h3>
+  </div>
   }
 
   <!-- Tabs para alternar entre temas y aperturas -->
   <div class="tabs tabs-boxed justify-center">
-    <button 
-      class="tab"
+    <button class="tab"
       [class.tab-active]="segment === 'themesUp' || segment === 'themesDown' || segment === 'themesItems'"
       (click)="setSegment('themesUp')">
       {{ 'PLAN_CHART.themes' | transloco }}
     </button>
-    <button 
-      class="tab"
+    <button class="tab"
       [class.tab-active]="segment === 'openingsUp' || segment === 'openingsDown' || segment === 'openingsItems'"
       (click)="setSegment('openingsUp')">
       {{ 'PLAN_CHART.openings' | transloco }}
@@ -23,130 +21,101 @@
 
   <!-- Controles para temas -->
   @if (segment === 'themesUp' || segment === 'themesDown' || segment === 'themesItems') {
-    <div class="flex gap-2 justify-center">
-      <button 
-        class="btn btn-sm"
-        [class.btn-primary]="segment === 'themesUp'"
-        [class.btn-ghost]="segment !== 'themesUp'"
-        (click)="setSegment('themesUp')">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-        </svg>
-        Top
-      </button>
-      <button 
-        class="btn btn-sm"
-        [class.btn-primary]="segment === 'themesDown'"
-        [class.btn-ghost]="segment !== 'themesDown'"
-        (click)="setSegment('themesDown')">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
-        </svg>
-        Bottom
-      </button>
-      <button 
-        class="btn btn-sm"
-        [class.btn-primary]="segment === 'themesItems'"
-        [class.btn-ghost]="segment !== 'themesItems'"
-        (click)="setSegment('themesItems')">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
-        Lista
-      </button>
-    </div>
+  <div class="flex gap-2 justify-center">
+    <button class="btn btn-sm" [class.btn-primary]="segment === 'themesUp'" [class.btn-ghost]="segment !== 'themesUp'"
+      (click)="setSegment('themesUp')">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+      </svg>
+      Top
+    </button>
+    <button class="btn btn-sm" [class.btn-primary]="segment === 'themesDown'"
+      [class.btn-ghost]="segment !== 'themesDown'" (click)="setSegment('themesDown')">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
+      </svg>
+      Bottom
+    </button>
+    <button class="btn btn-sm" [class.btn-primary]="segment === 'themesItems'"
+      [class.btn-ghost]="segment !== 'themesItems'" (click)="setSegment('themesItems')">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+      Lista
+    </button>
+  </div>
   }
 
   <!-- Controles para aperturas -->
   @if (segment === 'openingsUp' || segment === 'openingsDown' || segment === 'openingsItems') {
-    <div class="flex gap-2 justify-center">
-      <button 
-        class="btn btn-sm"
-        [class.btn-primary]="segment === 'openingsUp'"
-        [class.btn-ghost]="segment !== 'openingsUp'"
-        (click)="setSegment('openingsUp')">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-        </svg>
-        Top
-      </button>
-      <button 
-        class="btn btn-sm"
-        [class.btn-primary]="segment === 'openingsDown'"
-        [class.btn-ghost]="segment !== 'openingsDown'"
-        (click)="setSegment('openingsDown')">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
-        </svg>
-        Bottom
-      </button>
-      <button 
-        class="btn btn-sm"
-        [class.btn-primary]="segment === 'openingsItems'"
-        [class.btn-ghost]="segment !== 'openingsItems'"
-        (click)="setSegment('openingsItems')">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
-        Lista
-      </button>
-    </div>
+  <div class="flex gap-2 justify-center">
+    <button class="btn btn-sm" [class.btn-primary]="segment === 'openingsUp'"
+      [class.btn-ghost]="segment !== 'openingsUp'" (click)="setSegment('openingsUp')">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+      </svg>
+      Top
+    </button>
+    <button class="btn btn-sm" [class.btn-primary]="segment === 'openingsDown'"
+      [class.btn-ghost]="segment !== 'openingsDown'" (click)="setSegment('openingsDown')">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
+      </svg>
+      Bottom
+    </button>
+    <button class="btn btn-sm" [class.btn-primary]="segment === 'openingsItems'"
+      [class.btn-ghost]="segment !== 'openingsItems'" (click)="setSegment('openingsItems')">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+      Lista
+    </button>
+  </div>
   }
 
-  <!-- Gráficos y listas -->
+  <!-- Gráficos -->
+  @if (segment === 'themesUp' || segment === 'themesDown' || segment === 'openingsUp' || segment === 'openingsDown') {
   <div class="relative" style="height: 400px;">
-    <canvas 
-      #themesUpCanvas
-      [class.hidden]="segment !== 'themesUp'"
-      class="absolute inset-0">
+    <canvas #themesUpCanvas [class.hidden]="segment !== 'themesUp'" class="absolute inset-0">
     </canvas>
-    <canvas 
-      #themesDownCanvas
-      [class.hidden]="segment !== 'themesDown'"
-      class="absolute inset-0">
+    <canvas #themesDownCanvas [class.hidden]="segment !== 'themesDown'" class="absolute inset-0">
     </canvas>
-    <canvas 
-      #openingsUpCanvas
-      [class.hidden]="segment !== 'openingsUp'"
-      class="absolute inset-0">
+    <canvas #openingsUpCanvas [class.hidden]="segment !== 'openingsUp'" class="absolute inset-0">
     </canvas>
-    <canvas 
-      #openingsDownCanvas
-      [class.hidden]="segment !== 'openingsDown'"
-      class="absolute inset-0">
+    <canvas #openingsDownCanvas [class.hidden]="segment !== 'openingsDown'" class="absolute inset-0">
     </canvas>
   </div>
+  }
 
   <!-- Lista de temas -->
   @if (segment === 'themesItems') {
-    <div class="space-y-2">
-      @for (elo of themesElos; track $index; let i = $index) {
-        <div class="card bg-base-200">
-          <div class="card-body py-3">
-            <div class="flex justify-between items-center">
-              <h2 class="card-title text-lg">{{ themesLabels[i] }}</h2>
-              <div class="badge badge-lg badge-primary">{{ elo }}</div>
-            </div>
-          </div>
+  <div class="space-y-2">
+    @for (elo of themesElos; track $index; let i = $index) {
+    <div class="card bg-base-200">
+      <div class="card-body py-3">
+        <div class="flex justify-between items-center">
+          <h2 class="card-title text-lg">{{ themesLabels[i] }}</h2>
+          <div class="badge badge-lg badge-primary">{{ elo }}</div>
         </div>
-      }
+      </div>
     </div>
+    }
+  </div>
   }
 
   <!-- Lista de aperturas -->
   @if (segment === 'openingsItems') {
-    <div class="space-y-2">
-      @for (elo of openingsElos; track $index; let i = $index) {
-        <div class="card bg-base-200">
-          <div class="card-body py-3">
-            <div class="flex justify-between items-center">
-              <h2 class="card-title text-lg">{{ openingsLabels[i] }}</h2>
-              <div class="badge badge-lg badge-primary">{{ elo }}</div>
-            </div>
-          </div>
+  <div class="space-y-2">
+    @for (elo of openingsElos; track $index; let i = $index) {
+    <div class="card bg-base-200">
+      <div class="card-body py-3">
+        <div class="flex justify-between items-center">
+          <h2 class="card-title text-lg">{{ openingsLabels[i] }}</h2>
+          <div class="badge badge-lg badge-primary">{{ elo }}</div>
         </div>
-      }
+      </div>
     </div>
+    }
+  </div>
   }
 </div>
-

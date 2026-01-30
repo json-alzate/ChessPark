@@ -72,7 +72,9 @@ export class PlanChartComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.getElos();
+    setTimeout(() => {
+      this.getElos();
+    }, 3000);
   }
 
   async getElos() {
@@ -90,6 +92,8 @@ export class PlanChartComponent implements OnInit, AfterViewInit {
       this.totalElo = planElos.total || 1500;
     } else {
       elos = this.profileService.getElosThemesByPlanType(this.plan.planType);
+
+      console.log('elos ', JSON.stringify(elos), 'planType ', this.plan.planType);
       this.totalElo = this.profileService.getEloTotalByPlanType(this.plan.planType);
       openings = this.profileService.getElosOpeningsByPlanType(this.plan.planType);
     }

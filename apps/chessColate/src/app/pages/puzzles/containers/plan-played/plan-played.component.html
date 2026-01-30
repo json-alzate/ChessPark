@@ -2,26 +2,23 @@
   <div class="container mx-auto px-4 py-6" data-theme="halloween">
     <!-- Botón jugar plan - Desktop -->
     <div class="hidden md:block mb-6">
-      <button 
-        class="btn btn-primary btn-lg w-full" 
-        (click)="onPlayPlan()"
-        [disabled]="!plan || isLoadingToPlay">
+      <button class="btn btn-primary btn-lg w-full" (click)="onPlayPlan()" [disabled]="!plan || isLoadingToPlay">
         @if (!isLoadingToPlay) {
-          <span>{{ 'PLAN_PLAYED.playPlan' | transloco }}</span>
+        <span>{{ 'PLAN_PLAYED.playPlan' | transloco }}</span>
         } @else {
-          <span class="loading loading-spinner"></span>
+        <span class="loading loading-spinner"></span>
         }
       </button>
     </div>
 
-  @if (plan && !isLoadingToPlay) {
+    @if (plan && !isLoadingToPlay) {
     <div class="space-y-6">
       <!-- Título del plan -->
       <div>
         @if (plan.title) {
-          <h4 class="text-xl font-semibold mb-2">{{ plan.title }}</h4>
+        <h4 class="text-xl font-semibold mb-2">{{ plan.title }}</h4>
         }
-        <h2 class="text-3xl font-bold mb-4">
+        <h2 class="text-2xl font-bold mb-4">
           {{ 'PLAN_PLAYED.puzzlesPlayed' | transloco }}
         </h2>
       </div>
@@ -29,68 +26,63 @@
       <!-- Acordeones de bloques -->
       <div class="space-y-2">
         @for (block of plan.blocks; track $index; let i = $index) {
-          <div class="collapse collapse-arrow bg-base-200">
-            <input type="checkbox" [checked]="true" />
-            <div class="collapse-title text-xl font-medium flex items-center justify-between">
-              <div class="flex-1">
-                @if (block.title) {
-                  <h3 class="font-semibold">{{ block.title }}</h3>
-                }
-                @if (block.theme) {
-                  <h3 class="font-semibold">{{ appService.getNameThemePuzzleByValue(block.theme) }}</h3>
-                }
-                @if (block.openingFamily) {
-                  <h3 class="font-semibold">{{ appService.getNameOpeningByValue(block.openingFamily) }}</h3>
-                }
-                @if (block.description) {
-                  <p class="text-sm text-base-content/70 mt-1">{{ block.description }}</p>
-                }
-              </div>
-              <div class="badge badge-neutral ml-4">{{ block.puzzlesPlayed.length }}</div>
-            </div>
-            <div class="collapse-content">
-              <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 mt-4">
-                @for (userPuzzle of userPuzzlesToShowInBoards[i]; track userPuzzle.uid) {
-                  <div class="card bg-base-100 shadow-sm relative">
-                    <div class="card-body p-2">
-                      <lib-fen-board 
-                        [fen]="userPuzzle.fenStartUserPuzzle ?? ''"
-                        [firstMoveSquaresHighlight]="userPuzzle.firstMoveSquaresHighlight"
-                        [puzzle]="userPuzzle.rawPuzzle"
-                        (onPuzzleShowSolution)="onPuzzleShowSolution($event)">
-                      </lib-fen-board>
-                    </div>
-                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-70 z-10">
-                      @if (userPuzzle.failByTime) {
-                        <img src="assets/images/icons/alarm.png" class="w-8 h-8" alt="timeout" />
-                      } @else if (userPuzzle.resolved) {
-                        <img src="assets/images/icons/checkmark-circle.png" class="w-8 h-8" alt="correct" />
-                      } @else {
-                        <img src="assets/images/icons/close-circle.png" class="w-8 h-8" alt="incorrect" />
-                      }
-                    </div>
-                    <div 
-                      class="absolute inset-0 cursor-pointer"
-                      (click)="onPuzzleShowSolution(userPuzzle.rawPuzzle!)">
-                    </div>
-                  </div>
-                }
-              </div>
-              @if (showMoreButtons[i]) {
-                <button 
-                  class="btn btn-ghost btn-block mt-4"
-                  (click)="loadMorePuzzles(i)">
-                  {{ 'PLAN_PLAYED.loadMore' | transloco }}
-                </button>
+        <div class="collapse collapse-arrow bg-base-200">
+          <input type="checkbox" [checked]="true" />
+          <div class="collapse-title text-xl font-medium flex items-center justify-between">
+            <div class="flex-1">
+              @if (block.title) {
+              <h3 class="font-semibold">{{ block.title }}</h3>
+              }
+              @if (block.theme) {
+              <h3 class="font-semibold">{{ appService.getNameThemePuzzleByValue(block.theme) }}</h3>
+              }
+              @if (block.openingFamily) {
+              <h3 class="font-semibold">{{ appService.getNameOpeningByValue(block.openingFamily) }}</h3>
+              }
+              @if (block.description) {
+              <p class="text-sm text-base-content/70 mt-1">{{ block.description }}</p>
               }
             </div>
+            <div class="badge badge-neutral ml-4">{{ block.puzzlesPlayed.length }}</div>
           </div>
+          <div class="collapse-content">
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 mt-4">
+              @for (userPuzzle of userPuzzlesToShowInBoards[i]; track userPuzzle.uid) {
+              <div class="card bg-base-100 shadow-sm relative">
+                <div class="card-body p-2">
+                  <lib-fen-board [fen]="userPuzzle.fenStartUserPuzzle ?? ''"
+                    [firstMoveSquaresHighlight]="userPuzzle.firstMoveSquaresHighlight" [puzzle]="userPuzzle.rawPuzzle"
+                    (onPuzzleShowSolution)="onPuzzleShowSolution($event)">
+                  </lib-fen-board>
+                </div>
+                <div
+                  class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-70 z-10">
+                  @if (userPuzzle.failByTime) {
+                  <img src="assets/images/icons/alarm.png" class="w-8 h-8" alt="timeout" />
+                  } @else if (userPuzzle.resolved) {
+                  <img src="assets/images/icons/checkmark-circle.png" class="w-8 h-8" alt="correct" />
+                  } @else {
+                  <img src="assets/images/icons/close-circle.png" class="w-8 h-8" alt="incorrect" />
+                  }
+                </div>
+                <div class="absolute inset-0 cursor-pointer" (click)="onPuzzleShowSolution(userPuzzle.rawPuzzle!)">
+                </div>
+              </div>
+              }
+            </div>
+            @if (showMoreButtons[i]) {
+            <button class="btn btn-ghost btn-block mt-4" (click)="loadMorePuzzles(i)">
+              {{ 'PLAN_PLAYED.loadMore' | transloco }}
+            </button>
+            }
+          </div>
+        </div>
         }
       </div>
 
       <!-- Estadísticas -->
       <div class="space-y-4">
-        <h2 class="text-3xl font-bold">
+        <h2 class="text-2xl font-bold">
           {{ 'PLAN_PLAYED.statistics' | transloco }}
         </h2>
 
@@ -111,40 +103,37 @@
         </div>
 
         @if (plan.planType) {
-          <app-plan-chart [plan]="plan" [showEloPlanHeader]="false"></app-plan-chart>
+        <app-plan-chart [plan]="plan" [showEloPlanHeader]="false"></app-plan-chart>
         }
       </div>
     </div>
-  } @else {
+    } @else {
     <div class="space-y-6">
       <div class="skeleton h-8 w-3/4"></div>
       <div class="skeleton h-12 w-full"></div>
       @for (item of [1, 2, 3]; track item) {
-        <div class="collapse collapse-arrow bg-base-200">
-          <div class="collapse-title">
-            <div class="skeleton h-6 w-1/2"></div>
-            <div class="skeleton h-4 w-3/4 mt-2"></div>
-          </div>
+      <div class="collapse collapse-arrow bg-base-200">
+        <div class="collapse-title">
+          <div class="skeleton h-6 w-1/2"></div>
+          <div class="skeleton h-4 w-3/4 mt-2"></div>
         </div>
+      </div>
       }
     </div>
-  }
+    }
   </div>
 </ion-content>
 
 <!-- Botón jugar plan - Mobile -->
 <ion-footer class="md:hidden">
   <ion-toolbar>
-    <button 
-      class="btn btn-primary btn-lg w-full" 
-      (click)="onPlayPlan()"
-      [disabled]="!plan || isLoadingToPlay">
+    <button class="btn btn-primary btn-lg w-full" (click)="onPlayPlan()" [disabled]="!plan || isLoadingToPlay">
+
       @if (!isLoadingToPlay) {
-        <span>{{ 'PLAN_PLAYED.playPlan' | transloco }}</span>
+      <span>{{ 'PLAN_PLAYED.playPlan' | transloco }}</span>
       } @else {
-        <span class="loading loading-spinner"></span>
+      <span class="loading loading-spinner"></span>
       }
     </button>
   </ion-toolbar>
 </ion-footer>
-
