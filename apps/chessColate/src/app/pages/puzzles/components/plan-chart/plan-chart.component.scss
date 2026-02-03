@@ -3,11 +3,31 @@ canvas {
   position: absolute;
   width: 100%;
   height: 100%;
+  pointer-events: none;
+  /* Permite que los clics pasen a través del canvas */
 }
 
 .div-chart-container {
   position: relative;
   min-height: 400px;
+  margin-top: -5vh;
+  /* Reduce el espacio superior */
+}
+
+/* Cuando el contenedor está oculto, no debe ocupar espacio */
+.div-chart-container.hide {
+  min-height: 0;
+  height: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding: 0;
+}
+
+/* Asegurar que los botones estén por encima del canvas */
+.tabs,
+.flex.gap-2 {
+  position: relative;
+  z-index: 10;
 }
 
 .hide {
