@@ -11,7 +11,8 @@ canvas {
   position: relative;
   min-height: 400px;
   margin-top: -5vh;
-  /* Reduce el espacio superior */
+  margin-bottom: -10vh;
+  /* Reduce el espacio superior e inferior */
 }
 
 /* Cuando el contenedor está oculto, no debe ocupar espacio */

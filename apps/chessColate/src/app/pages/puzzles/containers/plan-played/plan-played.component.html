@@ -2,16 +2,12 @@
   <div class="container mx-auto px-4 py-6" data-theme="halloween">
     <!-- Botón jugar plan - Desktop -->
     <div class="hidden md:block mb-6">
-      <button class="btn btn-primary btn-lg w-full" (click)="onPlayPlan()" [disabled]="!plan || isLoadingToPlay">
-        @if (!isLoadingToPlay) {
+      <button class="btn btn-primary btn-lg w-full" (click)="onPlayPlan()" [disabled]="!plan">
         <span>{{ 'PLAN_PLAYED.playPlan' | transloco }}</span>
-        } @else {
-        <span class="loading loading-spinner"></span>
-        }
       </button>
     </div>
 
-    @if (plan && !isLoadingToPlay) {
+    @if (plan) {
     <div class="space-y-6">
       <!-- Título del plan -->
       <div>
@@ -127,13 +123,8 @@
 <!-- Botón jugar plan - Mobile -->
 <ion-footer class="md:hidden">
   <ion-toolbar>
-    <button class="btn btn-primary btn-lg w-full" (click)="onPlayPlan()" [disabled]="!plan || isLoadingToPlay">
-
-      @if (!isLoadingToPlay) {
+    <button class="btn btn-primary btn-lg w-full" (click)="onPlayPlan()" [disabled]="!plan">
       <span>{{ 'PLAN_PLAYED.playPlan' | transloco }}</span>
-      } @else {
-      <span class="loading loading-spinner"></span>
-      }
     </button>
   </ion-toolbar>
 </ion-footer>

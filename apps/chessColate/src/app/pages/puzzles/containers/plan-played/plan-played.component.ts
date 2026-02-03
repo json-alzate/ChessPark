@@ -6,14 +6,12 @@ import { ModalController, IonContent, IonFooter, IonToolbar } from '@ionic/angul
 
 import { TranslocoPipe } from '@jsverse/transloco';
 
-import { Plan, Block, Puzzle, UserPuzzle } from '@cpark/models';
+import { Plan, Puzzle, UserPuzzle } from '@cpark/models';
 import { PlanFacadeService } from '@cpark/state';
 
 import { AppService } from '@services/app.service';
-import { PlanService } from '@services/plan.service';
 import { ProfileService } from '@services/profile.service';
 import { PlansElosService } from '@services/plans-elos.service';
-import { BlockService } from '@services/block.service';
 
 import { BoardPuzzleSolutionComponent } from '@chesspark/board';
 import { FenBoardComponent } from '@chesspark/board';
@@ -31,17 +29,14 @@ export class PlanPlayedComponent implements OnInit {
   private router = inject(Router);
   private modalController = inject(ModalController);
   public appService = inject(AppService);
-  private planService = inject(PlanService);
   private profileService = inject(ProfileService);
   private plansElosService = inject(PlansElosService);
-  private blockService = inject(BlockService);
 
   plan: Plan | null = null;
   puzzlesPerPage = 4;
   showMoreButtons: { [blockIndex: number]: boolean } = {};
   userPuzzlesToShowInBoards: { [blockIndex: number]: UserPuzzle[] } = {};
   eloTotal: number = 0;
-  isLoadingToPlay = false;
 
   ngOnInit() {
 
@@ -184,29 +179,8 @@ export class PlanPlayedComponent implements OnInit {
     await modal.present();
   }
 
-  async onPlayPlan() {
-    if (!this.plan) {
-      return;
-    }
-
-    this.isLoadingToPlay = true;
-    try {
-      if (this.plan.planType === 'custom') {
-        // TODO: Implementar makeCustomPlanForPlay si es necesario
-        // const planReadyToPlay = await this.planService.makeCustomPlanForPlay(this.plan);
-        // this.planFacade.setPlan(planReadyToPlay);
-      } else {
-        const blocks: Block[] = await this.blockService.generateBlocksForPlan(this.plan.planType);
-        // se recorre cada bloque para generar los puzzles
-        for (const block of blocks) {
-          block.puzzles = await this.blockService.getPuzzlesForBlock(block);
-        }
-        await this.planService.newPlan(blocks, this.plan.planType);
-      }
-      this.router.navigate(['/puzzles/training']);
-    } finally {
-      this.isLoadingToPlay = false;
-    }
+  onPlayPlan() {
+    this.router.navigate(['/home']);
   }
 }
 
