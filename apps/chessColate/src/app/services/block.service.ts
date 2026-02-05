@@ -147,8 +147,6 @@ export class BlockService {
           break;
         case 'plan3': // No muestra soluciones / un mismo color / 3 minutos del tema mas fuerte del plan3
           const color3 = Math.random() > 0.5 ? 'white' : 'black';
-
-
           // se elige el elo mas fuerte que el usuario tenga en el plan3, sino se asigna el elo por defecto
           let themeStrong3;
 

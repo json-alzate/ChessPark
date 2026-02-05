@@ -59,6 +59,9 @@ export class PlanChartComponent implements OnInit, AfterViewInit {
         ticks: {
           color: 'white',
           backdropColor: 'transparent',
+          callback: function (value: any) {
+            return value.toString();
+          }
         }
       }
     }
@@ -72,7 +75,9 @@ export class PlanChartComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.getElos();
+    setTimeout(() => {
+      this.getElos();
+    }, 3000);
   }
 
   async getElos() {
@@ -90,6 +95,8 @@ export class PlanChartComponent implements OnInit, AfterViewInit {
       this.totalElo = planElos.total || 1500;
     } else {
       elos = this.profileService.getElosThemesByPlanType(this.plan.planType);
+
+      console.log('elos ', JSON.stringify(elos), 'planType ', this.plan.planType);
       this.totalElo = this.profileService.getEloTotalByPlanType(this.plan.planType);
       openings = this.profileService.getElosOpeningsByPlanType(this.plan.planType);
     }
@@ -114,7 +121,7 @@ export class PlanChartComponent implements OnInit, AfterViewInit {
       this.openingsElos.push(value);
     });
 
-    // Construir gráficos después de un pequeño delay para asegurar que los canvas estén renderizados
+    // Construir todos los gráficos después de un pequeño delay para asegurar que los canvas estén renderizados
     setTimeout(() => {
       this.buildThemesUpChart();
       this.buildThemesDownChart();
@@ -126,10 +133,6 @@ export class PlanChartComponent implements OnInit, AfterViewInit {
   buildThemesUpChart() {
     if (!this.themesUpCanvas?.nativeElement) {
       return;
-    }
-
-    if (this.themeChart) {
-      this.themeChart.destroy();
     }
 
     this.themeChart = new Chart(this.themesUpCanvas.nativeElement, {
@@ -155,10 +158,6 @@ export class PlanChartComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    if (this.themeChart) {
-      this.themeChart.destroy();
-    }
-
     this.themeChart = new Chart(this.themesDownCanvas.nativeElement, {
       type: 'radar',
       data: {
@@ -182,10 +181,6 @@ export class PlanChartComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    if (this.openingChart) {
-      this.openingChart.destroy();
-    }
-
     this.openingChart = new Chart(this.openingsUpCanvas.nativeElement, {
       type: 'radar',
       data: {
@@ -207,10 +202,6 @@ export class PlanChartComponent implements OnInit, AfterViewInit {
   buildOpeningsDownChart() {
     if (!this.openingsDownCanvas?.nativeElement) {
       return;
-    }
-
-    if (this.openingChart) {
-      this.openingChart.destroy();
     }
 
     this.openingChart = new Chart(this.openingsDownCanvas.nativeElement, {

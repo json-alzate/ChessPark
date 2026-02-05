@@ -211,16 +211,17 @@
     }
   },
   "PLAN_PLAYED": {
-    
-      "puzzlesPlayed": "Ejercicios jugados",
-      "statistics": "Estadísticas del plan",
-      "playPlan": "Jugar el plan",
-      "loadMore": "Cargar más"
-    
+    "puzzlesPlayed": "Ejercicios jugados",
+    "statistics": "Estadísticas del plan",
+    "playPlan": "Ir al inicio",
+    "loadMore": "Cargar más"
   },
   "PLAN_CHART": {
     "themes": "Temas",
-    "openings": "Aperturas"
+    "openings": "Aperturas",
+    "top": "Mejores",
+    "bottom": "Peores",
+    "list": "Lista"
   },
   "PLANS_HISTORY": {
     "title": "Historial de planes",

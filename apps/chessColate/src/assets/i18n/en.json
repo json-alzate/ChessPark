@@ -213,13 +213,15 @@
   "PLAN_PLAYED": {
     "puzzlesPlayed": "Puzzles played",
     "statistics": "Statistics of the plan",
-
-      "playPlan": "Play the plan",
-      "loadMore": "Load more"
+    "playPlan": "Go to home",
+    "loadMore": "Load more"
   },
   "PLAN_CHART": {
     "themes": "Themes",
-    "openings": "Openings"
+    "openings": "Openings",
+    "top": "Top",
+    "bottom": "Bottom",
+    "list": "List"
   },
   "PLANS_HISTORY": {
     "title": "Plans history",
