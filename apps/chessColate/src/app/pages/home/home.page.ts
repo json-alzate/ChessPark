@@ -27,24 +27,19 @@ import { TrainingMenuComponent } from './components/training-menu.component';
 })
 export class HomePage {
 
-  constructor(private blockService: BlockService) {
-    // setTimeout(() => {
-    //   this.createPlan('plan5');
-    // }, 2000);
-  }
+  constructor(private blockService: BlockService) { }
 
 
   async createPlan(planType: PlanTypes) {
     const blocks: Block[] = await this.blockService.generateBlocksForPlan(planType);
 
-    // se recorre cada bloque para generar los puzzles
-    for (const block of blocks) {
+    // Cargar puzzles de todos los bloques en paralelo
+    const puzzlePromises = blocks.map(async (block) => {
       block.puzzles = await this.blockService.getPuzzlesForBlock(block);
-    }
+      return block;
+    });
 
-    console.log(blocks);
-    
-
+    await Promise.all(puzzlePromises);
   }
 
   goToCustomPlanCreate() {

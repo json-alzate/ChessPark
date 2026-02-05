@@ -8,7 +8,7 @@ import { BlockService } from '@services/block.service';
 import { PlanService } from '@services/plan.service';
 
 import { addIcons } from 'ionicons';
-import { timerOutline} from 'ionicons/icons';
+import { timerOutline } from 'ionicons/icons';
 import { Block, Plan, PlanTypes } from '@cpark/models';
 import { Router } from '@angular/router';
 
@@ -30,32 +30,44 @@ export class TrainingMenuComponent {
   async createPlan(planNumber: number) {
     const planType = `plan${planNumber}` as PlanTypes;
 
-    this.showLoading();
-    const blocks: Block[] = await this.blockService.generateBlocksForPlan(planType);
-
-    // se recorre cada bloque para generar los puzzles
-    for (const block of blocks) {
-      block.puzzles = await this.blockService.getPuzzlesForBlock(block);
-    }
-
-    const newPlan: Plan = await this.planService.newPlan(blocks, planType);
-    console.log('newPlan', newPlan);
-    
-    this.hideLoading();
-
-    this.router.navigate(['/puzzles/training']);
-  }
-
-  async showLoading() {
-    console.log('showLoading');
     const loader = await this.loadingController.create({
-      message: 'Creating plan...',
+      message: 'Creando plan...',
     });
-     loader.present();
+    await loader.present();
+
+    try {
+      const blocks: Block[] = await this.blockService.generateBlocksForPlan(planType);
+
+      // Cargar puzzles de todos los bloques en paralelo
+      const total = blocks.length;
+      let loaded = 0;
+
+      const puzzlePromises = blocks.map(async (block, index) => {
+        const puzzles = await this.blockService.getPuzzlesForBlock(block);
+        block.puzzles = puzzles;
+        loaded++;
+
+        // Actualizar el mensaje de progreso
+        if (loader) {
+          loader.message = `Cargando puzzles... ${loaded}/${total}`;
+        }
+
+        return block;
+      });
+
+      await Promise.all(puzzlePromises);
+
+      const newPlan: Plan = await this.planService.newPlan(blocks, planType);
+      console.log('newPlan', newPlan);
+
+      await loader.dismiss();
+
+      this.router.navigate(['/puzzles/training']);
+    } catch (error) {
+      await loader.dismiss();
+      console.error('Error al crear el plan:', error);
+      // Aquí podrías mostrar un mensaje de error al usuario
+    }
   }
 
-  async hideLoading() {
-    console.log('hideLoading');
-    await this.loadingController.dismiss();
-  }
 }
