@@ -6,6 +6,7 @@ Este documento contiene ejemplos prácticos de cómo usar la librería `@chesspa
 
 - [Uso Básico](#uso-básico)
 - [Configuración Avanzada](#configuración-avanzada)
+- [Optimización de Rendimiento](#optimización-de-rendimiento)
 - [Búsqueda por Temas](#búsqueda-por-temas)
 - [Búsqueda por Aperturas](#búsqueda-por-aperturas)
 - [Filtrado por Color](#filtrado-por-color)
@@ -92,6 +93,8 @@ async function customConfig() {
     githubUser: 'json-alzate',
     enableCache: true,
     cacheExpirationMs: 14 * 24 * 60 * 60 * 1000, // 14 días
+    maxConcurrentDownloads: 5, // Máximo de descargas simultáneas
+    batchSize: 3, // Tamaño del batch para procesar ELOs
   });
 
   await provider.init();
@@ -121,9 +124,151 @@ async function withoutCache() {
 }
 ```
 
+## Optimización de Rendimiento
+
+### Ejemplo 6: Configuración para conexiones rápidas
+
+```typescript
+import { PuzzlesProvider } from '@chesspark/puzzles-provider';
+
+async function fastConnectionConfig() {
+  // Para conexiones rápidas, aumentar la concurrencia y el batch size
+  const provider = new PuzzlesProvider({
+    maxConcurrentDownloads: 10, // Más descargas simultáneas
+    batchSize: 5, // Batches más grandes
+    enableCache: true,
+  });
+
+  await provider.init();
+
+  const startTime = Date.now();
+  const puzzles = await provider.getPuzzles({ elo: 1500, count: 200 });
+  const endTime = Date.now();
+
+  console.log(`Obtenidos ${puzzles.length} puzzles en ${endTime - startTime}ms`);
+  provider.close();
+}
+```
+
+### Ejemplo 7: Configuración para conexiones lentas o móviles
+
+```typescript
+import { PuzzlesProvider } from '@chesspark/puzzles-provider';
+
+async function slowConnectionConfig() {
+  // Para conexiones lentas, reducir la concurrencia y el batch size
+  const provider = new PuzzlesProvider({
+    maxConcurrentDownloads: 3, // Menos descargas simultáneas
+    batchSize: 2, // Batches más pequeños
+    enableCache: true, // El caché es especialmente importante aquí
+  });
+
+  await provider.init();
+
+  const puzzles = await provider.getPuzzles({ elo: 1500, count: 100 });
+  console.log(`Obtenidos ${puzzles.length} puzzles optimizados para conexión lenta`);
+
+  provider.close();
+}
+```
+
+### Ejemplo 8: Cargar múltiples bloques en paralelo
+
+```typescript
+import { createPuzzlesProvider, Puzzle } from '@chesspark/puzzles-provider';
+
+interface Block {
+  elo: number;
+  theme?: string;
+  openingFamily?: string;
+  puzzles?: Puzzle[];
+}
+
+async function loadMultipleBlocksInParallel() {
+  const provider = await createPuzzlesProvider();
+
+  // Definir múltiples bloques de entrenamiento
+  const blocks: Block[] = [
+    { elo: 1500, theme: 'fork' },
+    { elo: 1600, theme: 'pin' },
+    { elo: 1700, theme: 'mateIn2' },
+    { elo: 1400, openingFamily: 'Sicilian_Defense' },
+  ];
+
+  console.log('Cargando bloques en paralelo...');
+  const startTime = Date.now();
+
+  // Cargar todos los bloques en paralelo (mucho más rápido)
+  const puzzlePromises = blocks.map(async (block, index) => {
+    const puzzles = await provider.getPuzzles({
+      elo: block.elo,
+      theme: block.theme,
+      openingFamily: block.openingFamily,
+      count: 50,
+    });
+    
+    block.puzzles = puzzles;
+    console.log(`Bloque ${index + 1} cargado: ${puzzles.length} puzzles`);
+    return block;
+  });
+
+  await Promise.all(puzzlePromises);
+
+  const endTime = Date.now();
+  console.log(`Todos los bloques cargados en ${endTime - startTime}ms`);
+
+  // Los bloques ahora tienen sus puzzles cargados
+  blocks.forEach((block, index) => {
+    console.log(`Bloque ${index + 1}: ${block.puzzles?.length} puzzles`);
+  });
+
+  provider.close();
+}
+```
+
+### Ejemplo 9: Comparación de rendimiento (secuencial vs paralelo)
+
+```typescript
+import { createPuzzlesProvider } from '@chesspark/puzzles-provider';
+
+async function performanceComparison() {
+  const provider = await createPuzzlesProvider();
+  const blocks = [
+    { elo: 1500, theme: 'fork' },
+    { elo: 1600, theme: 'pin' },
+    { elo: 1700, theme: 'mateIn2' },
+  ];
+
+  // Método secuencial (lento)
+  console.log('Cargando secuencialmente...');
+  const sequentialStart = Date.now();
+  for (const block of blocks) {
+    await provider.getPuzzles({ elo: block.elo, theme: block.theme, count: 50 });
+  }
+  const sequentialEnd = Date.now();
+  console.log(`Tiempo secuencial: ${sequentialEnd - sequentialStart}ms`);
+
+  // Método paralelo (rápido)
+  console.log('Cargando en paralelo...');
+  const parallelStart = Date.now();
+  await Promise.all(
+    blocks.map(block =>
+      provider.getPuzzles({ elo: block.elo, theme: block.theme, count: 50 })
+    )
+  );
+  const parallelEnd = Date.now();
+  console.log(`Tiempo paralelo: ${parallelEnd - parallelStart}ms`);
+
+  const improvement = ((sequentialEnd - sequentialStart) / (parallelEnd - parallelStart) - 1) * 100;
+  console.log(`Mejora: ${improvement.toFixed(1)}% más rápido`);
+
+  provider.close();
+}
+```
+
 ## Búsqueda por Temas
 
-### Ejemplo 6: Puzzles de táctica específica (Fork)
+### Ejemplo 10: Puzzles de táctica específica (Fork)
 
 ```typescript
 import { createPuzzlesProvider } from '@chesspark/puzzles-provider';
@@ -142,7 +287,7 @@ async function getForkPuzzles() {
 }
 ```
 
-### Ejemplo 7: Puzzles de mate
+### Ejemplo 11: Puzzles de mate
 
 ```typescript
 import { createPuzzlesProvider } from '@chesspark/puzzles-provider';

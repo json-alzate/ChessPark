@@ -32,6 +32,8 @@ describe('PuzzlesProvider', () => {
       expect(config).toHaveProperty('githubUser');
       expect(config).toHaveProperty('enableCache');
       expect(config).toHaveProperty('cacheExpirationMs');
+      expect(config).toHaveProperty('maxConcurrentDownloads');
+      expect(config).toHaveProperty('batchSize');
     });
   });
 
@@ -172,6 +174,97 @@ describe('PuzzlesProvider', () => {
       expect(fetch).toHaveBeenCalled();
       const fetchCalls = (global.fetch as jest.Mock).mock.calls;
       expect(fetchCalls.length).toBeGreaterThan(0);
+    });
+
+    it('debe procesar múltiples ELOs en paralelo usando batches', async () => {
+      const mockPuzzlesBatch: Puzzle[] = Array.from({ length: 10 }, (_, i) => ({
+        uid: `0000${i}`,
+        fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+        moves: 'e2e4 e7e5',
+        rating: 1500 + i,
+        themes: ['opening'],
+      }));
+
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => mockPuzzlesBatch,
+      });
+
+      await provider.init();
+      const puzzles = await provider.getPuzzles({ elo: 1500, count: 50 });
+
+      // Debe haber hecho múltiples llamadas (una por cada ELO en el batch)
+      expect(fetch).toHaveBeenCalled();
+      const fetchCalls = (global.fetch as jest.Mock).mock.calls;
+      // Debe haber procesado en batches (múltiples llamadas)
+      expect(fetchCalls.length).toBeGreaterThan(1);
+    });
+
+    it('debe respetar el límite de descargas concurrentes', async () => {
+      const providerWithLimit = new PuzzlesProvider({
+        enableCache: false,
+        maxConcurrentDownloads: 2,
+        batchSize: 1,
+      });
+
+      let concurrentDownloads = 0;
+      let maxConcurrent = 0;
+
+      (global.fetch as jest.Mock).mockImplementation(async () => {
+        concurrentDownloads++;
+        maxConcurrent = Math.max(maxConcurrent, concurrentDownloads);
+
+        // Simular tiempo de descarga
+        await new Promise(resolve => setTimeout(resolve, 10));
+
+        concurrentDownloads--;
+
+        return {
+          ok: true,
+          status: 200,
+          json: async () => mockPuzzles,
+        };
+      });
+
+      await providerWithLimit.init();
+      await providerWithLimit.getPuzzles({ elo: 1500, count: 10 });
+
+      // El máximo de descargas concurrentes no debe exceder el límite
+      expect(maxConcurrent).toBeLessThanOrEqual(2);
+
+      providerWithLimit.close();
+    });
+
+    it('debe procesar batches correctamente', async () => {
+      const providerWithBatch = new PuzzlesProvider({
+        enableCache: false,
+        batchSize: 3,
+      });
+
+      const callOrder: number[] = [];
+
+      (global.fetch as jest.Mock).mockImplementation(async (url: string) => {
+        // Extraer el ELO de la URL para rastrear el orden
+        const eloMatch = url.match(/(\d+)_\d+/);
+        if (eloMatch) {
+          callOrder.push(parseInt(eloMatch[1]));
+        }
+
+        return {
+          ok: true,
+          status: 200,
+          json: async () => mockPuzzles,
+        };
+      });
+
+      await providerWithBatch.init();
+      await providerWithBatch.getPuzzles({ elo: 1500, count: 20 });
+
+      // Debe haber procesado múltiples ELOs
+      expect(callOrder.length).toBeGreaterThan(1);
+
+      providerWithBatch.close();
     });
   });
 

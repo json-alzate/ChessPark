@@ -69,6 +69,10 @@ export interface PuzzlesProviderConfig {
   enableCache?: boolean;
   /** Tiempo de expiración del caché en milisegundos (por defecto: 7 días) */
   cacheExpirationMs?: number;
+  /** Número máximo de descargas concurrentes (por defecto: 5) */
+  maxConcurrentDownloads?: number;
+  /** Tamaño del batch para procesar ELOs en paralelo (por defecto: 3) */
+  batchSize?: number;
 }
 
 /**

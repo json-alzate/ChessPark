@@ -17,6 +17,7 @@ import {
 export class PuzzlesProvider {
   private cacheService: PuzzlesCacheService;
   private config: Required<PuzzlesProviderConfig>;
+  private downloadQueue: Promise<unknown>[] = [];
 
   constructor(config?: PuzzlesProviderConfig) {
     this.config = {
@@ -24,6 +25,8 @@ export class PuzzlesProvider {
       githubUser: config?.githubUser ?? DEFAULT_CONFIG.GITHUB_USER,
       enableCache: config?.enableCache ?? DEFAULT_CONFIG.ENABLE_CACHE,
       cacheExpirationMs: config?.cacheExpirationMs ?? DEFAULT_CONFIG.CACHE_EXPIRATION_MS,
+      maxConcurrentDownloads: config?.maxConcurrentDownloads ?? DEFAULT_CONFIG.MAX_CONCURRENT_DOWNLOADS,
+      batchSize: config?.batchSize ?? DEFAULT_CONFIG.BATCH_SIZE,
     };
 
     this.cacheService = new PuzzlesCacheService(
@@ -83,28 +86,33 @@ export class PuzzlesProvider {
 
     // Generar secuencia de ELOs para buscar
     const eloSequence = generateEloSequence(elo);
-    
+
     let allPuzzles: Puzzle[] = [];
 
-    // Buscar puzzles iterando por la secuencia de ELOs
-    for (const currentElo of eloSequence) {
-      if (allPuzzles.length >= count) break;
+    // Procesar ELOs en batches paralelos para mejorar el rendimiento
+    for (let i = 0; i < eloSequence.length && allPuzzles.length < count; i += this.config.batchSize) {
+      const batch = eloSequence.slice(i, i + this.config.batchSize);
 
-      try {
-        const puzzles = await this.fetchPuzzlesByElo(
-          currentElo,
-          theme,
-          openingFamily
-        );
+      // Descargar el batch en paralelo con control de concurrencia
+      const batchPromises = batch.map(currentElo =>
+        this.fetchWithConcurrencyLimit(() =>
+          this.fetchPuzzlesByElo(currentElo, theme, openingFamily)
+            .catch((error) => {
+              console.warn(`Error al obtener puzzles para ELO ${currentElo}:`, error);
+              return [] as Puzzle[];
+            })
+        )
+      );
 
-        if (puzzles.length > 0) {
-          allPuzzles = allPuzzles.concat(puzzles);
-        }
-      } catch (error) {
-        console.warn(`Error al obtener puzzles para ELO ${currentElo}:`, error);
-        // Continuar con el siguiente ELO
-        continue;
+      const batchResults = await Promise.all(batchPromises);
+      const batchPuzzles = batchResults.flat();
+
+      if (batchPuzzles.length > 0) {
+        allPuzzles = allPuzzles.concat(batchPuzzles);
       }
+
+      // Si ya tenemos suficientes puzzles, detener la búsqueda
+      if (allPuzzles.length >= count) break;
     }
 
     // Filtrar por color si se especificó
@@ -115,6 +123,28 @@ export class PuzzlesProvider {
     // Mezclar y limitar a la cantidad solicitada
     const shuffled = shuffleArray(allPuzzles);
     return shuffled.slice(0, count);
+  }
+
+  /**
+   * Controla el número de descargas concurrentes usando un semáforo
+   * @param task - Función que realiza la descarga
+   * @returns Resultado de la tarea
+   */
+  private async fetchWithConcurrencyLimit<T>(task: () => Promise<T>): Promise<T> {
+    // Esperar si hay demasiadas descargas en curso
+    while (this.downloadQueue.length >= this.config.maxConcurrentDownloads) {
+      await Promise.race(this.downloadQueue);
+    }
+
+    const downloadPromise = task().finally(() => {
+      const index = this.downloadQueue.indexOf(downloadPromise);
+      if (index > -1) {
+        this.downloadQueue.splice(index, 1);
+      }
+    });
+
+    this.downloadQueue.push(downloadPromise);
+    return downloadPromise;
   }
 
   /**
@@ -134,22 +164,17 @@ export class PuzzlesProvider {
       openingFamily
     );
 
-    // Intentar obtener desde caché
+    // Intentar obtener desde caché primero (no requiere control de concurrencia)
     if (this.config.enableCache) {
-      console.log(`[PuzzlesProvider] Verificando caché para ELO ${elo}: ${url}`);
-      const isCached = await this.cacheService.isFileCached(url);
-      
-      if (isCached) {
-        const cached = await this.cacheService.getCachedPuzzles(url);
-        if (cached) {
-          console.log(`[PuzzlesProvider] Usando puzzles cacheados para ELO ${elo}, count: ${cached.length}`);
-          return cached;
-        }
+      const cached = await this.cacheService.getCachedPuzzles(url);
+      if (cached && cached.length > 0) {
+        console.log(`[PuzzlesProvider] Usando puzzles cacheados para ELO ${elo}, count: ${cached.length}`);
+        return cached;
       }
     }
 
-    // Si no está en caché, descargar desde CDN
-    console.log(`Descargando puzzles desde CDN para ELO ${elo}: ${url}`);
+    // Si no está en caché, descargar desde CDN (con control de concurrencia)
+    console.log(`[PuzzlesProvider] Descargando puzzles desde CDN para ELO ${elo}: ${url}`);
     const puzzles = await this.fetchFromCDN(url);
 
     // Cachear para uso futuro (no bloquear)
@@ -168,7 +193,7 @@ export class PuzzlesProvider {
   private async fetchFromCDN(url: string): Promise<Puzzle[]> {
     try {
       const response = await fetch(url);
-      
+
       if (!response.ok) {
         if (response.status === 404) {
           // Archivo no encontrado es esperado para algunos rangos de ELO
@@ -179,7 +204,7 @@ export class PuzzlesProvider {
 
       const rawPuzzles = await response.json();
       const puzzles = Array.isArray(rawPuzzles) ? rawPuzzles : [];
-      
+
       // Convertir los puzzles del CDN al formato completo esperado
       return puzzles.map((puzzle: any) => this.enrichPuzzle(puzzle));
     } catch (error) {
