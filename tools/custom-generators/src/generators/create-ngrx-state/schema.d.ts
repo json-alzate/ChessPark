@@ -6,4 +6,5 @@ export interface CreateNgrxStateGeneratorSchema {
   hasFacade?: boolean;
   hasTests?: boolean;
   createModel?: boolean;
+  registerInApp?: boolean;
 }

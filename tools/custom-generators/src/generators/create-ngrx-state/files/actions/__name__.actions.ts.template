@@ -33,11 +33,14 @@ export const delete<%= classifyName %> = createAction(
   props<{ id: string }>()
 );
 <% } else { %>
+<% if (createModel) { %>
+import { <%= classifyName %> } from '@cpark/models';
+<% } %>
 export const load<%= classifyName %> = createAction('[<%= classifyName %>] Load <%= classifyName %>');
 
 export const load<%= classifyName %>Success = createAction(
   '[<%= classifyName %>] Load <%= classifyName %> Success',
-  props<{ data: any }>() // Reemplazar 'any' con el tipo específico
+  props<{ <%= propertyName %>: <% if (createModel) { %><%= classifyName %><% } else { %>any<% } %> }>()
 );
 
 export const load<%= classifyName %>Failure = createAction(
@@ -49,6 +52,6 @@ export const clear<%= classifyName %>Error = createAction('[<%= classifyName %>]
 
 export const update<%= classifyName %> = createAction(
   '[<%= classifyName %>] Update <%= classifyName %>',
-  props<{ data: any }>() // Reemplazar 'any' con el tipo específico
+  props<{ <%= propertyName %>: <% if (createModel) { %><%= classifyName %><% } else { %>any<% } %> }>()
 );
 <% } %>

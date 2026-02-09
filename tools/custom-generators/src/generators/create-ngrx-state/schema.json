@@ -57,6 +57,12 @@
       "type": "boolean",
       "description": "¿Crear modelo en la librería de modelos?",
       "x-prompt": "¿Quieres crear un modelo en la librería de modelos?"
+    },
+    "registerInApp": {
+      "type": "boolean",
+      "description": "¿Registrar reducer y state en app.reducers y app.state?",
+      "default": true,
+      "x-prompt": "¿Registrar el nuevo estado en la app global?"
     }
   },
   "required": ["name", "entityType"]

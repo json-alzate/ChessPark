@@ -48,7 +48,7 @@ import {
 } from './<%= name %>.actions';
 
 export const initial<%= classifyName %>State: <%= classifyName %>State = {
-  data: null,
+  <%= propertyName %>: null,
   loading<%= classifyName %>: false,
   error: null
 };
@@ -56,10 +56,10 @@ export const initial<%= classifyName %>State: <%= classifyName %>State = {
 const _<%= name %>Reducer = createReducer(
   initial<%= classifyName %>State,
   on(load<%= classifyName %>, (state) => ({ ...state, loading<%= classifyName %>: true, error: null })),
-  on(load<%= classifyName %>Success, (state, { data }) => ({ ...state, data, loading<%= classifyName %>: false })),
+  on(load<%= classifyName %>Success, (state, { <%= propertyName %> }) => ({ ...state, <%= propertyName %>, loading<%= classifyName %>: false })),
   on(load<%= classifyName %>Failure, (state, { error }) => ({ ...state, loading<%= classifyName %>: false, error })),
   on(clear<%= classifyName %>Error, (state) => ({ ...state, error: null })),
-  on(update<%= classifyName %>, (state, { data }) => ({ ...state, data }))
+  on(update<%= classifyName %>, (state, { <%= propertyName %> }) => ({ ...state, <%= propertyName %> }))
 );
 <% } %>
 
