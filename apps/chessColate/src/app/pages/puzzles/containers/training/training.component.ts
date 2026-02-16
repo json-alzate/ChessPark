@@ -15,6 +15,7 @@ import { AppService } from '@services/app.service';
 import { BlockService } from '@services/block.service';
 import { ProfileService } from '@services/profile.service';
 import { PlanFacadeService } from '@cpark/state';
+import { PlansElosService } from '@services/plans-elos.service';
 import { UidGeneratorService } from '@chesspark/common-utils';
 import { addIcons } from 'ionicons';
 import { 
@@ -47,6 +48,7 @@ import { SoundsService, SecondsToMinutesSecondsPipe } from '@chesspark/common-ut
 export class TrainingComponent implements OnInit {
   private blockService = inject(BlockService);
   private planFacade = inject(PlanFacadeService);
+  private plansElosService = inject(PlansElosService);
   private router = inject(Router);
   appService = inject(AppService);
   private profileService = inject(ProfileService);
@@ -323,29 +325,25 @@ export class TrainingComponent implements OnInit {
 
 
 
-    if (this.plan.planType === 'custom') {
-
-      // this.plansElosService.calculatePlanElos(
-      //   puzzleCompleted.rating,
-      //   puzzleStatus === 'good' ? 1 : 0,
-      //   this.plan?.uidCustomPlan,
-      //   this.profileService.getProfile?.uid,
-      //   puzzleCompleted.themes,
-      //   puzzleCompleted.openingFamily,
-      // );
-
-
-
-      
-    } else {
-      // se actualizan los elo's del usuario
-      // this.profileService.calculateEloPuzzlePlan(
-      //   puzzleCompleted.rating,
-      //   puzzleStatus === 'good' ? 1 : 0,
-      //   this.plan.planType,
-      //   puzzleCompleted.themes,
-      //   puzzleCompleted.openingFamily,
-      // );
+    if (this.plan.planType === 'custom' && this.plan?.uidCustomPlan && this.profileService.getProfile?.uid) {
+      // Para planes custom: lógica en PlansElosService, que usa la fachada solo para dispatch
+      this.plansElosService.calculatePlanElos(
+        puzzleCompleted.rating,
+        puzzleStatus === 'good' ? 1 : 0,
+        this.plan.uidCustomPlan,
+        this.profileService.getProfile.uid,
+        puzzleCompleted.themes,
+        puzzleCompleted.openingFamily,
+      );
+    } else if (this.plan.planType !== 'custom') {
+      // Para planes por defecto, actualizar los elos del perfil
+      this.profileService.calculateEloPuzzlePlan(
+        puzzleCompleted.rating,
+        puzzleStatus === 'good' ? 1 : 0,
+        this.plan.planType,
+        puzzleCompleted.themes,
+        puzzleCompleted.openingFamily,
+      );
     }
 
 

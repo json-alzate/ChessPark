@@ -6,10 +6,11 @@ import { RouterStateUrl } from './router.state';
 // states
 import { AuthState } from './auth';
 import { PlanState } from './plan';
-
+import { PlansElosState } from './plansElos';
 
 export interface AppState {
   router: RouterReducerState<RouterStateUrl>;
   auth: AuthState;
   plan: PlanState;
+  plansElos: PlansElosState;
 }

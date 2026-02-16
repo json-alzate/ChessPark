@@ -24,9 +24,7 @@ import { User as FirebaseUser } from 'firebase/auth';
 import { FirestoreService } from './firestore.service';
 import { AppService } from './app.service';
 import { LanguageService } from './language.service';
-
-// utils
-// import { calculateElo } from '@utils/calculate-elo';
+import { EloCalculatorService } from '@chesspark/common-utils';
 
 @Injectable({
   providedIn: 'root'
@@ -42,7 +40,8 @@ export class ProfileService implements IProfileService {
     private store: Store<AuthState>,
     private appService: AppService,
     private firestoreService: FirestoreService,
-    private languageService: LanguageService
+    private languageService: LanguageService,
+    private eloCalculator: EloCalculatorService
   ) {
     // Inicializar el observable del perfil
     this.profile$ = this.store.pipe(select(getProfile));
@@ -189,6 +188,74 @@ export class ProfileService implements IProfileService {
 
   addNewNickName(_nickname: string, _uidUser: string): Promise<void> {
     return this.firestoreService.addNewNickName(_nickname, _uidUser).then(() => {}).catch(() => { throw new Error('Error al agregar nuevo nickname'); });
+  }
+
+  /**
+   * Calcula y actualiza los elos de un plan por defecto (warmup, plan1, plan3, etc.)
+   * Este método actualiza los elos dentro del objeto Profile.elos
+   */
+  calculateEloPuzzlePlan(
+    puzzleElo: number,
+    result: 1 | 0.5 | 0,
+    planType: PlanTypes,
+    themes: string[],
+    openingFamily: string,
+  ): void {
+    // Usar Record para permitir acceso dinámico a propiedades
+    const elos: Record<string, any> = this.profile?.elos ? { ...this.profile.elos } : {};
+    let eloOpening = 1500;
+
+    if (this.profile?.elos) {
+      // Copia profunda para el planType específico, evitando la mutación directa
+      elos[planType] = { ...(elos[planType] || {}) };
+
+      if (openingFamily) {
+        const openingsKey = `${planType}Openings` as keyof typeof this.profile.elos;
+        const openings = this.profile.elos[openingsKey] as { [key: string]: number } | undefined;
+        if (openings) {
+          const currentElo = openings[openingFamily] || 1500;
+          eloOpening = this.eloCalculator.calculateElo(currentElo, puzzleElo, result).newElo;
+        }
+      }
+    } else {
+      eloOpening = this.eloCalculator.calculateElo(1500, puzzleElo, result).newElo;
+    }
+
+    themes.forEach(theme => {
+      if (!elos[planType]) {
+        elos[planType] = {}; // Crea planType si no existe
+      }
+      const currentThemeElo = (elos[planType] && elos[planType][theme]) || 1500;
+      elos[planType][theme] = this.eloCalculator.calculateElo(currentThemeElo, puzzleElo, result).newElo;
+    });
+
+    // Calcular el elo total del plan, con el parámetro del perfil
+    const totalKey = `${planType}Total`;
+    const currentTotalElo = this.profile?.elos && (this.profile.elos as Record<string, any>)[totalKey] 
+      ? ((this.profile.elos as Record<string, any>)[totalKey] as number)
+      : 1500;
+    const newTotalElo = this.eloCalculator.calculateElo(currentTotalElo, puzzleElo, result).newElo;
+    
+    // Inicializa el objeto de cambios con una copia de los elos existentes para evitar la sobrescritura
+    // Usamos Record para permitir acceso dinámico a propiedades
+    const changes: { elos: Record<string, any> } = { elos: { ...elos } };
+
+    // Actualiza específicamente para el tipo de plan y aperturas, haciendo merge adecuado
+    changes.elos[planType] = { ...(changes.elos[planType] || {}), ...elos[planType] };
+
+    // Actualiza el total del plan con el nuevo valor en el parámetro correspondiente al plan
+    changes.elos[`${planType}Total`] = newTotalElo;
+
+    if (openingFamily) {
+      const openingsKey = `${planType}Openings`;
+      changes.elos[openingsKey] = {
+        ...(changes.elos[openingsKey] || {}),
+        [openingFamily]: eloOpening
+      };
+    }
+    
+    // Se actualiza el perfil con los cambios
+    this.requestUpdateProfile(changes);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
