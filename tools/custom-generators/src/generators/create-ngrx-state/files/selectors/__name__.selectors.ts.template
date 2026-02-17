@@ -19,7 +19,7 @@ export const get<%= classifyName %>Count = createSelector(
 <% } else { %>
 export const get<%= classifyName %>Data = createSelector(
   get<%= classifyName %>State,
-  <%= name %>State => <%= name %>State.data
+  <%= name %>State => <%= name %>State.<%= propertyName %> ?? null
 );
 <% } %>
 

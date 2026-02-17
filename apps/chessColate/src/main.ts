@@ -26,12 +26,14 @@ import {
   appReducers,
   EFFECTS,
   AUTH_SERVICE_TOKEN, 
-  PROFILE_SERVICE_TOKEN 
+  PROFILE_SERVICE_TOKEN,
+  FIRESTORE_SERVICE_TOKEN
 } from '@cpark/state';
 
 // Services
 import { AuthService } from './app/services/auth.service';
 import { ProfileService } from './app/services/profile.service';
+import { FirestoreService } from './app/services/firestore.service';
 import { LanguageService } from './app/services/language.service';
 import { AppService } from './app/services/app.service';
 import { PuzzlesProvider } from '@chesspark/puzzles-provider';
@@ -89,10 +91,12 @@ bootstrapApplication(AppComponent, {
     // Servicios de autenticación (DEBEN estar ANTES de los Effects)
     AuthService,
     ProfileService,
+    FirestoreService,
     LanguageService,
     AppService,
     { provide: AUTH_SERVICE_TOKEN, useExisting: AuthService },
     { provide: PROFILE_SERVICE_TOKEN, useExisting: ProfileService },
+    { provide: FIRESTORE_SERVICE_TOKEN, useExisting: FirestoreService },
     // Puzzles Provider como singleton
     {
       provide: PuzzlesProvider,

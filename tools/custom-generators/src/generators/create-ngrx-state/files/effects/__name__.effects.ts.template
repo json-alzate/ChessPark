@@ -45,7 +45,7 @@ export class <%= classifyName %>Effects {
         // Simulación de llamada a API
         // Reemplazar por llamada real a servicio
         return of(null).pipe(
-          map((data) => load<%= classifyName %>Success({ data })),
+          map((<%= propertyName %>) => load<%= classifyName %>Success({ <%= propertyName %> })),
           catchError((error) => of(load<%= classifyName %>Failure({ error: error.message || 'Error al cargar <%= name %>' })))
         );
       })

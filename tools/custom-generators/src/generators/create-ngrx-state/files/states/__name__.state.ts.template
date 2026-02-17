@@ -16,9 +16,9 @@ export interface <%= classifyName %>State {
 <% } else { %>
 export interface <%= classifyName %>State {
   <% if (createModel) { %>
-  data: <%= classifyName %>; // Reemplazar con el tipo específico de tu entidad
+  <%= propertyName %>: <%= classifyName %> | null;
   <% } else { %>
-  data: any; // TODO: Reemplazar 'any' con el tipo específico cuando se cree el modelo
+  <%= propertyName %>: any | null; // TODO: Reemplazar 'any' con el tipo específico cuando se cree el modelo
   <% } %>
   loading<%= classifyName %>: boolean;
   error: string | null;

@@ -56,13 +56,18 @@ export class <%= classifyName %>FacadeService {
   }
 }
 <% } else { %>
-import { 
-  load<%= classifyName %>, 
-  clear<%= classifyName %>Error, 
-  update<%= classifyName %> 
+import {
+  load<%= classifyName %>,
+  load<%= classifyName %>Success,
+  load<%= classifyName %>Failure,
+  clear<%= classifyName %>Error,
+  update<%= classifyName %>
 } from './<%= name %>.actions';
 import { get<%= classifyName %>State } from './<%= name %>.state';
 import { map } from 'rxjs/operators';
+<% if (createModel) { %>
+import { <%= classifyName %> } from '@cpark/models';
+<% } %>
 
 @Injectable({ providedIn: 'root' })
 export class <%= classifyName %>FacadeService {
@@ -77,13 +82,21 @@ export class <%= classifyName %>FacadeService {
     this.store.dispatch(clear<%= classifyName %>Error());
   }
 
-  update<%= classifyName %>(data: any) { // Reemplazar 'any' con el tipo específico
-    this.store.dispatch(update<%= classifyName %>({ data }));
+  update<%= classifyName %>(<%= propertyName %>: <% if (createModel) { %><%= classifyName %><% } else { %>any<% } %>) {
+    this.store.dispatch(update<%= classifyName %>({ <%= propertyName %> }));
+  }
+
+  set<%= classifyName %>(<%= propertyName %>: <% if (createModel) { %><%= classifyName %><% } else { %>any<% } %>) {
+    this.store.dispatch(load<%= classifyName %>Success({ <%= propertyName %> }));
+  }
+
+  set<%= classifyName %>Error(error: string) {
+    this.store.dispatch(load<%= classifyName %>Failure({ error }));
   }
 
   // Selectores
   get<%= classifyName %>$() {
-    return this.store.select(get<%= classifyName %>State).pipe(map(state => state.data));
+    return this.store.select(get<%= classifyName %>State).pipe(map(state => state.<%= propertyName %> ?? null));
   }
 
   getLoading<%= classifyName %>$() {

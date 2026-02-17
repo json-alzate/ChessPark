@@ -8,7 +8,7 @@ describe('<%= classifyName %> State', () => {
       <% if (entityType === 'list') { %>
       <%= propertyName %>: [],
       <% } else { %>
-      data: null,
+      <%= propertyName %>: null,
       <% } %>
       loading<%= classifyName %>: false,
       error: null,
@@ -17,7 +17,7 @@ describe('<%= classifyName %> State', () => {
 
   describe('State Structure', () => {
     it('should have the correct structure', () => {
-      expect(state).toHaveProperty('<% if (entityType === 'list') { %><%= propertyName %><% } else { %>data<% } %>');
+      expect(state).toHaveProperty('<%= propertyName %>');
       expect(state).toHaveProperty('loading<%= classifyName %>');
       expect(state).toHaveProperty('error');
     });
@@ -26,7 +26,7 @@ describe('<%= classifyName %> State', () => {
       <% if (entityType === 'list') { %>
       expect(state.<%= propertyName %>).toEqual([]);
       <% } else { %>
-      expect(state.data).toBeNull();
+      expect(state.<%= propertyName %>).toBeNull();
       <% } %>
       expect(state.loading<%= classifyName %>).toBe(false);
       expect(state.error).toBeNull();
@@ -54,14 +54,14 @@ describe('<%= classifyName %> State', () => {
   });
   <% } else { %>
   describe('Single Item Operations', () => {
-    it('should handle null data initially', () => {
-      expect(state.data).toBeNull();
+    it('should handle null <%= propertyName %> initially', () => {
+      expect(state.<%= propertyName %>).toBeNull();
     });
 
-    it('should allow data to be set', () => {
-      const mockData = { id: '1', name: 'Test' };
-      state.data = mockData;
-      expect(state.data).toEqual(mockData);
+    it('should allow <%= propertyName %> to be set', () => {
+      const mock<%= classifyName %> = { id: '1', name: 'Test' };
+      state.<%= propertyName %> = mock<%= classifyName %>;
+      expect(state.<%= propertyName %>).toEqual(mock<%= classifyName %>);
     });
   });
   <% } %>
