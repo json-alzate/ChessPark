@@ -1,0 +1,17 @@
+---
+description: Guía de estilos UI/UX para ChessColate; aplicar al editar templates o componentes de la interfaz.
+globs: apps/chessColate/**/*.html
+alwaysApply: false
+---
+
+# UI Style Guide (ChessColate)
+
+Al editar templates en ChessColate, seguir [docs/STYLE_GUIDE.md](/docs/STYLE_GUIDE.md). Resumen obligatorio:
+
+- **Tema**: Contenedor principal con `data-theme="halloween"` y clase `main-container`.
+- **Estructura de página**: `ion-content [fullscreen]="true"` → `div.main-container` → contenido en `div.container.mx-auto.px-4.py-6`. Incluir `app-navbar` en páginas principales.
+- **Tipografía**: Título de página `h2.text-2xl.font-bold.mb-4`; sección `h3.text-xl.font-semibold.mb-2`; ELO numérico `h1.text-4xl.font-bold` con color `#bf811c`.
+- **Componentes**: DaisyUI (btn btn-primary/btn-ghost, card bg-base-100 shadow-sm, badge); Ionic (ion-content, ion-footer.md:hidden para acciones móvil).
+- **Responsive**: Usar breakpoints (sm/md/lg/xl) y `md:hidden` / `hidden md:block` cuando corresponda.
+
+Para construir o validar la interfaz completa, usar el skill **ui-style-guide** y el checklist de la guía.
