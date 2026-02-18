@@ -281,6 +281,10 @@ export class TrainingComponent implements OnInit {
   }
 
   onPuzzleCompleted(puzzleCompleted: Puzzle, puzzleStatus: 'good' | 'bad' | 'timeOut') {
+    const currentBlock = this.plan.blocks?.[this.currentIndexBlock];
+    if (!currentBlock) {
+      return;
+    }
 
     this.countPuzzlesPlayedBlock++;
 
@@ -304,15 +308,16 @@ export class TrainingComponent implements OnInit {
     };
 
     // Crear una copia del bloque actual
-    const currentBlock = {
-      ...this.plan.blocks[this.currentIndexBlock],
-      puzzlesPlayed: [...this.plan.blocks[this.currentIndexBlock].puzzlesPlayed, userPuzzle]
+    const existingPuzzlesPlayed = currentBlock.puzzlesPlayed ?? [];
+    const updatedBlock = {
+      ...currentBlock,
+      puzzlesPlayed: [...existingPuzzlesPlayed, userPuzzle]
     };
 
     // Crear una nueva copia de todos los bloques
     const newBlocks = [...this.plan.blocks];
     // Reemplazar el bloque actual con la copia actualizada
-    newBlocks[this.currentIndexBlock] = currentBlock;
+    newBlocks[this.currentIndexBlock] = updatedBlock;
 
     // Ahora actualizar el plan con los nuevos bloques
     this.plan = {

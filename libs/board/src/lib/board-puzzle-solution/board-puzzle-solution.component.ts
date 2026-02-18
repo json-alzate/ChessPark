@@ -225,6 +225,8 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit {
       switch (event.type) {
 
         case 'moveInputStarted':
+          this.board.removeMarkers();
+          this.showLastMove();
           this.removeArrows();
 
           // mostrar indicadores para donde se puede mover la pieza
@@ -257,7 +259,8 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit {
               const isValidPawnMove = possibleMoves.some(move => move.to === event.squareTo);
               
               if (!isValidPawnMove) {
-                // El movimiento del peón no es válido, rechazar
+                this.board.removeMarkers();
+                this.showLastMove();
                 return false;
               }
 
@@ -283,29 +286,32 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit {
                       this.showLastMove();
                       this.validateMove();
                     } else {
-                      // Movimiento inválido, restaurar posición original
                       this.board.setPosition(this.chessInstance.fen(), false);
+                      this.board.removeMarkers();
+                      this.showLastMove();
                     }
                   } catch (error) {
-                    // Movimiento de promoción inválido, restaurar posición original
                     this.board.setPosition(this.chessInstance.fen(), false);
+                    this.board.removeMarkers();
+                    this.showLastMove();
                     console.log('Invalid promotion move:', error);
                   }
                 } else {
-                  // Usuario canceló la promoción, restaurar posición original
                   this.board.setPosition(this.chessInstance.fen(), false);
+                  this.board.removeMarkers();
+                  this.showLastMove();
                 }
               });
               
               // Retornar true para aceptar el movimiento pendiente de promoción
               return true;
             } catch (error) {
-              // Error al validar el movimiento básico
+              this.board.removeMarkers();
+              this.showLastMove();
               return false;
             }
           }
 
-          // Validación de movimientos normales (aplicando correcciones de board-puzzle.component.ts)
           if (event.squareFrom && event.squareTo) {
             const objectMove = { from: event.squareFrom, to: event.squareTo };
             try {
@@ -315,18 +321,25 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit {
                 this.board.removeArrows();
                 this.showLastMove();
                 this.validateMove();
+              } else {
+                this.board.removeMarkers();
+                this.showLastMove();
               }
-              // return true, if input is accepted/valid, `false` takes the move back
               return theMove ? true : false;
             } catch (error) {
-              // Movimiento inválido, retornar false para rechazar el movimiento
+              this.board.removeMarkers();
+              this.showLastMove();
               return false;
             }
           }
+          this.board.removeMarkers();
+          this.showLastMove();
           return false;
 
         case 'moveInputCanceled':
-          // hide the indicators
+          this.board.removeMarkers();
+          this.showLastMove();
+          this.removeArrows();
           return true;
         case 'moveInputFinished':
           return true;
@@ -480,6 +493,18 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit {
 
     // Repite después de 500ms
     setTimeout(() => this.showClue(times + 1), 500);
+  }
+
+  /** Elimina todos los marcadores del tablero excepto los de última jugada (lastMove). */
+  removeMarkerNotLastMove(square?: string) {
+    const markersToProcess = square
+      ? this.board.getMarkers(undefined, square)
+      : this.board.getMarkers();
+    markersToProcess.forEach((marker: { type: { id?: string }; square?: string }) => {
+      if (marker.type?.id !== 'lastMove') {
+        this.board.removeMarkers(marker.type, square ?? marker.square);
+      }
+    });
   }
 
   // Board controls -----------------------------------
