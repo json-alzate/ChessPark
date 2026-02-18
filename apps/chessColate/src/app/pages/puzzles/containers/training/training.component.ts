@@ -6,7 +6,7 @@ import { interval, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 // Transloco
-import { TranslocoPipe } from '@jsverse/transloco';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
 import { IonRippleEffect, LoadingController, ModalController, IonIcon } from '@ionic/angular/standalone';
 
@@ -52,6 +52,7 @@ export class TrainingComponent implements OnInit {
   private router = inject(Router);
   appService = inject(AppService);
   private profileService = inject(ProfileService);
+  private translocoService = inject(TranslocoService);
   private uidGenerator = inject(UidGeneratorService);
   private soundsService = inject(SoundsService);
   showBlockTimer = false;
@@ -127,20 +128,36 @@ export class TrainingComponent implements OnInit {
 
     this.totalPuzzlesInBlock = this.plan.blocks[this.currentIndexBlock].puzzlesCount;
 
-    const themeName = this.plan.blocks[this.currentIndexBlock].theme;
-    const openingFamily = this.plan.blocks[this.currentIndexBlock].openingFamily;
-    const blockDescription = this.plan.blocks[this.currentIndexBlock].description;
+    const currentBlock = this.plan.blocks[this.currentIndexBlock];
+    const themeName = currentBlock.theme;
+    const openingFamily = currentBlock.openingFamily;
+    const blockDescription = currentBlock.description;
+    const blockTitle = currentBlock.title;
+    const blockColor = currentBlock.color;
+
     const themeOrOpeningName = themeName ?
       this.appService.getNameThemePuzzleByValue(themeName) :
       this.appService.getNameOpeningByValue(openingFamily || '');
 
-    const title = this.plan.blocks[this.currentIndexBlock].title ?
-      this.plan.blocks[this.currentIndexBlock].title :
-      themeOrOpeningName;
+    const whiteColorText = this.translocoService.translate('PUZZLES.colors.white');
+    const blackColorText = this.translocoService.translate('PUZZLES.colors.black');
+    const colorText = blockColor === 'white' ? whiteColorText :
+      blockColor === 'black' ? blackColorText : null;
+
+    const isDescriptionJustColor = blockDescription === whiteColorText || blockDescription === blackColorText;
+
+    let title: string;
+    if (blockTitle) {
+      title = blockTitle;
+    } else if (themeOrOpeningName && colorText) {
+      const withPrefix = this.translocoService.translate('PUZZLES.with');
+      title = `${themeOrOpeningName}${withPrefix}${colorText}`;
+    } else {
+      title = themeOrOpeningName;
+    }
 
     let image = 'assets/images/puzzle-themes/opening.svg';
     if (themeName) {
-      // si el tema es mateIn1, mateIn2, mateIn3, mateIn4, mateIn5, mateIn6, mateIn7, mateIn8, etc se debe mostrar el tema mate
       if (themeName.includes('mateIn')) {
         image = 'assets/images/puzzle-themes/mate.svg';
       } else {
@@ -148,7 +165,7 @@ export class TrainingComponent implements OnInit {
       }
     }
 
-    const description = blockDescription ? blockDescription :
+    const description = (blockDescription && !isDescriptionJustColor) ? blockDescription :
       (themeName ? this.appService.getDescriptionThemePuzzleByValue(themeName) :
         this.appService.getDescriptionOpeningByValue(openingFamily || ''));
 

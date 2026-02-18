@@ -42,7 +42,8 @@ export class BlockService {
     };
 
     if (blockSettings.color !== 'random') {
-      options.color = blockSettings.color === 'white' ? 'w' : 'b';
+      // El FEN del puzzle inicia con el turno del oponente; invertimos para pedir puzzles donde el usuario juegue el color indicado
+      options.color = blockSettings.color === 'white' ? 'b' : 'w';
     }
 
     const puzzlesToAdd: Puzzle[] = await this.puzzlesProvider.getPuzzles(options);
@@ -147,7 +148,6 @@ export class BlockService {
             }
           ];
           resolve(block1);
-          break;
           break;
         case 'plan3': // No muestra soluciones / un mismo color / 3 minutos del tema mas fuerte del plan3
           const allowedThemes3 = PLAN_ALLOWED_THEMES['plan3'];
