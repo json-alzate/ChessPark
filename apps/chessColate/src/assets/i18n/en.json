@@ -228,6 +228,18 @@
     "title": "Plans history",
     "more": "All history"
   },
+  "CUSTOM_PLANS": {
+    "listTitle": "Custom plans",
+    "empty": "You haven't created any custom plans yet.",
+    "createFirst": "Create my first routine",
+    "untitled": "Untitled",
+    "public": "Public",
+    "edit": "Edit",
+    "play": "Play",
+    "create": "Create routine",
+    "isPublic": "Public plan (visible to others)",
+    "saveOnly": "Save and go back"
+  },
   "COORDINATES_PUZZLES": {
     "coordinates": "Coordinates",
     "pieces": "Pieces",

@@ -1,0 +1,152 @@
+<ion-content [fullscreen]="true">
+  <div class="main-container" data-theme="halloween">
+    <app-navbar></app-navbar>
+
+    <div class="container mx-auto px-4 py-6">
+      @if (loading) {
+        <div class="flex justify-center py-8">
+          <span class="loading loading-spinner loading-lg text-primary"></span>
+        </div>
+      } @else {
+        <h2 class="text-2xl font-bold mb-4">{{ 'CUSTOM_TRAINING.form.title' | transloco }}</h2>
+
+        <ul class="list-disc list-inside text-base-content/70 mb-4">
+          <li>{{ 'CUSTOM_TRAINING.form.description1' | transloco }}</li>
+          <li>{{ 'CUSTOM_TRAINING.form.description2' | transloco }}</li>
+        </ul>
+
+        <div class="form-control w-full max-w-md mb-4">
+          <label class="label" for="plan-name">
+            <span class="label-text">{{ 'CUSTOM_TRAINING.fields.nameLabel' | transloco }}</span>
+          </label>
+          <input
+            id="plan-name"
+            type="text"
+            class="input input-bordered w-full"
+            [formControl]="nameControl"
+            maxlength="30"
+            [placeholder]="'CUSTOM_TRAINING.fields.nameLabel' | transloco"
+          />
+          @if (nameControl.touched && nameControl.errors) {
+            <label class="label">
+              <span class="label-text-alt text-error">
+                @if (nameControl.hasError('required')) {
+                  {{ 'CUSTOM_TRAINING.errors.nameRequired' | transloco }}
+                }
+                @if (nameControl.hasError('maxlength')) {
+                  {{ 'CUSTOM_TRAINING.errors.nameMaxLength' | transloco }}
+                }
+              </span>
+            </label>
+          }
+        </div>
+
+        <div class="form-control w-full max-w-md mb-4">
+          <label class="label cursor-pointer justify-start gap-2">
+            <input type="checkbox" class="toggle toggle-primary" [formControl]="isPublicControl" />
+            <span class="label-text">{{ 'CUSTOM_PLANS.isPublic' | transloco }}</span>
+          </label>
+        </div>
+
+        <h3 class="text-xl font-semibold mb-2">{{ 'COMMON.chess.blocks' | transloco }}</h3>
+        <ion-list class="space-y-2 mb-4">
+          <ion-reorder-group [disabled]="false" (ionItemReorder)="doReorder($event)">
+            @for (block of blocks; track $index) {
+              <ion-item class="rounded-lg border border-base-300">
+                @if (block.theme !== 'all' && block.theme !== 'weakness') {
+                  <img
+                    slot="start"
+                    class="w-8 h-8 rounded-full object-contain"
+                    [src]="'assets/images/puzzle-themes/' + block.theme + '.svg'"
+                    alt=""
+                  />
+                }
+                @if (block.theme === 'all') {
+                  <ion-icon slot="start" name="shuffle"></ion-icon>
+                }
+                @if (block.theme === 'weakness') {
+                  <ion-icon slot="start" name="trending-down"></ion-icon>
+                }
+                <ion-label>
+                  <h2>
+                    @if (block.time > 0 || block.puzzlesCount) {
+                      @if (block.time > 0) {
+                        <span>{{ block.time | secondsToMinutesSeconds }} <small class="opacity-70">(min:seg)</small></span>
+                      }
+                      @if (block.time > 0 && block.puzzlesCount) { ó }
+                      @if (block.puzzlesCount) {
+                        {{ block.puzzlesCount }} {{ 'NEW_BLOCK.fields.puzzles' | transloco }}
+                      }
+                    } @else {
+                      <ion-icon name="infinite-outline"></ion-icon>
+                    }
+                  </h2>
+                  <ion-note>
+                    @switch (block.color) {
+                      @case ('white') {
+                        {{ 'CUSTOM_TRAINING.colors.withWhite' | transloco }}
+                      }
+                      @case ('black') {
+                        {{ 'CUSTOM_TRAINING.colors.withBlack' | transloco }}
+                      }
+                      @default {
+                        {{ 'CUSTOM_TRAINING.colors.anyColor' | transloco }}
+                      }
+                    }
+                  </ion-note>
+                </ion-label>
+                <ion-reorder slot="end"></ion-reorder>
+              </ion-item>
+            }
+          </ion-reorder-group>
+        </ion-list>
+
+        <button
+          type="button"
+          class="btn btn-ghost btn-block mb-6"
+          [disabled]="blocks.length >= 5"
+          (click)="openBlockSettingsModal()"
+        >
+          <ion-icon name="add"></ion-icon>
+          {{ 'CUSTOM_TRAINING.actions.addBlock' | transloco }}
+        </button>
+
+        <div class="flex flex-col gap-2 max-w-md">
+          <button
+            type="button"
+            class="btn btn-primary"
+            [disabled]="blocks.length === 0 || nameControl.invalid || saving"
+            (click)="saveAndPlay()"
+          >
+            {{ 'CUSTOM_TRAINING.actions.saveAndPlay' | transloco }}
+          </button>
+          @if (isEditMode) {
+            <button
+              type="button"
+              class="btn btn-outline"
+              [disabled]="blocks.length === 0 || nameControl.invalid || saving"
+              (click)="save()"
+            >
+              {{ 'CUSTOM_PLANS.saveOnly' | transloco }}
+            </button>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</ion-content>
+
+<ion-footer class="ion-no-border md:hidden">
+  <ion-toolbar>
+    <div class="container mx-auto px-4 py-2">
+      <button
+        type="button"
+        class="btn btn-primary w-full"
+        [disabled]="blocks.length === 0 || nameControl.invalid || saving"
+        (click)="saveAndPlay()"
+      >
+        {{ 'CUSTOM_TRAINING.actions.saveAndPlay' | transloco }}
+      </button>
+    </div>
+  </ion-toolbar>
+</ion-footer>

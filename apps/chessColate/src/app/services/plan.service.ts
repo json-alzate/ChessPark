@@ -1,7 +1,4 @@
 import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-
-
 import { Plan, Block, PlanTypes } from '@cpark/models';
 import { UidGeneratorService } from '@chesspark/common-utils';
 import { PlanFacadeService } from '@cpark/state';
@@ -9,7 +6,8 @@ import { PlanFacadeService } from '@cpark/state';
 // services
 import { FirestoreService } from '@services/firestore.service';
 import { BlockService } from '@services/block.service';
-
+import { ProfileService } from '@services/profile.service';
+import { PlansElosService } from '@services/plans-elos.service';
 
 @Injectable({
   providedIn: 'root'
@@ -18,21 +16,52 @@ export class PlanService {
 
   private firestoreService = inject(FirestoreService);
   private blockService = inject(BlockService);
+  private profileService = inject(ProfileService);
+  private plansElosService = inject(PlansElosService);
   private uidGenerator = inject(UidGeneratorService);
   private planFacade = inject(PlanFacadeService);
-  
-  constructor(
-  ) { }
-
-
-
- 
 
   /**
-   *
+   * Prepara un plan personalizado para jugar: resuelve temas (all/weakness), carga puzzles
+   * por bloque y devuelve un plan con uid nuevo listo para setPlan y navegar a training.
+   */
+  async makeCustomPlanForPlay(plan: Plan, eloToStart = 1500): Promise<Plan> {
+    const uid = plan.uidCustomPlan ?? plan.uid;
+    const planElos = await this.plansElosService.getOnePlanElo(uid);
+    const eloBase = planElos?.total ?? eloToStart;
+
+    const blockUpdatedToAdd: Block[] = [];
+    for (const b of plan.blocks) {
+      let theme = b.theme;
+      if (b.theme === 'weakness') {
+        const weakness = planElos?.themes ? this.plansElosService.getWeakness(planElos.themes) : null;
+        theme = weakness ?? this.blockService.getRandomTheme();
+      } else if (b.theme === 'all') {
+        theme = this.blockService.getRandomTheme();
+      }
+      const blockWithTheme = { ...b, theme, elo: eloBase };
+      const puzzles = await this.blockService.getPuzzlesForBlock(blockWithTheme);
+      blockUpdatedToAdd.push({
+        ...blockWithTheme,
+        puzzles,
+        puzzlesPlayed: [],
+      });
+    }
+
+    return {
+      ...plan,
+      uid: this.uidGenerator.generateSimpleUid(),
+      uidCustomPlan: plan.uid,
+      planType: 'custom',
+      blocks: blockUpdatedToAdd,
+      createdAt: Date.now(),
+    };
+  }
+
+  /**
    * @param blocks
    * @param time in seconds (-1 for infinite)
-   * */
+   */
   newPlan(blocks: Block[], planType: PlanTypes): Promise<Plan> {
     this.planFacade.loadPlan();
     return new Promise((resolve, reject) => {

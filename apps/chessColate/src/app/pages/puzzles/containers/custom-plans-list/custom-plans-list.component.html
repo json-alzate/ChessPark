@@ -1,0 +1,70 @@
+<ion-content [fullscreen]="true">
+  <div class="main-container" data-theme="halloween">
+    <app-navbar></app-navbar>
+
+    <div class="container mx-auto px-4 py-6">
+      <h2 class="text-2xl font-bold mb-4">{{ 'CUSTOM_PLANS.listTitle' | transloco }}</h2>
+
+      @if (loading) {
+        <div class="flex justify-center py-8">
+          <span class="loading loading-spinner loading-lg text-primary"></span>
+        </div>
+      } @else if (plans.length === 0) {
+        <div class="card bg-base-100 shadow-sm">
+          <div class="card-body items-center text-center py-8">
+            <p class="text-base-content/70">{{ 'CUSTOM_PLANS.empty' | transloco }}</p>
+            <button type="button" class="btn btn-primary mt-4" (click)="goToCreate()">
+              {{ 'CUSTOM_PLANS.createFirst' | transloco }}
+            </button>
+          </div>
+        </div>
+      } @else {
+        <div class="space-y-4">
+          @for (plan of plans; track plan.uid) {
+            <div class="card bg-base-100 shadow-sm">
+              <div class="card-body p-4">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <h3 class="text-lg font-semibold">{{ plan.title || ('CUSTOM_PLANS.untitled' | transloco) }}</h3>
+                    <h6 class="text-sm text-base-content/70">
+                      {{ plan.blocks?.length ?? 0 }} {{ 'COMMON.chess.blocks' | transloco }}
+                      @if (plan.isPublic) {
+                        <span class="badge badge-sm badge-info ml-1">{{ 'CUSTOM_PLANS.public' | transloco }}</span>
+                      }
+                    </h6>
+                    @if (plan.createdAt) {
+                      <p class="text-xs text-base-content/50 mt-1">{{ formatDate(plan.createdAt) }}</p>
+                    }
+                  </div>
+                  <div class="flex gap-2">
+                    <button type="button" class="btn btn-sm btn-ghost" (click)="goToEdit(plan)">
+                      <ion-icon name="create-outline"></ion-icon>
+                      {{ 'CUSTOM_PLANS.edit' | transloco }}
+                    </button>
+                    <button type="button" class="btn btn-sm btn-primary" (click)="play(plan)">
+                      <ion-icon name="play-outline"></ion-icon>
+                      {{ 'CUSTOM_PLANS.play' | transloco }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="md:hidden">
+      <ion-fab-button (click)="goToCreate()" aria-label="{{ 'CUSTOM_PLANS.create' | transloco }}">
+        <ion-icon name="add"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+
+    <div class="hidden md:block container mx-auto px-4 pb-6">
+      <button type="button" class="btn btn-primary w-full md:w-auto" (click)="goToCreate()">
+        <ion-icon name="add"></ion-icon>
+        {{ 'CUSTOM_PLANS.create' | transloco }}
+      </button>
+    </div>
+  </div>
+</ion-content>

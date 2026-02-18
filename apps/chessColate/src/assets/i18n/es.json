@@ -228,6 +228,18 @@
     "title": "Historial de planes",
     "more": "Ver más"
   },
+  "CUSTOM_PLANS": {
+    "listTitle": "Planes personalizados",
+    "empty": "Aún no has creado ningún plan personalizado.",
+    "createFirst": "Crear mi primera rutina",
+    "untitled": "Sin título",
+    "public": "Público",
+    "edit": "Editar",
+    "play": "Jugar",
+    "create": "Crear rutina",
+    "isPublic": "Plan público (visible para otros)",
+    "saveOnly": "Guardar y volver"
+  },
   "COORDINATES_PUZZLES": {
     "coordinates": "Coordenadas",
     "pieces": "Piezas",

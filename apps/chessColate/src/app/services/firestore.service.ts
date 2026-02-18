@@ -349,10 +349,19 @@ export class FirestoreService {
       plansToReturn.push(planToAdd);
     });
 
-    console.log('plansToReturn', plansToReturn);
-
-
     return plansToReturn;
+  }
+
+  /**
+   * Get a single custom plan by uid.
+   */
+  async getCustomPlan(uid: string): Promise<Plan | null> {
+    const ref = doc(this.db, 'custom-plans', uid);
+    const snap = await getDoc(ref);
+    if (!snap.exists()) return null;
+    const data = snap.data() as Plan;
+    data.uid = snap.id;
+    return data;
   }
 
 

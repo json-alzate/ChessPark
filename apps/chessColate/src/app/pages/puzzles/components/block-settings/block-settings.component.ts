@@ -1,0 +1,154 @@
+import { Component, OnInit, inject } from '@angular/core';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+
+import { ModalController, IonContent, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon, IonItem, IonLabel, IonList, IonListHeader, IonAccordionGroup, IonAccordion, IonRange, IonRadioGroup, IonRadio, IonThumbnail, IonCheckbox, IonToggle, IonRow, IonCol, IonNote } from '@ionic/angular/standalone';
+
+import { TranslocoPipe } from '@jsverse/transloco';
+
+import { Block } from '@cpark/models';
+import { PuzzleThemesGroup } from '@cpark/models';
+import { SecondsToMinutesSecondsPipe } from '@chesspark/common-utils';
+
+import { TranslocoService } from '@jsverse/transloco';
+import { AppService } from '@services/app.service';
+
+import { addIcons } from 'ionicons';
+import { close, shuffle, trendingDown, sunnyOutline, moonOutline, infiniteOutline } from 'ionicons/icons';
+
+@Component({
+  selector: 'app-block-settings',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    TranslocoPipe,
+    SecondsToMinutesSecondsPipe,
+    IonContent,
+    IonToolbar,
+    IonTitle,
+    IonButtons,
+    IonButton,
+    IonIcon,
+    IonItem,
+    IonLabel,
+    IonList,
+    IonListHeader,
+    IonAccordionGroup,
+    IonAccordion,
+    IonRange,
+    IonRadioGroup,
+    IonRadio,
+    IonThumbnail,
+    IonCheckbox,
+    IonToggle,
+    IonRow,
+    IonCol,
+    IonNote,
+  ],
+  templateUrl: './block-settings.component.html',
+  styleUrl: './block-settings.component.scss',
+})
+export class BlockSettingsComponent implements OnInit {
+  private formBuilder = inject(FormBuilder);
+  private appService = inject(AppService);
+  private modalController = inject(ModalController);
+  private translocoService = inject(TranslocoService);
+
+  color: 'white' | 'black' | 'random' = 'random';
+  puzzlesGroupsThemes: PuzzleThemesGroup[] = [];
+  form!: FormGroup;
+
+  get lang(): string {
+    return this.translocoService.getActiveLang() ?? 'es';
+  }
+
+  constructor() {
+    addIcons({ close, shuffle, trendingDown, sunnyOutline, moonOutline, infiniteOutline });
+  }
+
+  ngOnInit(): void {
+    this.puzzlesGroupsThemes = this.appService.getThemesPuzzle ?? [];
+    this.buildForm();
+    this.form.get('goshPuzzle')?.valueChanges.subscribe(() => {
+      this.toggleFieldBasedOnBoolean('goshPuzzle', 'goshPuzzleTime');
+    });
+  }
+
+  get timeField() {
+    return this.form.get('time');
+  }
+  get puzzlesCountField() {
+    return this.form.get('puzzlesCount');
+  }
+  get themeField() {
+    return this.form.get('theme');
+  }
+  get eloLevelField() {
+    return this.form.get('eloLevel');
+  }
+  get puzzleTimeField() {
+    return this.form.get('puzzleTime');
+  }
+  get goshPuzzleTimeField() {
+    return this.form.get('goshPuzzleTime');
+  }
+
+  private buildForm(): void {
+    this.form = this.formBuilder.group({
+      time: [300, Validators.required],
+      puzzlesCount: [0],
+      eloLevel: [0],
+      theme: ['all'],
+      openingFamily: [''],
+      puzzleTime: [60, Validators.required],
+      nextPuzzleImmediately: [true],
+      showPuzzleSolution: [true],
+      goshPuzzle: [false],
+      goshPuzzleTime: [{ value: 30, disabled: true }],
+    });
+  }
+
+  formatPin(value: number): string {
+    return value > 0 ? `+${value}` : `${value}`;
+  }
+
+  private toggleFieldBasedOnBoolean(booleanControlName: string, targetControlName: string): void {
+    const booleanControl = this.form.get(booleanControlName);
+    const targetControl = this.form.get(targetControlName);
+    if (!booleanControl || !targetControl) return;
+    if (booleanControl.value) {
+      targetControl.enable();
+      targetControl.setValidators(Validators.required);
+    } else {
+      targetControl.setValue(30);
+      targetControl.disable();
+      targetControl.clearValidators();
+    }
+    targetControl.updateValueAndValidity();
+  }
+
+  onSubmit(event: Event): void {
+    event.preventDefault();
+    if (this.form.invalid) return;
+    const val = this.form.getRawValue();
+    const newBlock: Block = {
+      ...val,
+      color: this.color,
+      time: val.time === 0 ? -1 : val.time,
+      puzzlesCount: val.puzzlesCount ?? 0,
+      elo: 1500 + (val.eloLevel ?? 0),
+      puzzleTimes: {
+        total: val.puzzleTime,
+        warningOn: val.puzzleTime / 2,
+        dangerOn: val.puzzleTime / 4,
+      },
+      puzzlesPlayed: [],
+    };
+    this.modalController.dismiss(newBlock);
+  }
+
+  close(): void {
+    this.modalController.dismiss();
+  }
+}
