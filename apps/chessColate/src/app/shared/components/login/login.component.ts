@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
 import {
   ModalController,
   IonFab, IonFabButton, IonContent,
-  IonLabel, IonIcon, IonRow, IonCol, IonSegment, IonSegmentButton
+  IonIcon, IonRow, IonCol
 } from '@ionic/angular/standalone';
 
 import { addIcons } from 'ionicons';
@@ -28,14 +28,11 @@ import { AuthService } from '@services/auth.service';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    IonSegmentButton,
-    IonSegment,
     IonCol,
     IonRow,
     IonFab,
     IonFabButton,
     IonContent,
-    IonLabel,
     IonIcon,
     TranslocoPipe
   ]
@@ -114,11 +111,10 @@ export class LoginComponent implements OnInit {
     this.authService.loginGoogle();
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  segmentChanged(ev: any) {
+  setSegmentTab(value: 'login' | 'singUp') {
     this.errorLogin = '';
     this.errorSingUp = '';
-    this.segmentEmailPassword = ev?.detail?.value;
+    this.segmentEmailPassword = value;
   }
 
   // Ingresar

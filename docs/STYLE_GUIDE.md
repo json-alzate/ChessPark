@@ -202,6 +202,15 @@ La aplicación utiliza los colores del tema Halloween de DaisyUI:
 - `btn-block`: Ancho completo
 - `w-full`: Ancho completo (clase Tailwind)
 
+#### Excepción: Botones OAuth (Google)
+Los botones de inicio de sesión con proveedores externos (ej. Google) pueden usar estilos personalizados para cumplir con las guías de marca del proveedor. Ejemplo:
+```html
+<button class="btn btn-lg bg-white text-black border-[#e5e5e5]">
+  <!-- Logo del proveedor -->
+  Ingresar con Google
+</button>
+```
+
 ### Cards
 
 #### Card Básica
