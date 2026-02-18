@@ -1,11 +1,20 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, inject } from '@angular/core';
+import {
+  Component,
+  CUSTOM_ELEMENTS_SCHEMA,
+  ChangeDetectorRef,
+  inject,
+  OnInit,
+  OnDestroy,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Subject, takeUntil } from 'rxjs';
 
 import { IonRippleEffect, LoadingController } from '@ionic/angular/standalone';
 
 // services
 import { BlockService } from '@services/block.service';
 import { PlanService } from '@services/plan.service';
+import { ProfileService } from '@services/profile.service';
 
 import { addIcons } from 'ionicons';
 import { timerOutline } from 'ionicons/icons';
@@ -19,12 +28,55 @@ import { Router } from '@angular/router';
   templateUrl: './training-menu.component.html',
   styleUrl: './training-menu.component.scss',
 })
-export class TrainingMenuComponent {
+export class TrainingMenuComponent implements OnInit, OnDestroy {
   private blockService = inject(BlockService);
   private planService = inject(PlanService);
+  private profileService = inject(ProfileService);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
+  private destroy$ = new Subject<void>();
+
   constructor(private loadingController: LoadingController) {
     addIcons({ timerOutline });
+  }
+
+  ngOnInit(): void {
+    this.profileService.profile$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => this.cdr.markForCheck());
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  isEloProvisional(planNumber: number): boolean {
+    return !this.hasRegisteredEloForPlan(planNumber);
+  }
+
+  getEloDisplayForPlan(planNumber: number): string {
+    const elo = this.getEloForPlan(planNumber);
+    const isProvisional = !this.hasRegisteredEloForPlan(planNumber);
+    return isProvisional ? `${elo}?` : `${elo}`;
+  }
+
+  private getEloForPlan(planNumber: number): number {
+    if (!this.profileService.getProfile?.uid) {
+      return 1500;
+    }
+    const planType = `plan${planNumber}` as PlanTypes;
+    return this.profileService.getEloTotalByPlanType(planType);
+  }
+
+  private hasRegisteredEloForPlan(planNumber: number): boolean {
+    const profile = this.profileService.getProfile;
+    if (!profile?.uid || !profile.elos) {
+      return false;
+    }
+    const totalKey = `plan${planNumber}Total` as keyof typeof profile.elos;
+    const total = profile.elos[totalKey];
+    return typeof total === 'number';
   }
 
   async createPlan(planNumber: number) {
