@@ -14,6 +14,7 @@ import { ProfileService } from '@services/profile.service';
 import { AppService } from '@services/app.service';
 import { PuzzlesProvider } from '@chesspark/puzzles-provider';
 import { PlansElosService } from '@services/plans-elos.service';
+import { PLAN_ALLOWED_THEMES } from '../plan-allowed-themes.config';
 
 @Injectable({
   providedIn: 'root'
@@ -149,11 +150,12 @@ export class BlockService {
           break;
           break;
         case 'plan3': // No muestra soluciones / un mismo color / 3 minutos del tema mas fuerte del plan3
+          const allowedThemes3 = PLAN_ALLOWED_THEMES['plan3'];
           const color3 = Math.random() > 0.5 ? 'white' : 'black';
           // se elige el elo mas fuerte que el usuario tenga en el plan3, filtrando temas mapeados
           const themeStrong3 = profile?.elos?.plan3
-            ? this.getStrongestThemeInPlan(profile.elos.plan3)
-            : this.getRandomTheme();
+            ? this.getStrongestThemeInPlan(profile.elos.plan3, allowedThemes3)
+            : this.getRandomTheme(allowedThemes3);
 
           const eloThemeStrong3 = profile?.elos?.plan3 ? profile?.elos?.plan3[themeStrong3] : undefined;
 
@@ -181,9 +183,10 @@ export class BlockService {
               - tema random = t 2.5 minutos / 15 segundos por puzzle
               - tema debilidades (elo - 200) = t 2.5 minutos / 30 segundos por puzzle
           */
+          const allowedThemes5 = PLAN_ALLOWED_THEMES['plan5'];
           const color5 = Math.random() > 0.5 ? 'white' : 'black';
           // obtener el tema random , asignando una posición aleatoria de un array
-          const themeRandom5 = this.getRandomTheme();
+          const themeRandom5 = this.getRandomTheme(allowedThemes5);
           if (!themeRandom5) {
             reject('No se pudo obtener el tema random themeRandom5');
           }
@@ -191,8 +194,8 @@ export class BlockService {
           const themeRandomElo5 = profile?.elos?.plan5 ? profile?.elos?.plan5[themeRandom5] : undefined;
           // se elige el elo mas bajo que el usuario tenga en el plan5, filtrando temas mapeados
           const themeWeakness5 = profile?.elos?.plan5
-            ? this.getWeaknessInPlan(profile.elos.plan5)
-            : this.getRandomTheme();
+            ? this.getWeaknessInPlan(profile.elos.plan5, allowedThemes5)
+            : this.getRandomTheme(allowedThemes5);
 
           const eloThemeWeakness5 = profile?.elos?.plan5 ? profile?.elos?.plan5[themeWeakness5] : undefined;
 
@@ -241,20 +244,21 @@ export class BlockService {
            * - mismo tema = t 1 minuto / 20 segundos por puzzle
            * - misma apertura + finales = t 2 minutos / 60 segundos por puzzle
            */
+          const allowedThemes10 = PLAN_ALLOWED_THEMES['plan10'];
           const color10 = Math.random() > 0.5 ? 'white' : 'black';
 
           let theme10: string;
           let opening10: string;
           if (Math.random() < 0.5) { // tema random o debilidad
             // tema random
-            theme10 = this.getRandomTheme();
+            theme10 = this.getRandomTheme(allowedThemes10);
             if (!theme10) {
               reject('No se pudo obtener el tema random theme10');
             }
 
           } else {
             // tema debilidad
-            theme10 = profile?.elos?.plan10 ? this.getWeaknessInPlan(profile?.elos?.plan10) : this.getRandomTheme();
+            theme10 = profile?.elos?.plan10 ? this.getWeaknessInPlan(profile?.elos?.plan10, allowedThemes10) : this.getRandomTheme(allowedThemes10);
 
           }
           // se busca el elo del usuario según el string del theme10
@@ -372,8 +376,9 @@ export class BlockService {
            * - mate 3 = t 2 minutos / 60 segundos por puzzle
            * */
 
-          const theme20Random = this.getRandomTheme();
-          const themeWeakness20 = profile?.elos?.plan20 ? this.getWeaknessInPlan(profile?.elos?.plan20) : this.getRandomTheme();
+          const allowedThemes20 = PLAN_ALLOWED_THEMES['plan20'];
+          const theme20Random = this.getRandomTheme(allowedThemes20);
+          const themeWeakness20 = profile?.elos?.plan20 ? this.getWeaknessInPlan(profile?.elos?.plan20, allowedThemes20) : this.getRandomTheme(allowedThemes20);
           const eloThemeWeakness20 = profile?.elos?.plan20 ? profile?.elos?.plan20[themeWeakness20] : undefined;
           const eloTheme20Random = profile?.elos?.plan20 ? profile?.elos?.plan20[theme20Random] : undefined;
           const eloMateIn120 = profile?.elos?.plan20 ? profile?.elos?.plan20['mateIn1'] : undefined;
@@ -535,12 +540,13 @@ export class BlockService {
            * - mate 4 o mas = t 2 minutos / 60 segundos por puzzle
            * */
 
+          const allowedThemes30 = PLAN_ALLOWED_THEMES['plan30'];
           const color30 = Math.random() > 0.5 ? 'white' : 'black';
-          const themeWeakness30 = profile?.elos?.plan30 ? this.getWeaknessInPlan(profile?.elos?.plan30) : this.getRandomTheme();
+          const themeWeakness30 = profile?.elos?.plan30 ? this.getWeaknessInPlan(profile?.elos?.plan30, allowedThemes30) : this.getRandomTheme(allowedThemes30);
 
 
           const eloThemeWeakness30 = profile?.elos?.plan30 ? profile?.elos?.plan30[themeWeakness30] : undefined;
-          const theme30Random = this.getRandomTheme();
+          const theme30Random = this.getRandomTheme(allowedThemes30);
           const eloTheme30Random = profile?.elos?.plan30 ? profile?.elos?.plan30[theme30Random] : undefined;
           const opening30Random = this.getRandomOpening();
           const eloOpening30Random = profile?.elos?.plan30Openings ? profile?.elos?.plan30Openings[opening30Random] : undefined;
@@ -725,12 +731,17 @@ export class BlockService {
   }
 
   /**
-   * Obtiene un tema random de la lista de temas
-   * */
-  getRandomTheme(): string {
-    return this.appService.getThemesPuzzlesList[
-      Math.floor(Math.random() * this.appService.getThemesPuzzlesList.length)
-    ].value;
+   * Obtiene un tema random de la lista de temas.
+   * Si se pasa allowedThemeValues (con elementos), solo se elige entre esos temas.
+   */
+  getRandomTheme(allowedThemeValues?: string[]): string {
+    const list = this.appService.getThemesPuzzlesList;
+    const filtered =
+      allowedThemeValues?.length
+        ? list.filter(t => allowedThemeValues.includes(t.value))
+        : [];
+    const target = filtered.length > 0 ? filtered : list;
+    return target[Math.floor(Math.random() * target.length)].value;
   }
 
   /**
@@ -743,56 +754,45 @@ export class BlockService {
   }
 
   /**
-   * Obtiene el tema debil del usuario
-   * según el plan que se le pase
-   *
-   * */
-  // TODO: esto se elimina y se combina con el metodo del servicio de pla-elos,
-  // importante transladar el mapeo
+   * Obtiene el tema debil del usuario según el plan que se le pase.
+   * Si se pasa allowedThemeValues, solo se consideran esos temas (debilidad dentro del subconjunto).
+   */
   getWeaknessInPlan(plan: {
     [key: string]: number;
-  }): string {
-    // se filtra solo para devolver los temas que existan en la lista de la app
-    // es posible que los temas mapeados al plan desde el back no estén en la lista de temas
+  }, allowedThemeValues?: string[]): string {
     const themesList = this.appService.getThemesPuzzlesList;
     let planElosFiltered: { [key: string]: number } = {};
 
     Object.keys(plan).forEach(key => {
-      if (themesList.find(item => item.value === key)) {
-        planElosFiltered = { ...planElosFiltered, [key]: plan[key] };
-      }
+      if (!themesList.find(item => item.value === key)) return;
+      if (allowedThemeValues?.length && !allowedThemeValues.includes(key)) return;
+      planElosFiltered = { ...planElosFiltered, [key]: plan[key] };
     });
-    // se elige el tema con el elo mas bajo que el usuario tenga en el plan,
-    // sino elige un tema random de la lista de temas
     let theme = this.plansElosService.getWeakness(planElosFiltered);
     if (!theme) {
-      theme = this.appService.getThemesPuzzlesList[
-        Math.floor(Math.random() * this.appService.getThemesPuzzlesList.length)
-      ].value;
+      theme = this.getRandomTheme(allowedThemeValues);
     }
     return theme;
   }
 
   /**
-   * Obtiene el tema más fuerte del usuario
-   * según el plan que se le pase, filtrando solo temas mapeados
+   * Obtiene el tema más fuerte del usuario según el plan que se le pase.
+   * Si se pasa allowedThemeValues, solo se consideran esos temas.
    */
   getStrongestThemeInPlan(plan: {
     [key: string]: number;
-  }): string {
+  }, allowedThemeValues?: string[]): string {
     const themesList = this.appService.getThemesPuzzlesList;
     let planElosFiltered: { [key: string]: number } = {};
 
     Object.keys(plan).forEach(key => {
-      if (themesList.find(item => item.value === key)) {
-        planElosFiltered = { ...planElosFiltered, [key]: plan[key] };
-      }
+      if (!themesList.find(item => item.value === key)) return;
+      if (allowedThemeValues?.length && !allowedThemeValues.includes(key)) return;
+      planElosFiltered = { ...planElosFiltered, [key]: plan[key] };
     });
     let theme = this.plansElosService.getStrongestTheme(planElosFiltered);
     if (!theme) {
-      theme = this.appService.getThemesPuzzlesList[
-        Math.floor(Math.random() * this.appService.getThemesPuzzlesList.length)
-      ].value;
+      theme = this.getRandomTheme(allowedThemeValues);
     }
     return theme;
   }
