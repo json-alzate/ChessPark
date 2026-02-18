@@ -1,10 +1,10 @@
-<div class="flex flex-col h-full bg-base-100 overflow-hidden">
+<div class="flex flex-col h-full bg-base-100 overflow-hidden" data-theme="halloween">
   <!-- Header con botón cerrar y rating -->
   <div class="flex items-center justify-between p-2 flex-shrink-0">
     <button class="btn btn-ghost btn-square" (click)="closeModal()">
       <ion-icon name="close-outline" class="text-lg"></ion-icon>
     </button>
-    <span class="badge badge-lg">{{ puzzle.rating }}</span>
+    <span class="badge badge-lg" style="background-color: #bf811c; color: white;">{{ puzzle.rating }}</span>
   </div>
 
   <!-- Tablero de ajedrez -->
@@ -68,32 +68,32 @@
           </div>
           <div class="flex-1">
             @if (allowMoveArrows) {
-              <h2 class="text-success text-xl font-semibold">
+              <h2 class="text-success text-2xl font-bold mb-4">
                 {{ 'PUZZLE_SOLUTION.feedback.goodDone' | transloco }}
               </h2>
             } @else {
               @if (!okTextShow && !wrongTextShow) {
-                <h2 class="text-lg font-semibold">
+                <h2 class="text-2xl font-bold mb-4">
                   {{ 'PUZZLE_SOLUTION.game.turn' | transloco }}
                 </h2>
                 <p class="text-base-content/70">
                   {{ 'PUZZLE_SOLUTION.game.findBestMove' | transloco }}
                   @if (piecePathKingTurn === 'wK.svg') {
-                    <strong>{{ 'PUZZLES.colors.whites' | transloco }}</strong>
+                    <strong>{{ 'PUZZLES.colors.white' | transloco }}</strong>
                   } @else {
-                    <strong>Negras</strong>
+                    <strong>{{ 'PUZZLES.colors.black' | transloco }}</strong>
                   }
                 </p>
               } @else {
                 @if (okTextShow) {
-                  <h2 class="text-success text-lg font-semibold">
+                  <h2 class="text-success text-2xl font-bold mb-4">
                     {{ 'PUZZLE_SOLUTION.feedback.goodMove' | transloco }}
                   </h2>
                   <p class="text-base-content/70">
                     {{ 'PUZZLE_SOLUTION.feedback.continue' | transloco }}
                   </p>
                 } @else {
-                  <h2 class="text-error text-lg font-semibold">
+                  <h2 class="text-error text-2xl font-bold mb-4">
                     {{ 'PUZZLE_SOLUTION.feedback.wrongMove' | transloco }}
                   </h2>
                   <p class="text-base-content/70">
@@ -110,13 +110,13 @@
     <!-- Botones de acción -->
     <div class="flex flex-col gap-2 mb-4">
       <button 
-        class="btn btn-primary btn-block" 
+        class="btn btn-info btn-lg btn-outline btn-block" 
         [disabled]="isClueActive || allowMoveArrows"
         (click)="showClue()">
         {{ 'PUZZLE_SOLUTION.actions.clue' | transloco }}
       </button>
       <button 
-        class="btn btn-primary btn-block" 
+        class="btn btn-info btn-lg btn-outline btn-block" 
         [disabled]="allowMoveArrows"
         (click)="puzzleMoveResponse('user')">
         {{ 'PUZZLE_SOLUTION.actions.solution' | transloco }}
@@ -124,10 +124,10 @@
     </div>
 
     <!-- Timer y botón reproducir -->
-    <div class="flex flex-col items-center gap-4">
+    <div class="flex flex-col items-center gap-4 mb-4">
       <h1 class="text-4xl font-bold text-center">{{ time | secondsToMinutesSeconds }}</h1>
       <button 
-        class="btn btn-primary" 
+        class="btn btn-info btn-lg w-full" 
         (click)="startMoves()">
         {{ 'PUZZLE_SOLUTION.actions.playAndClose' | transloco }}
       </button>
@@ -135,7 +135,7 @@
 
     <!-- Temas del puzzle -->
     <div class="mt-4">
-      <h3 class="text-lg font-medium mb-2">{{ 'PUZZLE_SOLUTION.themes' | transloco }}</h3>
+      <h3 class="text-xl font-semibold mb-2">{{ 'PUZZLE_SOLUTION.themes' | transloco }}</h3>
       <div class="flex flex-wrap gap-2">
         @for (theme of themesTranslated; track theme) {
           <div class="badge badge-ghost">{{ theme }}</div>

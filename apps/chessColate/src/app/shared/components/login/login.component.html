@@ -36,14 +36,10 @@
 
   <div class="divider">{{ 'AUTH.divider' | transloco }}</div>
 
-  <div class="div-container-forms">
+  <div class="max-w-[500px] mx-auto px-4 py-6">
 
     @if (showResetPassword) {
-    <ion-segment value="resetPassword" class="ion-margin-bottom">
-      <ion-segment-button value="resetPassword" class="normal-case">
-        <ion-label>{{ 'AUTH.resetPassword.title' | transloco }}</ion-label>
-      </ion-segment-button>
-    </ion-segment>
+    <h3 class="text-xl font-semibold mb-4">{{ 'AUTH.resetPassword.title' | transloco }}</h3>
 
     <form [formGroup]="formResetPassword" (ngSubmit)="resetPassword($event)">
       <ion-row>
@@ -67,11 +63,11 @@
 
       <ion-row>
         <ion-col size="6" class="ion-padding-horizontal">
-          <button class="btn btn-error btn-wide" (click)="showResetPassword = false">{{ 'COMMON.actions.cancel' |
+          <button class="btn btn-error w-full" (click)="showResetPassword = false">{{ 'COMMON.actions.cancel' |
             transloco }}</button>
         </ion-col>
         <ion-col size="6" class="ion-padding-horizontal">
-          <button class="btn btn-primary btn-wide" type="submit" [disabled]="!formResetPassword.valid">{{
+          <button class="btn btn-primary w-full" type="submit" [disabled]="!formResetPassword.valid">{{
             'COMMON.actions.send' | transloco }}</button>
         </ion-col>
       </ion-row>
@@ -79,14 +75,14 @@
 
     } @else {
 
-    <ion-segment [value]="segmentEmailPassword" class="ion-margin-bottom" (ionChange)="segmentChanged($event)">
-      <ion-segment-button value="login" class="normal-case">
-        <ion-label>{{ 'AUTH.login.segments.loginSegment' | transloco }}</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="singUp" class="normal-case">
-        <ion-label>{{ 'AUTH.login.segments.registerSegment' | transloco }}</ion-label>
-      </ion-segment-button>
-    </ion-segment>
+    <div class="tabs tabs-boxed justify-center mb-4">
+      <button type="button" class="tab normal-case" [class.tab-active]="segmentEmailPassword === 'login'" (click)="setSegmentTab('login')">
+        {{ 'AUTH.login.segments.loginSegment' | transloco }}
+      </button>
+      <button type="button" class="tab normal-case" [class.tab-active]="segmentEmailPassword === 'singUp'" (click)="setSegmentTab('singUp')">
+        {{ 'AUTH.login.segments.registerSegment' | transloco }}
+      </button>
+    </div>
 
     @if (segmentEmailPassword === 'login') {
 
@@ -132,7 +128,7 @@
 
       <ion-row>
         <ion-col size="12" class="ion-text-center ion-padding-horizontal">
-          <button class="btn btn-primary btn-wide" type="submit" [disabled]="!formLogin.valid">{{
+          <button class="btn btn-primary w-full" type="submit" [disabled]="!formLogin.valid">{{
             'AUTH.login.loginButton' | transloco }}</button>
         </ion-col>
       </ion-row>
@@ -156,7 +152,7 @@
     </div>
     }
 
-    <div style="height: 1.5vh;"></div>
+    <div class="h-4"></div>
 
     } @else if (segmentEmailPassword === 'singUp') {
 
@@ -200,7 +196,7 @@
             <input formControlName="rePassword" type="password" required
               [placeholder]="'AUTH.register.confirmPasswordPlaceholder' | transloco" maxlength="100" minlength="8" />
           </label>
-          <span class="text-xs text-red-400 ion-no-margin">
+          <span class="validator-hint ion-no-margin">
             @if ( rePasswordFieldSingUp?.touched && rePasswordFieldSingUp?.hasError('required')) {
             {{ 'AUTH.register.confirmPasswordRequired' | transloco }}
             } @else if ( rePasswordFieldSingUp?.hasError('notMatch')) {
@@ -214,13 +210,13 @@
 
       <ion-row>
         <ion-col size="12" class="ion-padding-horizontal">
-          <small>{{ 'AUTH.register.termsAndConditions' | transloco }}</small>
+          <small class="text-base-content/70">{{ 'AUTH.register.termsAndConditions' | transloco }}</small>
         </ion-col>
       </ion-row>
 
       <ion-row>
         <ion-col size="12" class="ion-text-center ion-padding-horizontal pt-4">
-          <button type="submit" class="btn btn-primary btn-wide" [disabled]="!formSingUp.valid">{{
+          <button type="submit" class="btn btn-primary w-full" [disabled]="!formSingUp.valid">{{
             'AUTH.register.registerButton' | transloco }}</button>
         </ion-col>
       </ion-row>

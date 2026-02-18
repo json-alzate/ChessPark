@@ -90,10 +90,15 @@ export class PlanPlayedComponent implements OnInit {
   }
 
   async onPuzzleShowSolution(puzzle: Puzzle) {
+    const themesTranslated = puzzle.themes.map(theme =>
+      this.appService.getNameThemePuzzleByValue(theme)
+    );
+
     const modal = await this.modalController.create({
       component: BoardPuzzleSolutionComponent,
       componentProps: {
-        puzzle
+        puzzle,
+        themesTranslated
       }
     });
     await modal.present();

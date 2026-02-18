@@ -115,6 +115,7 @@
       "black": "Negras",
       "anyColor": "Cualquier color"
     },
+    "with": " con ",
     "modes": {
       "randomThemeWith": "Tema Random con ",
       "weaknessWith": "Debilidad con ",
