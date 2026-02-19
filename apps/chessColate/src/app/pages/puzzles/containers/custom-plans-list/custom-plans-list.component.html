@@ -5,7 +5,20 @@
     <div class="container mx-auto px-4 py-6">
       <h2 class="text-2xl font-bold mb-4">{{ 'CUSTOM_PLANS.listTitle' | transloco }}</h2>
 
-      @if (customPlansLoading$ | async) {
+      @if (authLoading$ | async) {
+        <div class="flex justify-center py-8">
+          <span class="loading loading-spinner loading-lg text-primary"></span>
+        </div>
+      } @else if (!(profile$ | async)) {
+        <div class="card bg-base-100 shadow-sm">
+          <div class="card-body items-center text-center py-8">
+            <p class="text-base-content/80 mb-4">{{ 'CUSTOM_PLANS.authRequired' | transloco }}</p>
+            <button type="button" class="btn btn-primary" (click)="openLoginModal()">
+              {{ 'CUSTOM_TRAINING.actions.login' | transloco }}
+            </button>
+          </div>
+        </div>
+      } @else if (customPlansLoading$ | async) {
         <div class="space-y-4">
           @for (i of [1,2,3,4]; track i) {
             <div class="card bg-base-100 shadow-sm">
@@ -81,17 +94,21 @@
       }
     </div>
 
-    <div class="hidden md:block container mx-auto px-4 pb-6">
-      <button type="button" class="btn btn-primary w-full md:w-auto" (click)="goToCreate()">
-        <ion-icon name="add"></ion-icon>
-        {{ 'CUSTOM_PLANS.create' | transloco }}
-      </button>
-    </div>
+    @if (profile$ | async) {
+      <div class="hidden md:block container mx-auto px-4 pb-6">
+        <button type="button" class="btn btn-primary w-full md:w-auto" (click)="goToCreate()">
+          <ion-icon name="add"></ion-icon>
+          {{ 'CUSTOM_PLANS.create' | transloco }}
+        </button>
+      </div>
+    }
   </div>
 
-  <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="md:hidden">
-    <ion-fab-button (click)="goToCreate()" aria-label="{{ 'CUSTOM_PLANS.create' | transloco }}">
-      <ion-icon name="add"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
+  @if (profile$ | async) {
+    <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="md:hidden">
+      <ion-fab-button (click)="goToCreate()" aria-label="{{ 'CUSTOM_PLANS.create' | transloco }}">
+        <ion-icon name="add"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+  }
 </ion-content>

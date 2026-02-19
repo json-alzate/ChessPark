@@ -1,8 +1,11 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { map, filter, pairwise, takeUntil, startWith, take } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
-import { IonContent, IonFab, IonFabButton, IonIcon, LoadingController } from '@ionic/angular/standalone';
+import { IonContent, IonFab, IonFabButton, IonIcon, LoadingController, ModalController } from '@ionic/angular/standalone';
 
 import { TranslocoPipe } from '@jsverse/transloco';
 
@@ -11,9 +14,10 @@ import { Plan } from '@cpark/models';
 import { CustomPlansService } from '@services/custom-plans.service';
 import { PlanService } from '@services/plan.service';
 import { ProfileService } from '@services/profile.service';
-import { PlanFacadeService, PlansElosFacadeService, CustomPlansFacadeService } from '@cpark/state';
+import { PlanFacadeService, PlansElosFacadeService, CustomPlansFacadeService, getProfile, getIsInitialized, AppState, getCountAllCustomPlans } from '@cpark/state';
 
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
+import { LoginComponent } from '@shared/components/login/login.component';
 
 import { addIcons } from 'ionicons';
 import { add, playOutline, createOutline } from 'ionicons/icons';
@@ -33,7 +37,7 @@ import { add, playOutline, createOutline } from 'ionicons/icons';
   templateUrl: './custom-plans-list.component.html',
   styleUrl: './custom-plans-list.component.scss',
 })
-export class CustomPlansListComponent implements OnInit {
+export class CustomPlansListComponent implements OnInit, OnDestroy {
   private customPlansService = inject(CustomPlansService);
   private customPlansFacade = inject(CustomPlansFacadeService);
   private planService = inject(PlanService);
@@ -42,9 +46,16 @@ export class CustomPlansListComponent implements OnInit {
   private plansElosFacade = inject(PlansElosFacadeService);
   private router = inject(Router);
   private loadingController = inject(LoadingController);
+  private store = inject(Store<AppState>);
+  private modalController = inject(ModalController);
+  private destroy$ = new Subject<void>();
 
   plans$ = this.customPlansService.getMyPlans$();
   customPlansLoading$ = this.customPlansFacade.getCustomPlansLoading$();
+  
+  /** true mientras la auth aún no ha emitido (no mostrar login hasta estar seguros) */
+  authLoading$ = this.store.select(getIsInitialized).pipe(map((init) => !init));
+  profile$ = this.store.select(getProfile);
 
   getPlanEloForPlan(planUid: string) {
     return this.plansElosFacade.getPlanElo$(planUid);
@@ -55,7 +66,37 @@ export class CustomPlansListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // El guard se encarga de cargar los planes; esta vista usa el estado NgRx
+    // Detectar cuando el usuario se autentica y cargar planes automáticamente
+    this.store.select(getProfile)
+      .pipe(
+        startWith(null), // Empezar con null para que pairwise siempre tenga un valor anterior
+        pairwise(), // Obtener el valor anterior y el actual
+        filter(([prev, current]) => !prev?.uid && !!current?.uid), // Solo cuando cambia de no autenticado a autenticado
+        takeUntil(this.destroy$)
+      )
+      .subscribe(([, profile]) => {
+        if (profile?.uid) {
+          // Cargar planes y elos cuando el usuario se autentica
+          this.plansElosFacade.requestLoadPlansElos(profile.uid);
+          
+          // Verificar si hay planes cargados, si no, cargarlos
+          this.store.select(getCountAllCustomPlans)
+            .pipe(
+              take(1), // Solo tomar el valor actual una vez
+              takeUntil(this.destroy$)
+            )
+            .subscribe((count) => {
+              if (count === 0) {
+                this.customPlansFacade.loadCustomPlans(profile.uid);
+              }
+            });
+        }
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   goToCreate(): void {
@@ -121,5 +162,14 @@ export class CustomPlansListComponent implements OnInit {
   formatDate(createdAt: number): string {
     if (!createdAt) return '';
     return new Date(createdAt).toLocaleDateString();
+  }
+
+  async openLoginModal(): Promise<void> {
+    const modal = await this.modalController.create({
+      component: LoginComponent,
+      componentProps: { segmentEmailPassword: 'login' },
+    });
+    await modal.present();
+    await modal.onDidDismiss();
   }
 }

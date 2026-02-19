@@ -130,7 +130,7 @@
     },
     "descriptions": {
       "randomDescription": "A different topic every time you play",
-      "weaknessDescription": "The topic with the least elo Available in the Plan"
+      "weaknessDescription": "The topic with the least elo available in the routine"
     },
     "help": {
       "gosh": "This puzzle is blindfold, the pieces will become transparent when",
@@ -156,8 +156,8 @@
   },
   "CUSTOM_TRAINING": {
     "form": {
-      "title": "Create your training plan",
-      "description1": "A plan consists of up to 5 blocks.",
+      "title": "Create your training routine",
+      "description1": "A routine consists of up to 5 blocks.",
       "description2": "Each block can contain a series of exercises with the adjustments you define."
     },
     "colors": {
@@ -166,7 +166,7 @@
       "anyColor": "Any color"
     },
     "fields": {
-      "nameLabel": "Name of the plan"
+      "nameLabel": "Name of the routine"
     },
     "errors": {
       "nameRequired": "The name is required",
@@ -179,9 +179,8 @@
       "cancel": "Cancel",
       "login": "Log in"
     },
-    "authRequired": "You must be authenticated to create a custom plan.",
-    "loginToCreate": "Log in to create and save your routines.",
-    "blocksLockedReason": "Blocks cannot be modified because this plan has already been played."
+    "authRequired": "You must be authenticated to create a custom routine.",
+    "blocksLockedReason": "Blocks cannot be modified because this routine has already been played."
   },
   "NEW_BLOCK": {
     "form": {
@@ -207,7 +206,7 @@
       "random": "Random",
       "weakness": "Weakness",
       "randomDescription": "A different topic every time you play",
-      "weaknessDescription": "The topic with the least elo Available in the Plan",
+      "weaknessDescription": "The topic with the least elo available in the routine",
       "difficulty": "Difficulty"
     },
     "difficulty": {
@@ -222,7 +221,7 @@
   },
   "PLAN_PLAYED": {
     "puzzlesPlayed": "Puzzles played",
-    "statistics": "Statistics of the plan",
+    "statistics": "Statistics of the routine",
     "playPlan": "Go to home",
     "loadMore": "Load more"
   },
@@ -238,18 +237,19 @@
     "more": "All history"
   },
   "CUSTOM_PLANS": {
-    "listTitle": "Custom plans",
-    "empty": "You haven't created any custom plans yet.",
+    "listTitle": "Custom routines",
+    "empty": "You haven't created any custom routines yet.",
     "createFirst": "Create my first routine",
     "untitled": "Untitled",
     "public": "Public",
     "edit": "Edit",
     "play": "Play",
     "create": "Create routine",
-    "isPublic": "Public plan (visible to others)",
+    "isPublic": "Public routine (visible to others)",
     "saveOnly": "Save and go back",
     "elo": "ELO",
-    "timesPlayed": "Times played"
+    "timesPlayed": "Times played",
+    "authRequired": "Log in to create and manage your custom routines"
   },
   "COORDINATES_PUZZLES": {
     "coordinates": "Coordinates",

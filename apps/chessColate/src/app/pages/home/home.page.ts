@@ -4,6 +4,8 @@ import { RouterLink } from '@angular/router';
 // Ionic
 import { IonContent } from '@ionic/angular/standalone';
 
+import { TranslocoPipe } from '@jsverse/transloco';
+
 import { Block, PlanTypes } from '@cpark/models';
 
 // Services
@@ -22,6 +24,7 @@ import { TrainingMenuComponent } from './components/training-menu.component';
     IonContent,
     CommonModule,
     RouterLink,
+    TranslocoPipe,
     NavbarComponent,
     TrainingMenuComponent],
   templateUrl: 'home.page.html',

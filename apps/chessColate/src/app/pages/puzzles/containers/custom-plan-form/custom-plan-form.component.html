@@ -20,8 +20,7 @@
       } @else if (!isEditMode && !(profile$ | async)) {
         <div class="card bg-base-100 shadow-sm">
           <div class="card-body items-center text-center py-8">
-            <p class="text-base-content/80 mb-2">{{ 'CUSTOM_TRAINING.authRequired' | transloco }}</p>
-            <p class="text-base-content/60 text-sm mb-4">{{ 'CUSTOM_TRAINING.loginToCreate' | transloco }}</p>
+            <p class="text-base-content/80 mb-4">{{ 'CUSTOM_TRAINING.authRequired' | transloco }}</p>
             <div class="flex gap-2">
               <button type="button" class="btn btn-ghost" (click)="cancel()">
                 {{ 'CUSTOM_TRAINING.actions.cancel' | transloco }}
