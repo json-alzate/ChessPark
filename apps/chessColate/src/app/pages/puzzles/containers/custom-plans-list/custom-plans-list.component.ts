@@ -11,7 +11,7 @@ import { Plan } from '@cpark/models';
 import { CustomPlansService } from '@services/custom-plans.service';
 import { PlanService } from '@services/plan.service';
 import { ProfileService } from '@services/profile.service';
-import { PlanFacadeService, PlansElosFacadeService } from '@cpark/state';
+import { PlanFacadeService, PlansElosFacadeService, CustomPlansFacadeService } from '@cpark/state';
 
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 
@@ -35,6 +35,7 @@ import { add, playOutline, createOutline } from 'ionicons/icons';
 })
 export class CustomPlansListComponent implements OnInit {
   private customPlansService = inject(CustomPlansService);
+  private customPlansFacade = inject(CustomPlansFacadeService);
   private planService = inject(PlanService);
   private profileService = inject(ProfileService);
   private planFacade = inject(PlanFacadeService);
@@ -43,6 +44,7 @@ export class CustomPlansListComponent implements OnInit {
   private loadingController = inject(LoadingController);
 
   plans$ = this.customPlansService.getMyPlans$();
+  customPlansLoading$ = this.customPlansFacade.getCustomPlansLoading$();
 
   getPlanEloForPlan(planUid: string) {
     return this.plansElosFacade.getPlanElo$(planUid);

@@ -80,11 +80,11 @@ export class TrainingComponent implements OnInit {
     if (!block) return 'white';
     if (block.color === 'white') return 'white';
     if (block.color === 'black') return 'black';
-    // random: derivar del FEN del puzzle (campo activo: w o b)
+    // random: el FEN indica el turno del oponente (quien acaba de mover); invertimos para obtener el color del jugador
     if (puzzle?.fen) {
       const parts = puzzle.fen.trim().split(/\s+/);
       const turn = parts[1]?.toLowerCase();
-      return turn === 'b' ? 'black' : 'white';
+      return turn === 'b' ? 'white' : 'black';
     }
     return 'white';
   }

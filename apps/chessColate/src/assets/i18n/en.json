@@ -174,12 +174,14 @@
     },
     "actions": {
       "addBlock": "Add block",
+      "removeBlock": "Remove block",
       "saveAndPlay": "Save and play",
       "cancel": "Cancel",
       "login": "Log in"
     },
     "authRequired": "You must be authenticated to create a custom plan.",
-    "loginToCreate": "Log in to create and save your routines."
+    "loginToCreate": "Log in to create and save your routines.",
+    "blocksLockedReason": "Blocks cannot be modified because this plan has already been played."
   },
   "NEW_BLOCK": {
     "form": {

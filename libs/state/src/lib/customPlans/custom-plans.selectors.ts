@@ -11,6 +11,11 @@ export const {
   selectEntities: getCustomPlansEntities,
 } = customPlansStateAdapter.getSelectors(getCustomPlansState);
 
+export const getCustomPlansLoading = createSelector(
+  getCustomPlansState,
+  (state) => state?.loading ?? false
+);
+
 export const getCustomPlan = (uid: string) =>
   createSelector(getAllCustomPlans, (plans: Plan[]) => {
     if (!plans) return null;

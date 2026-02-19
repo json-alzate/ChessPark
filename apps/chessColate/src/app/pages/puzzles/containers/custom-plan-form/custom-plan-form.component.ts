@@ -1,9 +1,10 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
+import { Store } from '@ngrx/store';
 import { ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
-import { Subscription } from 'rxjs';
-import { filter, take } from 'rxjs/operators';
+import { Subscription, of } from 'rxjs';
+import { filter, take, map, timeout, catchError } from 'rxjs/operators';
 
 import {
   IonContent,
@@ -29,14 +30,15 @@ import { CustomPlansService } from '@services/custom-plans.service';
 import { PlanService } from '@services/plan.service';
 import { AppService } from '@services/app.service';
 import { ProfileService } from '@services/profile.service';
-import { PlanFacadeService, CustomPlansFacadeService } from '@cpark/state';
+import { PlanFacadeService, CustomPlansFacadeService, PlansElosFacadeService, getProfile, getIsInitialized } from '@cpark/state';
+import { AppState } from '@cpark/state';
 
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 import { BlockSettingsComponent } from '@pages/puzzles/components/block-settings/block-settings.component';
 import { LoginComponent } from '@shared/components/login/login.component';
 
 import { addIcons } from 'ionicons';
-import { add, shuffle, trendingDown, infiniteOutline } from 'ionicons/icons';
+import { add, shuffle, trendingDown, infiniteOutline, trashOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-custom-plan-form',
@@ -69,6 +71,8 @@ export class CustomPlanFormComponent implements OnInit, OnDestroy {
   private profileService = inject(ProfileService);
   private planFacade = inject(PlanFacadeService);
   private customPlansFacade = inject(CustomPlansFacadeService);
+  private plansElosFacade = inject(PlansElosFacadeService);
+  private store = inject(Store<AppState>);
   private appService = inject(AppService);
   private transloco = inject(TranslocoService);
   private modalController = inject(ModalController);
@@ -86,8 +90,37 @@ export class CustomPlanFormComponent implements OnInit, OnDestroy {
   loginOpenedFromCreatePlan = false;
   private profileSub?: Subscription;
 
+  /** true mientras la auth aún no ha emitido (no mostrar login hasta estar seguros) */
+  authLoading$ = this.store.select(getIsInitialized).pipe(map((init) => !init));
+  profile$ = this.store.select(getProfile);
+
   constructor() {
-    addIcons({ add, shuffle, trendingDown, infiniteOutline });
+    addIcons({ add, shuffle, trendingDown, infiniteOutline, trashOutline });
+  }
+
+  getPlanEloForPlan(planUid: string | null) {
+    return this.plansElosFacade.getPlanElo$(planUid ?? '');
+  }
+
+  /** En create emite al instante; en edit espera PlanElos o timeout para evitar skeleton infinito */
+  get planElosForBlocks$() {
+    if (!this.isEditMode) return of({ timesPlayed: 0 });
+    return this.plansElosFacade.getPlanElo$(this.planUid ?? '').pipe(
+      take(1),
+      timeout(800),
+      map((p) => p ?? { timesPlayed: 0 }),
+      catchError(() => of({ timesPlayed: 0 }))
+    );
+  }
+
+  removeBlock(index: number): void {
+    this.blocks.splice(index, 1);
+  }
+
+  /** true si se pueden modificar bloques (crear: sí; editar: solo si el plan no se ha jugado) */
+  canModifyBlocks(planElos: { timesPlayed?: number } | null | undefined): boolean {
+    if (!this.isEditMode) return true;
+    return (planElos?.timesPlayed ?? 0) === 0;
   }
 
   ngOnInit(): void {
@@ -98,8 +131,6 @@ export class CustomPlanFormComponent implements OnInit, OnDestroy {
       this.loadPlan(uid);
     } else {
       this.loading = false;
-      const profile = this.profileService.getProfile;
-      this.loginRequired = !profile;
     }
   }
 

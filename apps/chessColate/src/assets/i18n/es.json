@@ -174,12 +174,14 @@
     },
     "actions": {
       "addBlock": "Añadir bloque",
+      "removeBlock": "Quitar bloque",
       "saveAndPlay": "Guardar y jugar",
       "cancel": "Cancelar",
       "login": "Iniciar sesión"
     },
     "authRequired": "Debes autenticarte para crear un plan personalizado.",
-    "loginToCreate": "Inicia sesión para crear y guardar tus rutinas."
+    "loginToCreate": "Inicia sesión para crear y guardar tus rutinas.",
+    "blocksLockedReason": "No se pueden modificar los bloques porque este plan ya ha sido jugado."
   },
   "NEW_BLOCK": {
     "form": {

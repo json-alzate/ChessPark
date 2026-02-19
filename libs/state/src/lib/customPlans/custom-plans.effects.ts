@@ -33,7 +33,7 @@ export class CustomPlansEffects {
             mergeMap((plans) => [addCustomPlans({ plans })]),
             catchError((error) => {
               console.error('Error loading custom plans', error);
-              return [];
+              return [addCustomPlans({ plans: [] })];
             })
           )
         )

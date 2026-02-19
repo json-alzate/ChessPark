@@ -7,7 +7,17 @@
         <div class="flex justify-center py-8">
           <span class="loading loading-spinner loading-lg text-primary"></span>
         </div>
-      } @else if (loginRequired && !isEditMode) {
+      } @else if (!isEditMode && (authLoading$ | async)) {
+        <div class="space-y-6">
+          <div class="skeleton h-8 w-3/4"></div>
+          <div class="skeleton h-4 w-full max-w-md"></div>
+          <div class="skeleton h-12 w-full max-w-md"></div>
+          <div class="skeleton h-4 w-1/2"></div>
+          @for (i of [1,2,3]; track i) {
+            <div class="skeleton h-16 w-full rounded-lg"></div>
+          }
+        </div>
+      } @else if (!isEditMode && !(profile$ | async)) {
         <div class="card bg-base-100 shadow-sm">
           <div class="card-body items-center text-center py-8">
             <p class="text-base-content/80 mb-2">{{ 'CUSTOM_TRAINING.authRequired' | transloco }}</p>
@@ -69,68 +79,93 @@
         </div>
 
         <h3 class="text-xl font-semibold mb-2">{{ 'COMMON.chess.blocks' | transloco }}</h3>
-        <ion-list class="space-y-2 mb-4">
-          <ion-reorder-group [disabled]="false" (ionItemReorder)="doReorder($event)">
-            @for (block of blocks; track $index) {
-              <ion-item class="rounded-lg border border-base-300">
-                @if (block.theme !== 'all' && block.theme !== 'weakness') {
-                  <img
-                    slot="start"
-                    class="w-8 h-8 rounded-full object-contain"
-                    [src]="'assets/images/puzzle-themes/' + block.theme + '.svg'"
-                    alt=""
-                  />
-                }
-                @if (block.theme === 'all') {
-                  <ion-icon slot="start" name="shuffle"></ion-icon>
-                }
-                @if (block.theme === 'weakness') {
-                  <ion-icon slot="start" name="trending-down"></ion-icon>
-                }
-                <ion-label>
-                  <h2 class="font-medium">{{ getThemeName(block.theme) }}</h2>
-                  <p class="text-sm">
-                    @if (block.time > 0 || block.puzzlesCount) {
-                      @if (block.time > 0) {
-                        <span>{{ block.time | secondsToMinutesSeconds }} <small class="opacity-70">(min:seg)</small></span>
+        <ng-container *ngIf="planElosForBlocks$ | async as planElos; else blocksSkeleton">
+          @if (!canModifyBlocks(planElos)) {
+            <p class="text-sm text-base-content/70 mb-3 px-1">
+              {{ 'CUSTOM_TRAINING.blocksLockedReason' | transloco }}
+            </p>
+          }
+          <ion-list class="space-y-2 mb-4">
+            <ion-reorder-group [disabled]="!canModifyBlocks(planElos)" (ionItemReorder)="doReorder($event)">
+              @for (block of blocks; track $index) {
+                <ion-item class="rounded-lg border border-base-300" [class.opacity-60]="!canModifyBlocks(planElos)" [class.pointer-events-none]="!canModifyBlocks(planElos)">
+                  @if (block.theme !== 'all' && block.theme !== 'weakness') {
+                    <img
+                      slot="start"
+                      class="w-8 h-8 rounded-full object-contain"
+                      [src]="'assets/images/puzzle-themes/' + block.theme + '.svg'"
+                      alt=""
+                    />
+                  }
+                  @if (block.theme === 'all') {
+                    <ion-icon slot="start" name="shuffle"></ion-icon>
+                  }
+                  @if (block.theme === 'weakness') {
+                    <ion-icon slot="start" name="trending-down"></ion-icon>
+                  }
+                  <ion-label>
+                    <h2 class="font-medium">{{ getThemeName(block.theme) }}</h2>
+                    <p class="text-sm">
+                      @if (block.time > 0 || block.puzzlesCount) {
+                        @if (block.time > 0) {
+                          <span>{{ block.time | secondsToMinutesSeconds }} <small class="opacity-70">(min:seg)</small></span>
+                        }
+                        @if (block.time > 0 && block.puzzlesCount) { ó }
+                        @if (block.puzzlesCount) {
+                          {{ block.puzzlesCount }} {{ 'NEW_BLOCK.fields.puzzles' | transloco }}
+                        }
+                      } @else {
+                        <ion-icon name="infinite-outline"></ion-icon>
                       }
-                      @if (block.time > 0 && block.puzzlesCount) { ó }
-                      @if (block.puzzlesCount) {
-                        {{ block.puzzlesCount }} {{ 'NEW_BLOCK.fields.puzzles' | transloco }}
+                    </p>
+                    <ion-note>
+                      @switch (block.color) {
+                        @case ('white') {
+                          {{ 'CUSTOM_TRAINING.colors.withWhite' | transloco }}
+                        }
+                        @case ('black') {
+                          {{ 'CUSTOM_TRAINING.colors.withBlack' | transloco }}
+                        }
+                        @default {
+                          {{ 'CUSTOM_TRAINING.colors.anyColor' | transloco }}
+                        }
                       }
-                    } @else {
-                      <ion-icon name="infinite-outline"></ion-icon>
-                    }
-                  </p>
-                  <ion-note>
-                    @switch (block.color) {
-                      @case ('white') {
-                        {{ 'CUSTOM_TRAINING.colors.withWhite' | transloco }}
-                      }
-                      @case ('black') {
-                        {{ 'CUSTOM_TRAINING.colors.withBlack' | transloco }}
-                      }
-                      @default {
-                        {{ 'CUSTOM_TRAINING.colors.anyColor' | transloco }}
-                      }
-                    }
-                  </ion-note>
-                </ion-label>
-                <ion-reorder slot="end"></ion-reorder>
-              </ion-item>
-            }
-          </ion-reorder-group>
-        </ion-list>
+                    </ion-note>
+                  </ion-label>
+                  @if (canModifyBlocks(planElos)) {
+                    <button
+                      type="button"
+                      slot="end"
+                      class="btn btn-ghost btn-square btn-sm text-error"
+                      (click)="removeBlock($index)"
+                      [attr.aria-label]="'CUSTOM_TRAINING.actions.removeBlock' | transloco"
+                    >
+                      <ion-icon name="trash-outline"></ion-icon>
+                    </button>
+                  }
+                  <ion-reorder slot="end"></ion-reorder>
+                </ion-item>
+              }
+            </ion-reorder-group>
+          </ion-list>
 
-        <button
-          type="button"
-          class="btn btn-ghost btn-block mb-6"
-          [disabled]="blocks.length >= 5"
-          (click)="openBlockSettingsModal()"
-        >
+          <button
+            type="button"
+            class="btn btn-ghost btn-block mb-6"
+            [disabled]="blocks.length >= 5 || !canModifyBlocks(planElos)"
+            (click)="openBlockSettingsModal()"
+          >
           <ion-icon name="add"></ion-icon>
           {{ 'CUSTOM_TRAINING.actions.addBlock' | transloco }}
         </button>
+        </ng-container>
+        <ng-template #blocksSkeleton>
+          <div class="space-y-2 mb-6">
+            @for (i of [1,2,3]; track i) {
+              <div class="skeleton h-16 w-full rounded-lg"></div>
+            }
+          </div>
+        </ng-template>
 
         <div class="flex flex-col gap-2 max-w-md hidden md:flex">
           <button

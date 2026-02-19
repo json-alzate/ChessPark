@@ -12,6 +12,7 @@ import {
   getCountAllCustomPlans,
   getCustomPlan,
   getCustomPlansOrderByDate,
+  getCustomPlansLoading,
 } from './custom-plans.selectors';
 import { Plan } from '@cpark/models';
 
@@ -45,5 +46,9 @@ export class CustomPlansFacadeService {
 
   getCountAllCustomPlans$(): Observable<number> {
     return this.store.select(getCountAllCustomPlans);
+  }
+
+  getCustomPlansLoading$(): Observable<boolean> {
+    return this.store.select(getCustomPlansLoading);
   }
 }

@@ -4,19 +4,22 @@ import {
   customPlansStateAdapter,
 } from './custom-plans.state';
 import {
+  loadCustomPlans,
   addCustomPlans,
   addOneCustomPlan,
   updateCustomPlan,
 } from './custom-plans.actions';
 
 export const initialCustomPlansState: CustomPlansState =
-  customPlansStateAdapter.getInitialState();
+  customPlansStateAdapter.getInitialState({ loading: false });
 
 const _customPlansReducer = createReducer(
   initialCustomPlansState,
-  on(addCustomPlans, (state, { plans }) =>
-    customPlansStateAdapter.addMany(plans, state)
-  ),
+  on(loadCustomPlans, (state) => ({ ...state, loading: true })),
+  on(addCustomPlans, (state, { plans }) => ({
+    ...customPlansStateAdapter.addMany(plans, state),
+    loading: false,
+  })),
   on(addOneCustomPlan, (state, { plan }) =>
     customPlansStateAdapter.addOne(plan, state)
   ),

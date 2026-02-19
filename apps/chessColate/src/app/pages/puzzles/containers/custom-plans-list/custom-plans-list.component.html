@@ -5,7 +5,23 @@
     <div class="container mx-auto px-4 py-6">
       <h2 class="text-2xl font-bold mb-4">{{ 'CUSTOM_PLANS.listTitle' | transloco }}</h2>
 
-      @if (plans$ | async; as plans) {
+      @if (customPlansLoading$ | async) {
+        <div class="space-y-4">
+          @for (i of [1,2,3,4]; track i) {
+            <div class="card bg-base-100 shadow-sm">
+              <div class="card-body p-4">
+                <div class="skeleton h-6 w-1/2 mb-2"></div>
+                <div class="skeleton h-4 w-1/3 mb-2"></div>
+                <div class="skeleton h-4 w-1/4"></div>
+                <div class="flex gap-2 mt-4">
+                  <div class="skeleton h-9 w-20"></div>
+                  <div class="skeleton h-9 w-20"></div>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      } @else if (plans$ | async; as plans) {
         @if (plans.length === 0) {
           <div class="card bg-base-100 shadow-sm">
             <div class="card-body items-center text-center py-8">
@@ -29,9 +45,14 @@
                         <span class="badge badge-sm badge-info ml-1">{{ 'CUSTOM_PLANS.public' | transloco }}</span>
                       }
                     </h6>
-                    <p class="text-xs text-base-content/60 mt-1">
-                      {{ 'CUSTOM_PLANS.elo' | transloco }}: {{ (getPlanEloForPlan(plan.uid) | async)?.total ?? '-' }}
-                      · {{ 'CUSTOM_PLANS.timesPlayed' | transloco }}: {{ (getPlanEloForPlan(plan.uid) | async)?.timesPlayed ?? 0 }}
+                    <p class="text-xs text-base-content/60 mt-1 min-h-[1.25rem]">
+                      @let planElos = getPlanEloForPlan(plan.uid) | async;
+                      @if (planElos === undefined) {
+                        <span class="skeleton h-3 w-32 inline-block"></span>
+                      } @else {
+                        {{ 'CUSTOM_PLANS.elo' | transloco }}: {{ planElos?.total ?? '-' }}
+                        · {{ 'CUSTOM_PLANS.timesPlayed' | transloco }}: {{ planElos?.timesPlayed ?? 0 }}
+                      }
                     </p>
                     @if (plan.createdAt) {
                       <p class="text-xs text-base-content/50 mt-1">{{ formatDate(plan.createdAt) }}</p>
