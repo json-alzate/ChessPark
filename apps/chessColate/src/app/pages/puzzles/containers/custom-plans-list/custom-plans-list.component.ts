@@ -150,6 +150,8 @@ export class CustomPlansListComponent implements OnInit, OnDestroy {
         }
       );
       await loader.dismiss();
+      // Limpiar el plan anterior antes de establecer uno nuevo
+      this.planFacade.clearPlan();
       this.planFacade.setPlan(planToPlay);
       this.router.navigate(['/puzzles/training']);
     } catch (error) {

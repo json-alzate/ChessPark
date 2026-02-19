@@ -138,6 +138,12 @@
       "yourTurn": "Tu turno",
       "findBestMoveWhite": "Encuentra el mejor movimiento para las blancas.",
       "findBestMoveBlack": "Encuentra el mejor movimiento para las negras."
+    },
+    "exitTraining": {
+      "title": "Salir del entrenamiento",
+      "message": "¿Estás seguro de que deseas salir del entrenamiento?",
+      "cancel": "Cancelar",
+      "confirm": "Salir"
     }
   },
   "TRAINING": {

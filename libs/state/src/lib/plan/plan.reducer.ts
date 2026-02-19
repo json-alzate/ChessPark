@@ -6,6 +6,7 @@ import {
   loadPlanSuccess,
   loadPlanFailure,
   clearPlanError,
+  clearPlan,
   updatePlan,
 } from './plan.actions';
 
@@ -29,6 +30,7 @@ const _planReducer = createReducer(
     error,
   })),
   on(clearPlanError, (state) => ({ ...state, error: null })),
+  on(clearPlan, () => initialPlanState),
   on(updatePlan, (state, { plan }) => ({ ...state, plan }))
 );
 

@@ -138,6 +138,12 @@
       "yourTurn": "Your turn",
       "findBestMoveWhite": "Find the best move for White.",
       "findBestMoveBlack": "Find the best move for Black."
+    },
+    "exitTraining": {
+      "title": "Exit training",
+      "message": "Are you sure you want to exit the training?",
+      "cancel": "Cancel",
+      "confirm": "Exit"
     }
   },
   "TRAINING": {

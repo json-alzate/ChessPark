@@ -105,6 +105,8 @@ export class PlanPlayedComponent implements OnInit {
   }
 
   onPlayPlan() {
+    // Limpiar el estado del plan antes de navegar al inicio
+    this.planFacade.clearPlan();
     this.router.navigate(['/home']);
   }
 }

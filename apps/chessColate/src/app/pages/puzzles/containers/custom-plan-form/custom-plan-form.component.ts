@@ -254,6 +254,8 @@ export class CustomPlanFormComponent implements OnInit, OnDestroy {
       }
       const eloToStart = this.getEloToStart();
       const planToPlay = await this.planService.makeCustomPlanForPlay(plan, eloToStart);
+      // Limpiar el plan anterior antes de establecer uno nuevo
+      this.planFacade.clearPlan();
       this.planFacade.setPlan(planToPlay);
       this.router.navigate(['/puzzles/training']);
     } finally {

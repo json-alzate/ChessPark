@@ -71,6 +71,8 @@ export class PlanService {
    * @param time in seconds (-1 for infinite)
    */
   newPlan(blocks: Block[], planType: PlanTypes): Promise<Plan> {
+    // Limpiar el plan anterior antes de crear uno nuevo
+    this.planFacade.clearPlan();
     this.planFacade.loadPlan();
     return new Promise((resolve, reject) => {
       try {

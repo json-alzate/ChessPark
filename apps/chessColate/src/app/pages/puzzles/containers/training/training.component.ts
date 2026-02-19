@@ -8,7 +8,7 @@ import { takeUntil } from 'rxjs/operators';
 // Transloco
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
-import { IonRippleEffect, LoadingController, ModalController, IonIcon } from '@ionic/angular/standalone';
+import { IonRippleEffect, LoadingController, ModalController, IonIcon, AlertController } from '@ionic/angular/standalone';
 
 // services
 import { AppService } from '@services/app.service';
@@ -89,7 +89,10 @@ export class TrainingComponent implements OnInit {
     return 'white';
   }
 
-  constructor(private modalController: ModalController) {
+  constructor(
+    private modalController: ModalController,
+    private alertController: AlertController
+  ) {
     addIcons({ 
       timerOutline,
       chevronDownOutline,
@@ -474,14 +477,55 @@ export class TrainingComponent implements OnInit {
         .catch((err) => console.error('Error incrementing play count', err));
     }
 
+    // Limpiar recursos antes de navegar
+    this.cleanupResources();
+
     // Navegar a la pantalla de plan jugado
     this.router.navigate(['/puzzles/plan-played']);
   }
 
-  onExitTraining() {
+  private cleanupResources() {
+    // Detener todos los timers
     this.stopPlanTimer();
+    this.stopBlockTimer();
+    
+    // Limpiar flags
     this.forceStopTimerInPuzzleBoard = true;
-    this.router.navigate(['/home']);
+    this.showBlockTimer = false;
+    this.isGoshHelperShow = false;
+    this.isDropdownOpen = false;
+    
+    // Resetear variables del componente
+    this.currentIndexBlock = -1;
+    this.timeLeftBlock = 0;
+    this.countPuzzlesPlayedBlock = 0;
+    this.totalPuzzlesInBlock = 0;
+    
+    // Limpiar el estado del plan en Redux
+    this.planFacade.clearPlan();
+  }
+
+  async onExitTraining() {
+    const alert = await this.alertController.create({
+      header: this.translocoService.translate('PUZZLES.exitTraining.title') || 'Salir del entrenamiento',
+      message: this.translocoService.translate('PUZZLES.exitTraining.message') || '¿Estás seguro de que deseas salir del entrenamiento?',
+      buttons: [
+        {
+          text: this.translocoService.translate('PUZZLES.exitTraining.cancel') || 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: this.translocoService.translate('PUZZLES.exitTraining.confirm') || 'Salir',
+          role: 'confirm',
+          handler: () => {
+            this.cleanupResources();
+            this.router.navigate(['/home']);
+          }
+        }
+      ]
+    });
+
+    await alert.present();
   }
 
   closeDropdown() {
@@ -494,11 +538,24 @@ export class TrainingComponent implements OnInit {
 
 
   ionViewWillLeave() {
+    // Asegurar limpieza completa al salir del componente
     this.forceStopTimerInPuzzleBoard = true;
-    this.timerUnsubscribe$.next();
-    this.timerUnsubscribe$.complete();
-    this.timerUnsubscribeBlock$.next();
-    this.timerUnsubscribeBlock$.complete();
+    
+    // Detener timers
+    if (this.timerUnsubscribe$ && !this.timerUnsubscribe$.closed) {
+      this.timerUnsubscribe$.next();
+      this.timerUnsubscribe$.complete();
+    }
+    
+    if (this.timerUnsubscribeBlock$ && !this.timerUnsubscribeBlock$.closed) {
+      this.timerUnsubscribeBlock$.next();
+      this.timerUnsubscribeBlock$.complete();
+    }
+    
+    // Limpiar flags
+    this.showBlockTimer = false;
+    this.isGoshHelperShow = false;
+    this.isDropdownOpen = false;
   }
 
 }
