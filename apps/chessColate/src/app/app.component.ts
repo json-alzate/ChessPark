@@ -4,7 +4,7 @@ import { initializeApp } from 'firebase/app';
 import { Subscription } from 'rxjs';
 
 // Ionic imports
-import { IonMenu, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonIcon, IonLabel, IonRouterOutlet, IonButtons, IonButton, IonAvatar, IonMenuToggle, ModalController } from '@ionic/angular/standalone';
+import { IonMenu, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonIcon, IonLabel, IonRouterOutlet, IonButtons, IonButton, IonAvatar, IonMenuToggle, ModalController, MenuController } from '@ionic/angular/standalone';
 
 // Transloco
 import { TranslocoPipe } from '@jsverse/transloco';
@@ -69,6 +69,7 @@ export class AppComponent implements OnInit, OnDestroy {
   profileService = inject(ProfileService);
   firestoreService = inject(FirestoreService);
   modalController = inject(ModalController);
+  menuController = inject(MenuController);
   // Datos del usuario
   profile: Profile | null = null;
   isAuthenticated = false;
@@ -203,19 +204,23 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Navega a una ruta específica
+   * Navega a una ruta específica y cierra el menú lateral
    */
   navigateTo(route: string) {
-    this.router.navigate([route]);
+    this.router.navigate([route]).then(() => {
+      this.menuController.close('side-menu');
+    });
   }
 
   /**
-   * Cierra la sesión del usuario
+   * Cierra la sesión del usuario y cierra el menú lateral
    */
   logout() {
     this.authService.logout().subscribe(() => {
       console.log('Sesión cerrada');
-      this.router.navigate(['/home']);
+      this.router.navigate(['/home']).then(() => {
+        this.menuController.close('side-menu');
+      });
     });
   }
 
