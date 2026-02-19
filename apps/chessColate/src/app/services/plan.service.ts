@@ -24,14 +24,21 @@ export class PlanService {
   /**
    * Prepara un plan personalizado para jugar: resuelve temas (all/weakness), carga puzzles
    * por bloque y devuelve un plan con uid nuevo listo para setPlan y navegar a training.
+   * @param onProgress callback opcional para reportar progreso (loaded, total)
    */
-  async makeCustomPlanForPlay(plan: Plan, eloToStart = 1500): Promise<Plan> {
+  async makeCustomPlanForPlay(
+    plan: Plan,
+    eloToStart = 1500,
+    onProgress?: (loaded: number, total: number) => void
+  ): Promise<Plan> {
     const uid = plan.uidCustomPlan ?? plan.uid;
     const planElos = await this.plansElosService.getOnePlanElo(uid);
     const eloBase = planElos?.total ?? eloToStart;
 
     const blockUpdatedToAdd: Block[] = [];
-    for (const b of plan.blocks) {
+    const total = plan.blocks.length;
+    for (let i = 0; i < plan.blocks.length; i++) {
+      const b = plan.blocks[i];
       let theme = b.theme;
       if (b.theme === 'weakness') {
         const weakness = planElos?.themes ? this.plansElosService.getWeakness(planElos.themes) : null;
@@ -46,6 +53,7 @@ export class PlanService {
         puzzles,
         puzzlesPlayed: [],
       });
+      onProgress?.(i + 1, total);
     }
 
     return {

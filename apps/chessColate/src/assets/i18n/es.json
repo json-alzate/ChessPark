@@ -134,7 +134,10 @@
     },
     "help": {
       "gosh": "Este ejercicio es a la ciegas, las piezas se harán transparentes cuando el",
-      "gosh2": "llegue a"
+      "gosh2": "llegue a",
+      "yourTurn": "Tu turno",
+      "findBestMoveWhite": "Encuentra el mejor movimiento para las blancas.",
+      "findBestMoveBlack": "Encuentra el mejor movimiento para las negras."
     }
   },
   "TRAINING": {

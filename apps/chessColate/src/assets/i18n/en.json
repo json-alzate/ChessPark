@@ -134,7 +134,10 @@
     },
     "help": {
       "gosh": "This puzzle is blindfold, the pieces will become transparent when",
-      "gosh2": "reaches"
+      "gosh2": "reaches",
+      "yourTurn": "Your turn",
+      "findBestMoveWhite": "Find the best move for White.",
+      "findBestMoveBlack": "Find the best move for Black."
     }
   },
   "TRAINING": {

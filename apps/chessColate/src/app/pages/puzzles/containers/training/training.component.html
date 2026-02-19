@@ -91,11 +91,26 @@
      
           </ion-col>
   
-            <ion-col size-xs="12" size-sm="12" size-md="12" size-lg="6" size-xl="6" offset-lg="3" offset-xl="3">
-              <ion-note>
-                {{ 'PUZZLES.help.gosh' | transloco}} <ion-icon [name]="'eye-outline'"></ion-icon> {{ 'PUZZLES.help.gosh2' |
-                transloco}} 00:00
-              </ion-note>
+            <ion-col size-xs="12" size-sm="12" size-md="12" size-lg="6" size-xl="6" offset-lg="3" offset-xl="3" class="flex flex-col gap-2">
+              <div class="flex items-center gap-3">
+                <img [src]="'assets/images/king-' + playerColor + '.svg'" [alt]="playerColor" class="h-8 w-8" />
+                <div class="flex flex-col">
+                  <span class="font-semibold text-base">{{ 'PUZZLES.help.yourTurn' | transloco }}</span>
+                  <span class="text-sm text-base-content/80">
+                    @if (playerColor === 'white') {
+                      {{ 'PUZZLES.help.findBestMoveWhite' | transloco }}
+                    } @else {
+                      {{ 'PUZZLES.help.findBestMoveBlack' | transloco }}
+                    }
+                  </span>
+                </div>
+              </div>
+              @if (isGoshHelperShow) {
+                <ion-note class="flex items-center gap-2 text-base-content/80 text-sm">
+                  {{ 'PUZZLES.help.gosh' | transloco}} <ion-icon name="eye-outline" class="h-4 w-4"></ion-icon>
+                  {{ 'PUZZLES.help.gosh2' | transloco}} {{ (puzzleToPlay?.goshPuzzleTime ?? 0) | secondsToMinutesSeconds }}
+                </ion-note>
+              }
             </ion-col>
         
         </ion-row>

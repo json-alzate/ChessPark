@@ -73,6 +73,22 @@ export class TrainingComponent implements OnInit {
   isGoshHelperShow = false;
   isDropdownOpen = false;
 
+  /** Color con el que juega el usuario en el puzzle actual (blancas o negras) */
+  get playerColor(): 'white' | 'black' {
+    const block = this.plan?.blocks?.[this.currentIndexBlock];
+    const puzzle = this.puzzleToPlay;
+    if (!block) return 'white';
+    if (block.color === 'white') return 'white';
+    if (block.color === 'black') return 'black';
+    // random: derivar del FEN del puzzle (campo activo: w o b)
+    if (puzzle?.fen) {
+      const parts = puzzle.fen.trim().split(/\s+/);
+      const turn = parts[1]?.toLowerCase();
+      return turn === 'b' ? 'black' : 'white';
+    }
+    return 'white';
+  }
+
   constructor(private modalController: ModalController) {
     addIcons({ 
       timerOutline,
@@ -237,7 +253,7 @@ export class TrainingComponent implements OnInit {
 
     const puzzle = { ...puzzleSource };
 
-    if (currentBlock.goshPuzzleTime) {
+    if (currentBlock.goshPuzzle && currentBlock.goshPuzzleTime) {
       puzzle.goshPuzzleTime = currentBlock.goshPuzzleTime;
     }
     if (currentBlock.puzzleTimes) {

@@ -2,7 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
-import { IonContent, IonFab, IonFabButton, IonIcon } from '@ionic/angular/standalone';
+import { IonContent, IonFab, IonFabButton, IonIcon, LoadingController } from '@ionic/angular/standalone';
 
 import { TranslocoPipe } from '@jsverse/transloco';
 
@@ -40,6 +40,7 @@ export class CustomPlansListComponent implements OnInit {
   private planFacade = inject(PlanFacadeService);
   private plansElosFacade = inject(PlansElosFacadeService);
   private router = inject(Router);
+  private loadingController = inject(LoadingController);
 
   plans$ = this.customPlansService.getMyPlans$();
 
@@ -91,12 +92,28 @@ export class CustomPlansListComponent implements OnInit {
       )
         eloToStart = profile.elos.plan30Total;
     }
-    const planToPlay = await this.planService.makeCustomPlanForPlay(
-      plan,
-      eloToStart
-    );
-    this.planFacade.setPlan(planToPlay);
-    this.router.navigate(['/puzzles/training']);
+
+    const loader = await this.loadingController.create({
+      message: 'Cargando puzzles...',
+    });
+    await loader.present();
+
+    try {
+      const planToPlay = await this.planService.makeCustomPlanForPlay(
+        plan,
+        eloToStart,
+        (loaded, total) => {
+          loader.message = `Cargando puzzles... ${loaded}/${total}`;
+        }
+      );
+      await loader.dismiss();
+      this.planFacade.setPlan(planToPlay);
+      this.router.navigate(['/puzzles/training']);
+    } catch (error) {
+      await loader.dismiss();
+      console.error('Error al cargar el plan:', error);
+      throw error;
+    }
   }
 
   formatDate(createdAt: number): string {
