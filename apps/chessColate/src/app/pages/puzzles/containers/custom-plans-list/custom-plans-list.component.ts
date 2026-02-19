@@ -11,7 +11,7 @@ import { Plan } from '@cpark/models';
 import { CustomPlansService } from '@services/custom-plans.service';
 import { PlanService } from '@services/plan.service';
 import { ProfileService } from '@services/profile.service';
-import { PlanFacadeService } from '@cpark/state';
+import { PlanFacadeService, PlansElosFacadeService } from '@cpark/state';
 
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 
@@ -38,9 +38,14 @@ export class CustomPlansListComponent implements OnInit {
   private planService = inject(PlanService);
   private profileService = inject(ProfileService);
   private planFacade = inject(PlanFacadeService);
+  private plansElosFacade = inject(PlansElosFacadeService);
   private router = inject(Router);
 
   plans$ = this.customPlansService.getMyPlans$();
+
+  getPlanEloForPlan(planUid: string) {
+    return this.plansElosFacade.getPlanElo$(planUid);
+  }
 
   constructor() {
     addIcons({ add, playOutline, createOutline });

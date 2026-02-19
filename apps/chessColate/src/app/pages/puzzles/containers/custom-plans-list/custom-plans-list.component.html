@@ -29,6 +29,10 @@
                         <span class="badge badge-sm badge-info ml-1">{{ 'CUSTOM_PLANS.public' | transloco }}</span>
                       }
                     </h6>
+                    <p class="text-xs text-base-content/60 mt-1">
+                      {{ 'CUSTOM_PLANS.elo' | transloco }}: {{ (getPlanEloForPlan(plan.uid) | async)?.total ?? '-' }}
+                      · {{ 'CUSTOM_PLANS.timesPlayed' | transloco }}: {{ (getPlanEloForPlan(plan.uid) | async)?.timesPlayed ?? 0 }}
+                    </p>
                     @if (plan.createdAt) {
                       <p class="text-xs text-base-content/50 mt-1">{{ formatDate(plan.createdAt) }}</p>
                     }
@@ -56,12 +60,6 @@
       }
     </div>
 
-    <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="md:hidden">
-      <ion-fab-button (click)="goToCreate()" aria-label="{{ 'CUSTOM_PLANS.create' | transloco }}">
-        <ion-icon name="add"></ion-icon>
-      </ion-fab-button>
-    </ion-fab>
-
     <div class="hidden md:block container mx-auto px-4 pb-6">
       <button type="button" class="btn btn-primary w-full md:w-auto" (click)="goToCreate()">
         <ion-icon name="add"></ion-icon>
@@ -69,4 +67,10 @@
       </button>
     </div>
   </div>
+
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="md:hidden">
+    <ion-fab-button (click)="goToCreate()" aria-label="{{ 'CUSTOM_PLANS.create' | transloco }}">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>

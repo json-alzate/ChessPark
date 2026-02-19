@@ -446,10 +446,20 @@ export class TrainingComponent implements OnInit {
 
     // Actualizar el plan en Redux
     this.planFacade.updatePlan(this.plan);
-    
+
+    // Incrementar contador de veces jugado para planes custom
+    if (
+      this.plan.planType === 'custom' &&
+      this.plan.uidCustomPlan &&
+      this.profileService.getProfile?.uid
+    ) {
+      this.plansElosService
+        .incrementPlayCount(this.plan.uidCustomPlan, this.profileService.getProfile.uid)
+        .catch((err) => console.error('Error incrementing play count', err));
+    }
+
     // Navegar a la pantalla de plan jugado
     this.router.navigate(['/puzzles/plan-played']);
-    // TODO: Track end plan
   }
 
   onExitTraining() {

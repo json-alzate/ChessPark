@@ -242,7 +242,9 @@
     "play": "Jugar",
     "create": "Crear rutina",
     "isPublic": "Plan público (visible para otros)",
-    "saveOnly": "Guardar y volver"
+    "saveOnly": "Guardar y volver",
+    "elo": "ELO",
+    "timesPlayed": "Veces jugado"
   },
   "COORDINATES_PUZZLES": {
     "coordinates": "Coordenadas",

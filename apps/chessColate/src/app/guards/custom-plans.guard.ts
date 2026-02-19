@@ -8,12 +8,20 @@ import { AppState } from '@cpark/state';
 import { getCountAllCustomPlans } from '@cpark/state';
 import { getProfile } from '@cpark/state';
 import { loadCustomPlans } from '@cpark/state';
+import { PlansElosFacadeService } from '@cpark/state';
 
 @Injectable({ providedIn: 'root' })
 export class CustomPlansGuard {
   private store = inject(Store<AppState>);
+  private plansElosFacade = inject(PlansElosFacadeService);
 
   canActivate() {
+    this.store.select(getProfile).pipe(take(1)).subscribe((profile) => {
+      if (profile?.uid) {
+        this.plansElosFacade.requestLoadPlansElos(profile.uid);
+      }
+    });
+
     combineLatest([
       this.store.select(getCountAllCustomPlans),
       this.store.select(getProfile),

@@ -18,7 +18,7 @@ export const CUSTOM_PLANS_FIRESTORE_TOKEN = new InjectionToken<ICustomPlansFires
 );
 
 @Injectable()
-export class CustomPlansEffects {CUSTOM_PLANS_FIRESTORE_TOKEN
+export class CustomPlansEffects {
   loadCustomPlans$;
 
   constructor(

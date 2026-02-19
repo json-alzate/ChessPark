@@ -242,7 +242,9 @@
     "play": "Play",
     "create": "Create routine",
     "isPublic": "Public plan (visible to others)",
-    "saveOnly": "Save and go back"
+    "saveOnly": "Save and go back",
+    "elo": "ELO",
+    "timesPlayed": "Times played"
   },
   "COORDINATES_PUZZLES": {
     "coordinates": "Coordinates",
