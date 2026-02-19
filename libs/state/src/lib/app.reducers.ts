@@ -9,6 +9,7 @@ import { authReducer } from './auth';
 import { AppState } from './app.state';
 import { planReducer } from './plan';
 import { plansElosReducer } from './plansElos';
+import { customPlansReducer } from './customPlans';
 
 // models
 
@@ -17,6 +18,7 @@ export const appReducers: ActionReducerMap<AppState> = {
   router: fromRouter.routerReducer,
   plan: planReducer,
   plansElos: plansElosReducer,
+  customPlans: customPlansReducer,
 };
 
 export const metaReducers: MetaReducer<AppState>[] = [];

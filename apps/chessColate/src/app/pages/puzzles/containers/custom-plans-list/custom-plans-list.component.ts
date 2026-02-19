@@ -40,24 +40,14 @@ export class CustomPlansListComponent implements OnInit {
   private planFacade = inject(PlanFacadeService);
   private router = inject(Router);
 
-  plans: Plan[] = [];
-  loading = true;
+  plans$ = this.customPlansService.getMyPlans$();
 
   constructor() {
     addIcons({ add, playOutline, createOutline });
   }
 
   ngOnInit(): void {
-    this.loadPlans();
-  }
-
-  async loadPlans(): Promise<void> {
-    this.loading = true;
-    try {
-      this.plans = await this.customPlansService.getMyPlans();
-    } finally {
-      this.loading = false;
-    }
+    // El guard se encarga de cargar los planes; esta vista usa el estado NgRx
   }
 
   goToCreate(): void {
@@ -69,16 +59,37 @@ export class CustomPlansListComponent implements OnInit {
   }
 
   async play(plan: Plan): Promise<void> {
-    const totalBlockTime = plan.blocks.reduce((sum, b) => sum + (b.time > 0 ? b.time : 0), 0);
+    const totalBlockTime = plan.blocks.reduce(
+      (sum, b) => sum + (b.time > 0 ? b.time : 0),
+      0
+    );
     const profile = this.profileService.getProfile;
     let eloToStart = 1500;
     if (profile?.elos) {
-      if (totalBlockTime <= 3000 && typeof profile.elos.plan5Total === 'number') eloToStart = profile.elos.plan5Total;
-      else if (totalBlockTime > 3000 && totalBlockTime <= 6000 && typeof profile.elos.plan10Total === 'number') eloToStart = profile.elos.plan10Total;
-      else if (totalBlockTime > 6000 && totalBlockTime <= 12000 && typeof profile.elos.plan20Total === 'number') eloToStart = profile.elos.plan20Total;
-      else if (totalBlockTime > 12000 && typeof profile.elos.plan30Total === 'number') eloToStart = profile.elos.plan30Total;
+      if (totalBlockTime <= 3000 && typeof profile.elos.plan5Total === 'number')
+        eloToStart = profile.elos.plan5Total;
+      else if (
+        totalBlockTime > 3000 &&
+        totalBlockTime <= 6000 &&
+        typeof profile.elos.plan10Total === 'number'
+      )
+        eloToStart = profile.elos.plan10Total;
+      else if (
+        totalBlockTime > 6000 &&
+        totalBlockTime <= 12000 &&
+        typeof profile.elos.plan20Total === 'number'
+      )
+        eloToStart = profile.elos.plan20Total;
+      else if (
+        totalBlockTime > 12000 &&
+        typeof profile.elos.plan30Total === 'number'
+      )
+        eloToStart = profile.elos.plan30Total;
     }
-    const planToPlay = await this.planService.makeCustomPlanForPlay(plan, eloToStart);
+    const planToPlay = await this.planService.makeCustomPlanForPlay(
+      plan,
+      eloToStart
+    );
     this.planFacade.setPlan(planToPlay);
     this.router.navigate(['/puzzles/training']);
   }

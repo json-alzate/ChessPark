@@ -1,44 +1,50 @@
 import { inject, Injectable } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
+
 import { Plan } from '@cpark/models';
+
 import { FirestoreService } from '@services/firestore.service';
-import { ProfileService } from '@services/profile.service';
+import { CustomPlansFacadeService } from '@cpark/state';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CustomPlansService {
   private firestoreService = inject(FirestoreService);
-  private profileService = inject(ProfileService);
+  private customPlansFacade = inject(CustomPlansFacadeService);
 
   /**
    * Obtiene un plan personalizado por uid.
+   * Usa el estado si está disponible, sino consulta Firestore.
    */
   async getById(uid: string): Promise<Plan | null> {
+    const fromState = await firstValueFrom(
+      this.customPlansFacade.getCustomPlan$(uid)
+    );
+    if (fromState) return fromState;
     return this.firestoreService.getCustomPlan(uid);
   }
 
   /**
-   * Obtiene los planes personalizados del usuario actual.
+   * Observable de los planes personalizados del usuario (desde el estado NgRx).
    */
-  async getMyPlans(): Promise<Plan[]> {
-    const uidUser = this.profileService.getProfile?.uid;
-    if (!uidUser) {
-      return [];
-    }
-    return this.firestoreService.getCustomPlans(uidUser);
+  getMyPlans$() {
+    return this.customPlansFacade.getCustomPlansOrderByDate$();
   }
 
   /**
-   * Guarda un nuevo plan personalizado en Firestore.
+   * Guarda un nuevo plan personalizado en Firestore y actualiza el estado.
    */
   async save(plan: Plan): Promise<void> {
     await this.firestoreService.saveCustomPlan(plan);
+    this.customPlansFacade.addOneCustomPlan(plan);
   }
 
   /**
-   * Actualiza un plan personalizado existente en Firestore.
+   * Actualiza un plan personalizado existente en Firestore y actualiza el estado.
    */
   async update(plan: Plan): Promise<void> {
-    return this.firestoreService.updateCustomPlan(plan);
+    await this.firestoreService.updateCustomPlan(plan);
+    this.customPlansFacade.updateCustomPlanInState(plan);
   }
 }

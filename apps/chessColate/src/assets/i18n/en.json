@@ -171,8 +171,12 @@
     },
     "actions": {
       "addBlock": "Add block",
-      "saveAndPlay": "Save and play"
-    }
+      "saveAndPlay": "Save and play",
+      "cancel": "Cancel",
+      "login": "Log in"
+    },
+    "authRequired": "You must be authenticated to create a custom plan.",
+    "loginToCreate": "Log in to create and save your routines."
   },
   "NEW_BLOCK": {
     "form": {

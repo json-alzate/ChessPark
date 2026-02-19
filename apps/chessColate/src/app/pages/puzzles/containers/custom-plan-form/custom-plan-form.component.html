@@ -7,8 +7,28 @@
         <div class="flex justify-center py-8">
           <span class="loading loading-spinner loading-lg text-primary"></span>
         </div>
+      } @else if (loginRequired && !isEditMode) {
+        <div class="card bg-base-100 shadow-sm">
+          <div class="card-body items-center text-center py-8">
+            <p class="text-base-content/80 mb-2">{{ 'CUSTOM_TRAINING.authRequired' | transloco }}</p>
+            <p class="text-base-content/60 text-sm mb-4">{{ 'CUSTOM_TRAINING.loginToCreate' | transloco }}</p>
+            <div class="flex gap-2">
+              <button type="button" class="btn btn-ghost" (click)="cancel()">
+                {{ 'CUSTOM_TRAINING.actions.cancel' | transloco }}
+              </button>
+              <button type="button" class="btn btn-primary" (click)="openLoginModal()">
+                {{ 'CUSTOM_TRAINING.actions.login' | transloco }}
+              </button>
+            </div>
+          </div>
+        </div>
       } @else {
-        <h2 class="text-2xl font-bold mb-4">{{ 'CUSTOM_TRAINING.form.title' | transloco }}</h2>
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-2xl font-bold">{{ 'CUSTOM_TRAINING.form.title' | transloco }}</h2>
+          <button type="button" class="btn btn-ghost btn-sm" (click)="cancel()">
+            {{ 'CUSTOM_TRAINING.actions.cancel' | transloco }}
+          </button>
+        </div>
 
         <ul class="list-disc list-inside text-base-content/70 mb-4">
           <li>{{ 'CUSTOM_TRAINING.form.description1' | transloco }}</li>
@@ -68,7 +88,8 @@
                   <ion-icon slot="start" name="trending-down"></ion-icon>
                 }
                 <ion-label>
-                  <h2>
+                  <h2 class="font-medium">{{ getThemeName(block.theme) }}</h2>
+                  <p class="text-sm">
                     @if (block.time > 0 || block.puzzlesCount) {
                       @if (block.time > 0) {
                         <span>{{ block.time | secondsToMinutesSeconds }} <small class="opacity-70">(min:seg)</small></span>
@@ -80,7 +101,7 @@
                     } @else {
                       <ion-icon name="infinite-outline"></ion-icon>
                     }
-                  </h2>
+                  </p>
                   <ion-note>
                     @switch (block.color) {
                       @case ('white') {
@@ -111,7 +132,7 @@
           {{ 'CUSTOM_TRAINING.actions.addBlock' | transloco }}
         </button>
 
-        <div class="flex flex-col gap-2 max-w-md">
+        <div class="flex flex-col gap-2 max-w-md hidden md:flex">
           <button
             type="button"
             class="btn btn-primary"

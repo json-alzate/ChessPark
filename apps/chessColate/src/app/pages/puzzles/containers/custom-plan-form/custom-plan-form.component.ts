@@ -1,7 +1,9 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
+import { Subscription } from 'rxjs';
+import { filter, take } from 'rxjs/operators';
 
 import {
   IonContent,
@@ -18,18 +20,20 @@ import {
   ModalController,
 } from '@ionic/angular/standalone';
 
-import { TranslocoPipe } from '@jsverse/transloco';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
 import { Plan, Block } from '@cpark/models';
 import { UidGeneratorService, SecondsToMinutesSecondsPipe } from '@chesspark/common-utils';
 
 import { CustomPlansService } from '@services/custom-plans.service';
 import { PlanService } from '@services/plan.service';
+import { AppService } from '@services/app.service';
 import { ProfileService } from '@services/profile.service';
-import { PlanFacadeService } from '@cpark/state';
+import { PlanFacadeService, CustomPlansFacadeService } from '@cpark/state';
 
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 import { BlockSettingsComponent } from '@pages/puzzles/components/block-settings/block-settings.component';
+import { LoginComponent } from '@shared/components/login/login.component';
 
 import { addIcons } from 'ionicons';
 import { add, shuffle, trendingDown, infiniteOutline } from 'ionicons/icons';
@@ -57,13 +61,16 @@ import { add, shuffle, trendingDown, infiniteOutline } from 'ionicons/icons';
   templateUrl: './custom-plan-form.component.html',
   styleUrl: './custom-plan-form.component.scss',
 })
-export class CustomPlanFormComponent implements OnInit {
+export class CustomPlanFormComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private customPlansService = inject(CustomPlansService);
   private planService = inject(PlanService);
   private profileService = inject(ProfileService);
   private planFacade = inject(PlanFacadeService);
+  private customPlansFacade = inject(CustomPlansFacadeService);
+  private appService = inject(AppService);
+  private transloco = inject(TranslocoService);
   private modalController = inject(ModalController);
   private uidGenerator = inject(UidGeneratorService);
 
@@ -75,6 +82,9 @@ export class CustomPlanFormComponent implements OnInit {
   originalCreatedAt: number = 0;
   loading = true;
   saving = false;
+  loginRequired = false;
+  loginOpenedFromCreatePlan = false;
+  private profileSub?: Subscription;
 
   constructor() {
     addIcons({ add, shuffle, trendingDown, infiniteOutline });
@@ -88,7 +98,36 @@ export class CustomPlanFormComponent implements OnInit {
       this.loadPlan(uid);
     } else {
       this.loading = false;
+      const profile = this.profileService.getProfile;
+      this.loginRequired = !profile;
     }
+  }
+
+  ngOnDestroy(): void {
+    this.profileSub?.unsubscribe();
+  }
+
+  async openLoginModal(): Promise<void> {
+    this.loginOpenedFromCreatePlan = true;
+    this.profileSub = this.profileService.profile$
+      .pipe(
+        filter((p) => !!p && this.loginOpenedFromCreatePlan),
+        take(1)
+      )
+      .subscribe((profile) => {
+        if (profile?.uid) {
+          this.customPlansFacade.loadCustomPlans(profile.uid);
+        }
+        this.loginRequired = false;
+        this.loginOpenedFromCreatePlan = false;
+      });
+
+    const modal = await this.modalController.create({
+      component: LoginComponent,
+      componentProps: { segmentEmailPassword: 'login' },
+    });
+    await modal.present();
+    await modal.onDidDismiss();
   }
 
   async loadPlan(uid: string): Promise<void> {
@@ -126,7 +165,7 @@ export class CustomPlanFormComponent implements OnInit {
   doReorder(event: ItemReorderCustomEvent): void {
     const item = this.blocks.splice(event.detail.from, 1)[0];
     this.blocks.splice(event.detail.to, 0, item);
-    event.detail.complete();
+    event.detail.complete(false);
   }
 
   private getEloToStart(): number {
@@ -189,6 +228,16 @@ export class CustomPlanFormComponent implements OnInit {
     } finally {
       this.saving = false;
     }
+  }
+
+  cancel(): void {
+    this.router.navigate(['/puzzles/custom-plans']);
+  }
+
+  getThemeName(theme: string): string {
+    if (theme === 'all') return this.transloco.translate('NEW_BLOCK.theme.random');
+    if (theme === 'weakness') return this.transloco.translate('NEW_BLOCK.theme.weakness');
+    return this.appService.getNameThemePuzzleByValue(theme) || theme;
   }
 
   async save(): Promise<void> {

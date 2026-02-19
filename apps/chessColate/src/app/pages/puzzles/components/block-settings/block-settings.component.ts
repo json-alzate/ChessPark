@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -55,6 +55,8 @@ export class BlockSettingsComponent implements OnInit {
   private modalController = inject(ModalController);
   private translocoService = inject(TranslocoService);
 
+  @ViewChild(IonAccordionGroup) accordionGroup?: IonAccordionGroup;
+
   color: 'white' | 'black' | 'random' = 'random';
   puzzlesGroupsThemes: PuzzleThemesGroup[] = [];
   form!: FormGroup;
@@ -73,6 +75,17 @@ export class BlockSettingsComponent implements OnInit {
     this.form.get('goshPuzzle')?.valueChanges.subscribe(() => {
       this.toggleFieldBasedOnBoolean('goshPuzzle', 'goshPuzzleTime');
     });
+    this.themeField?.valueChanges.subscribe(() => {
+      if (this.accordionGroup) {
+        this.accordionGroup.value = undefined;
+      }
+    });
+  }
+
+  getThemeName(value: string): string {
+    if (value === 'all') return '';
+    if (value === 'weakness') return '';
+    return this.appService.getNameThemePuzzleByValue(value) || '';
   }
 
   get timeField() {

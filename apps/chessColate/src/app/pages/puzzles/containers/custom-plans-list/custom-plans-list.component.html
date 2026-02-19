@@ -5,22 +5,19 @@
     <div class="container mx-auto px-4 py-6">
       <h2 class="text-2xl font-bold mb-4">{{ 'CUSTOM_PLANS.listTitle' | transloco }}</h2>
 
-      @if (loading) {
-        <div class="flex justify-center py-8">
-          <span class="loading loading-spinner loading-lg text-primary"></span>
-        </div>
-      } @else if (plans.length === 0) {
-        <div class="card bg-base-100 shadow-sm">
-          <div class="card-body items-center text-center py-8">
-            <p class="text-base-content/70">{{ 'CUSTOM_PLANS.empty' | transloco }}</p>
-            <button type="button" class="btn btn-primary mt-4" (click)="goToCreate()">
-              {{ 'CUSTOM_PLANS.createFirst' | transloco }}
-            </button>
+      @if (plans$ | async; as plans) {
+        @if (plans.length === 0) {
+          <div class="card bg-base-100 shadow-sm">
+            <div class="card-body items-center text-center py-8">
+              <p class="text-base-content/70">{{ 'CUSTOM_PLANS.empty' | transloco }}</p>
+              <button type="button" class="btn btn-primary mt-4" (click)="goToCreate()">
+                {{ 'CUSTOM_PLANS.createFirst' | transloco }}
+              </button>
+            </div>
           </div>
-        </div>
-      } @else {
-        <div class="space-y-4">
-          @for (plan of plans; track plan.uid) {
+        } @else {
+          <div class="space-y-4">
+            @for (plan of plans; track plan.uid) {
             <div class="card bg-base-100 shadow-sm">
               <div class="card-body p-4">
                 <div class="flex flex-wrap items-center justify-between gap-2">
@@ -49,7 +46,12 @@
                 </div>
               </div>
             </div>
-          }
+            }
+          </div>
+        }
+      } @else {
+        <div class="flex justify-center py-8">
+          <span class="loading loading-spinner loading-lg text-primary"></span>
         </div>
       }
     </div>

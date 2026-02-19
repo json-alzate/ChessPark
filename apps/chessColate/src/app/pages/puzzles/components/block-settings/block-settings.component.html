@@ -104,18 +104,27 @@
 
         <ion-accordion value="theme">
           <ion-item slot="header" color="light">
-            <ion-label>{{ 'NEW_BLOCK.theme.theme' | transloco }}</ion-label>
             @if (themeField?.value !== 'all' && themeField?.value !== 'weakness') {
-              <ion-thumbnail class="thumbnail-theme" slot="end">
+              <ion-thumbnail class="thumbnail-theme" slot="start">
                 <img [src]="'assets/images/puzzle-themes/' + themeField?.value + '.svg'" alt="" />
               </ion-thumbnail>
             }
             @if (themeField?.value === 'all') {
-              <ion-icon name="shuffle" slot="end"></ion-icon>
+              <ion-icon name="shuffle" slot="start"></ion-icon>
             }
             @if (themeField?.value === 'weakness') {
-              <ion-icon name="trending-down" slot="end"></ion-icon>
+              <ion-icon name="trending-down" slot="start"></ion-icon>
             }
+            <ion-label>
+              {{ 'NEW_BLOCK.theme.theme' | transloco }}:
+              @if (themeField?.value === 'all') {
+                {{ 'NEW_BLOCK.theme.random' | transloco }}
+              } @else if (themeField?.value === 'weakness') {
+                {{ 'NEW_BLOCK.theme.weakness' | transloco }}
+              } @else if (themeField?.value) {
+                {{ getThemeName(themeField?.value ?? '') }}
+              }
+            </ion-label>
           </ion-item>
           <div class="content-accordion-themes" slot="content">
             <ion-radio-group formControlName="theme">

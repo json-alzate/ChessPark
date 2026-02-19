@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { CustomPlansGuard } from './guards/custom-plans.guard';
 
 export const routes: Routes = [
   {
@@ -21,14 +22,17 @@ export const routes: Routes = [
   {
     path: 'puzzles/custom-plans',
     loadComponent: () => import('./pages/puzzles/containers/custom-plans-list/custom-plans-list.component').then(m => m.CustomPlansListComponent),
+    canActivate: [CustomPlansGuard],
   },
   {
     path: 'puzzles/custom-plans/create',
     loadComponent: () => import('./pages/puzzles/containers/custom-plan-form/custom-plan-form.component').then(m => m.CustomPlanFormComponent),
+    canActivate: [CustomPlansGuard],
   },
   {
     path: 'puzzles/custom-plans/edit/:uid',
     loadComponent: () => import('./pages/puzzles/containers/custom-plan-form/custom-plan-form.component').then(m => m.CustomPlanFormComponent),
+    canActivate: [CustomPlansGuard],
   },
   {
     path: '',

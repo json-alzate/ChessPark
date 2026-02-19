@@ -22,12 +22,13 @@ import { TranslocoHttpLoader } from './transloco-loader';
 import { provideTransloco } from '@jsverse/transloco';
 
 // State
-import { 
+import {
   appReducers,
   EFFECTS,
-  AUTH_SERVICE_TOKEN, 
+  AUTH_SERVICE_TOKEN,
   PROFILE_SERVICE_TOKEN,
-  FIRESTORE_SERVICE_TOKEN
+  FIRESTORE_SERVICE_TOKEN,
+  CUSTOM_PLANS_FIRESTORE_TOKEN,
 } from '@cpark/state';
 
 // Services
@@ -97,6 +98,7 @@ bootstrapApplication(AppComponent, {
     { provide: AUTH_SERVICE_TOKEN, useExisting: AuthService },
     { provide: PROFILE_SERVICE_TOKEN, useExisting: ProfileService },
     { provide: FIRESTORE_SERVICE_TOKEN, useExisting: FirestoreService },
+    { provide: CUSTOM_PLANS_FIRESTORE_TOKEN, useExisting: FirestoreService },
     // Puzzles Provider como singleton
     {
       provide: PuzzlesProvider,

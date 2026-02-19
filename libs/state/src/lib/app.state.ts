@@ -7,10 +7,12 @@ import { RouterStateUrl } from './router.state';
 import { AuthState } from './auth';
 import { PlanState } from './plan';
 import { PlansElosState } from './plansElos';
+import { CustomPlansState } from './customPlans';
 
 export interface AppState {
   router: RouterReducerState<RouterStateUrl>;
   auth: AuthState;
   plan: PlanState;
   plansElos: PlansElosState;
+  customPlans: CustomPlansState;
 }
