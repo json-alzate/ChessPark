@@ -1,4 +1,4 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
@@ -45,7 +45,7 @@ import { SoundsService, SecondsToMinutesSecondsPipe } from '@chesspark/common-ut
   templateUrl: './training.component.html',
   styleUrl: './training.component.scss',
 })
-export class TrainingComponent implements OnInit {
+export class TrainingComponent implements OnInit, OnDestroy {
   private blockService = inject(BlockService);
   private planFacade = inject(PlanFacadeService);
   private plansElosService = inject(PlansElosService);
@@ -55,6 +55,12 @@ export class TrainingComponent implements OnInit {
   private translocoService = inject(TranslocoService);
   private uidGenerator = inject(UidGeneratorService);
   private soundsService = inject(SoundsService);
+  
+  // Subject para gestionar suscripciones
+  private destroy$ = new Subject<void>();
+  private isInitialized = false;
+  private isProcessingBlock = false;
+  
   showBlockTimer = false;
 
   currentIndexBlock = -1; // -1 para que al iniciar se seleccione el primer bloque sumando ++ y queda en 0
@@ -105,27 +111,51 @@ export class TrainingComponent implements OnInit {
   }
 
   ngOnInit() {
+    // Prevenir múltiples inicializaciones
+    if (this.isInitialized) {
+      return;
+    }
+    
+    this.isInitialized = true;
+    
+    this.planFacade.getPlan$()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((plan: Plan | null) => {
+        if (!plan) {
+          this.router.navigate(['/home']);
+          return;
+        }
+        this.plan = { ...plan };
+        console.log('Plan ', this.plan);
+        if (!this.plan.isFinished && !this.isProcessingBlock) {
+          this.playNextBlock();
+          return;
+        }
+      });
+  }
 
-    this.planFacade.getPlan$().subscribe((plan: Plan | null) => {
-      if (!plan) {
-        this.router.navigate(['/home']);
-        return;
-      }
-      this.plan = { ...plan };
-      console.log('Plan ', this.plan);
-      if (!this.plan.isFinished) {
-        this.playNextBlock();
-        return;
-      }
-    });
+  ngOnDestroy() {
+    // Completar destroy$ para cancelar todas las suscripciones
+    this.destroy$.next();
+    this.destroy$.complete();
+    
+    // Limpiar recursos
+    this.cleanupResources();
   }
 
 
   playNextBlock() {
+    // Prevenir ejecuciones múltiples
+    if (this.isProcessingBlock) {
+      return;
+    }
+    
+    this.isProcessingBlock = true;
     this.currentIndexBlock++;
 
     // se valida si se ha llegado al final del plan
     if (this.currentIndexBlock === this.plan.blocks.length) {
+      this.isProcessingBlock = false;
       this.endPlan();
       return;
     }
@@ -200,6 +230,7 @@ export class TrainingComponent implements OnInit {
     await modal.present();
 
     modal.onDidDismiss().then((data) => {
+      this.isProcessingBlock = false;
       this.selectPuzzleToPlay();
       if (this.plan.blocks[this.currentIndexBlock].time !== -1) {
         this.showBlockTimer = true;
@@ -494,12 +525,16 @@ export class TrainingComponent implements OnInit {
     this.showBlockTimer = false;
     this.isGoshHelperShow = false;
     this.isDropdownOpen = false;
+    this.isProcessingBlock = false;
     
     // Resetear variables del componente
     this.currentIndexBlock = -1;
     this.timeLeftBlock = 0;
     this.countPuzzlesPlayedBlock = 0;
     this.totalPuzzlesInBlock = 0;
+    
+    // Resetear flag de inicialización para permitir reinicialización
+    this.isInitialized = false;
     
     // Limpiar el estado del plan en Redux
     this.planFacade.clearPlan();
