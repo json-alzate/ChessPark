@@ -80,6 +80,16 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit {
   okTextShow = false;
   wrongTextShow = false;
 
+  // Estados de carga para bloqueo de botones
+  isPlaying = false;
+  isClosing = false;
+  isShowingClue = false;
+  isShowingSolution = false;
+
+  get isAnyActionInProgress(): boolean {
+    return this.isPlaying || this.isClosing || this.isShowingClue || this.isShowingSolution;
+  }
+
   constructor() {
     // Registrar iconos de Ionic
     addIcons({
@@ -172,6 +182,9 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit {
   closeModal() {
     this.closeCancelMoves = true;
     this.timerUnsubscribe$.next();
+    // Resetear estados de carga
+    this.isClosing = false;
+    this.isPlaying = false;
     if (this.modalController) {
       this.modalController.dismiss();
     }
@@ -197,7 +210,7 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit {
   async buildBoard(fen: string) {
 
     console.log('buildBoard', fen);
-    
+
     this.chessInstance.load(this.puzzle.fen);
     this.piecePathKingTurn = this.chessInstance.turn() === 'b' ? 'wK.svg' : 'bK.svg';
 
@@ -245,19 +258,19 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit {
         case 'validateMoveInput':
           // Aplicar correcciones de board-puzzle.component.ts para promoción de peones
           if (event.squareTo && event.piece && event.squareFrom &&
-              (event.squareTo.charAt(1) === '8' || event.squareTo.charAt(1) === '1') && 
-              event.piece.charAt(1) === 'p') {
+            (event.squareTo.charAt(1) === '8' || event.squareTo.charAt(1) === '1') &&
+            event.piece.charAt(1) === 'p') {
 
             // Validar primero si el movimiento básico del peón es válido
             try {
               // Verificar que hay movimientos posibles desde la casilla de origen
-              const possibleMoves = this.chessInstance.moves({ 
-                square: event.squareFrom as any, 
-                verbose: true 
+              const possibleMoves = this.chessInstance.moves({
+                square: event.squareFrom as any,
+                verbose: true
               });
-              
+
               const isValidPawnMove = possibleMoves.some(move => move.to === event.squareTo);
-              
+
               if (!isValidPawnMove) {
                 this.board.removeMarkers();
                 this.showLastMove();
@@ -268,20 +281,20 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit {
               // Mostrar diálogo de promoción solo si el movimiento básico es válido
               this.board.showPromotionDialog(event.squareTo, colorToShow, (result) => {
                 if (result && result.piece && event.squareFrom && event.squareTo) {
-                  const objectMovePromotion = { 
-                    from: event.squareFrom, 
-                    to: event.squareTo, 
-                    promotion: result.piece.charAt(1) 
+                  const objectMovePromotion = {
+                    from: event.squareFrom,
+                    to: event.squareTo,
+                    promotion: result.piece.charAt(1)
                   };
-                  
+
                   // Validar primero con chess.js antes de actualizar el tablero
                   try {
                     const theMovePromotion = this.chessInstance.move(objectMovePromotion);
-                    
+
                     if (theMovePromotion) {
                       // Solo si el movimiento es válido, sincronizar el tablero con el estado de chess.js
                       this.board.setPosition(this.chessInstance.fen(), false);
-                      
+
                       this.board.removeArrows();
                       this.showLastMove();
                       this.validateMove();
@@ -302,7 +315,7 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit {
                   this.showLastMove();
                 }
               });
-              
+
               // Retornar true para aceptar el movimiento pendiente de promoción
               return true;
             } catch (error) {
@@ -419,6 +432,15 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit {
   }
 
   async puzzleMoveResponse(origin?: 'user') {
+    // Si se llama desde el botón de usuario, desactivar por 3 segundos
+    if (origin === 'user') {
+      this.isShowingSolution = true;
+      // Resetear después de 3 segundos
+      setTimeout(() => {
+        this.isShowingSolution = false;
+      }, 3000);
+    }
+
     this.currentMoveNumber++;
 
     if (this.arrayFenSolution.length === this.currentMoveNumber) {
@@ -441,7 +463,7 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit {
       const from = this.arrayMovesSolution[this.currentMoveNumber - 1].slice(0, 2);
       const to = this.arrayMovesSolution[this.currentMoveNumber - 1].slice(2, 4);
       this.showLastMove(from, to);
-      
+
       if (origin === 'user') {
         this.puzzleMoveResponse();
       }
@@ -457,6 +479,7 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit {
     // Marcar el inicio de la ejecución
     if (!times) {
       this.isClueActive = true;
+      this.isShowingClue = true;
       times = 1; // Inicializa `times` si no se proporciona.
     }
 
@@ -464,6 +487,7 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit {
     if (!square) {
       console.error('No square to mark');
       this.isClueActive = false;
+      this.isShowingClue = false;
       return;
     }
 
@@ -488,6 +512,7 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit {
     // Detén el parpadeo después de 8 alternancias.
     if (times === 8) {
       this.isClueActive = false; // Libera la bandera
+      this.isShowingClue = false;
       return;
     }
 
@@ -522,9 +547,11 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit {
   }
 
   async startMoves() {
+    this.isPlaying = true;
     // eslint-disable-next-line @typescript-eslint/prefer-for-of
     for (let i = this.currentMoveNumber + 1; i < this.arrayFenSolution.length; i++) {
       if (this.closeCancelMoves) {
+        this.isPlaying = false;
         break;
       }
       let lastMove;
@@ -546,7 +573,11 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit {
         this.showLastMove(from, to);
       }
     }
-    setTimeout(() => this.closeModal(), 1500);
+    this.isPlaying = false;
+    this.isClosing = true;
+    setTimeout(() => {
+      this.closeModal();
+    }, 1500);
   }
 
   showLastMove(from?: string, to?: string) {

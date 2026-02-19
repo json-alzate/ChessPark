@@ -283,7 +283,9 @@
     "actions": {
       "clue": "Pedir una pista",
       "solution": "Ver la solución",
-      "playAndClose": "Reproducir y cerrar"
+      "playAndClose": "Reproducir y cerrar",
+      "playing": "Reproduciendo...",
+      "closing": "Cerrando..."
     },
     "themes": "Temas"
   },

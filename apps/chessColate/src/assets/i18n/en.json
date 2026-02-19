@@ -283,7 +283,9 @@
     "actions": {
       "clue": "Ask a clue",
       "solution": "See the solution",
-      "playAndClose": "Play and close"
+      "playAndClose": "Play and close",
+      "playing": "Playing...",
+      "closing": "Closing..."
     },
     "themes": "Themes"
   },
