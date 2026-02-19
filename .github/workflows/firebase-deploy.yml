@@ -8,13 +8,12 @@ on:
   workflow_dispatch:
     inputs:
       app:
-        description: 'App to deploy (chesspark, chessCoordinatesTrainer, chessColate, or all)'
+        description: 'App to deploy (chessCoordinatesTrainer, chessColate, or all)'
         required: true
         default: 'all'
         type: choice
         options:
         - all
-        - chesspark
         - chessCoordinatesTrainer
         - chessColate
 
@@ -45,10 +44,6 @@ jobs:
         
     - name: 🏗️ Build applications
       run: |
-        if [ "${{ github.event.inputs.app }}" = "chesspark" ] || [ "${{ github.event.inputs.app }}" = "all" ]; then
-          npx nx build chesspark
-        fi
-        
         if [ "${{ github.event.inputs.app }}" = "chessCoordinatesTrainer" ] || [ "${{ github.event.inputs.app }}" = "all" ]; then
           npx nx build chessCoordinatesTrainer
         fi
@@ -59,9 +54,7 @@ jobs:
         
     - name: 🚀 Deploy to Firebase
       run: |
-        if [ "${{ github.event.inputs.app }}" = "chesspark" ]; then
-          firebase deploy --only hosting:chesspark
-        elif [ "${{ github.event.inputs.app }}" = "chessCoordinatesTrainer" ]; then
+        if [ "${{ github.event.inputs.app }}" = "chessCoordinatesTrainer" ]; then
           firebase deploy --only hosting:chessCoordinatesTrainer
         elif [ "${{ github.event.inputs.app }}" = "chessColate" ]; then
           firebase deploy --only hosting:chessColate
@@ -75,9 +68,6 @@ jobs:
       run: |
         echo "🚀 Deployment completed successfully!"
         echo "📱 Apps deployed:"
-        if [ "${{ github.event.inputs.app }}" = "chesspark" ] || [ "${{ github.event.inputs.app }}" = "all" ]; then
-          echo "  - chesspark: https://chesspark-app.web.app"
-        fi
         if [ "${{ github.event.inputs.app }}" = "chessCoordinatesTrainer" ] || [ "${{ github.event.inputs.app }}" = "all" ]; then
           echo "  - chessCoordinatesTrainer: https://chess-coordinates-trainer-app.web.app"
         fi
