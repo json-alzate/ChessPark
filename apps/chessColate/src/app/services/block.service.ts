@@ -182,6 +182,7 @@ export class BlockService {
           /* No Muestra soluciones / un mismo color
               - tema random = t 2.5 minutos / 15 segundos por puzzle
               - tema debilidades (elo - 200) = t 2.5 minutos / 30 segundos por puzzle
+              Limitado a los temas permitidos para el plan5 en el archivo plan-allowed-themes.config.ts
           */
           const allowedThemes5 = PLAN_ALLOWED_THEMES['plan5'];
           const color5 = Math.random() > 0.5 ? 'white' : 'black';
@@ -235,55 +236,32 @@ export class BlockService {
           ];
           resolve(block5);
           break;
-        case 'plan10':
-
-          /**  Muestra soluciones / un mismo color
-           * - tema random || debilidades = t 2 minutos / 15 segundos por puzzle (elo - 100)
-           * - apertura random || apertura débil = t 2 minutos / 30 segundos por puzzle
-           * - misma apertura + mismo tema  = t 3 minutos / 60 segundos por puzzle
-           * - mismo tema = t 1 minuto / 20 segundos por puzzle
-           * - misma apertura + finales = t 2 minutos / 60 segundos por puzzle
+        case 'plan10': {
+          /** Entrenamiento optimizado para engagement
+           * Total: 10 minutos (600 segundos) - 4 bloques
+           * Estructura: Calentamiento → Intensidad → Velocidad → Desafío
            */
           const allowedThemes10 = PLAN_ALLOWED_THEMES['plan10'];
           const color10 = Math.random() > 0.5 ? 'white' : 'black';
 
-          let theme10: string;
-          let opening10: string;
-          if (Math.random() < 0.5) { // tema random o debilidad
-            // tema random
-            theme10 = this.getRandomTheme(allowedThemes10);
-            if (!theme10) {
-              reject('No se pudo obtener el tema random theme10');
-            }
+          const themeWarmup10 = this.getRandomTheme(allowedThemes10);
+          const themeIntensity10 = profile?.elos?.plan10
+            ? this.getWeaknessInPlan(profile.elos.plan10, allowedThemes10)
+            : this.getRandomTheme(allowedThemes10);
+          const themeChallenge10 = this.getRandomTheme(allowedThemes10);
 
-          } else {
-            // tema debilidad
-            theme10 = profile?.elos?.plan10 ? this.getWeaknessInPlan(profile?.elos?.plan10, allowedThemes10) : this.getRandomTheme(allowedThemes10);
-
-          }
-          // se busca el elo del usuario según el string del theme10
-          const eloTheme10 = profile?.elos?.plan10 ? profile.elos.plan10[theme10] : undefined;
-          if (Math.random() < 0.5) { // apertura random o debilidad
-            // apertura random
-            opening10 = this.getRandomOpening();
-            if (!opening10) {
-              reject('No se pudo obtener la apertura random opening10');
-            }
-
-          } else {
-            // se elige la apertura con el elo mas bajo que el usuario tenga en el plan10,
-            opening10 = profile?.elos?.plan10Openings ? this.getWeaknessInPlanOpenings(profile?.elos?.plan10Openings)
-              : this.getRandomOpening();
-          }
-          // se busca el elo del usuario según el string de la opening10
-          const eloOpening10 = profile?.elos?.plan10Openings ? profile?.elos?.plan10Openings[opening10] : undefined;
+          const eloWarmup10 = profile?.elos?.plan10 ? profile.elos.plan10[themeWarmup10] : undefined;
+          const eloIntensity10 = profile?.elos?.plan10 ? profile.elos.plan10[themeIntensity10] : undefined;
+          const eloChallenge10 = profile?.elos?.plan10 ? profile.elos.plan10[themeChallenge10] : undefined;
+          const eloMateIn110 = profile?.elos?.plan10 ? profile.elos.plan10['mateIn1'] : undefined;
 
           const block10: Block[] = [
+            // 1. Calentamiento (2 min) - Entrada suave
             {
               time: 120,
               puzzlesCount: 0,
-              theme: theme10,
-              elo: eloTheme10 || defaultElo,
+              theme: themeWarmup10,
+              elo: eloWarmup10 || defaultElo,
               color: color10,
               puzzleTimes: {
                 warningOn: 12,
@@ -294,65 +272,50 @@ export class BlockService {
               nextPuzzleImmediately: true,
               showPuzzleSolution: true
             },
+            // 2. Intensidad (3 min) - Enfoque en debilidades
             {
-              time: 120,
+              time: 180,
               puzzlesCount: 0,
-              theme: '',
-              openingFamily: opening10,
-              elo: eloOpening10 || defaultElo,
+              theme: themeIntensity10,
+              description: this.translocoService.translate('PUZZLES.modes.weaknessWith') +
+                (color10 === 'white' ? whiteColorText : blackColorText),
+              elo: eloIntensity10 || defaultElo,
               color: color10,
               puzzleTimes: {
-                warningOn: 15,
-                dangerOn: 8,
+                warningOn: 18,
+                dangerOn: 9,
                 total: 30
               },
               puzzlesPlayed: [],
               nextPuzzleImmediately: true,
               showPuzzleSolution: true
             },
-            {
-              time: 180,
-              puzzlesCount: 0,
-              description: this.translocoService.translate('PUZZLES.modes.sameOpeningAndTheme'),
-              theme: theme10,
-              openingFamily: opening10,
-              elo: eloTheme10 || defaultElo,
-              color: color10,
-              puzzleTimes: {
-                warningOn: 30,
-                dangerOn: 15,
-                total: 60
-              },
-              puzzlesPlayed: [],
-              nextPuzzleImmediately: true,
-              showPuzzleSolution: true
-            },
-            {
-              time: 60,
-              puzzlesCount: 0,
-              theme: theme10,
-              description: this.translocoService.translate('PUZZLES.modes.sameThemeLessTime'),
-              elo: eloTheme10 || defaultElo,
-              color: color10,
-              puzzleTimes: {
-                warningOn: 12,
-                dangerOn: 6,
-                total: 15
-              },
-              puzzlesPlayed: [],
-              nextPuzzleImmediately: true,
-              showPuzzleSolution: true
-            },
+            // 3. Velocidad (2 min) - Adrenalina rápida
             {
               time: 120,
               puzzlesCount: 0,
-              theme: 'endgame',
-              openingFamily: opening10,
-              elo: eloOpening10 || defaultElo,
+              theme: 'mateIn1',
+              elo: eloMateIn110 || defaultElo,
               color: color10,
               puzzleTimes: {
-                warningOn: 30,
-                dangerOn: 15,
+                warningOn: 6,
+                dangerOn: 3,
+                total: 10
+              },
+              puzzlesPlayed: [],
+              nextPuzzleImmediately: true,
+              showPuzzleSolution: true
+            },
+            // 4. Desafío (3 min) - Satisfacción final
+            {
+              time: 180,
+              puzzlesCount: 0,
+              theme: themeChallenge10,
+              elo: eloChallenge10 || defaultElo,
+              color: color10,
+              puzzleTimes: {
+                warningOn: 40,
+                dangerOn: 20,
                 total: 60
               },
               puzzlesPlayed: [],
@@ -363,104 +326,62 @@ export class BlockService {
 
           resolve(block10);
           break;
-        case 'plan20':
-          /** Muestra soluciones / cambio de color
-           * -  debilidades = t 3 minutos / 40 segundos por puzzle (elo - 500)
-           * -  tema random = t 5 minutos / 3 minutos por puzzle
-           * -  mate en 1 = t 2 minutos / 10 segundos por puzzle
-           * -  mismo tema random = t 2 minutos / 50 segundos por puzzle (elo - 300)
-           * -  mismo tema random = t 2 minuto / 50 segundos por puzzle (elo + 200)
-           * - mismo tema random = t 1 minuto / 15 segundos por puzzle (elo - 800)
-           *    ||  mismo tema random a ciegas 10 segundos = t 1 minuto / 60 segundos por puzzle
-           * - finales = t 3 minutos / 60 segundos por puzzle
-           * - mate 3 = t 2 minutos / 60 segundos por puzzle
-           * */
-
+        }
+        case 'plan20': {
+          /** Entrenamiento optimizado para engagement
+           * Total: 20 minutos (1200 segundos) - 5 bloques
+           * Estructura: Calentamiento → Intensidad → Velocidad → Pico → Desafío → Enfriamiento
+           */
           const allowedThemes20 = PLAN_ALLOWED_THEMES['plan20'];
-          const theme20Random = this.getRandomTheme(allowedThemes20);
-          const themeWeakness20 = profile?.elos?.plan20 ? this.getWeaknessInPlan(profile?.elos?.plan20, allowedThemes20) : this.getRandomTheme(allowedThemes20);
-          const eloThemeWeakness20 = profile?.elos?.plan20 ? profile?.elos?.plan20[themeWeakness20] : undefined;
-          const eloTheme20Random = profile?.elos?.plan20 ? profile?.elos?.plan20[theme20Random] : undefined;
-          const eloMateIn120 = profile?.elos?.plan20 ? profile?.elos?.plan20['mateIn1'] : undefined;
-          const eloEndgame20 = profile?.elos?.plan20 ? profile?.elos?.plan20['endgame'] : undefined;
-          const eloMateIn320 = profile?.elos?.plan20 ? profile?.elos?.plan20['mateIn3'] : undefined;
+          const themeWarmup20 = this.getRandomTheme(allowedThemes20);
+          const themeIntensity20 = profile?.elos?.plan20
+            ? this.getWeaknessInPlan(profile.elos.plan20, allowedThemes20)
+            : this.getRandomTheme(allowedThemes20);
+          const themePeak20 = this.getRandomTheme(allowedThemes20);
+          const themeChallenge20 = this.getRandomTheme(allowedThemes20);
 
-          let randomBlockOrBlind: Block;
-
-          if (Math.random() < 0.5 ? true : false) {
-            // tema a ciegas
-            randomBlockOrBlind = {
-              time: 120,
-              puzzlesCount: 0,
-              theme: theme20Random,
-              description: this.translocoService.translate('PUZZLES.modes.sameRandomTheme'),
-              elo: eloTheme20Random || defaultElo,
-              color: 'random',
-              puzzleTimes: {
-                warningOn: 8,
-                dangerOn: 5,
-                total: 15
-              },
-              puzzlesPlayed: [],
-              nextPuzzleImmediately: true,
-              showPuzzleSolution: true
-            };
-
-          } else {
-            randomBlockOrBlind = {
-              time: 120,
-              puzzlesCount: 0,
-              theme: theme20Random,
-              description: this.translocoService.translate('PUZZLES.modes.sameOpeningRandomThemeBlind'),
-              elo: eloTheme20Random || defaultElo,
-              color: 'random',
-              puzzleTimes: {
-                warningOn: 24,
-                dangerOn: 12,
-                total: 60
-              },
-              goshPuzzle: true,
-              goshPuzzleTime: 10,
-              puzzlesPlayed: [],
-              nextPuzzleImmediately: true,
-              showPuzzleSolution: true
-            };
-          }
-
+          const eloWarmup20 = profile?.elos?.plan20 ? profile.elos.plan20[themeWarmup20] : undefined;
+          const eloIntensity20 = profile?.elos?.plan20 ? profile.elos.plan20[themeIntensity20] : undefined;
+          const eloPeak20 = profile?.elos?.plan20 ? profile.elos.plan20[themePeak20] : undefined;
+          const eloChallenge20 = profile?.elos?.plan20 ? profile.elos.plan20[themeChallenge20] : undefined;
+          const eloMateIn120 = profile?.elos?.plan20 ? profile.elos.plan20['mateIn1'] : undefined;
+          const eloEndgame20 = profile?.elos?.plan20 ? profile.elos.plan20['endgame'] : undefined;
 
           const block20: Block[] = [
+            // 1. Calentamiento (3 min) - Entrada suave
+            {
+              time: 180,
+              puzzlesCount: 0,
+              theme: themeWarmup20,
+              elo: eloWarmup20 || defaultElo,
+              color: 'random',
+              puzzleTimes: {
+                warningOn: 15,
+                dangerOn: 8,
+                total: 25
+              },
+              puzzlesPlayed: [],
+              nextPuzzleImmediately: true,
+              showPuzzleSolution: true
+            },
+            // 2. Intensidad (4 min) - Enfoque en debilidades
             {
               time: 240,
               puzzlesCount: 0,
-              theme: themeWeakness20,
+              theme: themeIntensity20,
               description: this.translocoService.translate('PUZZLES.modes.weaknessWithAnyColor'),
-              elo: eloThemeWeakness20 || defaultElo,
+              elo: eloIntensity20 || defaultElo,
               color: 'random',
               puzzleTimes: {
-                warningOn: 24,
-                dangerOn: 12,
-                total: 40
+                warningOn: 18,
+                dangerOn: 9,
+                total: 30
               },
               puzzlesPlayed: [],
               nextPuzzleImmediately: true,
               showPuzzleSolution: true
             },
-            {
-              time: 300,
-              puzzlesCount: 0,
-              theme: theme20Random,
-              description: this.translocoService.translate('PUZZLES.modes.randomThemeWithAnyColor'),
-              elo: eloTheme20Random || defaultElo,
-              color: 'random',
-              puzzleTimes: {
-                warningOn: 50,
-                dangerOn: 20,
-                total: 240
-              },
-              puzzlesPlayed: [],
-              nextPuzzleImmediately: true,
-              showPuzzleSolution: true
-            },
+            // 3. Velocidad (2 min) - Adrenalina rápida
             {
               time: 120,
               puzzlesCount: 0,
@@ -476,23 +397,57 @@ export class BlockService {
               nextPuzzleImmediately: true,
               showPuzzleSolution: true
             },
+            // 4. Pico (5 min) - Satisfacción máxima
             {
-              time: 120,
+              time: 300,
               puzzlesCount: 0,
-              theme: theme20Random,
-              description: this.translocoService.translate('PUZZLES.modes.sameThemeLessTime'),
-              elo: eloTheme20Random || defaultElo,
+              theme: themePeak20,
+              elo: eloPeak20 || defaultElo,
               color: 'random',
               puzzleTimes: {
-                warningOn: 24,
-                dangerOn: 12,
-                total: 50
+                warningOn: 40,
+                dangerOn: 20,
+                total: 60
               },
               puzzlesPlayed: [],
               nextPuzzleImmediately: true,
               showPuzzleSolution: true
             },
-            randomBlockOrBlind,
+            // 5. Desafío (3 min) - Emoción final (50% ciegas, 50% rápido)
+            Math.random() < 0.5 ? {
+              time: 180,
+              puzzlesCount: 0,
+              theme: themeChallenge20,
+              description: this.translocoService.translate('PUZZLES.modes.sameOpeningRandomThemeBlind'),
+              elo: eloChallenge20 || defaultElo,
+              color: 'random',
+              puzzleTimes: {
+                warningOn: 10,
+                dangerOn: 5,
+                total: 15
+              },
+              goshPuzzle: true,
+              goshPuzzleTime: 10,
+              puzzlesPlayed: [],
+              nextPuzzleImmediately: true,
+              showPuzzleSolution: true
+            } : {
+              time: 180,
+              puzzlesCount: 0,
+              theme: themeChallenge20,
+              description: this.translocoService.translate('PUZZLES.modes.sameRandomTheme'),
+              elo: eloChallenge20 || defaultElo,
+              color: 'random',
+              puzzleTimes: {
+                warningOn: 12,
+                dangerOn: 6,
+                total: 20
+              },
+              puzzlesPlayed: [],
+              nextPuzzleImmediately: true,
+              showPuzzleSolution: true
+            },
+            // 6. Enfriamiento (3 min) - Cierre relajado
             {
               time: 180,
               puzzlesCount: 0,
@@ -500,68 +455,68 @@ export class BlockService {
               elo: eloEndgame20 || defaultElo,
               color: 'random',
               puzzleTimes: {
-                warningOn: 24,
-                dangerOn: 12,
-                total: 60
+                warningOn: 30,
+                dangerOn: 15,
+                total: 50
               },
               puzzlesPlayed: [],
               nextPuzzleImmediately: true,
               showPuzzleSolution: true
-            },
-            {
-              time: 120,
-              puzzlesCount: 0,
-              theme: 'mateIn3',
-              elo: eloMateIn320 || defaultElo,
-              color: 'random',
-              puzzleTimes: {
-                warningOn: 24,
-                dangerOn: 12,
-                total: 60
-              },
-              puzzlesPlayed: [],
-              nextPuzzleImmediately: true,
-              showPuzzleSolution: true
-            },
+            }
           ];
 
           resolve(block20);
-
-
           break;
-        case 'plan30':
-          /** Muestra soluciones / un mismo color
-           * -  debilidades = t 5 minutos / 60 segundos por puzzle (elo - 200)
-           * -   apertura random = t 2 minutos / 30 segundos por puzzle
-           * -  tema random = t 5 minutos / 3 minutos por puzzle
-           * -  mismo tema random  a ciegas 15 segundos = t 5 minutos / 50 segundos por puzzle (elo - 300)
-           * -  finales = t 5 minutos / 60 segundos por puzzle
-           * - finales de peones = t 5 minutos / 3 minutos por puzzle
-           * - mate 4 o mas = t 2 minutos / 60 segundos por puzzle
-           * */
-
+        }
+        case 'plan30': {
+          /** Entrenamiento optimizado para engagement
+           * Total: 30 minutos (1800 segundos) - 5 bloques
+           * Estructura: Calentamiento → Intensidad → Velocidad → Pico → Desafío → Enfriamiento
+           */
           const allowedThemes30 = PLAN_ALLOWED_THEMES['plan30'];
           const color30 = Math.random() > 0.5 ? 'white' : 'black';
-          const themeWeakness30 = profile?.elos?.plan30 ? this.getWeaknessInPlan(profile?.elos?.plan30, allowedThemes30) : this.getRandomTheme(allowedThemes30);
 
+          const themeWarmup30 = this.getRandomTheme(allowedThemes30);
+          const themeIntensity30 = profile?.elos?.plan30
+            ? this.getWeaknessInPlan(profile.elos.plan30, allowedThemes30)
+            : this.getRandomTheme(allowedThemes30);
+          const themePeak30 = this.getRandomTheme(allowedThemes30);
+          const themeChallenge30 = this.getRandomTheme(allowedThemes30);
+          const themeSpeed30 = this.getRandomTheme(allowedThemes30);
 
-          const eloThemeWeakness30 = profile?.elos?.plan30 ? profile?.elos?.plan30[themeWeakness30] : undefined;
-          const theme30Random = this.getRandomTheme(allowedThemes30);
-          const eloTheme30Random = profile?.elos?.plan30 ? profile?.elos?.plan30[theme30Random] : undefined;
-          const opening30Random = this.getRandomOpening();
-          const eloOpening30Random = profile?.elos?.plan30Openings ? profile?.elos?.plan30Openings[opening30Random] : undefined;
-          const eloEndgame30 = profile?.elos?.plan30 ? profile?.elos?.plan30['endgame'] : undefined;
-          const eloPawnEndgame30 = profile?.elos?.plan30 ? profile?.elos?.plan30['pawnEndgame'] : undefined;
-          const eloMateIn430 = profile?.elos?.plan30 ? profile?.elos?.plan30['mateIn4'] : undefined;
+          const eloWarmup30 = profile?.elos?.plan30 ? profile.elos.plan30[themeWarmup30] : undefined;
+          const eloIntensity30 = profile?.elos?.plan30 ? profile.elos.plan30[themeIntensity30] : undefined;
+          const eloPeak30 = profile?.elos?.plan30 ? profile.elos.plan30[themePeak30] : undefined;
+          const eloChallenge30 = profile?.elos?.plan30 ? profile.elos.plan30[themeChallenge30] : undefined;
+          const eloSpeed30 = profile?.elos?.plan30 ? profile.elos.plan30[themeSpeed30] : undefined;
+          const eloEndgame30 = profile?.elos?.plan30 ? profile.elos.plan30['endgame'] : undefined;
+          const eloPawnEndgame30 = profile?.elos?.plan30 ? profile.elos.plan30['pawnEndgame'] : undefined;
 
           const block30: Block[] = [
+            // 1. Calentamiento (4 min) - Entrada suave
             {
-              time: 300,
+              time: 240,
               puzzlesCount: 0,
-              theme: themeWeakness30,
-              // eslint-disable-next-line max-len
-              description: this.translocoService.translate('PUZZLES.modes.weaknessWith') + (color30 === 'white' ? whiteColorText : blackColorText),
-              elo: eloThemeWeakness30 || defaultElo,
+              theme: themeWarmup30,
+              elo: eloWarmup30 || defaultElo,
+              color: color30,
+              puzzleTimes: {
+                warningOn: 18,
+                dangerOn: 9,
+                total: 30
+              },
+              puzzlesPlayed: [],
+              nextPuzzleImmediately: true,
+              showPuzzleSolution: true
+            },
+            // 2. Intensidad (6 min) - Enfoque en debilidades
+            {
+              time: 360,
+              puzzlesCount: 0,
+              theme: themeIntensity30,
+              description: this.translocoService.translate('PUZZLES.modes.weaknessWith') +
+                (color30 === 'white' ? whiteColorText : blackColorText),
+              elo: eloIntensity30 || defaultElo,
               color: color30,
               puzzleTimes: {
                 warningOn: 40,
@@ -572,50 +527,50 @@ export class BlockService {
               nextPuzzleImmediately: true,
               showPuzzleSolution: true
             },
+            // 3. Velocidad (3 min) - Adrenalina rápida (tema rápido permitido)
             {
-              time: 120,
+              time: 180,
               puzzlesCount: 0,
-              theme: '',
-              description: this.translocoService.translate('PUZZLES.modes.randomOpening'),
-              openingFamily: opening30Random,
-              elo: eloOpening30Random || defaultElo,
+              theme: themeSpeed30,
+              elo: eloSpeed30 || defaultElo,
               color: color30,
               puzzleTimes: {
-                warningOn: 15,
-                dangerOn: 8,
-                total: 30
+                warningOn: 12,
+                dangerOn: 6,
+                total: 20
               },
               puzzlesPlayed: [],
               nextPuzzleImmediately: true,
               showPuzzleSolution: true
             },
+            // 4. Pico (8 min) - Satisfacción máxima
             {
-              time: 300,
+              time: 480,
               puzzlesCount: 0,
-              theme: theme30Random,
-              description: this.translocoService.translate('PUZZLES.modes.randomTheme'),
-              elo: eloTheme30Random || defaultElo,
+              theme: themePeak30,
+              elo: eloPeak30 || defaultElo,
               color: color30,
               puzzleTimes: {
-                warningOn: 50,
-                dangerOn: 20,
-                total: 180
+                warningOn: 60,
+                dangerOn: 30,
+                total: 90
               },
               puzzlesPlayed: [],
               nextPuzzleImmediately: true,
               showPuzzleSolution: true
             },
+            // 5. Desafío (4 min) - Emoción máxima (ciegas)
             {
-              time: 300,
+              time: 240,
               puzzlesCount: 0,
-              theme: theme30Random,
+              theme: themeChallenge30,
               description: this.translocoService.translate('PUZZLES.modes.sameOpeningRandomThemeBlind'),
-              elo: eloTheme30Random || defaultElo,
+              elo: eloChallenge30 || defaultElo,
               color: color30,
               puzzleTimes: {
-                warningOn: 20,
-                dangerOn: 10,
-                total: 50
+                warningOn: 10,
+                dangerOn: 5,
+                total: 15
               },
               goshPuzzle: true,
               goshPuzzleTime: 15,
@@ -623,58 +578,27 @@ export class BlockService {
               nextPuzzleImmediately: true,
               showPuzzleSolution: true
             },
+            // 6. Enfriamiento (5 min) - Cierre relajado
             {
               time: 300,
               puzzlesCount: 0,
-              theme: 'endgame',
-              elo: eloEndgame30 || defaultElo,
+              theme: Math.random() < 0.5 ? 'endgame' : 'pawnEndgame',
+              elo: (Math.random() < 0.5 ? eloEndgame30 : eloPawnEndgame30) || defaultElo,
               color: color30,
               puzzleTimes: {
-                warningOn: 20,
-                dangerOn: 10,
+                warningOn: 40,
+                dangerOn: 20,
                 total: 60
               },
               puzzlesPlayed: [],
               nextPuzzleImmediately: true,
               showPuzzleSolution: true
-            },
-            {
-              time: 300,
-              puzzlesCount: 0,
-              theme: 'pawnEndgame',
-              elo: eloPawnEndgame30 || defaultElo,
-              color: color30,
-              puzzleTimes: {
-                warningOn: 20,
-                dangerOn: 10,
-                total: 60
-              },
-              puzzlesPlayed: [],
-              nextPuzzleImmediately: true,
-              showPuzzleSolution: true
-            },
-            {
-              time: 180,
-              puzzlesCount: 0,
-              theme: 'mateIn4',
-              elo: eloMateIn430 || defaultElo,
-              color: color30,
-              puzzleTimes: {
-                warningOn: 20,
-                dangerOn: 10,
-                total: 60
-              },
-              puzzlesPlayed: [],
-              nextPuzzleImmediately: true,
-              showPuzzleSolution: true
-            },
-
+            }
           ];
 
           resolve(block30);
-
-
           break;
+        }
         case 'backToCalm':
           /**
            * Muestra soluciones / un mismo color

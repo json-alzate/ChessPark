@@ -231,6 +231,7 @@ export class TrainingComponent implements OnInit, OnDestroy {
 
     modal.onDidDismiss().then((data) => {
       this.isProcessingBlock = false;
+      this.forceStopTimerInPuzzleBoard = false;
       this.selectPuzzleToPlay();
       if (this.plan.blocks[this.currentIndexBlock].time !== -1) {
         this.showBlockTimer = true;
@@ -239,7 +240,6 @@ export class TrainingComponent implements OnInit, OnDestroy {
         this.showBlockTimer = false;
         this.stopBlockTimer();
       }
-      this.forceStopTimerInPuzzleBoard = false;
     });
 
 
@@ -296,11 +296,8 @@ export class TrainingComponent implements OnInit, OnDestroy {
 
 
     this.puzzleToPlay = puzzle;
-    if (puzzle.goshPuzzleTime && !this.isGoshHelperShow) {
-      this.isGoshHelperShow = true;
-    } else {
-      this.isGoshHelperShow = false;
-    }
+    // Siempre verificar si el puzzle es a la ciegas para mostrar el mensaje
+    this.isGoshHelperShow = !!(puzzle.goshPuzzleTime && puzzle.goshPuzzleTime > 0);
   }
 
   initTimeToEndBlock(timeBlock: number) {
@@ -466,6 +463,7 @@ export class TrainingComponent implements OnInit, OnDestroy {
     
     modal.onDidDismiss().then((data) => {
       this.forceStopTimerInPuzzleBoard = false;
+      // Asegurar que el mensaje de ajedrez a la ciegas se muestre si aplica
       this.selectPuzzleToPlay();
       if (this.plan.blocks[this.currentIndexBlock].time !== -1) {
         this.resumeBlockTimer();

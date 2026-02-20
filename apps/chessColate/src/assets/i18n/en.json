@@ -133,8 +133,8 @@
       "weaknessDescription": "The topic with the least elo available in the routine"
     },
     "help": {
-      "gosh": "This puzzle is blindfold, the pieces will become transparent when",
-      "gosh2": "reaches",
+      "gosh": "This puzzle is blindfold. The pieces will disappear when the counter reaches zero (in",
+      "gosh2": "). You must solve the puzzle without seeing the pieces.",
       "yourTurn": "Your turn",
       "findBestMoveWhite": "Find the best move for White.",
       "findBestMoveBlack": "Find the best move for Black."

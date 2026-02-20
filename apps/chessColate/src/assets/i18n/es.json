@@ -133,8 +133,8 @@
       "weaknessDescription": "El tema con el menor elo disponible en la rutina"
     },
     "help": {
-      "gosh": "Este ejercicio es a la ciegas, las piezas se harán transparentes cuando el",
-      "gosh2": "llegue a",
+      "gosh": "Este ejercicio es a la ciegas. Las piezas desaparecerán cuando el contador llegue a cero (en",
+      "gosh2": "). Deberás resolver el puzzle sin ver las piezas.",
       "yourTurn": "Tu turno",
       "findBestMoveWhite": "Encuentra el mejor movimiento para las blancas.",
       "findBestMoveBlack": "Encuentra el mejor movimiento para las negras."

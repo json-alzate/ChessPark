@@ -115,9 +115,11 @@
           </div>
         </div>
         @if (isGoshHelperShow) {
-        <ion-note class="flex items-center gap-2 text-base-content/80 text-sm">
-          {{ 'PUZZLES.help.gosh' | transloco}} <ion-icon name="eye-outline" class="h-4 w-4"></ion-icon>
-          {{ 'PUZZLES.help.gosh2' | transloco}} {{ (puzzleToPlay?.goshPuzzleTime ?? 0) | secondsToMinutesSeconds }}
+        <ion-note class="flex items-start gap-2 text-base-content/80 text-sm bg-warning/10 p-3 rounded-lg border border-warning/20">
+          <ion-icon name="eye-outline" class="h-5 w-5 mt-0.5 flex-shrink-0"></ion-icon>
+          <div class="flex flex-col gap-1">
+            <span class="font-semibold">{{ 'PUZZLES.help.gosh' | transloco}} <span class="font-mono font-normal">{{ (puzzleToPlay?.goshPuzzleTime ?? 0) | secondsToMinutesSeconds }}</span> {{ 'PUZZLES.help.gosh2' | transloco}}</span>
+          </div>
         </ion-note>
         }
       </ion-col>
