@@ -34,17 +34,24 @@ export class CustomPlansService {
 
   /**
    * Guarda un nuevo plan personalizado en Firestore y actualiza el estado.
+   * Sincroniza con public-plans si el plan es público.
+   * TODO: no llamar directamente a firestore, pasar por el facade o store.
    */
   async save(plan: Plan): Promise<void> {
     await this.firestoreService.saveCustomPlan(plan);
     this.customPlansFacade.addOneCustomPlan(plan);
+    // Sincronizar con public-plans si es público
+    await this.firestoreService.syncPlanToPublic(plan);
   }
 
   /**
    * Actualiza un plan personalizado existente en Firestore y actualiza el estado.
+   * Sincroniza con public-plans si el plan es público.
    */
   async update(plan: Plan): Promise<void> {
     await this.firestoreService.updateCustomPlan(plan);
     this.customPlansFacade.updateCustomPlanInState(plan);
+    // Sincronizar con public-plans (maneja isPublic true/false)
+    await this.firestoreService.syncPlanToPublic(plan);
   }
 }

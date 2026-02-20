@@ -167,22 +167,31 @@
         </ng-template>
 
         <div class="flex flex-col gap-2 max-w-md hidden md:flex">
-          <button
-            type="button"
-            class="btn btn-primary"
-            [disabled]="blocks.length === 0 || nameControl.invalid || saving"
-            (click)="saveAndPlay()"
-          >
-            {{ 'CUSTOM_TRAINING.actions.saveAndPlay' | transloco }}
-          </button>
           @if (isEditMode) {
+            <button
+              type="button"
+              class="btn btn-primary"
+              [disabled]="blocks.length === 0 || nameControl.invalid || saving"
+              (click)="saveAndPlay()"
+            >
+              {{ 'CUSTOM_TRAINING.actions.editAndPlay' | transloco }}
+            </button>
             <button
               type="button"
               class="btn btn-outline"
               [disabled]="blocks.length === 0 || nameControl.invalid || saving"
               (click)="save()"
             >
-              {{ 'CUSTOM_PLANS.saveOnly' | transloco }}
+              {{ 'CUSTOM_TRAINING.actions.editOnly' | transloco }}
+            </button>
+          } @else {
+            <button
+              type="button"
+              class="btn btn-primary"
+              [disabled]="blocks.length === 0 || nameControl.invalid || saving"
+              (click)="saveAndPlay()"
+            >
+              {{ 'CUSTOM_TRAINING.actions.saveAndPlay' | transloco }}
             </button>
           }
         </div>
@@ -194,14 +203,35 @@
 <ion-footer class="ion-no-border md:hidden">
   <ion-toolbar>
     <div class="container mx-auto px-4 py-2">
-      <button
-        type="button"
-        class="btn btn-primary w-full"
-        [disabled]="blocks.length === 0 || nameControl.invalid || saving"
-        (click)="saveAndPlay()"
-      >
-        {{ 'CUSTOM_TRAINING.actions.saveAndPlay' | transloco }}
-      </button>
+      @if (isEditMode) {
+        <div class="flex flex-col gap-2">
+          <button
+            type="button"
+            class="btn btn-primary w-full"
+            [disabled]="blocks.length === 0 || nameControl.invalid || saving"
+            (click)="saveAndPlay()"
+          >
+            {{ 'CUSTOM_TRAINING.actions.editAndPlay' | transloco }}
+          </button>
+          <button
+            type="button"
+            class="btn btn-outline w-full"
+            [disabled]="blocks.length === 0 || nameControl.invalid || saving"
+            (click)="save()"
+          >
+            {{ 'CUSTOM_TRAINING.actions.editOnly' | transloco }}
+          </button>
+        </div>
+      } @else {
+        <button
+          type="button"
+          class="btn btn-primary w-full"
+          [disabled]="blocks.length === 0 || nameControl.invalid || saving"
+          (click)="saveAndPlay()"
+        >
+          {{ 'CUSTOM_TRAINING.actions.saveAndPlay' | transloco }}
+        </button>
+      }
     </div>
   </ion-toolbar>
 </ion-footer>

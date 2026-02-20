@@ -17,7 +17,7 @@
     <div class="p-2">
       <div class="flex flex-row gap-1 mt-2 mb-2">
         <a class="btn btn-sm btn-soft btn-info" [routerLink]="['/puzzles/custom-plans']">{{ 'CUSTOM_PLANS.listTitle' | transloco }}</a>
-        <button class="btn btn-sm btn-soft btn-info flex-1 min-w-0" type="button">Rutinas públicas</button>
+        <a class="btn btn-sm btn-soft btn-info flex-1 min-w-0" [routerLink]="['/puzzles/public-plans']">{{ 'PUBLIC_PLANS.title' | transloco }}</a>
       </div>
     </div>
 

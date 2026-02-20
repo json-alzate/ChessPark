@@ -181,6 +181,8 @@
     "actions": {
       "addBlock": "Add block",
       "removeBlock": "Remove block",
+      "editAndPlay": "Edit and play",
+      "editOnly": "Edit only",
       "saveAndPlay": "Save and play",
       "cancel": "Cancel",
       "login": "Log in"
@@ -229,7 +231,9 @@
     "puzzlesPlayed": "Puzzles played",
     "statistics": "Statistics of the routine",
     "playPlan": "Go to home",
-    "loadMore": "Load more"
+    "loadMore": "Load more",
+    "like": "Like",
+    "unlike": "Unlike"
   },
   "PLAN_CHART": {
     "themes": "Themes",
@@ -256,6 +260,37 @@
     "elo": "ELO",
     "timesPlayed": "Times played",
     "authRequired": "Log in to create and manage your custom routines"
+  },
+  "PUBLIC_PLANS": {
+    "title": "Public routines",
+    "tabs": {
+      "public": "Public",
+      "myInteractions": "My interactions"
+    },
+    "filters": {
+      "recent": "Most recent",
+      "mostPlayed": "Most played",
+      "mostLiked": "Most liked"
+    },
+    "interactions": {
+      "liked": "Liked",
+      "played": "Played",
+      "saved": "Saved",
+      "empty": "You have no interactions in this category"
+    },
+    "empty": "No public routines available",
+    "untitled": "Untitled",
+    "viewBlocks": "View blocks",
+    "block": "Block",
+    "blockInfo": "Theme",
+    "elo": "ELO",
+    "stats": {
+      "timesPlayed": "Times played",
+      "likes": "Likes"
+    },
+    "play": "Play",
+    "loadingMore": "Loading more...",
+    "cannotLikeOwn": "You cannot like your own routine"
   },
   "COORDINATES_PUZZLES": {
     "coordinates": "Coordinates",

@@ -181,6 +181,8 @@
     "actions": {
       "addBlock": "Añadir bloque",
       "removeBlock": "Quitar bloque",
+      "editAndPlay": "Editar y jugar",
+      "editOnly": "Solo editar",
       "saveAndPlay": "Guardar y jugar",
       "cancel": "Cancelar",
       "login": "Iniciar sesión"
@@ -229,7 +231,9 @@
     "puzzlesPlayed": "Ejercicios jugados",
     "statistics": "Estadísticas de la rutina",
     "playPlan": "Ir al inicio",
-    "loadMore": "Cargar más"
+    "loadMore": "Cargar más",
+    "like": "Me gusta",
+    "unlike": "Quitar me gusta"
   },
   "PLAN_CHART": {
     "themes": "Temas",
@@ -256,6 +260,37 @@
     "elo": "ELO",
     "timesPlayed": "Veces jugado",
     "authRequired": "Inicia sesión para crear y gestionar tus rutinas personalizadas"
+  },
+  "PUBLIC_PLANS": {
+    "title": "Rutinas públicas",
+    "tabs": {
+      "public": "Públicos",
+      "myInteractions": "Mis interacciones"
+    },
+    "filters": {
+      "recent": "Más recientes",
+      "mostPlayed": "Más jugados",
+      "mostLiked": "Más me gusta"
+    },
+    "interactions": {
+      "liked": "Me gusta",
+      "played": "Jugados",
+      "saved": "Guardados",
+      "empty": "No tienes interacciones en esta categoría"
+    },
+    "empty": "No hay rutinas públicas disponibles",
+    "untitled": "Sin título",
+    "viewBlocks": "Ver bloques",
+    "block": "Bloque",
+    "blockInfo": "Tema",
+    "elo": "ELO",
+    "stats": {
+      "timesPlayed": "Veces jugado",
+      "likes": "Me gusta"
+    },
+    "play": "Jugar",
+    "loadingMore": "Cargando más...",
+    "cannotLikeOwn": "No puedes dar me gusta a tu propia rutina"
   },
   "COORDINATES_PUZZLES": {
     "coordinates": "Coordenadas",

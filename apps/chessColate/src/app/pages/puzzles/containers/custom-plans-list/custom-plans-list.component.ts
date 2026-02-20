@@ -7,20 +7,22 @@ import { Subject } from 'rxjs';
 
 import { IonContent, IonFab, IonFabButton, IonIcon, LoadingController, ModalController } from '@ionic/angular/standalone';
 
-import { TranslocoPipe } from '@jsverse/transloco';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
-import { Plan } from '@cpark/models';
+import { Plan, Block } from '@cpark/models';
 
 import { CustomPlansService } from '@services/custom-plans.service';
 import { PlanService } from '@services/plan.service';
 import { ProfileService } from '@services/profile.service';
+import { AppService } from '@services/app.service';
 import { PlanFacadeService, PlansElosFacadeService, CustomPlansFacadeService, getProfile, getIsInitialized, AppState, getCountAllCustomPlans } from '@cpark/state';
+import { SecondsToMinutesSecondsPipe } from '@chesspark/common-utils';
 
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 import { LoginComponent } from '@shared/components/login/login.component';
 
 import { addIcons } from 'ionicons';
-import { add, playOutline, createOutline } from 'ionicons/icons';
+import { add, playOutline, createOutline, shuffle, trendingDown, infiniteOutline, arrowBackOutline, homeOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-custom-plans-list',
@@ -33,6 +35,7 @@ import { add, playOutline, createOutline } from 'ionicons/icons';
     IonFabButton,
     IonIcon,
     NavbarComponent,
+    SecondsToMinutesSecondsPipe,
   ],
   templateUrl: './custom-plans-list.component.html',
   styleUrl: './custom-plans-list.component.scss',
@@ -42,6 +45,8 @@ export class CustomPlansListComponent implements OnInit, OnDestroy {
   private customPlansFacade = inject(CustomPlansFacadeService);
   private planService = inject(PlanService);
   private profileService = inject(ProfileService);
+  private appService = inject(AppService);
+  private translocoService = inject(TranslocoService);
   private planFacade = inject(PlanFacadeService);
   private plansElosFacade = inject(PlansElosFacadeService);
   private router = inject(Router);
@@ -62,7 +67,7 @@ export class CustomPlansListComponent implements OnInit, OnDestroy {
   }
 
   constructor() {
-    addIcons({ add, playOutline, createOutline });
+    addIcons({ add, playOutline, createOutline, shuffle, trendingDown, infiniteOutline, arrowBackOutline, homeOutline });
   }
 
   ngOnInit(): void {
@@ -101,6 +106,10 @@ export class CustomPlansListComponent implements OnInit, OnDestroy {
 
   goToCreate(): void {
     this.router.navigate(['/puzzles/custom-plans/create']);
+  }
+
+  goToHome(): void {
+    this.router.navigate(['/home']);
   }
 
   goToEdit(plan: Plan): void {
@@ -173,5 +182,49 @@ export class CustomPlansListComponent implements OnInit, OnDestroy {
     });
     await modal.present();
     await modal.onDidDismiss();
+  }
+
+  getThemeName(theme: string): string {
+    if (theme === 'all') {
+      return this.translocoService.translate('NEW_BLOCK.theme.random') || 'Aleatorio';
+    }
+    if (theme === 'weakness') {
+      return this.translocoService.translate('NEW_BLOCK.theme.weakness') || 'Debilidad';
+    }
+    return this.appService.getNameThemePuzzleByValue(theme) || theme;
+  }
+
+  getThemeIcon(theme: string): { type: 'icon' | 'image'; value: string } | null {
+    if (theme === 'all') {
+      return { type: 'icon', value: 'shuffle' };
+    }
+    if (theme === 'weakness') {
+      return { type: 'icon', value: 'trending-down' };
+    }
+    const themeData = this.appService.getThemePuzzleByValue(theme);
+    if (themeData?.img) {
+      return { type: 'image', value: `/assets/images/puzzle-themes/${themeData.img}` };
+    }
+    return null;
+  }
+
+  getBlockConfig(block: Block): 
+    | { type: 'time'; time: number }
+    | { type: 'puzzles'; puzzles: number }
+    | { type: 'both'; time: number; puzzles: number }
+    | { type: 'infinite' } {
+    const hasTime = block.time > 0;
+    const hasPuzzles = block.puzzlesCount > 0;
+
+    if (hasTime && hasPuzzles) {
+      return { type: 'both', time: block.time, puzzles: block.puzzlesCount };
+    }
+    if (hasTime) {
+      return { type: 'time', time: block.time };
+    }
+    if (hasPuzzles) {
+      return { type: 'puzzles', puzzles: block.puzzlesCount };
+    }
+    return { type: 'infinite' };
   }
 }
