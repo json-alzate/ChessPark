@@ -13,4 +13,5 @@ export interface Plan {
     planType: PlanTypes;
     isFinished?: boolean;
     uidCustomPlan?: string; // en caso de que el plan sea creado por el usuario , se utiliza para obtener los elos
-};
+    isPublic?: boolean; // si el plan es visible para otros usuarios
+}

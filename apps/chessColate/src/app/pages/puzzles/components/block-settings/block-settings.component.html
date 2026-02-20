@@ -1,0 +1,230 @@
+<ion-content>
+  <ion-toolbar>
+    <ion-title>{{ 'NEW_BLOCK.form.title' | transloco }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="close()">
+        <ion-icon slot="icon-only" name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <div class="ion-padding">
+    <form [formGroup]="form" (ngSubmit)="onSubmit($event)">
+      <ion-accordion-group>
+        <ion-accordion value="duration">
+          <ion-item slot="header" color="light">
+            <ion-label>{{ 'NEW_BLOCK.form.duration' | transloco }}</ion-label>
+            <div slot="end">
+              @if (timeField?.value || puzzlesCountField?.value) {
+                <span *ngIf="timeField?.value">{{ timeField?.value | secondsToMinutesSeconds }} <small><i>({{ 'NEW_BLOCK.fields.minSec' | transloco }})</i></small></span>
+                <span *ngIf="timeField?.value && puzzlesCountField?.value"> {{ 'NEW_BLOCK.form.or' | transloco }}</span>
+                <span *ngIf="puzzlesCountField?.value">{{ puzzlesCountField?.value }} {{ 'NEW_BLOCK.fields.puzzles' | transloco }}</span>
+              } @else {
+                <ion-icon name="infinite-outline"></ion-icon>
+              }
+            </div>
+          </ion-item>
+          <div class="ion-padding" slot="content">
+            <ion-list>
+              <div class="range-container">
+                <div class="time">
+                  <div class="header">
+                    <div class="label">{{ 'NEW_BLOCK.fields.time' | transloco }}:</div>
+                    <div class="note">
+                      @if (timeField?.value === 0) {
+                        {{ 'NEW_BLOCK.fields.unlimited' | transloco }}
+                      } @else {
+                        {{ timeField?.value | secondsToMinutesSeconds }} <small><i>({{ 'NEW_BLOCK.fields.minSec' | transloco }})</i></small>
+                      }
+                    </div>
+                  </div>
+                  <div class="control">
+                    <ion-range formControlName="time" aria-label="Range time" [min]="0" [max]="1500" [step]="30"></ion-range>
+                  </div>
+                </div>
+                <div class="count">
+                  <div class="header">
+                    <div class="label">{{ 'NEW_BLOCK.fields.puzzlesCount' | transloco }}:</div>
+                    <div class="note">
+                      @if (puzzlesCountField?.value === 0) {
+                        {{ 'NEW_BLOCK.fields.unlimited' | transloco }}
+                      } @else {
+                        {{ puzzlesCountField?.value }} {{ 'NEW_BLOCK.fields.puzzles' | transloco }}
+                      }
+                    </div>
+                  </div>
+                  <div class="control">
+                    <ion-range formControlName="puzzlesCount" [step]="3" aria-label="Range count" [pin]="true" [ticks]="true" [snaps]="true" [min]="0" [max]="100"></ion-range>
+                  </div>
+                </div>
+              </div>
+            </ion-list>
+          </div>
+        </ion-accordion>
+
+        <ion-accordion value="puzzles">
+          <ion-item slot="header" color="light">
+            <ion-label>{{ 'NEW_BLOCK.fields.puzzles' | transloco }}</ion-label>
+          </ion-item>
+          <div class="ion-padding" slot="content">
+            <ion-list>
+              <div class="range-container">
+                <div class="time-puzzles">
+                  <div class="header">
+                    <div class="label">{{ 'NEW_BLOCK.fields.timeByPuzzle' | transloco }}:</div>
+                    <div class="note">{{ puzzleTimeField?.value | secondsToMinutesSeconds }} <small><i>({{ 'NEW_BLOCK.fields.minSec' | transloco }})</i></small></div>
+                  </div>
+                  <div class="control">
+                    <ion-range formControlName="puzzleTime" aria-label="Range time puzzles" [min]="10" [step]="10" [max]="600"></ion-range>
+                  </div>
+                </div>
+              </div>
+              <ion-item>
+                <ion-label>{{ 'NEW_BLOCK.options.showSolution' | transloco }}</ion-label>
+                <ion-checkbox formControlName="showPuzzleSolution" slot="end" aria-label=""></ion-checkbox>
+              </ion-item>
+              <ion-item>
+                <ion-label>{{ 'NEW_BLOCK.options.blind' | transloco }}</ion-label>
+                <ion-toggle formControlName="goshPuzzle" slot="end" aria-label=""></ion-toggle>
+              </ion-item>
+              <div class="range-container">
+                <div class="time-puzzles">
+                  <div class="header">
+                    <div class="label">{{ 'NEW_BLOCK.options.timeVisible' | transloco }}:</div>
+                    <div class="note">{{ goshPuzzleTimeField?.value | secondsToMinutesSeconds }} <small><i>({{ 'NEW_BLOCK.fields.minSec' | transloco }})</i></small></div>
+                  </div>
+                  <div class="control">
+                    <ion-range formControlName="goshPuzzleTime" aria-label="Range time visible" [min]="5" [max]="540"></ion-range>
+                  </div>
+                </div>
+              </div>
+            </ion-list>
+          </div>
+        </ion-accordion>
+
+        <ion-accordion value="theme">
+          <ion-item slot="header" color="light">
+            @if (themeField?.value !== 'all' && themeField?.value !== 'weakness') {
+              <ion-thumbnail class="thumbnail-theme" slot="start">
+                <img [src]="'assets/images/puzzle-themes/' + themeField?.value + '.svg'" alt="" />
+              </ion-thumbnail>
+            }
+            @if (themeField?.value === 'all') {
+              <ion-icon name="shuffle" slot="start"></ion-icon>
+            }
+            @if (themeField?.value === 'weakness') {
+              <ion-icon name="trending-down" slot="start"></ion-icon>
+            }
+            <ion-label>
+              {{ 'NEW_BLOCK.theme.theme' | transloco }}:
+              @if (themeField?.value === 'all') {
+                {{ 'NEW_BLOCK.theme.random' | transloco }}
+              } @else if (themeField?.value === 'weakness') {
+                {{ 'NEW_BLOCK.theme.weakness' | transloco }}
+              } @else if (themeField?.value) {
+                {{ getThemeName(themeField?.value ?? '') }}
+              }
+            </ion-label>
+          </ion-item>
+          <div class="content-accordion-themes" slot="content">
+            <ion-radio-group formControlName="theme">
+              <ion-item>
+                <ion-icon slot="start" name="shuffle"></ion-icon>
+                <ion-radio value="all" aria-label="all">{{ 'NEW_BLOCK.theme.random' | transloco }}<br><small>{{ 'NEW_BLOCK.theme.randomDescription' | transloco }}</small></ion-radio>
+              </ion-item>
+              <ion-item>
+                <ion-icon slot="start" name="trending-down"></ion-icon>
+                <ion-radio value="weakness" aria-label="weakness">{{ 'NEW_BLOCK.theme.weakness' | transloco }}<br><small>{{ 'NEW_BLOCK.theme.weaknessDescription' | transloco }}</small></ion-radio>
+              </ion-item>
+              @for (puzzlesGroupThemes of puzzlesGroupsThemes; track puzzlesGroupThemes.groupName) {
+                <ion-list>
+                  <ion-list-header>
+                    <ion-label>{{ puzzlesGroupThemes.groupName }}</ion-label>
+                  </ion-list-header>
+                  @for (puzzlesGroup of puzzlesGroupThemes.themes; track puzzlesGroup.value) {
+                    <ion-item>
+                      <ion-thumbnail slot="start" class="ion-padding">
+                        <img [src]="'assets/images/puzzle-themes/' + puzzlesGroup.img" alt="" />
+                      </ion-thumbnail>
+                      <ion-radio [value]="puzzlesGroup.value" aria-label="">
+                        @if (lang === 'es') {
+                          {{ puzzlesGroup.nameEs }}
+                        } @else {
+                          {{ puzzlesGroup.nameEn }}
+                        }
+                      </ion-radio>
+                    </ion-item>
+                  }
+                </ion-list>
+              }
+            </ion-radio-group>
+          </div>
+        </ion-accordion>
+
+        <ion-accordion value="elo">
+          <ion-item slot="header" color="light">
+            <ion-label>{{ 'NEW_BLOCK.theme.difficulty' | transloco }}</ion-label>
+            <ion-note slot="end">
+              @if (eloLevelField?.value === 0) {
+                {{ 'NEW_BLOCK.difficulty.balanced' | transloco }}
+              } @else {
+                Elo <span *ngIf="eloLevelField?.value > 0">+</span>{{ eloLevelField?.value }}
+              }
+            </ion-note>
+          </ion-item>
+          <div class="ion-padding" slot="content">
+            <ion-list>
+              <div class="range-container">
+                <div class="time">
+                  <div class="header">
+                    <div class="label">Elo:</div>
+                    <div class="note">
+                      @if (eloLevelField?.value === 0) {
+                        {{ 'NEW_BLOCK.difficulty.normal' | transloco }}
+                      }
+                      @if (eloLevelField?.value > 0) {
+                        {{ 'NEW_BLOCK.difficulty.increase' | transloco }} {{ eloLevelField?.value }}
+                      }
+                      @if (eloLevelField?.value < 0) {
+                        {{ 'NEW_BLOCK.difficulty.decrease' | transloco }} {{ eloLevelField?.value }}
+                      }
+                    </div>
+                  </div>
+                  <div class="control">
+                    <ion-range formControlName="eloLevel" aria-label="Range elo" [step]="100" [pinFormatter]="formatPin" [pin]="true" [ticks]="true" [snaps]="true" [min]="-600" [max]="600"></ion-range>
+                  </div>
+                </div>
+              </div>
+            </ion-list>
+          </div>
+        </ion-accordion>
+      </ion-accordion-group>
+
+      <ion-row>
+        <ion-col size="4">
+          <ion-button size="large" expand="block" [color]="color === 'white' ? 'primary' : 'medium'" (click)="color = 'white'">
+            <img slot="icon-only" src="assets/images/king-white.svg" alt="" class="h-6 w-6" />
+          </ion-button>
+        </ion-col>
+        <ion-col size="4">
+          <ion-button size="large" expand="block" [color]="color === 'random' ? 'primary' : 'medium'" (click)="color = 'random'" class="ion-no-padding">
+            <ion-icon slot="icon-only" name="shuffle"></ion-icon>
+          </ion-button>
+        </ion-col>
+        <ion-col size="4">
+          <ion-button size="large" expand="block" [color]="color === 'black' ? 'primary' : 'medium'" (click)="color = 'black'">
+            <img slot="icon-only" src="assets/images/king-black.svg" alt="" class="h-6 w-6" />
+          </ion-button>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col size="12">
+          <ion-button type="submit" [disabled]="!form.valid" class="ion-margin" expand="block" size="large">
+            {{ 'NEW_BLOCK.actions.add' | transloco }}
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </form>
+  </div>
+</ion-content>

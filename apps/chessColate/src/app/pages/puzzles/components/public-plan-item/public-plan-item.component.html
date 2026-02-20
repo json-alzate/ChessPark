@@ -1,0 +1,103 @@
+<div class="card bg-base-100 shadow-sm">
+  <div class="card-body p-4">
+    <!-- Header con título -->
+    <div class="flex items-start justify-between gap-2 mb-3">
+      <div class="flex-1 min-w-0">
+        <h3 class="text-lg font-semibold mb-1">
+          {{ plan.title || ('PUBLIC_PLANS.untitled' | transloco) }}
+        </h3>
+      </div>
+    </div>
+
+    <!-- Accordion para bloques -->
+    <div class="collapse collapse-arrow bg-base-200 mb-3">
+      <input type="checkbox" />
+      <div class="collapse-title text-sm font-medium">
+        {{ 'PUBLIC_PLANS.viewBlocks' | transloco }} ({{ plan.blocks.length ?? 0 }})
+      </div>
+      <div class="collapse-content">
+        <div class="space-y-2">
+          @for (block of plan.blocks; track $index) {
+            <div class="card bg-base-100 shadow-xs p-2">
+              <div class="text-sm">
+                <div class="font-medium">{{ block.title || ('PUBLIC_PLANS.block' | transloco) + ' ' + ($index + 1) }}</div>
+                @if (block.description) {
+                  <div class="text-xs text-base-content/70 mt-1">{{ block.description }}</div>
+                }
+                <div class="flex items-center gap-2 text-xs text-base-content/60 mt-1">
+                  <!-- Icono del tema -->
+                  @if (getThemeIcon(block.theme); as themeIcon) {
+                    @if (themeIcon.type === 'icon') {
+                      <ion-icon [name]="themeIcon.value" class="h-4 w-4"></ion-icon>
+                    } @else {
+                      <img [src]="themeIcon.value" alt="" class="h-4 w-4" />
+                    }
+                  }
+                  <!-- Tema traducido -->
+                  <span>{{ getThemeName(block.theme) }}</span>
+                  <span>·</span>
+                  <!-- Configuración del bloque (tiempo/puzzles) -->
+                  @if (getBlockConfig(block); as config) {
+                    @if (config.type === 'time') {
+                      <span>{{ config.time | secondsToMinutesSeconds }}</span>
+                    } @else if (config.type === 'puzzles') {
+                      <span>{{ config.puzzles }} {{ 'NEW_BLOCK.fields.puzzles' | transloco }}</span>
+                    } @else if (config.type === 'both') {
+                      <span>{{ config.time | secondsToMinutesSeconds }} {{ 'NEW_BLOCK.or' | transloco }} {{ config.puzzles }} {{ 'NEW_BLOCK.fields.puzzles' | transloco }}</span>
+                    } @else {
+                      <ion-icon name="infinite-outline" class="h-4 w-4"></ion-icon>
+                    }
+                  }
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Acciones -->
+    <div class="flex items-center justify-between gap-2">
+      <div class="flex items-center gap-3">
+        <!-- Estadísticas combinadas estilo YouTube -->
+        <div class="flex items-center gap-4 text-sm text-base-content/70">
+          <!-- Veces jugado -->
+          <div class="flex items-center gap-1">
+            <ion-icon name="play-outline" class="h-4 w-4"></ion-icon>
+            <span>{{ plan.timesPlayed }}</span>
+          </div>
+          <!-- Me gusta -->
+          <button
+            type="button"
+            class="flex items-center gap-1 btn btn-sm btn-ghost p-0 h-auto min-h-0"
+            [class.text-primary]="isLiked"
+            [disabled]="!canLike"
+            (click)="onToggleLike()"
+            [title]="!canLike ? ('PUBLIC_PLANS.cannotLikeOwn' | transloco) : ''">
+            <ion-icon [name]="isLiked ? 'heart' : 'heart-outline'" class="h-4 w-4"></ion-icon>
+            <span>{{ plan.likesCount }}</span>
+          </button>
+        </div>
+
+        <!-- Botón Guardar -->
+        <button
+          type="button"
+          class="btn btn-sm"
+          [class.btn-primary]="isSaved"
+          [class.btn-ghost]="!isSaved"
+          (click)="onToggleSaved()">
+          <ion-icon [name]="isSaved ? 'bookmark' : 'bookmark-outline'"></ion-icon>
+        </button>
+      </div>
+
+      <!-- Botón Jugar -->
+      <button
+        type="button"
+        class="btn btn-sm btn-primary"
+        (click)="onPlay()">
+        <ion-icon name="play-outline"></ion-icon>
+        {{ 'PUBLIC_PLANS.play' | transloco }}
+      </button>
+    </div>
+  </div>
+</div>

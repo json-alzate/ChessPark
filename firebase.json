@@ -1,21 +1,6 @@
 {
   "hosting": [
     {
-      "target": "chesspark",
-      "public": "dist/apps/chesspark/browser",
-      "ignore": [
-        "firebase.json",
-        "**/.*",
-        "**/node_modules/**"
-      ],
-      "rewrites": [
-        {
-          "source": "**",
-          "destination": "/index.html"
-        }
-      ]
-    },
-    {
       "site": "chessgrid",
       "public": "dist/apps/chessGrid/browser",
       "ignore": [

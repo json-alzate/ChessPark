@@ -4,20 +4,9 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "nx build chesspark",
           "nx build chessCoordinatesTrainer", 
           "nx build chessColate",
           "firebase deploy"
-        ],
-        "parallel": false
-      }
-    },
-    "deploy-chesspark": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "nx build chesspark",
-          "firebase deploy --only hosting:chesspark"
         ],
         "parallel": false
       }

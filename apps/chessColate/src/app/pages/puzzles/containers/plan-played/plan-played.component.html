@@ -76,6 +76,30 @@
         }
       </div>
 
+      <!-- Botón Me Gusta (solo si es público y el usuario no es el creador) -->
+      @if (canLike) {
+        <div class="card bg-base-100 shadow-sm">
+          <div class="card-body">
+            <button
+              type="button"
+              class="btn w-full"
+              [class.btn-primary]="isLiked"
+              [class.btn-ghost]="!isLiked"
+              [disabled]="isLoadingLike"
+              (click)="onToggleLike()">
+              <ion-icon [name]="isLiked ? 'heart' : 'heart-outline'"></ion-icon>
+              <span>
+                @if (isLiked) {
+                  {{ 'PLAN_PLAYED.unlike' | transloco }}
+                } @else {
+                  {{ 'PLAN_PLAYED.like' | transloco }}
+                }
+              </span>
+            </button>
+          </div>
+        </div>
+      }
+
       <!-- Estadísticas -->
       <div class="space-y-4">
         <h2 class="text-2xl font-bold">

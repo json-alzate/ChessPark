@@ -180,7 +180,6 @@ npx nx generate @nx/cypress:configuration --project=nombre-proyecto-e2e
 ## 📂 Estructura de Proyectos
 
 ### Aplicaciones disponibles:
-- `chess-podcasts` - Aplicación de podcasts de ajedrez
 - `chessColate` - Aplicación principal de ajedrez
 - `chessGrid` - Aplicación de grid de ajedrez
 
@@ -232,4 +231,4 @@ npx nx show project nombre-proyecto
 
 ---
 
-**Nota**: Reemplaza `nombre-proyecto` con el nombre real del proyecto donde quieres generar los elementos (chess-podcasts, chessColate, chessGrid, etc.).
+**Nota**: Reemplaza `nombre-proyecto` con el nombre real del proyecto donde quieres generar los elementos (chessColate, chessGrid, etc.).

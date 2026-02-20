@@ -1,7 +1,7 @@
 <div class="flex flex-col h-full bg-base-100 overflow-hidden" data-theme="halloween">
   <!-- Header con botón cerrar y rating -->
   <div class="flex items-center justify-between p-2 flex-shrink-0">
-    <button class="btn btn-ghost btn-square" (click)="closeModal()">
+    <button class="btn btn-ghost btn-square" (click)="closeModal()" [disabled]="isAnyActionInProgress">
       <ion-icon name="close-outline" class="text-lg"></ion-icon>
     </button>
     <span class="badge badge-lg" style="background-color: #bf811c; color: white;">{{ puzzle.rating }}</span>
@@ -111,15 +111,19 @@
     <div class="flex flex-col gap-2 mb-4">
       <button 
         class="btn btn-info btn-lg btn-outline btn-block" 
-        [disabled]="isClueActive || allowMoveArrows"
+        [disabled]="isClueActive || allowMoveArrows || isAnyActionInProgress"
         (click)="showClue()">
         {{ 'PUZZLE_SOLUTION.actions.clue' | transloco }}
       </button>
       <button 
         class="btn btn-info btn-lg btn-outline btn-block" 
-        [disabled]="allowMoveArrows"
+        [disabled]="allowMoveArrows || isAnyActionInProgress"
         (click)="puzzleMoveResponse('user')">
-        {{ 'PUZZLE_SOLUTION.actions.solution' | transloco }}
+        @if (isShowingSolution) {
+          <span class="loading loading-spinner loading-sm"></span>
+        } @else {
+          {{ 'PUZZLE_SOLUTION.actions.solution' | transloco }}
+        }
       </button>
     </div>
 
@@ -128,8 +132,15 @@
       <h1 class="text-4xl font-bold text-center">{{ time | secondsToMinutesSeconds }}</h1>
       <button 
         class="btn btn-info btn-lg w-full" 
+        [disabled]="isAnyActionInProgress"
         (click)="startMoves()">
-        {{ 'PUZZLE_SOLUTION.actions.playAndClose' | transloco }}
+        @if (isPlaying) {
+          {{ 'PUZZLE_SOLUTION.actions.playing' | transloco }}
+        } @else if (isClosing) {
+          {{ 'PUZZLE_SOLUTION.actions.closing' | transloco }}
+        } @else {
+          {{ 'PUZZLE_SOLUTION.actions.playAndClose' | transloco }}
+        }
       </button>
     </div>
 

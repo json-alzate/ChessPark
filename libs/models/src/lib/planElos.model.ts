@@ -9,4 +9,5 @@ export interface PlanElos {
         [key: string]: number;
     };
     total: number;
+    timesPlayed?: number;
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 import { interval, Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -13,7 +13,7 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule],
   styleUrls: ['./block-presentation.component.scss'],
 })
-export class BlockPresentationComponent implements OnInit {
+export class BlockPresentationComponent implements OnInit, OnDestroy {
 
   @Input() title!: string;
   @Input() description!: string;
@@ -33,6 +33,11 @@ export class BlockPresentationComponent implements OnInit {
 
   ngOnInit() { }
 
+  ngOnDestroy() {
+    // Asegurar que el timer se detenga cuando el componente se destruye
+    this.stopTimer();
+  }
+
   startCountdown() {
     this.timer$ = interval(1000);
     this.timer$.pipe(
@@ -51,10 +56,12 @@ export class BlockPresentationComponent implements OnInit {
   }
 
   stopTimer() {
+    // No llamar unsubscribe() en un Subject - solo next() y complete()
+    if (!this.timerUnsubscribe$.closed) {
+      this.timerUnsubscribe$.next();
+      this.timerUnsubscribe$.complete();
+    }
     this.timer$ = undefined as unknown as Observable<number>;
-    this.timerUnsubscribe$.next();
-    this.timerUnsubscribe$.complete();
-    this.timerUnsubscribe$.unsubscribe();
   }
 
 }

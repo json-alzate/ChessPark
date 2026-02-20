@@ -1,3 +1,24 @@
-.navbar-container {
-  // Agrega tus estilos aquí
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 1000;
+  // Usar la variable CSS de DaisyUI para bg-base-200 que se adapta al tema activo
+  background-color: hsl(var(--b2));
+  // Sombra sutil para separación visual durante el scroll
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  
+  // Asegurar que el fondo sea sólido para evitar transparencia durante el scroll
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+// Spacer para compensar el navbar fixed y evitar que el contenido quede oculto
+.navbar-spacer {
+  height: 64px; // Altura estándar del navbar de DaisyUI (min-height: 4rem)
+  min-height: 64px;
+  flex-shrink: 0;
+  width: 100%;
 }

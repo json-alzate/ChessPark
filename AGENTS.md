@@ -3,6 +3,8 @@
 
 # General Guidelines for working with Nx
 
+- When building or validating the ChessColate graphical interface, use the **ui-style-guide** skill and follow [docs/STYLE_GUIDE.md](docs/STYLE_GUIDE.md) for consistency.
+
 - When running tasks (for example build, lint, test, e2e, etc.), always prefer running the task through `nx` (i.e. `nx run`, `nx run-many`, `nx affected`) instead of using the underlying tooling directly
 - You have access to the Nx MCP server and its tools, use them to help the user
 - When answering questions about the repository, use the `nx_workspace` tool first to gain an understanding of the workspace architecture where applicable.

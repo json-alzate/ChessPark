@@ -130,11 +130,20 @@
     },
     "descriptions": {
       "randomDescription": "Un tema diferente cada vez que se juegue",
-      "weaknessDescription": "El tema con el menor elo disponible en el plan"
+      "weaknessDescription": "El tema con el menor elo disponible en la rutina"
     },
     "help": {
-      "gosh": "Este ejercicio es a la ciegas, las piezas se harán transparentes cuando el",
-      "gosh2": "llegue a"
+      "gosh": "Este ejercicio es a la ciegas. Las piezas desaparecerán cuando el contador llegue a cero (en",
+      "gosh2": "). Deberás resolver el puzzle sin ver las piezas.",
+      "yourTurn": "Tu turno",
+      "findBestMoveWhite": "Encuentra el mejor movimiento para las blancas.",
+      "findBestMoveBlack": "Encuentra el mejor movimiento para las negras."
+    },
+    "exitTraining": {
+      "title": "Salir del entrenamiento",
+      "message": "¿Estás seguro de que deseas salir del entrenamiento?",
+      "cancel": "Cancelar",
+      "confirm": "Salir"
     }
   },
   "TRAINING": {
@@ -153,8 +162,8 @@
   },
   "CUSTOM_TRAINING": {
     "form": {
-      "title": "Crea tu plan de entrenamiento",
-      "description1": "Un plan se compone de hasta 5 bloques.",
+      "title": "Crea tu rutina de entrenamiento",
+      "description1": "Una rutina se compone de hasta 5 bloques.",
       "description2": "Cada bloque puede contener una serie de ejercicios con los ajustes que definas."
     },
     "colors": {
@@ -163,7 +172,7 @@
       "anyColor": "Cualquier color"
     },
     "fields": {
-      "nameLabel": "Nombre del plan"
+      "nameLabel": "Nombre de la rutina"
     },
     "errors": {
       "nameRequired": "El nombre es requerido",
@@ -171,8 +180,15 @@
     },
     "actions": {
       "addBlock": "Añadir bloque",
-      "saveAndPlay": "Guardar y jugar"
-    }
+      "removeBlock": "Quitar bloque",
+      "editAndPlay": "Editar y jugar",
+      "editOnly": "Solo editar",
+      "saveAndPlay": "Guardar y jugar",
+      "cancel": "Cancelar",
+      "login": "Iniciar sesión"
+    },
+    "authRequired": "Debes autenticarte para crear una rutina personalizada.",
+    "blocksLockedReason": "No se pueden modificar los bloques porque esta rutina ya ha sido jugada."
   },
   "NEW_BLOCK": {
     "form": {
@@ -198,7 +214,7 @@
       "random": "Aleatorio",
       "weakness": "Debilidad",
       "randomDescription": "Un tema diferente cada vez que se juegue",
-      "weaknessDescription": "El tema con el menor elo disponible en el plan",
+      "weaknessDescription": "El tema con el menor elo disponible en la rutina",
       "difficulty": "Dificultad"
     },
     "difficulty": {
@@ -213,9 +229,11 @@
   },
   "PLAN_PLAYED": {
     "puzzlesPlayed": "Ejercicios jugados",
-    "statistics": "Estadísticas del plan",
+    "statistics": "Estadísticas de la rutina",
     "playPlan": "Ir al inicio",
-    "loadMore": "Cargar más"
+    "loadMore": "Cargar más",
+    "like": "Me gusta",
+    "unlike": "Quitar me gusta"
   },
   "PLAN_CHART": {
     "themes": "Temas",
@@ -227,6 +245,52 @@
   "PLANS_HISTORY": {
     "title": "Historial de planes",
     "more": "Ver más"
+  },
+  "CUSTOM_PLANS": {
+    "listTitle": "Rutinas personalizadas",
+    "empty": "Aún no has creado ninguna rutina personalizada.",
+    "createFirst": "Crear mi primera rutina",
+    "untitled": "Sin título",
+    "public": "Público",
+    "edit": "Editar",
+    "play": "Jugar",
+    "create": "Crear rutina",
+    "isPublic": "Rutina pública (visible para otros)",
+    "saveOnly": "Guardar y volver",
+    "elo": "ELO",
+    "timesPlayed": "Veces jugado",
+    "authRequired": "Inicia sesión para crear y gestionar tus rutinas personalizadas"
+  },
+  "PUBLIC_PLANS": {
+    "title": "Rutinas públicas",
+    "tabs": {
+      "public": "Públicos",
+      "myInteractions": "Mis interacciones"
+    },
+    "filters": {
+      "recent": "Más recientes",
+      "mostPlayed": "Más jugados",
+      "mostLiked": "Más me gusta"
+    },
+    "interactions": {
+      "liked": "Me gusta",
+      "played": "Jugados",
+      "saved": "Guardados",
+      "empty": "No tienes interacciones en esta categoría"
+    },
+    "empty": "No hay rutinas públicas disponibles",
+    "untitled": "Sin título",
+    "viewBlocks": "Ver bloques",
+    "block": "Bloque",
+    "blockInfo": "Tema",
+    "elo": "ELO",
+    "stats": {
+      "timesPlayed": "Veces jugado",
+      "likes": "Me gusta"
+    },
+    "play": "Jugar",
+    "loadingMore": "Cargando más...",
+    "cannotLikeOwn": "No puedes dar me gusta a tu propia rutina"
   },
   "COORDINATES_PUZZLES": {
     "coordinates": "Coordenadas",
@@ -260,7 +324,9 @@
     "actions": {
       "clue": "Pedir una pista",
       "solution": "Ver la solución",
-      "playAndClose": "Reproducir y cerrar"
+      "playAndClose": "Reproducir y cerrar",
+      "playing": "Reproduciendo...",
+      "closing": "Cerrando..."
     },
     "themes": "Temas"
   },

@@ -5,9 +5,6 @@
   "targets": {
     "chesspark-53bce": {
       "hosting": {
-        "chesspark": [
-          "chesspark-app"
-        ],
         "chessCoordinatesTrainer": [
           "chess-coordinates-trainer-app"
         ],

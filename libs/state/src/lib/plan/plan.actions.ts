@@ -15,6 +15,8 @@ export const loadPlanFailure = createAction(
 
 export const clearPlanError = createAction('[Plan] Clear Error');
 
+export const clearPlan = createAction('[Plan] Clear Plan');
+
 export const updatePlan = createAction(
   '[Plan] Update Plan',
   props<{ plan: Plan }>()

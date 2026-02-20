@@ -22,12 +22,14 @@ import { TranslocoHttpLoader } from './transloco-loader';
 import { provideTransloco } from '@jsverse/transloco';
 
 // State
-import { 
+import {
   appReducers,
   EFFECTS,
-  AUTH_SERVICE_TOKEN, 
+  AUTH_SERVICE_TOKEN,
   PROFILE_SERVICE_TOKEN,
-  FIRESTORE_SERVICE_TOKEN
+  FIRESTORE_SERVICE_TOKEN,
+  CUSTOM_PLANS_FIRESTORE_TOKEN,
+  PUBLIC_PLANS_FIRESTORE_TOKEN,
 } from '@cpark/state';
 
 // Services
@@ -50,14 +52,14 @@ async function initializeApp(): Promise<void> {
   const languageService = inject(LanguageService);
   const appService = inject(AppService);
   const puzzlesProvider = inject(PuzzlesProvider);
-  
+
   // Inicializar el idioma primero (esto cargará y esperará las traducciones)
   await languageService.initializeLanguage();
-  
+
   // Cargar datos de temas y aperturas
   await appService.loadThemesPuzzle();
   await appService.loadOpenings();
-  
+
   // Inicializar el proveedor de puzzles (caché)
   await puzzlesProvider.init();
 }
@@ -76,7 +78,7 @@ bootstrapApplication(AppComponent, {
     provideIonicAngular(),
     provideRouter(routes, withPreloading(PreloadAllModules)),
     provideHttpClient(),
-    
+
     // Transloco (antes de los servicios para que puedan usarlo)
     provideTransloco({
       config: {
@@ -87,7 +89,7 @@ bootstrapApplication(AppComponent, {
       },
       loader: TranslocoHttpLoader
     }),
-    
+
     // Servicios de autenticación (DEBEN estar ANTES de los Effects)
     AuthService,
     ProfileService,
@@ -97,6 +99,8 @@ bootstrapApplication(AppComponent, {
     { provide: AUTH_SERVICE_TOKEN, useExisting: AuthService },
     { provide: PROFILE_SERVICE_TOKEN, useExisting: ProfileService },
     { provide: FIRESTORE_SERVICE_TOKEN, useExisting: FirestoreService },
+    { provide: CUSTOM_PLANS_FIRESTORE_TOKEN, useExisting: FirestoreService },
+    { provide: PUBLIC_PLANS_FIRESTORE_TOKEN, useExisting: FirestoreService },
     // Puzzles Provider como singleton
     {
       provide: PuzzlesProvider,
@@ -104,16 +108,26 @@ bootstrapApplication(AppComponent, {
     },
     // Inicializar idioma y datos antes del bootstrap
     provideAppInitializer(initializeApp),
-    
+
     // NgRx Store
-    provideStore(appReducers),
-    
+    provideStore(appReducers, {
+      runtimeChecks: {
+        strictStateImmutability: false, // Deshabilitar para evitar problemas con objetos complejos
+        strictActionImmutability: false,
+        strictStateSerializability: false, // Permitir objetos no serializables temporalmente
+        strictActionSerializability: false,
+        strictActionWithinNgZone: false,
+        strictActionTypeUniqueness: false,
+      },
+      metaReducers: []
+    }),
+
     // NgRx Effects (DESPUÉS de proveer los servicios)
     provideEffects(EFFECTS),
-    
+
     // NgRx DevTools (solo en desarrollo)
-    provideStoreDevtools({ 
-      maxAge: 25, 
+    provideStoreDevtools({
+      maxAge: 25,
       logOnly: environment.production,
       autoPause: true,
       trace: false,

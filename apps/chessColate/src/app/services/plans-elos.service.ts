@@ -119,5 +119,37 @@ export class PlansElosService {
     }
     return await this.firestoreService.getPlanElos(planUid, profile.uid);
   }
+
+  /**
+   * Incrementa el contador de veces jugado de un plan custom.
+   * Se llama cuando el usuario finaliza un plan.
+   */
+  async incrementPlayCount(planUid: string, uidUser: string): Promise<void> {
+    let planElos: PlanElos | null = await firstValueFrom(
+      this.plansElosFacade.getPlanElo$(planUid)
+    );
+    if (!planElos || !planElos.uid) {
+      planElos = await this.firestoreService.getPlanElos(planUid, uidUser);
+    }
+
+    if (planElos && planElos.uid) {
+      const updated = {
+        ...planElos,
+        timesPlayed: (planElos.timesPlayed ?? 0) + 1,
+      };
+      this.plansElosFacade.requestUpdatePlanElos(updated);
+    } else {
+      const newPlanElos: PlanElos = {
+        uid: this.uidGenerator.generateSimpleUid(),
+        uidUser,
+        uidPlan: planUid,
+        openings: {},
+        themes: {},
+        total: 1500,
+        timesPlayed: 1,
+      };
+      this.plansElosFacade.requestAddOnePlanElo(newPlanElos);
+    }
+  }
 }
 

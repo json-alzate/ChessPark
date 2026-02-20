@@ -1,7 +1,0 @@
-{
-  "name": "chess-podcasts",
-  "integrations": {
-    "capacitor": {}
-  },
-  "type": "angular"
-}

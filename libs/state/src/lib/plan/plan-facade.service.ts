@@ -9,6 +9,7 @@ import {
   loadPlanSuccess,
   loadPlanFailure,
   clearPlanError,
+  clearPlan,
   updatePlan,
 } from './plan.actions';
 
@@ -23,6 +24,10 @@ export class PlanFacadeService {
 
   clearError() {
     this.store.dispatch(clearPlanError());
+  }
+
+  clearPlan() {
+    this.store.dispatch(clearPlan());
   }
 
   updatePlan(plan: Plan) {

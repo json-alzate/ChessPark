@@ -1,4 +1,4 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
@@ -8,7 +8,7 @@ import { takeUntil } from 'rxjs/operators';
 // Transloco
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
-import { IonRippleEffect, LoadingController, ModalController, IonIcon } from '@ionic/angular/standalone';
+import { IonRippleEffect, LoadingController, ModalController, IonIcon, AlertController } from '@ionic/angular/standalone';
 
 // services
 import { AppService } from '@services/app.service';
@@ -45,7 +45,7 @@ import { SoundsService, SecondsToMinutesSecondsPipe } from '@chesspark/common-ut
   templateUrl: './training.component.html',
   styleUrl: './training.component.scss',
 })
-export class TrainingComponent implements OnInit {
+export class TrainingComponent implements OnInit, OnDestroy {
   private blockService = inject(BlockService);
   private planFacade = inject(PlanFacadeService);
   private plansElosService = inject(PlansElosService);
@@ -55,6 +55,12 @@ export class TrainingComponent implements OnInit {
   private translocoService = inject(TranslocoService);
   private uidGenerator = inject(UidGeneratorService);
   private soundsService = inject(SoundsService);
+  
+  // Subject para gestionar suscripciones
+  private destroy$ = new Subject<void>();
+  private isInitialized = false;
+  private isProcessingBlock = false;
+  
   showBlockTimer = false;
 
   currentIndexBlock = -1; // -1 para que al iniciar se seleccione el primer bloque sumando ++ y queda en 0
@@ -73,7 +79,26 @@ export class TrainingComponent implements OnInit {
   isGoshHelperShow = false;
   isDropdownOpen = false;
 
-  constructor(private modalController: ModalController) {
+  /** Color con el que juega el usuario en el puzzle actual (blancas o negras) */
+  get playerColor(): 'white' | 'black' {
+    const block = this.plan?.blocks?.[this.currentIndexBlock];
+    const puzzle = this.puzzleToPlay;
+    if (!block) return 'white';
+    if (block.color === 'white') return 'white';
+    if (block.color === 'black') return 'black';
+    // random: el FEN indica el turno del oponente (quien acaba de mover); invertimos para obtener el color del jugador
+    if (puzzle?.fen) {
+      const parts = puzzle.fen.trim().split(/\s+/);
+      const turn = parts[1]?.toLowerCase();
+      return turn === 'b' ? 'white' : 'black';
+    }
+    return 'white';
+  }
+
+  constructor(
+    private modalController: ModalController,
+    private alertController: AlertController
+  ) {
     addIcons({ 
       timerOutline,
       chevronDownOutline,
@@ -86,27 +111,51 @@ export class TrainingComponent implements OnInit {
   }
 
   ngOnInit() {
+    // Prevenir múltiples inicializaciones
+    if (this.isInitialized) {
+      return;
+    }
+    
+    this.isInitialized = true;
+    
+    this.planFacade.getPlan$()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((plan: Plan | null) => {
+        if (!plan) {
+          this.router.navigate(['/home']);
+          return;
+        }
+        this.plan = { ...plan };
+        console.log('Plan ', this.plan);
+        if (!this.plan.isFinished && !this.isProcessingBlock) {
+          this.playNextBlock();
+          return;
+        }
+      });
+  }
 
-    this.planFacade.getPlan$().subscribe((plan: Plan | null) => {
-      if (!plan) {
-        this.router.navigate(['/home']);
-        return;
-      }
-      this.plan = { ...plan };
-      console.log('Plan ', this.plan);
-      if (!this.plan.isFinished) {
-        this.playNextBlock();
-        return;
-      }
-    });
+  ngOnDestroy() {
+    // Completar destroy$ para cancelar todas las suscripciones
+    this.destroy$.next();
+    this.destroy$.complete();
+    
+    // Limpiar recursos
+    this.cleanupResources();
   }
 
 
   playNextBlock() {
+    // Prevenir ejecuciones múltiples
+    if (this.isProcessingBlock) {
+      return;
+    }
+    
+    this.isProcessingBlock = true;
     this.currentIndexBlock++;
 
     // se valida si se ha llegado al final del plan
     if (this.currentIndexBlock === this.plan.blocks.length) {
+      this.isProcessingBlock = false;
       this.endPlan();
       return;
     }
@@ -181,6 +230,8 @@ export class TrainingComponent implements OnInit {
     await modal.present();
 
     modal.onDidDismiss().then((data) => {
+      this.isProcessingBlock = false;
+      this.forceStopTimerInPuzzleBoard = false;
       this.selectPuzzleToPlay();
       if (this.plan.blocks[this.currentIndexBlock].time !== -1) {
         this.showBlockTimer = true;
@@ -189,7 +240,6 @@ export class TrainingComponent implements OnInit {
         this.showBlockTimer = false;
         this.stopBlockTimer();
       }
-      this.forceStopTimerInPuzzleBoard = false;
     });
 
 
@@ -237,7 +287,7 @@ export class TrainingComponent implements OnInit {
 
     const puzzle = { ...puzzleSource };
 
-    if (currentBlock.goshPuzzleTime) {
+    if (currentBlock.goshPuzzle && currentBlock.goshPuzzleTime) {
       puzzle.goshPuzzleTime = currentBlock.goshPuzzleTime;
     }
     if (currentBlock.puzzleTimes) {
@@ -246,11 +296,8 @@ export class TrainingComponent implements OnInit {
 
 
     this.puzzleToPlay = puzzle;
-    if (puzzle.goshPuzzleTime && !this.isGoshHelperShow) {
-      this.isGoshHelperShow = true;
-    } else {
-      this.isGoshHelperShow = false;
-    }
+    // Siempre verificar si el puzzle es a la ciegas para mostrar el mensaje
+    this.isGoshHelperShow = !!(puzzle.goshPuzzleTime && puzzle.goshPuzzleTime > 0);
   }
 
   initTimeToEndBlock(timeBlock: number) {
@@ -416,6 +463,7 @@ export class TrainingComponent implements OnInit {
     
     modal.onDidDismiss().then((data) => {
       this.forceStopTimerInPuzzleBoard = false;
+      // Asegurar que el mensaje de ajedrez a la ciegas se muestre si aplica
       this.selectPuzzleToPlay();
       if (this.plan.blocks[this.currentIndexBlock].time !== -1) {
         this.resumeBlockTimer();
@@ -446,16 +494,71 @@ export class TrainingComponent implements OnInit {
 
     // Actualizar el plan en Redux
     this.planFacade.updatePlan(this.plan);
-    
+
+    // Incrementar contador de veces jugado para planes custom
+    if (
+      this.plan.planType === 'custom' &&
+      this.plan.uidCustomPlan &&
+      this.profileService.getProfile?.uid
+    ) {
+      this.plansElosService
+        .incrementPlayCount(this.plan.uidCustomPlan, this.profileService.getProfile.uid)
+        .catch((err) => console.error('Error incrementing play count', err));
+    }
+
+    // Limpiar recursos antes de navegar
+    this.cleanupResources();
+
     // Navegar a la pantalla de plan jugado
     this.router.navigate(['/puzzles/plan-played']);
-    // TODO: Track end plan
   }
 
-  onExitTraining() {
+  private cleanupResources() {
+    // Detener todos los timers
     this.stopPlanTimer();
+    this.stopBlockTimer();
+    
+    // Limpiar flags
     this.forceStopTimerInPuzzleBoard = true;
-    this.router.navigate(['/home']);
+    this.showBlockTimer = false;
+    this.isGoshHelperShow = false;
+    this.isDropdownOpen = false;
+    this.isProcessingBlock = false;
+    
+    // Resetear variables del componente
+    this.currentIndexBlock = -1;
+    this.timeLeftBlock = 0;
+    this.countPuzzlesPlayedBlock = 0;
+    this.totalPuzzlesInBlock = 0;
+    
+    // Resetear flag de inicialización para permitir reinicialización
+    this.isInitialized = false;
+    
+    // Limpiar el estado del plan en Redux
+    this.planFacade.clearPlan();
+  }
+
+  async onExitTraining() {
+    const alert = await this.alertController.create({
+      header: this.translocoService.translate('PUZZLES.exitTraining.title') || 'Salir del entrenamiento',
+      message: this.translocoService.translate('PUZZLES.exitTraining.message') || '¿Estás seguro de que deseas salir del entrenamiento?',
+      buttons: [
+        {
+          text: this.translocoService.translate('PUZZLES.exitTraining.cancel') || 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: this.translocoService.translate('PUZZLES.exitTraining.confirm') || 'Salir',
+          role: 'confirm',
+          handler: () => {
+            this.cleanupResources();
+            this.router.navigate(['/home']);
+          }
+        }
+      ]
+    });
+
+    await alert.present();
   }
 
   closeDropdown() {
@@ -468,11 +571,24 @@ export class TrainingComponent implements OnInit {
 
 
   ionViewWillLeave() {
+    // Asegurar limpieza completa al salir del componente
     this.forceStopTimerInPuzzleBoard = true;
-    this.timerUnsubscribe$.next();
-    this.timerUnsubscribe$.complete();
-    this.timerUnsubscribeBlock$.next();
-    this.timerUnsubscribeBlock$.complete();
+    
+    // Detener timers
+    if (this.timerUnsubscribe$ && !this.timerUnsubscribe$.closed) {
+      this.timerUnsubscribe$.next();
+      this.timerUnsubscribe$.complete();
+    }
+    
+    if (this.timerUnsubscribeBlock$ && !this.timerUnsubscribeBlock$.closed) {
+      this.timerUnsubscribeBlock$.next();
+      this.timerUnsubscribeBlock$.complete();
+    }
+    
+    // Limpiar flags
+    this.showBlockTimer = false;
+    this.isGoshHelperShow = false;
+    this.isDropdownOpen = false;
   }
 
 }

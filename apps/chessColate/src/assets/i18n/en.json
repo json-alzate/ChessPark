@@ -130,11 +130,20 @@
     },
     "descriptions": {
       "randomDescription": "A different topic every time you play",
-      "weaknessDescription": "The topic with the least elo Available in the Plan"
+      "weaknessDescription": "The topic with the least elo available in the routine"
     },
     "help": {
-      "gosh": "This puzzle is blindfold, the pieces will become transparent when",
-      "gosh2": "reaches"
+      "gosh": "This puzzle is blindfold. The pieces will disappear when the counter reaches zero (in",
+      "gosh2": "). You must solve the puzzle without seeing the pieces.",
+      "yourTurn": "Your turn",
+      "findBestMoveWhite": "Find the best move for White.",
+      "findBestMoveBlack": "Find the best move for Black."
+    },
+    "exitTraining": {
+      "title": "Exit training",
+      "message": "Are you sure you want to exit the training?",
+      "cancel": "Cancel",
+      "confirm": "Exit"
     }
   },
   "TRAINING": {
@@ -153,8 +162,8 @@
   },
   "CUSTOM_TRAINING": {
     "form": {
-      "title": "Create your training plan",
-      "description1": "A plan consists of up to 5 blocks.",
+      "title": "Create your training routine",
+      "description1": "A routine consists of up to 5 blocks.",
       "description2": "Each block can contain a series of exercises with the adjustments you define."
     },
     "colors": {
@@ -163,7 +172,7 @@
       "anyColor": "Any color"
     },
     "fields": {
-      "nameLabel": "Name of the plan"
+      "nameLabel": "Name of the routine"
     },
     "errors": {
       "nameRequired": "The name is required",
@@ -171,8 +180,15 @@
     },
     "actions": {
       "addBlock": "Add block",
-      "saveAndPlay": "Save and play"
-    }
+      "removeBlock": "Remove block",
+      "editAndPlay": "Edit and play",
+      "editOnly": "Edit only",
+      "saveAndPlay": "Save and play",
+      "cancel": "Cancel",
+      "login": "Log in"
+    },
+    "authRequired": "You must be authenticated to create a custom routine.",
+    "blocksLockedReason": "Blocks cannot be modified because this routine has already been played."
   },
   "NEW_BLOCK": {
     "form": {
@@ -198,7 +214,7 @@
       "random": "Random",
       "weakness": "Weakness",
       "randomDescription": "A different topic every time you play",
-      "weaknessDescription": "The topic with the least elo Available in the Plan",
+      "weaknessDescription": "The topic with the least elo available in the routine",
       "difficulty": "Difficulty"
     },
     "difficulty": {
@@ -213,9 +229,11 @@
   },
   "PLAN_PLAYED": {
     "puzzlesPlayed": "Puzzles played",
-    "statistics": "Statistics of the plan",
+    "statistics": "Statistics of the routine",
     "playPlan": "Go to home",
-    "loadMore": "Load more"
+    "loadMore": "Load more",
+    "like": "Like",
+    "unlike": "Unlike"
   },
   "PLAN_CHART": {
     "themes": "Themes",
@@ -227,6 +245,52 @@
   "PLANS_HISTORY": {
     "title": "Plans history",
     "more": "All history"
+  },
+  "CUSTOM_PLANS": {
+    "listTitle": "Custom routines",
+    "empty": "You haven't created any custom routines yet.",
+    "createFirst": "Create my first routine",
+    "untitled": "Untitled",
+    "public": "Public",
+    "edit": "Edit",
+    "play": "Play",
+    "create": "Create routine",
+    "isPublic": "Public routine (visible to others)",
+    "saveOnly": "Save and go back",
+    "elo": "ELO",
+    "timesPlayed": "Times played",
+    "authRequired": "Log in to create and manage your custom routines"
+  },
+  "PUBLIC_PLANS": {
+    "title": "Public routines",
+    "tabs": {
+      "public": "Public",
+      "myInteractions": "My interactions"
+    },
+    "filters": {
+      "recent": "Most recent",
+      "mostPlayed": "Most played",
+      "mostLiked": "Most liked"
+    },
+    "interactions": {
+      "liked": "Liked",
+      "played": "Played",
+      "saved": "Saved",
+      "empty": "You have no interactions in this category"
+    },
+    "empty": "No public routines available",
+    "untitled": "Untitled",
+    "viewBlocks": "View blocks",
+    "block": "Block",
+    "blockInfo": "Theme",
+    "elo": "ELO",
+    "stats": {
+      "timesPlayed": "Times played",
+      "likes": "Likes"
+    },
+    "play": "Play",
+    "loadingMore": "Loading more...",
+    "cannotLikeOwn": "You cannot like your own routine"
   },
   "COORDINATES_PUZZLES": {
     "coordinates": "Coordinates",
@@ -260,7 +324,9 @@
     "actions": {
       "clue": "Ask a clue",
       "solution": "See the solution",
-      "playAndClose": "Play and close"
+      "playAndClose": "Play and close",
+      "playing": "Playing...",
+      "closing": "Closing..."
     },
     "themes": "Themes"
   },
