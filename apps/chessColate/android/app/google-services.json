@@ -1,0 +1,78 @@
+{
+  "project_info": {
+    "project_number": "798600509062",
+    "project_id": "chesscolate",
+    "storage_bucket": "chesscolate.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:798600509062:android:278b967533cc1ffef40307",
+        "android_client_info": {
+          "package_name": "com.jheison.chesscolate"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "798600509062-6eg6gnebj02m49ifr4mcda3vd1tgpkek.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jheison.chesscolate",
+            "certificate_hash": "995bd644452ec80ef593c35651a44773e822f646"
+          }
+        },
+        {
+          "client_id": "798600509062-a1mdvrcbfg9brjudlu1mh64bkl0ehioo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jheison.chesscolate",
+            "certificate_hash": "aad6c34ef83404ee27cd6732eab8af8430f569ac"
+          }
+        },
+        {
+          "client_id": "798600509062-du3b2cq83rlbasebg27d26l2cijiveke.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jheison.chesscolate",
+            "certificate_hash": "0126606a24ca44d26b74fd2e6a3ff30380106cd0"
+          }
+        },
+        {
+          "client_id": "798600509062-jdrljcgakeqj5asprml8drtje3ptb3vp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jheison.chesscolate",
+            "certificate_hash": "3902f9268867ea417b63cde62e22dc77c8f2e2e4"
+          }
+        },
+        {
+          "client_id": "798600509062-1hrnp7meoueqo1v0lipqdnrqpjln44nv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB0e0JMITz32StzVvvlVGBXXrBOc18JekU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "798600509062-1hrnp7meoueqo1v0lipqdnrqpjln44nv.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "798600509062-q6h0n9urq24g7a2v25vnfg1kev96pkov.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.jheison.chesscolate"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
