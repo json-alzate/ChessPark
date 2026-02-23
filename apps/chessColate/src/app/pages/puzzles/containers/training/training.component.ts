@@ -506,8 +506,20 @@ export class TrainingComponent implements OnInit, OnDestroy {
         .catch((err) => console.error('Error incrementing play count', err));
     }
 
-    // Limpiar recursos antes de navegar
-    this.cleanupResources();
+    // NO limpiar el plan aquí, ya que plan-played lo necesita
+    // Solo detener timers y limpiar recursos del componente
+    this.stopPlanTimer();
+    this.stopBlockTimer();
+    this.forceStopTimerInPuzzleBoard = true;
+    this.showBlockTimer = false;
+    this.isGoshHelperShow = false;
+    this.isDropdownOpen = false;
+    this.isProcessingBlock = false;
+    this.currentIndexBlock = -1;
+    this.timeLeftBlock = 0;
+    this.countPuzzlesPlayedBlock = 0;
+    this.totalPuzzlesInBlock = 0;
+    this.isInitialized = false;
 
     // Navegar a la pantalla de plan jugado
     this.router.navigate(['/puzzles/plan-played']);
@@ -551,6 +563,7 @@ export class TrainingComponent implements OnInit, OnDestroy {
           text: this.translocoService.translate('PUZZLES.exitTraining.confirm') || 'Salir',
           role: 'confirm',
           handler: () => {
+            // Cuando se cancela, sí se debe limpiar el plan
             this.cleanupResources();
             this.router.navigate(['/home']);
           }

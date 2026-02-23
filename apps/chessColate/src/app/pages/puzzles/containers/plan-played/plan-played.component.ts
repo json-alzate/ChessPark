@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
@@ -28,7 +28,7 @@ import { heartOutline, heart } from 'ionicons/icons';
   templateUrl: './plan-played.component.html',
   styleUrl: './plan-played.component.scss',
 })
-export class PlanPlayedComponent implements OnInit {
+export class PlanPlayedComponent implements OnInit, OnDestroy {
   private planFacade = inject(PlanFacadeService);
   private router = inject(Router);
   private modalController = inject(ModalController);
@@ -167,6 +167,11 @@ export class PlanPlayedComponent implements OnInit {
     // Limpiar el estado del plan antes de navegar al inicio
     this.planFacade.clearPlan();
     this.router.navigate(['/home']);
+  }
+
+  ngOnDestroy() {
+    // Limpiar el plan al salir de la pantalla de plan-played
+    this.planFacade.clearPlan();
   }
 }
 
