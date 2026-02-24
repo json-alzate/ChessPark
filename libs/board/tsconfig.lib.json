@@ -24,6 +24,9 @@
     },
     {
       "path": "../common-utils/tsconfig.lib.json"
+    },
+    {
+      "path": "../stockfish-wasm/tsconfig.lib.json"
     }
   ]
 }

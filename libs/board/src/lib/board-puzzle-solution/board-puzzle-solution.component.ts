@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, Input, Output, EventEmitter, Renderer2, inject } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, Input, Output, EventEmitter, Renderer2, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 // rxjs
@@ -38,6 +38,12 @@ import { Puzzle } from '@cpark/models';
 // Utils
 import { SecondsToMinutesSecondsPipe, SoundsService } from '@chesspark/common-utils';
 
+// Stockfish
+import {
+  StockfishService,
+  StockfishAnalysisService,
+} from '@chesspark/stockfish-wasm';
+
 @Component({
   selector: 'lib-board-puzzle-solution',
   standalone: true,
@@ -45,7 +51,7 @@ import { SecondsToMinutesSecondsPipe, SoundsService } from '@chesspark/common-ut
   templateUrl: './board-puzzle-solution.component.html',
   styleUrls: ['./board-puzzle-solution.component.scss'],
 })
-export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit {
+export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @Input() puzzle!: Puzzle;
   @Input() themesTranslated: string[] = [];
@@ -60,9 +66,12 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit {
   chessInstance = new Chess();
   closeCancelMoves = false;
 
-  // TODO: Stockfish - Se creará una librería separada para esta funcionalidad
-  // stockfishEnabled = false;
-  // bestMove = '';
+  // Stockfish
+  private stockfishService: StockfishService = inject(StockfishService);
+  private stockfishAnalysisService: StockfishAnalysisService = inject(StockfishAnalysisService);
+  stockfishEnabled = false;
+  stockfishInitialized = false;
+  bestMove: string | null = null;
 
   currentMoveNumber = 0;
   arrayFenSolution: string[] = [];
@@ -103,8 +112,36 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit {
     });
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.startTimer();
+    // Inicializar Stockfish
+    console.log('[Stockfish] Starting initialization...');
+    try {
+      // Asegurarse de que no haya un worker anterior activo
+      if (this.stockfishService.isReady) {
+        console.log('[Stockfish] Service already ready, terminating previous instance');
+        this.stockfishService.terminate();
+        await new Promise(resolve => setTimeout(resolve, 200));
+      }
+
+      await this.stockfishService.initialize({
+        depth: 15,
+        threads: 1,
+        hash: 16,
+        workerPath: 'assets/engine/stockfish-16.1-lite-single.js',
+      });
+      this.stockfishInitialized = true;
+      console.log('[Stockfish] Initialized successfully, isReady:', this.stockfishService.isReady);
+    } catch (error) {
+      console.error('[Stockfish] Failed to initialize:', error);
+      this.stockfishInitialized = false;
+      // Intentar limpiar en caso de error
+      try {
+        this.stockfishService.terminate();
+      } catch (e) {
+        console.error('[Stockfish] Error during cleanup:', e);
+      }
+    }
   }
 
   ngAfterViewInit() {
@@ -114,69 +151,192 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit {
     }, 0);
   }
 
-  // TODO: Stockfish - Se creará una librería separada para esta funcionalidad
-  // startStockfish(event) {
-  //   if (event.detail.checked) {
-  //     this.stockfishEnabled = true;
-  //     // Inicia el motor y envía comandos
-  //     this.stockfishService.postMessage('uci');
-  //     this.stockfishService.postMessage(
-  //       'position fen ' + this.chessInstance.fen()
-  //     );
-  //     this.stockfishService.postMessage('go depth 15');
-  //   } else {
-  //     this.stockfishEnabled = false;
-  //     this.stockfishService.postMessage('stop');
-  //     this.removeStockfishMarkers();
-  //   }
-  // }
+  /**
+   * Activa o desactiva Stockfish
+   */
+  async startStockfish(event: { detail: { checked: boolean } }) {
+    if (!this.stockfishInitialized || !this.stockfishService.isReady) {
+      console.warn('Stockfish not initialized');
+      return;
+    }
 
-  // listenStockfish() {
-  //   // Escucha los mensajes del motor
-  //   this.stockfishService.onMessage((message) => {
-  //     if (message.startsWith('bestmove')) {
-  //       console.log('bestmove', message);
-  //       this.bestMove = message;
-  //       this.drawStockfishMarkers();
-  //     }
-  //   });
-  // }
+    if (event.detail.checked) {
+      this.stockfishEnabled = true;
+      await this.analyzeCurrentPosition();
+    } else {
+      this.stockfishEnabled = false;
+      console.log('[Stockfish] Disabled');
+      this.stockfishService.stopAnalysis();
+      this.removeAllStockfishIndicators();
+      this.bestMove = null;
+    }
+  }
 
-  // drawStockfishArrows() {
-  //   if (this.bestMove) {
-  //     const arrowType = {
-  //       id: 'stockfishBestMove',
-  //       class: 'arrow-stockfish-best-move',
-  //       headSize: 7,
-  //       slice: 'arrowPointy'
-  //     };
-  //     const bestMove = this.bestMove.split(' ')[1];
-  //     this.board.removeArrows();
-  //     this.board.addArrow(arrowType, bestMove.slice(0, 2), bestMove.slice(2, 4));
-  //   }
-  // }
+  /**
+   * Analiza la posición actual con Stockfish
+   */
+  async analyzeCurrentPosition() {
+    if (!this.stockfishEnabled) {
+      console.log('[Stockfish] Analysis skipped - Stockfish disabled');
+      return;
+    }
 
-  // drawStockfishMarkers() {
-  //   this.removeStockfishMarkers();
-  //   if (this.bestMove) {
-  //     const markerType = {
-  //       id: 'stockfishBestMove',
-  //       class: 'marker-square-stockfish-best-move',
-  //       slice: 'markerSquare'
-  //     };
-  //     const bestMove = this.bestMove.split(' ')[1];
-  //     this.board.addMarker(markerType, bestMove.slice(0, 2));
-  //     this.board.addMarker(markerType, bestMove.slice(2, 4));
-  //   }
-  // }
+    if (!this.stockfishService.isReady || !this.stockfishInitialized) {
+      console.warn('[Stockfish] Analysis skipped - service not ready. isReady:', this.stockfishService.isReady, 'initialized:', this.stockfishInitialized);
+      // Si no está listo, desactivar el toggle
+      this.stockfishEnabled = false;
+      return;
+    }
 
-  // removeStockfishMarkers() {
-  //   this.board.removeMarkers('stockfishBestMove');
-  // }
+    // Detener análisis anterior si existe
+    try {
+      this.stockfishService.stopAnalysis();
+    } catch (error) {
+      console.warn('[Stockfish] Error stopping previous analysis:', error);
+    }
+
+    try {
+      const fen = this.chessInstance.fen();
+      console.log('[Stockfish] Starting analysis for FEN:', fen);
+
+      // Obtener mejor movimiento
+      console.log('[Stockfish] Requesting best move with depth 15...');
+      const result = await this.stockfishAnalysisService.getBestMove(fen, {
+        depth: 15,
+      });
+
+      console.log('[Stockfish] Analysis result:', result);
+      if (result && result.move) {
+        this.bestMove = result.move;
+        console.log('[Stockfish] Best move found:', this.bestMove, 'length:', this.bestMove.length);
+
+        // Verificar que el tablero esté disponible
+        if (this.board) {
+          this.drawStockfishMarkers();
+          this.drawStockfishArrows();
+        } else {
+          console.warn('[Stockfish] Board not available, cannot draw indicators');
+        }
+      } else {
+        console.warn('[Stockfish] No best move in result:', result);
+      }
+    } catch (error) {
+      console.error('[Stockfish] Error analyzing position:', error);
+      // Si hay un error crítico, desactivar Stockfish
+      if (error instanceof Error && error.message.includes('memory')) {
+        console.error('[Stockfish] Critical memory error, disabling Stockfish');
+        this.stockfishEnabled = false;
+        this.stockfishInitialized = false;
+        try {
+          this.stockfishService.terminate();
+        } catch (e) {
+          console.error('[Stockfish] Error terminating after memory error:', e);
+        }
+      }
+    }
+  }
+
+  /**
+   * Dibuja marcadores en el tablero para la mejor jugada de Stockfish
+   */
+  drawStockfishMarkers() {
+    this.removeStockfishMarkers();
+    if (this.bestMove && this.bestMove.length >= 4) {
+      const markerType = {
+        id: 'stockfishBestMove',
+        class: 'marker-square-stockfish-best-move',
+        slice: 'markerSquare',
+      };
+      const from = this.bestMove.slice(0, 2);
+      const to = this.bestMove.slice(2, 4);
+      console.log('[Stockfish] Drawing markers from', from, 'to', to);
+      this.board.addMarker(markerType, from);
+      this.board.addMarker(markerType, to);
+    }
+  }
+
+  /**
+   * Dibuja flechas en el tablero para la mejor jugada de Stockfish
+   */
+  drawStockfishArrows() {
+    if (!this.board) {
+      console.warn('[Stockfish] Cannot draw arrows: board not available');
+      return;
+    }
+
+    this.removeStockfishArrows();
+    if (this.bestMove && this.bestMove.length >= 4) {
+      const arrowType = {
+        id: 'stockfishBestMove',
+        class: 'arrow-stockfish-best-move',
+        headSize: 7,
+        slice: 'arrowPointy',
+      };
+      const from = this.bestMove.slice(0, 2);
+      const to = this.bestMove.slice(2, 4);
+      console.log('[Stockfish] Drawing arrow from', from, 'to', to, 'bestMove:', this.bestMove);
+
+      try {
+        this.board.addArrow(arrowType, from, to);
+        console.log('[Stockfish] Arrow added successfully');
+      } catch (error) {
+        console.error('[Stockfish] Error adding arrow:', error);
+      }
+    } else {
+      console.warn('[Stockfish] Cannot draw arrow: bestMove invalid', this.bestMove);
+    }
+  }
+
+  /**
+   * Remueve las flechas de Stockfish del tablero
+   */
+  removeStockfishArrows() {
+    if (!this.board) {
+      return;
+    }
+    // Obtener todas las flechas y remover las de Stockfish
+    // Nota: removeArrows() remueve todas las flechas, pero esto es intencional
+    // ya que solo se llama cuando se desactiva Stockfish o se va a dibujar una nueva
+    try {
+      this.board.removeArrows();
+      console.log('[Stockfish] Removed all arrows');
+    } catch (error) {
+      console.error('[Stockfish] Error removing arrows:', error);
+    }
+  }
+
+  /**
+   * Remueve los marcadores de Stockfish del tablero
+   */
+  removeStockfishMarkers() {
+    // Obtener todos los marcadores y remover los de Stockfish
+    const allMarkers = this.board.getMarkers();
+    allMarkers.forEach(marker => {
+      if (marker.type.id === 'stockfishBestMove') {
+        this.board.removeMarkers(marker.type, marker.square);
+      }
+    });
+  }
+
+  /**
+   * Remueve tanto marcadores como flechas de Stockfish
+   */
+  removeAllStockfishIndicators() {
+    this.removeStockfishMarkers();
+    this.removeStockfishArrows();
+  }
 
   removeArrows() {
-    // remove board arrows
+    // Guardar si hay flechas de Stockfish activas
+    const hadStockfishArrows = this.stockfishEnabled && this.bestMove;
+
+    // Remover todas las flechas
     this.board.removeArrows();
+
+    // Volver a dibujar las flechas de Stockfish si estaban activas
+    if (hadStockfishArrows) {
+      this.drawStockfishArrows();
+    }
   }
 
   closeModal() {
@@ -388,6 +548,7 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit {
 
   async validateMove() {
     if (!this.allowMoveArrows) {
+      // Durante el puzzle: validar que el movimiento sea el correcto
       const fenChessInstance = this.chessInstance.fen();
 
       this.soundsService.determineChessMoveType(this.fenToCompareAndPlaySound, fenChessInstance);
@@ -403,6 +564,14 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit {
         this.soundsService.playError();
         this.rollBackMove();
       }
+    } else {
+      // Después de completar el puzzle: permitir cualquier movimiento legal
+      // Solo actualizar la posición y mostrar la última jugada
+      this.showLastMove();
+      // Actualizar Stockfish si está habilitado
+      if (this.stockfishEnabled) {
+        this.analyzeCurrentPosition();
+      }
     }
 
     // Actualiza el tablero después de un movimiento de enroque
@@ -412,10 +581,10 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit {
       this.board.setPosition(this.chessInstance.fen());
     }
 
-    // TODO: Stockfish - Se creará una librería separada para esta funcionalidad
-    // if (this.stockfishEnabled) {
-    //   this.startStockfish({ detail: { checked: true } });
-    // }
+    // Actualizar Stockfish si está habilitado
+    if (this.stockfishEnabled) {
+      this.analyzeCurrentPosition();
+    }
   }
 
   async rollBackMove() {
@@ -447,6 +616,7 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit {
       this.allowMoveArrows = true;
       this.stopTimer();
       this.currentMoveNumber--;
+      console.log('Puzzle completed, allowMoveArrows:', this.allowMoveArrows, 'stockfishInitialized:', this.stockfishInitialized);
     } else {
       await new Promise<void>((resolve) => {
         setTimeout(() => resolve(), 500);
@@ -468,10 +638,10 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit {
         this.puzzleMoveResponse();
       }
 
-      // TODO: Stockfish - Se creará una librería separada para esta funcionalidad
-      // if (this.stockfishEnabled) {
-      //   this.startStockfish({ detail: { checked: true } });
-      // }
+      // Actualizar Stockfish si está habilitado
+      if (this.stockfishEnabled) {
+        this.analyzeCurrentPosition();
+      }
     }
   }
 
@@ -609,10 +779,10 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit {
     this.fenToCompareAndPlaySound = this.chessInstance.fen();
     this.currentMoveNumber = 0;
 
-    // TODO: Stockfish - Se creará una librería separada para esta funcionalidad
-    // if (this.stockfishEnabled) {
-    //   this.startStockfish({ detail: { checked: true } });
-    // }
+    // Actualizar Stockfish si está habilitado
+    if (this.stockfishEnabled) {
+      this.analyzeCurrentPosition();
+    }
   }
 
   /**
@@ -632,10 +802,10 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit {
     this.board.setPosition(this.arrayFenSolution[this.currentMoveNumber], true);
     this.showLastMove();
 
-    // TODO: Stockfish - Se creará una librería separada para esta funcionalidad
-    // if (this.stockfishEnabled) {
-    //   this.startStockfish({ detail: { checked: true } });
-    // }
+    // Actualizar Stockfish si está habilitado
+    if (this.stockfishEnabled) {
+      this.analyzeCurrentPosition();
+    }
   }
 
   /**
@@ -656,10 +826,10 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit {
     this.fenToCompareAndPlaySound = this.chessInstance.fen();
     this.showLastMove();
 
-    // TODO: Stockfish - Se creará una librería separada para esta funcionalidad
-    // if (this.stockfishEnabled) {
-    //   this.startStockfish({ detail: { checked: true } });
-    // }
+    // Actualizar Stockfish si está habilitado
+    if (this.stockfishEnabled) {
+      this.analyzeCurrentPosition();
+    }
   }
 
   moveToEnd() {
@@ -671,10 +841,33 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit {
     this.fenToCompareAndPlaySound = this.chessInstance.fen();
     this.showLastMove();
 
-    // TODO: Stockfish - Se creará una librería separada para esta funcionalidad
-    // if (this.stockfishEnabled) {
-    //   this.startStockfish({ detail: { checked: true } });
-    // }
+    // Actualizar Stockfish si está habilitado
+    if (this.stockfishEnabled) {
+      this.analyzeCurrentPosition();
+    }
+  }
+
+  ngOnDestroy() {
+    console.log('[Stockfish] Component destroying, cleaning up...');
+    // Detener análisis si está activo
+    if (this.stockfishEnabled) {
+      try {
+        this.stockfishService.stopAnalysis();
+      } catch (error) {
+        console.warn('[Stockfish] Error stopping analysis:', error);
+      }
+    }
+
+    // Limpiar recursos de Stockfish
+    try {
+      if (this.stockfishService) {
+        this.stockfishService.terminate();
+        console.log('[Stockfish] Worker terminated');
+      }
+    } catch (error) {
+      console.error('[Stockfish] Error terminating Stockfish:', error);
+    }
+    this.stopTimer();
   }
 }
 

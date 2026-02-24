@@ -1,0 +1,14 @@
+{
+  "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
+  "dest": "../../dist/libs/stockfish-wasm",
+  "lib": {
+    "entryFile": "src/index.ts"
+  },
+  "assets": [
+    {
+      "glob": "**/*",
+      "input": "assets",
+      "output": "assets"
+    }
+  ]
+}
