@@ -18,7 +18,7 @@ import { PlanFacadeService } from '@cpark/state';
 import { PlansElosService } from '@services/plans-elos.service';
 import { UidGeneratorService } from '@chesspark/common-utils';
 import { addIcons } from 'ionicons';
-import { 
+import {
   timerOutline,
   chevronDownOutline,
   checkmarkCircleOutline,
@@ -55,12 +55,13 @@ export class TrainingComponent implements OnInit, OnDestroy {
   private translocoService = inject(TranslocoService);
   private uidGenerator = inject(UidGeneratorService);
   private soundsService = inject(SoundsService);
-  
+
   // Subject para gestionar suscripciones
   private destroy$ = new Subject<void>();
   private isInitialized = false;
   private isProcessingBlock = false;
-  
+  private isLoadingPlan = false;
+
   showBlockTimer = false;
 
   currentIndexBlock = -1; // -1 para que al iniciar se seleccione el primer bloque sumando ++ y queda en 0
@@ -99,7 +100,7 @@ export class TrainingComponent implements OnInit, OnDestroy {
     private modalController: ModalController,
     private alertController: AlertController
   ) {
-    addIcons({ 
+    addIcons({
       timerOutline,
       chevronDownOutline,
       checkmarkCircleOutline,
@@ -115,18 +116,38 @@ export class TrainingComponent implements OnInit, OnDestroy {
     if (this.isInitialized) {
       return;
     }
-    
+
     this.isInitialized = true;
-    
+
+    // Suscribirse al estado de carga del plan
+    this.planFacade.getLoadingPlan$()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(loading => {
+        this.isLoadingPlan = loading;
+      });
+
     this.planFacade.getPlan$()
       .pipe(takeUntil(this.destroy$))
       .subscribe((plan: Plan | null) => {
         if (!plan) {
-          this.router.navigate(['/home']);
+          // Solo navegar a home si:
+          // 1. No se está cargando un plan
+          // 2. Y no tenemos un plan ya asignado (para evitar navegar cuando se limpia después de tener uno)
+          if (!this.isLoadingPlan && !this.plan) {
+            this.router.navigate(['/home']);
+          }
           return;
         }
+
+        // Si ya tenemos el mismo plan, no hacer nada
+        if (this.plan && this.plan.uid === plan.uid) {
+          return;
+        }
+
         this.plan = { ...plan };
         console.log('Plan ', this.plan);
+
+        // Solo procesar si el plan no está terminado y no se está procesando un bloque
         if (!this.plan.isFinished && !this.isProcessingBlock) {
           this.playNextBlock();
           return;
@@ -138,7 +159,7 @@ export class TrainingComponent implements OnInit, OnDestroy {
     // Completar destroy$ para cancelar todas las suscripciones
     this.destroy$.next();
     this.destroy$.complete();
-    
+
     // Limpiar recursos
     this.cleanupResources();
   }
@@ -149,7 +170,7 @@ export class TrainingComponent implements OnInit, OnDestroy {
     if (this.isProcessingBlock) {
       return;
     }
-    
+
     this.isProcessingBlock = true;
     this.currentIndexBlock++;
 
@@ -205,12 +226,12 @@ export class TrainingComponent implements OnInit, OnDestroy {
       title = themeOrOpeningName;
     }
 
-    let image = 'assets/images/puzzle-themes/opening.svg';
+    let image = '/assets/images/puzzle-themes/opening.svg';
     if (themeName) {
       if (themeName.includes('mateIn')) {
-        image = 'assets/images/puzzle-themes/mate.svg';
+        image = '/assets/images/puzzle-themes/mate.svg';
       } else {
-        image = `assets/images/puzzle-themes/${themeName}.svg`;
+        image = `/assets/images/puzzle-themes/${themeName}.svg`;
       }
     }
 
@@ -447,7 +468,7 @@ export class TrainingComponent implements OnInit, OnDestroy {
     }
 
     // Calcular temas traducidos
-    const themesTranslated = this.puzzleToPlay.themes.map(theme => 
+    const themesTranslated = this.puzzleToPlay.themes.map(theme =>
       this.appService.getNameThemePuzzleByValue(theme)
     );
 
@@ -458,9 +479,9 @@ export class TrainingComponent implements OnInit, OnDestroy {
         themesTranslated
       }
     });
-    
+
     await modal.present();
-    
+
     modal.onDidDismiss().then((data) => {
       this.forceStopTimerInPuzzleBoard = false;
       // Asegurar que el mensaje de ajedrez a la ciegas se muestre si aplica
@@ -529,23 +550,23 @@ export class TrainingComponent implements OnInit, OnDestroy {
     // Detener todos los timers
     this.stopPlanTimer();
     this.stopBlockTimer();
-    
+
     // Limpiar flags
     this.forceStopTimerInPuzzleBoard = true;
     this.showBlockTimer = false;
     this.isGoshHelperShow = false;
     this.isDropdownOpen = false;
     this.isProcessingBlock = false;
-    
+
     // Resetear variables del componente
     this.currentIndexBlock = -1;
     this.timeLeftBlock = 0;
     this.countPuzzlesPlayedBlock = 0;
     this.totalPuzzlesInBlock = 0;
-    
+
     // Resetear flag de inicialización para permitir reinicialización
     this.isInitialized = false;
-    
+
     // Limpiar el estado del plan en Redux
     this.planFacade.clearPlan();
   }
@@ -586,18 +607,18 @@ export class TrainingComponent implements OnInit, OnDestroy {
   ionViewWillLeave() {
     // Asegurar limpieza completa al salir del componente
     this.forceStopTimerInPuzzleBoard = true;
-    
+
     // Detener timers
     if (this.timerUnsubscribe$ && !this.timerUnsubscribe$.closed) {
       this.timerUnsubscribe$.next();
       this.timerUnsubscribe$.complete();
     }
-    
+
     if (this.timerUnsubscribeBlock$ && !this.timerUnsubscribeBlock$.closed) {
       this.timerUnsubscribeBlock$.next();
       this.timerUnsubscribeBlock$.complete();
     }
-    
+
     // Limpiar flags
     this.showBlockTimer = false;
     this.isGoshHelperShow = false;

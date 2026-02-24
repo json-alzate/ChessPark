@@ -233,7 +233,14 @@
     "playPlan": "Ir al inicio",
     "loadMore": "Cargar más",
     "like": "Me gusta",
-    "unlike": "Quitar me gusta"
+    "unlike": "Quitar me gusta",
+    "repeatPlan": "Repetir rutina",
+    "selectRoutine": "Seleccionar otra rutina",
+    "loginRequired": {
+      "title": "Inicia sesión para ver tus estadísticas",
+      "message": "Al iniciar sesión, podrás ver y registrar tu progreso en tiempo real. Tus estadísticas se guardarán automáticamente cada vez que completes una rutina.",
+      "loginButton": "Iniciar sesión"
+    }
   },
   "PLAN_CHART": {
     "themes": "Temas",

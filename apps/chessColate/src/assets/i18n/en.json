@@ -233,7 +233,14 @@
     "playPlan": "Go to home",
     "loadMore": "Load more",
     "like": "Like",
-    "unlike": "Unlike"
+    "unlike": "Unlike",
+    "repeatPlan": "Repeat routine",
+    "selectRoutine": "Select another routine",
+    "loginRequired": {
+      "title": "Sign in to view your statistics",
+      "message": "By signing in, you'll be able to view and track your progress in real time. Your statistics will be automatically saved every time you complete a routine.",
+      "loginButton": "Sign in"
+    }
   },
   "PLAN_CHART": {
     "themes": "Themes",

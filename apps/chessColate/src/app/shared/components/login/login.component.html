@@ -2,238 +2,241 @@
 
   <div class="main-container" data-theme="halloween">
 
-  <ion-fab vertical="top" horizontal="start" slot="fixed">
-    <ion-fab-button (click)="close()" size="small" color="light">
-      <ion-icon name="close-outline"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
+    <ion-fab vertical="top" horizontal="start" slot="fixed">
+      <ion-fab-button (click)="close()" size="small" color="light">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
 
 
-  <ion-row class="row-buttons-providers">
+    <ion-row class="row-buttons-providers">
 
-    <ion-col size="12" class="ion-margin-bottom">
-      <div  class="flex justify-center">
-        <img src="assets/images/home_icon.png" alt="Home icon" />
+      <ion-col size="12" class="mb-8 mt-12">
+        <div class="flex justify-center">
+          <img src="assets/images/home_icon.png" alt="Home icon" />
+        </div>
+      </ion-col>
+
+
+      <ion-col size="12" class="ion-text-center ion-margin-top">
+        <button class="btn btn-lg bg-white text-black border-[#e5e5e5]" (click)="loginGoogle()">
+          <svg aria-label="Google logo" width="32" height="32" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+            <g>
+              <path d="m0 0H512V512H0" fill="#fff"></path>
+              <path fill="#34a853" d="M153 292c30 82 118 95 171 60h62v48A192 192 0 0190 341"></path>
+              <path fill="#4285f4" d="m386 400a140 175 0 0053-179H260v74h102q-7 37-38 57"></path>
+              <path fill="#fbbc02" d="m90 341a208 200 0 010-171l63 49q-12 37 0 73"></path>
+              <path fill="#ea4335" d="m153 219c22-69 116-109 179-50l55-54c-78-75-230-72-297 55"></path>
+            </g>
+          </svg>
+          {{ 'AUTH.login.withGoogle' | transloco }}
+        </button>
+      </ion-col>
+    </ion-row>
+
+    <div class="divider">{{ 'AUTH.divider' | transloco }}</div>
+
+    <div class="max-w-[500px] mx-auto px-4 py-6">
+
+      @if (showResetPassword) {
+      <h3 class="text-xl font-semibold mb-4">{{ 'AUTH.resetPassword.title' | transloco }}</h3>
+
+      <form [formGroup]="formResetPassword" (ngSubmit)="resetPassword($event)">
+        <ion-row>
+          <ion-col size="12" class="ion-padding-horizontal pt-4">
+            <label class="input input-lg validator w-full">
+              <ion-icon name="mail-outline"></ion-icon>
+              <input formControlName="email" type="email" required
+                [placeholder]="'AUTH.register.emailPlaceholder' | transloco" maxlength="100" />
+            </label>
+            <span class="validator-hint ion-no-margin">
+              @if(emailFieldResetPassword?.hasError('required')) {
+              {{ 'AUTH.errors.emailRequired' | transloco }}
+              } @else if (emailFieldResetPassword?.hasError('pattern')) {
+              {{ 'AUTH.errors.emailInvalid' | transloco }}
+              } @else {
+              &nbsp;
+              }
+            </span>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col size="6" class="ion-padding-horizontal">
+            <button class="btn btn-error w-full" (click)="showResetPassword = false">{{ 'COMMON.actions.cancel' |
+              transloco }}</button>
+          </ion-col>
+          <ion-col size="6" class="ion-padding-horizontal">
+            <button class="btn btn-primary w-full" type="submit" [disabled]="!formResetPassword.valid">{{
+              'COMMON.actions.send' | transloco }}</button>
+          </ion-col>
+        </ion-row>
+      </form>
+
+      } @else {
+
+      <div class="tabs tabs-boxed justify-center mb-4">
+        <button type="button" class="tab normal-case" [class.tab-active]="segmentEmailPassword === 'login'"
+          (click)="setSegmentTab('login')">
+          {{ 'AUTH.login.segments.loginSegment' | transloco }}
+        </button>
+        <button type="button" class="tab normal-case" [class.tab-active]="segmentEmailPassword === 'singUp'"
+          (click)="setSegmentTab('singUp')">
+          {{ 'AUTH.login.segments.registerSegment' | transloco }}
+        </button>
       </div>
-    </ion-col>
 
+      @if (segmentEmailPassword === 'login') {
 
-    <ion-col size="12" class="ion-text-center ion-margin-top">
-      <button class="btn btn-lg bg-white text-black border-[#e5e5e5]" (click)="loginGoogle()">
-        <svg aria-label="Google logo" width="32" height="32" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-          <g>
-            <path d="m0 0H512V512H0" fill="#fff"></path>
-            <path fill="#34a853" d="M153 292c30 82 118 95 171 60h62v48A192 192 0 0190 341"></path>
-            <path fill="#4285f4" d="m386 400a140 175 0 0053-179H260v74h102q-7 37-38 57"></path>
-            <path fill="#fbbc02" d="m90 341a208 200 0 010-171l63 49q-12 37 0 73"></path>
-            <path fill="#ea4335" d="m153 219c22-69 116-109 179-50l55-54c-78-75-230-72-297 55"></path>
-          </g>
-        </svg>
-        {{ 'AUTH.login.withGoogle' | transloco }}
-      </button>
-    </ion-col>
-  </ion-row>
+      <form [formGroup]="formLogin" (ngSubmit)="onSubmitLogin($event)">
+        <ion-row>
+          <ion-col size="12" class="ion-padding-horizontal pt-4">
+            <label class="input input-lg validator w-full">
+              <ion-icon name="mail-outline"></ion-icon>
+              <input formControlName="email" type="email" required
+                [placeholder]="'AUTH.register.emailPlaceholder' | transloco" maxlength="100" />
+            </label>
+            <span class="validator-hint ion-no-margin pt-1">
+              @if(emailFieldLogin?.hasError('required')) {
+              {{ 'AUTH.errors.emailRequired' | transloco }}
+              } @else if (emailFieldLogin?.hasError('pattern')) {
+              {{ 'AUTH.errors.emailInvalid' | transloco }}
+              } @else {
+              &nbsp;
+              }
+            </span>
+          </ion-col>
+          <ion-col size="12" class="ion-padding-horizontal pt-4">
+            <label class="input input-lg validator w-full">
+              <ion-icon name="key-outline"></ion-icon>
+              <input formControlName="password" type="password"
+                [placeholder]="'AUTH.login.passwordPlaceholder' | transloco" maxlength="100" />
+            </label>
+            <span class="validator-hint ion-no-margin">
+              @if( passwordFieldLogin?.touched && passwordFieldLogin?.hasError('required')) {
+              {{ 'AUTH.errors.passwordRequired' | transloco }}
+              } @else if (passwordFieldLogin?.hasError('minlength')) {
+              {{ 'AUTH.errors.passwordMinLength' | transloco }}
+              } @else {
+              &nbsp;
+              }
+            </span>
+          </ion-col>
+          <ion-col size="12" class="ion-text-end ion-padding-horizontal pb-4">
+            <button class="btn btn-link btn-sm btn-info" (click)="showResetPassword = true">{{
+              'AUTH.login.resetPasswordButton' |
+              transloco }}</button>
+          </ion-col>
+        </ion-row>
 
-  <div class="divider">{{ 'AUTH.divider' | transloco }}</div>
+        <ion-row>
+          <ion-col size="12" class="ion-text-center ion-padding-horizontal">
+            <button class="btn btn-primary w-full" type="submit" [disabled]="!formLogin.valid">{{
+              'AUTH.login.loginButton' | transloco }}</button>
+          </ion-col>
+        </ion-row>
+      </form>
 
-  <div class="max-w-[500px] mx-auto px-4 py-6">
-
-    @if (showResetPassword) {
-    <h3 class="text-xl font-semibold mb-4">{{ 'AUTH.resetPassword.title' | transloco }}</h3>
-
-    <form [formGroup]="formResetPassword" (ngSubmit)="resetPassword($event)">
-      <ion-row>
-        <ion-col size="12" class="ion-padding-horizontal pt-4">
-          <label class="input input-lg validator w-full">
-            <ion-icon name="mail-outline"></ion-icon>
-            <input formControlName="email" type="email" required
-              [placeholder]="'AUTH.register.emailPlaceholder' | transloco" maxlength="100" />
-          </label>
-          <span class="validator-hint ion-no-margin">
-            @if(emailFieldResetPassword?.hasError('required')) {
-            {{ 'AUTH.errors.emailRequired' | transloco }}
-            } @else if (emailFieldResetPassword?.hasError('pattern')) {
-            {{ 'AUTH.errors.emailInvalid' | transloco }}
-            } @else {
-            &nbsp;
-            }
-          </span>
-        </ion-col>
-      </ion-row>
-
-      <ion-row>
-        <ion-col size="6" class="ion-padding-horizontal">
-          <button class="btn btn-error w-full" (click)="showResetPassword = false">{{ 'COMMON.actions.cancel' |
-            transloco }}</button>
-        </ion-col>
-        <ion-col size="6" class="ion-padding-horizontal">
-          <button class="btn btn-primary w-full" type="submit" [disabled]="!formResetPassword.valid">{{
-            'COMMON.actions.send' | transloco }}</button>
-        </ion-col>
-      </ion-row>
-    </form>
-
-    } @else {
-
-    <div class="tabs tabs-boxed justify-center mb-4">
-      <button type="button" class="tab normal-case" [class.tab-active]="segmentEmailPassword === 'login'" (click)="setSegmentTab('login')">
-        {{ 'AUTH.login.segments.loginSegment' | transloco }}
-      </button>
-      <button type="button" class="tab normal-case" [class.tab-active]="segmentEmailPassword === 'singUp'" (click)="setSegmentTab('singUp')">
-        {{ 'AUTH.login.segments.registerSegment' | transloco }}
-      </button>
-    </div>
-
-    @if (segmentEmailPassword === 'login') {
-
-    <form [formGroup]="formLogin" (ngSubmit)="onSubmitLogin($event)">
-      <ion-row>
-        <ion-col size="12" class="ion-padding-horizontal pt-4">
-          <label class="input input-lg validator w-full">
-            <ion-icon name="mail-outline"></ion-icon>
-            <input formControlName="email" type="email" required
-              [placeholder]="'AUTH.register.emailPlaceholder' | transloco" maxlength="100" />
-          </label>
-          <span class="validator-hint ion-no-margin pt-1">
-            @if(emailFieldLogin?.hasError('required')) {
-            {{ 'AUTH.errors.emailRequired' | transloco }}
-            } @else if (emailFieldLogin?.hasError('pattern')) {
-            {{ 'AUTH.errors.emailInvalid' | transloco }}
-            } @else {
-            &nbsp;
-            }
-          </span>
-        </ion-col>
-        <ion-col size="12" class="ion-padding-horizontal pt-4">
-          <label class="input input-lg validator w-full">
-            <ion-icon name="key-outline"></ion-icon>
-            <input formControlName="password" type="password"
-              [placeholder]="'AUTH.login.passwordPlaceholder' | transloco" maxlength="100" />
-          </label>
-          <span class="validator-hint ion-no-margin">
-            @if( passwordFieldLogin?.touched && passwordFieldLogin?.hasError('required')) {
-            {{ 'AUTH.errors.passwordRequired' | transloco }}
-            } @else if (passwordFieldLogin?.hasError('minlength')) {
-            {{ 'AUTH.errors.passwordMinLength' | transloco }}
-            } @else {
-            &nbsp;
-            }
-          </span>
-        </ion-col>
-        <ion-col size="12" class="ion-text-end ion-padding-horizontal pb-4">
-          <button class="btn btn-link btn-sm btn-info" (click)="showResetPassword = true">{{ 'AUTH.login.resetPasswordButton' |
-            transloco }}</button>
-        </ion-col>
-      </ion-row>
-
-      <ion-row>
-        <ion-col size="12" class="ion-text-center ion-padding-horizontal">
-          <button class="btn btn-primary w-full" type="submit" [disabled]="!formLogin.valid">{{
-            'AUTH.login.loginButton' | transloco }}</button>
-        </ion-col>
-      </ion-row>
-    </form>
-
-    @if (showPasswordRestoreMessage) {
-    <div class="message-info" [class.active]="showPasswordRestoreMessage">
-      <div class="toast toast-bottom toast-center">
-        <div class="alert alert-info">
-          <span>{{ 'AUTH.login.passwordResetEmailSent' | transloco }}</span>
+      @if (showPasswordRestoreMessage) {
+      <div class="message-info" [class.active]="showPasswordRestoreMessage">
+        <div class="toast toast-bottom toast-center">
+          <div class="alert alert-info">
+            <span>{{ 'AUTH.login.passwordResetEmailSent' | transloco }}</span>
+          </div>
         </div>
       </div>
-    </div>
-    } @else {
-    <div class="message-error" [class.active]="errorLogin">
-      <div class="toast toast-bottom toast-center">
-        <div class="alert alert-error">
-          <span>{{ 'AUTH.errors.loginFailed' | transloco }}</span>
+      } @else {
+      <div class="message-error" [class.active]="errorLogin">
+        <div class="toast toast-bottom toast-center">
+          <div class="alert alert-error">
+            <span>{{ 'AUTH.errors.loginFailed' | transloco }}</span>
+          </div>
         </div>
       </div>
-    </div>
-    }
+      }
 
-    <div class="h-4"></div>
+      <div class="h-4"></div>
 
-    } @else if (segmentEmailPassword === 'singUp') {
+      } @else if (segmentEmailPassword === 'singUp') {
 
-    <form [formGroup]="formSingUp" (ngSubmit)="onSubmitSingUp($event)">
-      <ion-row>
-        <ion-col size="12" class="ion-padding-horizontal pt-4">
-          <label class="input input-lg validator w-full">
-            <ion-icon name="mail-outline"></ion-icon>
-            <input formControlName="email" type="email" required
-              [placeholder]="'AUTH.register.emailPlaceholder' | transloco" maxlength="100" />
-          </label>
-          <span class="validator-hint ion-no-margin">
-            @if(emailFieldSingUp?.hasError('required')) {
-            {{ 'AUTH.errors.emailRequired' | transloco }}
-            } @else if (emailFieldSingUp?.hasError('pattern')) {
-            {{ 'AUTH.errors.emailInvalid' | transloco }}
-            } @else {
-            &nbsp;
-            }
-          </span>
-        </ion-col>
-        <ion-col size="12" class="ion-padding-horizontal pt-4">
-          <label class="input input-lg validator w-full">
-            <ion-icon name="lock-closed-outline"></ion-icon>
-            <input formControlName="password" type="password"
-              [placeholder]="'AUTH.register.createPasswordPlaceholder' | transloco" maxlength="100" minlength="8" />
-          </label>
-          <span class="validator-hint ion-no-margin">
-            @if (passwordFieldSingUp?.hasError('required')) {
-            {{ 'AUTH.register.passwordRequired' | transloco }}
-            } @else if (passwordFieldSingUp?.hasError('minlength')) {
-            {{ 'AUTH.errors.passwordMinLength' | transloco }}
-            } @else {
-            &nbsp;
-            }
-          </span>
-        </ion-col>
-        <ion-col size="12" class="ion-padding-horizontal pt-4">
-          <label class="input input-lg validator w-full">
-            <ion-icon name="key-outline"></ion-icon>
-            <input formControlName="rePassword" type="password" required
-              [placeholder]="'AUTH.register.confirmPasswordPlaceholder' | transloco" maxlength="100" minlength="8" />
-          </label>
-          <span class="validator-hint ion-no-margin">
-            @if ( rePasswordFieldSingUp?.touched && rePasswordFieldSingUp?.hasError('required')) {
-            {{ 'AUTH.register.confirmPasswordRequired' | transloco }}
-            } @else if ( rePasswordFieldSingUp?.hasError('notMatch')) {
-            {{ 'AUTH.register.passwordsDoNotMatch' | transloco }}
-            } @else {
-            &nbsp;
-            }
-          </span>
-        </ion-col>
-      </ion-row>
+      <form [formGroup]="formSingUp" (ngSubmit)="onSubmitSingUp($event)">
+        <ion-row>
+          <ion-col size="12" class="ion-padding-horizontal pt-4">
+            <label class="input input-lg validator w-full">
+              <ion-icon name="mail-outline"></ion-icon>
+              <input formControlName="email" type="email" required
+                [placeholder]="'AUTH.register.emailPlaceholder' | transloco" maxlength="100" />
+            </label>
+            <span class="validator-hint ion-no-margin">
+              @if(emailFieldSingUp?.hasError('required')) {
+              {{ 'AUTH.errors.emailRequired' | transloco }}
+              } @else if (emailFieldSingUp?.hasError('pattern')) {
+              {{ 'AUTH.errors.emailInvalid' | transloco }}
+              } @else {
+              &nbsp;
+              }
+            </span>
+          </ion-col>
+          <ion-col size="12" class="ion-padding-horizontal pt-4">
+            <label class="input input-lg validator w-full">
+              <ion-icon name="lock-closed-outline"></ion-icon>
+              <input formControlName="password" type="password"
+                [placeholder]="'AUTH.register.createPasswordPlaceholder' | transloco" maxlength="100" minlength="8" />
+            </label>
+            <span class="validator-hint ion-no-margin">
+              @if (passwordFieldSingUp?.hasError('required')) {
+              {{ 'AUTH.register.passwordRequired' | transloco }}
+              } @else if (passwordFieldSingUp?.hasError('minlength')) {
+              {{ 'AUTH.errors.passwordMinLength' | transloco }}
+              } @else {
+              &nbsp;
+              }
+            </span>
+          </ion-col>
+          <ion-col size="12" class="ion-padding-horizontal pt-4">
+            <label class="input input-lg validator w-full">
+              <ion-icon name="key-outline"></ion-icon>
+              <input formControlName="rePassword" type="password" required
+                [placeholder]="'AUTH.register.confirmPasswordPlaceholder' | transloco" maxlength="100" minlength="8" />
+            </label>
+            <span class="validator-hint ion-no-margin">
+              @if ( rePasswordFieldSingUp?.touched && rePasswordFieldSingUp?.hasError('required')) {
+              {{ 'AUTH.register.confirmPasswordRequired' | transloco }}
+              } @else if ( rePasswordFieldSingUp?.hasError('notMatch')) {
+              {{ 'AUTH.register.passwordsDoNotMatch' | transloco }}
+              } @else {
+              &nbsp;
+              }
+            </span>
+          </ion-col>
+        </ion-row>
 
-      <ion-row>
-        <ion-col size="12" class="ion-padding-horizontal">
-          <small class="text-base-content/70">{{ 'AUTH.register.termsAndConditions' | transloco }}</small>
-        </ion-col>
-      </ion-row>
+        <ion-row>
+          <ion-col size="12" class="ion-padding-horizontal">
+            <small class="text-base-content/70">{{ 'AUTH.register.termsAndConditions' | transloco }}</small>
+          </ion-col>
+        </ion-row>
 
-      <ion-row>
-        <ion-col size="12" class="ion-text-center ion-padding-horizontal pt-4">
-          <button type="submit" class="btn btn-primary w-full" [disabled]="!formSingUp.valid">{{
-            'AUTH.register.registerButton' | transloco }}</button>
-        </ion-col>
-      </ion-row>
-    </form>
+        <ion-row>
+          <ion-col size="12" class="ion-text-center ion-padding-horizontal pt-4">
+            <button type="submit" class="btn btn-primary w-full" [disabled]="!formSingUp.valid">{{
+              'AUTH.register.registerButton' | transloco }}</button>
+          </ion-col>
+        </ion-row>
+      </form>
 
-    <div class="message-error" [class.active]="errorSingUp">
-      <div class="toast toast-bottom toast-center">
-        <div class="alert alert-error">
-          <span>{{ ('AUTH.errors.' + errorSingUp) | transloco }}</span>
+      <div class="message-error" [class.active]="errorSingUp">
+        <div class="toast toast-bottom toast-center">
+          <div class="alert alert-error">
+            <span>{{ ('AUTH.errors.' + errorSingUp) | transloco }}</span>
+          </div>
         </div>
       </div>
+
+      }
+
+      }
     </div>
-
-    }
-
-    }
-  </div>
 
   </div>
 
