@@ -86,6 +86,12 @@ export class AppComponent implements OnInit, OnDestroy {
       route: '/home',
       enabled: true
     },
+    {
+      title: 'Coordenadas',
+      icon: 'grid-outline',
+      route: '/coordinates',
+      enabled: true
+    },
   ];
 
   // Notificaciones

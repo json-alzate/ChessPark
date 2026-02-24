@@ -1,0 +1,41 @@
+<div class="flex justify-center items-center p-4">
+  <div class="avatar">
+    <div
+      class="rounded-full ring ring-primary ring-offset-base-100"
+      [ngClass]="getRingSize()"
+    >
+      <img
+        [src]="currentColorInBoard === 'white' ? 'assets/images/king-white.svg' : 'assets/images/king-black.svg'"
+        [alt]="currentColorInBoard === 'white' ? 'Rey Blanco' : 'Rey Negro'"
+        class="w-full h-full p-2"
+        [ngClass]="getSizeClasses()"
+      />
+    </div>
+  </div>
+  
+  @if (showLabel) {
+  <div class="ml-3">
+    <p class="text-sm font-medium opacity-70">{{ 'COORDINATES.game.playingWith' | transloco }}</p>
+    <p class="text-lg font-bold">
+      {{ currentColorInBoard === 'white' ? ('COORDINATES.game.whites' | transloco) : ('COORDINATES.game.blacks' | transloco) }}
+    </p>
+
+    @if (showRecord && bestScore > 0) {
+    <div class="mt-2 p-2 bg-base-200 rounded-lg">
+      <p class="text-xs opacity-60">{{ 'COORDINATES.game.currentRecord' | transloco }}</p>
+      <p class="text-sm font-bold text-primary">
+        {{ bestScore }} {{ 'COORDINATES.game.points' | transloco }}
+      </p>
+      <p class="text-xs opacity-50 mt-1">{{ 'COORDINATES.game.beatRecord' | transloco }}</p>
+    </div>
+    } @else if (showRecord) {
+    <div class="mt-2 p-2 bg-base-200 rounded-lg">
+      <p class="text-xs opacity-60">{{ 'COORDINATES.game.firstTime' | transloco }}</p>
+      <p class="text-sm font-bold text-success">
+        {{ 'COORDINATES.game.setRecord' | transloco }}
+      </p>
+    </div>
+    }
+  </div>
+  }
+</div>

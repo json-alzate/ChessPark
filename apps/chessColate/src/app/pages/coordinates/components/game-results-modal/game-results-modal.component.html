@@ -1,0 +1,100 @@
+<ion-modal #resultsModal>
+    <ng-template>
+        <ion-header class="ion-no-border">
+            <ion-toolbar>
+                <ion-title class="text-center">
+                    @if (isNewRecord) { 🏆 {{ 'COORDINATES.results.newRecord' | transloco }} 🏆 } @else { 🎯 {{
+                    'COORDINATES.results.title' | transloco }} }
+                </ion-title>
+            </ion-toolbar>
+        </ion-header>
+
+        <ion-content class="ion-padding">
+            <div class="text-center space-y-6">
+                <!-- Imagen del rey del color con el que se jugó -->
+                <div class="flex justify-center">
+                    <div class="avatar">
+                        <div class="w-20 h-20 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+                            <img [src]="currentColorInBoard === 'white' ? 'assets/images/king-white.svg' : 'assets/images/king-black.svg'"
+                                [alt]="currentColorInBoard === 'white' ? 'Rey Blanco' : 'Rey Negro'"
+                                class="w-full h-full p-3" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Información del juego -->
+                <div class="space-y-4">
+                    <div class="stats stats-vertical w-full">
+                        <div class="stat place-items-center">
+                            <div class="stat-title">{{ 'COORDINATES.results.finalScore' | transloco }}</div>
+                            <div class="stat-value text-4xl text-primary">{{ score }}</div>
+                        </div>
+
+                        <div class="stat place-items-center">
+                            <div class="stat-title">{{ 'COORDINATES.stats.correct' | transloco }}</div>
+                            <div class="stat-value text-success">
+                                {{ squaresGood.length }}
+                            </div>
+                        </div>
+
+                        <div class="stat place-items-center">
+                            <div class="stat-title">{{ 'COORDINATES.stats.errors' | transloco }}</div>
+                            <div class="stat-value text-error">{{ squaresBad.length }}</div>
+                        </div>
+
+                        <div class="stat place-items-center">
+                            <div class="stat-title">{{ 'COORDINATES.stats.accuracy' | transloco }}</div>
+                            <div class="stat-value text-info">
+                                {{ currentGameStats.accuracy | number:'1.0-1' }}%
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Información del récord -->
+                    @if (isNewRecord) {
+                    <div class="alert alert-success shadow-lg">
+                        <ion-icon name="trophy" class="text-2xl"></ion-icon>
+                        <div>
+                            <h3 class="font-bold">{{ 'COORDINATES.results.congratulations' | transloco }}</h3>
+                            <div class="text-xs">
+                                @if (recordType === 'both') { {{ 'COORDINATES.results.doubleRecord' | transloco }} {{
+                                currentColorInBoard === 'white' ? ('COORDINATES.game.whites' | transloco) :
+                                ('COORDINATES.game.blacks' | transloco) }}! }
+                                @else if (recordType === 'overall') { {{ 'COORDINATES.results.overallRecord' | transloco
+                                }} {{
+                                currentColorInBoard === 'white' ? ('COORDINATES.game.whites' | transloco) :
+                                ('COORDINATES.game.blacks' | transloco) }}! }
+                                @else { {{ 'COORDINATES.results.colorRecord' | transloco }} {{
+                                currentColorInBoard === 'white' ? ('COORDINATES.game.whites' | transloco) :
+                                ('COORDINATES.game.blacks' | transloco) }}! }
+                            </div>
+                        </div>
+                    </div>
+                    } @else {
+                    <div class="alert alert-info shadow-lg">
+                        <ion-icon name="information-circle" class="text-2xl"></ion-icon>
+                        <div>
+                            <h3 class="font-bold">{{ 'COORDINATES.results.goodGame' | transloco }}</h3>
+                            <div class="text-xs">
+                                {{ 'COORDINATES.results.bestScoreWith' | transloco }} {{ currentColorInBoard === 'white'
+                                ?
+                                ('COORDINATES.game.whites' | transloco) : ('COORDINATES.game.blacks' | transloco) }} {{
+                                'COORDINATES.results.is' | transloco }} {{ bestScoreByColor }} {{
+                                'COORDINATES.game.points' | transloco }}.
+                            </div>
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+        </ion-content>
+
+        <ion-footer class="ion-no-border">
+            <ion-toolbar class="ion-padding-horizontal">
+                <button class="btn btn-lg btn-primary w-full" (click)="onCloseModal()">
+                    {{ 'COORDINATES.results.continue' | transloco }}
+                </button>
+            </ion-toolbar>
+        </ion-footer>
+    </ng-template>
+</ion-modal>

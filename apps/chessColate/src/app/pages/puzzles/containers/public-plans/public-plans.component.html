@@ -4,19 +4,19 @@
 
         <div class="container mx-auto px-4 py-6">
             <div class="mb-4">
-                <div class="breadcrumbs">
-                    <ul>
-                        <li>
-                            <a (click)="goToHome()" class="cursor-pointer text-sm">
-                                <ion-icon name="home-outline" class="h-4 w-4"></ion-icon>
-                                <span>Inicio</span>
-                            </a>
-                        </li>
-                        <li>
-                            <span class="text-2xl font-bold">{{ 'PUBLIC_PLANS.title' | transloco }}</span>
-                        </li>
-                    </ul>
+                <div class="flex items-center justify-between mb-2">
+                    <div class="breadcrumbs">
+                        <ul>
+                            <li>
+                                <a (click)="goToHome()" class="cursor-pointer text-sm">
+                                    <ion-icon name="home-outline" class="h-4 w-4"></ion-icon>
+                                    <span>{{ 'MENU.navigation.home' | transloco }}</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
+                <h2 class="text-2xl font-bold">{{ 'PUBLIC_PLANS.title' | transloco }}</h2>
             </div>
 
             <!-- Tabs principales -->

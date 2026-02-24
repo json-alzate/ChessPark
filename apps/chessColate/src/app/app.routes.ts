@@ -42,6 +42,10 @@ export const routes: Routes = [
     canActivate: [PublicPlansGuard],
   },
   {
+    path: 'coordinates',
+    loadComponent: () => import('./pages/coordinates/coordinates.page').then(m => m.CoordinatesPage),
+  },
+  {
     path: '',
     redirectTo: 'home',
     pathMatch: 'full',

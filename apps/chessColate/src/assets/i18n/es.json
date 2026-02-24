@@ -299,6 +299,58 @@
     "loadingMore": "Cargando más...",
     "cannotLikeOwn": "No puedes dar me gusta a tu propia rutina"
   },
+  "COORDINATES": {
+    "title": "Coordenadas de Ajedrez",
+    "actions": {
+      "play": "Jugar",
+      "stopGame": "Detener juego"
+    },
+    "game": {
+      "playingWith": "Jugando con",
+      "whites": "Blancas",
+      "blacks": "Negras",
+      "currentRecord": "Récord actual:",
+      "points": "puntos",
+      "beatRecord": "¡Supera tu récord!",
+      "firstTime": "Primera vez",
+      "setRecord": "¡Establece tu récord!"
+    },
+    "stats": {
+      "correct": "Aciertos",
+      "errors": "Errores",
+      "accuracy": "Precisión",
+      "bestScores": "Mejores Puntajes",
+      "rounds": "Rondas",
+      "noScores": "No hay puntajes aún.",
+      "playFirst": "¡Juega tu primera partida!"
+    },
+    "results": {
+      "title": "Resultado del Juego",
+      "newRecord": "¡NUEVO RÉCORD!",
+      "finalScore": "Puntaje Final",
+      "congratulations": "¡Felicidades!",
+      "doubleRecord": "Has logrado un DOBLE RÉCORD jugando con",
+      "overallRecord": "¡Nuevo RÉCORD GENERAL jugando con",
+      "colorRecord": "¡Nuevo RÉCORD jugando con",
+      "goodGame": "Buen juego",
+      "bestScoreWith": "Tu mejor puntaje con",
+      "is": "es",
+      "continue": "Continuar"
+    },
+    "settings": {
+      "title": "Configuración",
+      "showCoordinates": "Mostrar Coordenadas",
+      "showCoordinatesDesc": "Muestra las letras y números del tablero",
+      "showPieces": "Mostrar Piezas",
+      "showPiecesDesc": "Muestra las piezas de ajedrez en el tablero",
+      "showRandomPieces": "Mostrar Piezas en Posiciones Aleatorias",
+      "showRandomPiecesDesc": "Coloca las piezas en posiciones aleatorias del tablero",
+      "infiniteMode": "Modo Infinito",
+      "infiniteModeDesc": "Jugar sin límite de tiempo",
+      "playSound": "Reproducir Sonido",
+      "playSoundDesc": "Reproduce un sonido cuando se toca una casilla"
+    }
+  },
   "COORDINATES_PUZZLES": {
     "coordinates": "Coordenadas",
     "pieces": "Piezas",

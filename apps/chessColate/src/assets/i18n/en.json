@@ -299,6 +299,58 @@
     "loadingMore": "Loading more...",
     "cannotLikeOwn": "You cannot like your own routine"
   },
+  "COORDINATES": {
+    "title": "Chess Coordinates",
+    "actions": {
+      "play": "Play",
+      "stopGame": "Stop game"
+    },
+    "game": {
+      "playingWith": "Playing with",
+      "whites": "Whites",
+      "blacks": "Blacks",
+      "currentRecord": "Current record:",
+      "points": "points",
+      "beatRecord": "Beat your record!",
+      "firstTime": "First time",
+      "setRecord": "Set your record!"
+    },
+    "stats": {
+      "correct": "Correct",
+      "errors": "Errors",
+      "accuracy": "Accuracy",
+      "bestScores": "Best Scores",
+      "rounds": "Rounds",
+      "noScores": "No scores yet.",
+      "playFirst": "Play your first game!"
+    },
+    "results": {
+      "title": "Game Result",
+      "newRecord": "NEW RECORD!",
+      "finalScore": "Final Score",
+      "congratulations": "Congratulations!",
+      "doubleRecord": "You achieved a DOUBLE RECORD playing with",
+      "overallRecord": "New OVERALL RECORD playing with",
+      "colorRecord": "New RECORD playing with",
+      "goodGame": "Good game",
+      "bestScoreWith": "Your best score with",
+      "is": "is",
+      "continue": "Continue"
+    },
+    "settings": {
+      "title": "Settings",
+      "showCoordinates": "Show Coordinates",
+      "showCoordinatesDesc": "Shows the letters and numbers on the board",
+      "showPieces": "Show Pieces",
+      "showPiecesDesc": "Shows the chess pieces on the board",
+      "showRandomPieces": "Show Pieces in Random Positions",
+      "showRandomPiecesDesc": "Places pieces in random positions on the board",
+      "infiniteMode": "Infinite Mode",
+      "infiniteModeDesc": "Play without time limit",
+      "playSound": "Play Sound",
+      "playSoundDesc": "Plays a sound when a square is touched"
+    }
+  },
   "COORDINATES_PUZZLES": {
     "coordinates": "Coordinates",
     "pieces": "Pieces",
