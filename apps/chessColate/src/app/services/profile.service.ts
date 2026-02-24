@@ -26,6 +26,17 @@ import { AppService } from './app.service';
 import { LanguageService } from './language.service';
 import { EloCalculatorService } from '@chesspark/common-utils';
 
+/**
+ * Información sobre récords alcanzados en un plan por defecto
+ */
+export interface DefaultPlanRecordInfo {
+  isNewTotalRecord: boolean;
+  isNewThemeRecord: boolean;
+  isNewOpeningRecord: boolean;
+  newThemeRecords: string[];
+  newOpeningRecord?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -200,10 +211,18 @@ export class ProfileService implements IProfileService {
     planType: PlanTypes,
     themes: string[],
     openingFamily: string,
-  ): void {
+  ): DefaultPlanRecordInfo {
     // Usar Record para permitir acceso dinámico a propiedades
     const elos: Record<string, any> = this.profile?.elos ? { ...this.profile.elos } : {};
     let eloOpening = 1500;
+
+    const recordInfo: DefaultPlanRecordInfo = {
+      isNewTotalRecord: false,
+      isNewThemeRecord: false,
+      isNewOpeningRecord: false,
+      newThemeRecords: [],
+      newOpeningRecord: undefined
+    };
 
     if (this.profile?.elos) {
       // Copia profunda para el planType específico, evitando la mutación directa
@@ -221,12 +240,39 @@ export class ProfileService implements IProfileService {
       eloOpening = this.eloCalculator.calculateElo(1500, puzzleElo, result).newElo;
     }
 
+    // Inicializar máximos si no existen
+    const maxTotalKey = `${planType}MaxTotal`;
+    const maxThemesKey = `${planType}Max`;
+    const maxOpeningsKey = `${planType}MaxOpenings`;
+
+    if (!elos[maxTotalKey]) {
+      const currentTotal = this.profile?.elos && (this.profile.elos as Record<string, any>)[`${planType}Total`]
+        ? ((this.profile.elos as Record<string, any>)[`${planType}Total`] as number)
+        : 1500;
+      elos[maxTotalKey] = currentTotal;
+    }
+    if (!elos[maxThemesKey]) {
+      elos[maxThemesKey] = {};
+    }
+    if (!elos[maxOpeningsKey]) {
+      elos[maxOpeningsKey] = {};
+    }
+
     themes.forEach(theme => {
       if (!elos[planType]) {
         elos[planType] = {}; // Crea planType si no existe
       }
       const currentThemeElo = (elos[planType] && elos[planType][theme]) || 1500;
-      elos[planType][theme] = this.eloCalculator.calculateElo(currentThemeElo, puzzleElo, result).newElo;
+      const newThemeElo = this.eloCalculator.calculateElo(currentThemeElo, puzzleElo, result).newElo;
+      elos[planType][theme] = newThemeElo;
+
+      // Verificar si es nuevo récord para este tema
+      const currentMaxTheme = elos[maxThemesKey][theme];
+      if (currentMaxTheme === undefined || newThemeElo > currentMaxTheme) {
+        elos[maxThemesKey][theme] = newThemeElo;
+        recordInfo.isNewThemeRecord = true;
+        recordInfo.newThemeRecords.push(theme);
+      }
     });
 
     // Calcular el elo total del plan, con el parámetro del perfil
@@ -235,6 +281,12 @@ export class ProfileService implements IProfileService {
       ? ((this.profile.elos as Record<string, any>)[totalKey] as number)
       : 1500;
     const newTotalElo = this.eloCalculator.calculateElo(currentTotalElo, puzzleElo, result).newElo;
+
+    // Verificar si es nuevo récord total
+    if (newTotalElo > elos[maxTotalKey]) {
+      elos[maxTotalKey] = newTotalElo;
+      recordInfo.isNewTotalRecord = true;
+    }
     
     // Inicializa el objeto de cambios con una copia de los elos existentes para evitar la sobrescritura
     // Usamos Record para permitir acceso dinámico a propiedades
@@ -246,16 +298,31 @@ export class ProfileService implements IProfileService {
     // Actualiza el total del plan con el nuevo valor en el parámetro correspondiente al plan
     changes.elos[`${planType}Total`] = newTotalElo;
 
+    // Actualizar máximos
+    changes.elos[maxTotalKey] = elos[maxTotalKey];
+    changes.elos[maxThemesKey] = { ...(changes.elos[maxThemesKey] || {}), ...elos[maxThemesKey] };
+
     if (openingFamily) {
       const openingsKey = `${planType}Openings`;
       changes.elos[openingsKey] = {
         ...(changes.elos[openingsKey] || {}),
         [openingFamily]: eloOpening
       };
+
+      // Verificar si es nuevo récord para esta apertura
+      const currentMaxOpening = elos[maxOpeningsKey][openingFamily];
+      if (currentMaxOpening === undefined || eloOpening > currentMaxOpening) {
+        elos[maxOpeningsKey][openingFamily] = eloOpening;
+        recordInfo.isNewOpeningRecord = true;
+        recordInfo.newOpeningRecord = openingFamily;
+      }
+      changes.elos[maxOpeningsKey] = { ...(changes.elos[maxOpeningsKey] || {}), ...elos[maxOpeningsKey] };
     }
     
     // Se actualiza el perfil con los cambios
     this.requestUpdateProfile(changes);
+
+    return recordInfo;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

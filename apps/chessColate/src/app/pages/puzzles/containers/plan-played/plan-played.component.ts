@@ -23,6 +23,7 @@ import { PlanChartComponent } from '@pages/puzzles/components/plan-chart/plan-ch
 import { LoginComponent } from '@shared/components/login/login.component';
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 import { TrainingMenuComponent } from '@pages/home/components/training-menu.component';
+import { ConfettiService } from '@chesspark/common-utils';
 
 import { addIcons } from 'ionicons';
 import { heartOutline, heart } from 'ionicons/icons';
@@ -48,6 +49,7 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
   private blockService = inject(BlockService);
   private planService = inject(PlanService);
   private loadingController = inject(LoadingController);
+  private confettiService = inject(ConfettiService);
 
   plan: Plan | null = null;
   puzzlesPerPage = 4;
@@ -173,9 +175,35 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
     if (this.plan.planType === 'custom' && this.plan.uidCustomPlan) {
       const planElos = await this.plansElosService.getOnePlanElo(this.plan.uidCustomPlan);
       this.eloTotal = planElos?.total || 0;
+      
+      // Verificar si se superó el máximo histórico inicial (antes de empezar este juego)
+      // Comparar con initialMaxElo guardado al empezar, o con maxTotal si no existe
+      const initialMax = this.plan.initialMaxElo ?? planElos?.maxTotal ?? 1500;
+      if (this.eloTotal > initialMax) {
+        this.launchConfetti();
+      }
     } else {
       this.eloTotal = this.profileService.getEloTotalByPlanType(this.plan.planType);
+      
+      // Verificar si se superó el máximo histórico inicial (antes de empezar este juego)
+      // Comparar con initialMaxElo guardado al empezar
+      const initialMax = this.plan.initialMaxElo;
+      if (initialMax !== undefined && this.eloTotal > initialMax) {
+        this.launchConfetti();
+      }
     }
+  }
+
+  /**
+   * Lanza confetti para celebrar un nuevo récord de ELO total
+   */
+  private launchConfetti() {
+    // Usar colores dorados para récord de ELO total
+    const confettiColors = ['#FFD700', '#FFA500', '#FF8C00', '#FF6347'];
+    const duration = 5000;
+    const intensity: 'high' = 'high';
+
+    this.confettiService.launch(confettiColors, duration, intensity);
   }
 
   loadMorePuzzles(blockIndex: number) {

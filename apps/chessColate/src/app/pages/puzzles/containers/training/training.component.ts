@@ -147,6 +147,11 @@ export class TrainingComponent implements OnInit, OnDestroy {
         this.plan = { ...plan };
         console.log('Plan ', this.plan);
 
+        // Guardar el máximo inicial si no está guardado (solo la primera vez que se carga el plan)
+        if (!this.plan.isFinished && !this.plan.initialMaxElo && !this.isProcessingBlock) {
+          this.saveInitialMaxElo();
+        }
+
         // Solo procesar si el plan no está terminado y no se está procesando un bloque
         if (!this.plan.isFinished && !this.isProcessingBlock) {
           this.playNextBlock();
@@ -164,6 +169,33 @@ export class TrainingComponent implements OnInit, OnDestroy {
     this.cleanupResources();
   }
 
+  /**
+   * Guarda el ELO máximo inicial del plan antes de empezar a jugar
+   */
+  private async saveInitialMaxElo() {
+    if (!this.plan) return;
+
+    if (this.plan.planType === 'custom' && this.plan.uidCustomPlan && this.profileService.getProfile?.uid) {
+      const planElos = await this.plansElosService.getOnePlanElo(this.plan.uidCustomPlan);
+      const initialMax = planElos?.maxTotal ?? planElos?.total ?? 1500;
+      this.plan = { ...this.plan, initialMaxElo: initialMax };
+      this.planFacade.updatePlan(this.plan);
+    } else if (this.plan.planType !== 'custom') {
+      const profile = this.profileService.getProfile;
+      const elos = profile?.elos;
+      if (elos) {
+        const maxTotalKey = `${this.plan.planType}MaxTotal` as keyof typeof elos;
+        const maxTotal = elos[maxTotalKey];
+        const initialMax = (typeof maxTotal === 'number' ? maxTotal : undefined) ?? this.profileService.getEloTotalByPlanType(this.plan.planType);
+        this.plan = { ...this.plan, initialMaxElo: initialMax };
+        this.planFacade.updatePlan(this.plan);
+      } else {
+        const initialMax = this.profileService.getEloTotalByPlanType(this.plan.planType);
+        this.plan = { ...this.plan, initialMaxElo: initialMax };
+        this.planFacade.updatePlan(this.plan);
+      }
+    }
+  }
 
   playNextBlock() {
     // Prevenir ejecuciones múltiples
@@ -600,6 +632,7 @@ export class TrainingComponent implements OnInit, OnDestroy {
       this.isDropdownOpen = false;
     }, 200);
   }
+
 
 
 

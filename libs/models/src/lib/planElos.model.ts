@@ -10,4 +10,11 @@ export interface PlanElos {
     };
     total: number;
     timesPlayed?: number;
+    maxTotal?: number;
+    maxThemes?: {
+        [key: string]: number;
+    };
+    maxOpenings?: {
+        [key: string]: number;
+    };
 }

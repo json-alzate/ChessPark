@@ -10,6 +10,7 @@ import {
   IonButton,
   IonIcon,
 } from '@ionic/angular/standalone';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
 import { closeOutline, stopOutline, settingsOutline } from 'ionicons/icons';
 
@@ -30,6 +31,7 @@ export interface GameSettings {
   standalone: true,
   imports: [
     CommonModule,
+    TranslocoPipe,
     IonModal,
     IonHeader,
     IonToolbar,

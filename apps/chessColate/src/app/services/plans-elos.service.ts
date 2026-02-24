@@ -6,6 +6,17 @@ import { PlansElosFacadeService } from '@cpark/state';
 import { FirestoreService } from '@services/firestore.service';
 import { ProfileService } from '@services/profile.service';
 
+/**
+ * Información sobre récords alcanzados en un plan
+ */
+export interface PlanRecordInfo {
+  isNewTotalRecord: boolean;
+  isNewThemeRecord: boolean;
+  isNewOpeningRecord: boolean;
+  newThemeRecords: string[];
+  newOpeningRecord?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -21,6 +32,7 @@ export class PlansElosService {
   /**
    * Calcula los elos de un plan custom tras un puzzle y actualiza estado (y vía effects, Firestore).
    * La lógica de dominio vive aquí; la fachada solo expone dispatch y selectores.
+   * Retorna información sobre si se alcanzaron nuevos récords.
    */
   async calculatePlanElos(
     puzzleElo: number,
@@ -29,7 +41,7 @@ export class PlansElosService {
     uidUser: string,
     themes: string[],
     openingFamily: string,
-  ): Promise<void> {
+  ): Promise<PlanRecordInfo> {
     let planElos: PlanElos | null = await firstValueFrom(
       this.plansElosFacade.getPlanElo$(planUid)
     );
@@ -41,14 +53,30 @@ export class PlansElosService {
         uidPlan: planUid,
         openings: {},
         themes: {},
-        total: 1500
+        total: 1500,
+        maxTotal: undefined,
+        maxThemes: {},
+        maxOpenings: {}
       };
     } else {
       planElos = {
         ...planElos,
         openings: { ...planElos.openings },
-        themes: { ...planElos.themes }
+        themes: { ...planElos.themes },
+        maxThemes: { ...(planElos.maxThemes || {}) },
+        maxOpenings: { ...(planElos.maxOpenings || {}) }
       };
+    }
+
+    // Inicializar máximos si no existen
+    if (planElos.maxTotal === undefined) {
+      planElos.maxTotal = planElos.total || 1500;
+    }
+    if (!planElos.maxThemes) {
+      planElos.maxThemes = {};
+    }
+    if (!planElos.maxOpenings) {
+      planElos.maxOpenings = {};
     }
 
     let eloOpening = 1500;
@@ -60,20 +88,52 @@ export class PlansElosService {
     }
 
     const temThemes = planElos.themes ? { ...planElos.themes } : {};
+    const recordInfo: PlanRecordInfo = {
+      isNewTotalRecord: false,
+      isNewThemeRecord: false,
+      isNewOpeningRecord: false,
+      newThemeRecords: [],
+      newOpeningRecord: undefined
+    };
+
     themes.forEach(theme => {
       const currentThemeElo = temThemes[theme] || 1500;
-      temThemes[theme] = this.eloCalculator.calculateElo(currentThemeElo, puzzleElo, result).newElo;
+      const newThemeElo = this.eloCalculator.calculateElo(currentThemeElo, puzzleElo, result).newElo;
+      temThemes[theme] = newThemeElo;
+
+      // Verificar si es nuevo récord para este tema
+      const currentMaxTheme = planElos.maxThemes![theme];
+      if (currentMaxTheme === undefined || newThemeElo > currentMaxTheme) {
+        planElos.maxThemes![theme] = newThemeElo;
+        recordInfo.isNewThemeRecord = true;
+        recordInfo.newThemeRecords.push(theme);
+      }
     });
     planElos.themes = temThemes;
 
     const currentTotalElo = planElos.total || 1500;
-    planElos.total = this.eloCalculator.calculateElo(currentTotalElo, puzzleElo, result).newElo;
+    const newTotalElo = this.eloCalculator.calculateElo(currentTotalElo, puzzleElo, result).newElo;
+    planElos.total = newTotalElo;
+
+    // Verificar si es nuevo récord total
+    if (newTotalElo > planElos.maxTotal!) {
+      planElos.maxTotal = newTotalElo;
+      recordInfo.isNewTotalRecord = true;
+    }
 
     if (openingFamily) {
       planElos.openings = {
         ...(planElos.openings || {}),
         [openingFamily]: eloOpening
       };
+
+      // Verificar si es nuevo récord para esta apertura
+      const currentMaxOpening = planElos.maxOpenings![openingFamily];
+      if (currentMaxOpening === undefined || eloOpening > currentMaxOpening) {
+        planElos.maxOpenings![openingFamily] = eloOpening;
+        recordInfo.isNewOpeningRecord = true;
+        recordInfo.newOpeningRecord = openingFamily;
+      }
     }
 
     if (planElos.uid) {
@@ -84,6 +144,8 @@ export class PlansElosService {
       planElos.uidPlan = planUid;
       this.plansElosFacade.requestAddOnePlanElo(planElos);
     }
+
+    return recordInfo;
   }
 
   getWeakness(planElos: { [key: string]: number }): string | null {
