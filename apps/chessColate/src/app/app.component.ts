@@ -92,6 +92,12 @@ export class AppComponent implements OnInit, OnDestroy {
       route: '/coordinates',
       enabled: true
     },
+    {
+      title: 'Historial de Planes',
+      icon: 'time-outline',
+      route: '/puzzles/plans-history',
+      enabled: true
+    },
   ];
 
   // Notificaciones

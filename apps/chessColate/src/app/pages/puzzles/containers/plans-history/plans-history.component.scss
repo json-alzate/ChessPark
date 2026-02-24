@@ -1,0 +1,10 @@
+// Estilos específicos para la página de historial de planes
+// La mayoría de estilos se manejan con DaisyUI y el theme halloween
+
+.card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+}

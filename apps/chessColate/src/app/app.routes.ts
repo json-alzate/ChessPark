@@ -22,6 +22,10 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/puzzles/containers/plan-played/plan-played.component').then(m => m.PlanPlayedComponent),
   },
   {
+    path: 'puzzles/plans-history',
+    loadComponent: () => import('./pages/puzzles/containers/plans-history/plans-history.component').then(m => m.PlansHistoryComponent),
+  },
+  {
     path: 'puzzles/custom-plans',
     loadComponent: () => import('./pages/puzzles/containers/custom-plans-list/custom-plans-list.component').then(m => m.CustomPlansListComponent),
     canActivate: [CustomPlansGuard],

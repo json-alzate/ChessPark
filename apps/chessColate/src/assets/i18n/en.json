@@ -251,7 +251,15 @@
   },
   "PLANS_HISTORY": {
     "title": "Plans history",
-    "more": "All history"
+    "more": "All history",
+    "empty": "No saved plans",
+    "emptyDescription": "Plans you complete will be automatically saved here",
+    "viewDetails": "View details",
+    "delete": "Delete",
+    "puzzlesPlayed": "Puzzles played",
+    "elo": "ELO",
+    "blocks": "Blocks",
+    "successRate": "Success rate"
   },
   "CUSTOM_PLANS": {
     "listTitle": "Custom routines",

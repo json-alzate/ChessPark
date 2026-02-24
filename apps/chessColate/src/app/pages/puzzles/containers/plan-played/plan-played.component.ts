@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
 import { ModalController, IonContent, IonIcon } from '@ionic/angular/standalone';
 
@@ -15,6 +15,7 @@ import { PlansElosService } from '@services/plans-elos.service';
 import { FirestoreService } from '@services/firestore.service';
 import { BlockService } from '@services/block.service';
 import { PlanService } from '@services/plan.service';
+import { PlanStorageService } from '@services/plan-storage.service';
 import { LoadingController } from '@ionic/angular/standalone';
 
 import { BoardPuzzleSolutionComponent } from '@chesspark/board';
@@ -40,6 +41,7 @@ import { takeUntil } from 'rxjs/operators';
 export class PlanPlayedComponent implements OnInit, OnDestroy {
   private planFacade = inject(PlanFacadeService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private modalController = inject(ModalController);
   public appService = inject(AppService);
   private profileService = inject(ProfileService);
@@ -48,6 +50,7 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
   private firestoreService = inject(FirestoreService);
   private blockService = inject(BlockService);
   private planService = inject(PlanService);
+  private planStorageService = inject(PlanStorageService);
   private loadingController = inject(LoadingController);
   private confettiService = inject(ConfettiService);
 
@@ -90,6 +93,19 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
         }
       });
 
+    // Verificar si hay un uid en los query params (desde historial)
+    this.route.queryParams
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(params => {
+        if (params['uid'] && !this.plan) {
+          // Intentar cargar el plan desde el historial
+          const planFromHistory = this.planStorageService.getPlanById(params['uid']);
+          if (planFromHistory) {
+            this.planFacade.updatePlan(planFromHistory);
+          }
+        }
+      });
+
     // Suscribirse al plan
     this.planFacade.getPlan$()
       .pipe(takeUntil(this.destroy$))
@@ -116,6 +132,21 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
           }
           // Si el plan no está terminado, ignorarlo (es un plan nuevo que se está creando)
         } else if (!plan && !this.isLoadingPlan && !this.hasHadPlan) {
+          // Intentar cargar desde query params si existe
+          const planUid = this.route.snapshot.queryParams['uid'];
+          if (planUid) {
+            const planFromHistory = this.planStorageService.getPlanById(planUid);
+            if (planFromHistory) {
+              this.plan = planFromHistory;
+              this.hasHadPlan = true;
+              this.getTotalElo();
+              this.plan.blocks.forEach((block, blockIndex) => {
+                this.userPuzzlesToShowInBoards[blockIndex] = block.puzzlesPlayed.slice(0, this.puzzlesPerPage);
+                this.showMoreButtons[blockIndex] = block.puzzlesPlayed.length > this.puzzlesPerPage;
+              });
+              return;
+            }
+          }
           // Solo navegar a home si nunca tuvimos un plan y no se está cargando uno
           // Esto evita navegar cuando se limpia el plan para cargar uno nuevo
           this.router.navigate(['/home']);

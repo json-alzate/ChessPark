@@ -19,6 +19,7 @@
       "@chesspark/common-utils": ["libs/common-utils/src/index.ts"],
       "@chesspark/custom-generators": ["tools/custom-generators/src/index.ts"],
       "@chesspark/puzzles-provider": ["libs/puzzles-provider/src/index.ts"],
+      "@chesspark/revenuecat": ["libs/revenuecat/src/index.ts"],
       "@chesspark/stockfish-wasm": ["libs/stockfish-wasm/src/index.ts"],
       "@cpark/models": ["libs/models/src/index.ts"],
       "@cpark/state": ["libs/state/src/index.ts"],

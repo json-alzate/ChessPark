@@ -251,7 +251,15 @@
   },
   "PLANS_HISTORY": {
     "title": "Historial de planes",
-    "more": "Ver más"
+    "more": "Ver más",
+    "empty": "No hay planes guardados",
+    "emptyDescription": "Los planes que completes se guardarán aquí automáticamente",
+    "viewDetails": "Ver detalles",
+    "delete": "Eliminar",
+    "puzzlesPlayed": "Ejercicios jugados",
+    "elo": "ELO",
+    "blocks": "Bloques",
+    "successRate": "Tasa de aciertos"
   },
   "CUSTOM_PLANS": {
     "listTitle": "Rutinas personalizadas",

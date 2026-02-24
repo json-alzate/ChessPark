@@ -16,6 +16,7 @@ import { BlockService } from '@services/block.service';
 import { ProfileService } from '@services/profile.service';
 import { PlanFacadeService } from '@cpark/state';
 import { PlansElosService } from '@services/plans-elos.service';
+import { PlanStorageService } from '@services/plan-storage.service';
 import { UidGeneratorService } from '@chesspark/common-utils';
 import { addIcons } from 'ionicons';
 import {
@@ -49,6 +50,7 @@ export class TrainingComponent implements OnInit, OnDestroy {
   private blockService = inject(BlockService);
   private planFacade = inject(PlanFacadeService);
   private plansElosService = inject(PlansElosService);
+  private planStorageService = inject(PlanStorageService);
   private router = inject(Router);
   appService = inject(AppService);
   private profileService = inject(ProfileService);
@@ -547,6 +549,9 @@ export class TrainingComponent implements OnInit, OnDestroy {
 
     // Actualizar el plan en Redux
     this.planFacade.updatePlan(this.plan);
+
+    // Guardar el plan en localStorage
+    this.planStorageService.savePlan(this.plan);
 
     // Incrementar contador de veces jugado para planes custom
     if (
