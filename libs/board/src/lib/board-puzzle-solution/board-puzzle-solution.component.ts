@@ -222,15 +222,47 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit, OnDe
       }
     } catch (error) {
       console.error('[Stockfish] Error analyzing position:', error);
+      
+      // Si el error es que el worker no está inicializado, intentar reinicializar
+      if (error instanceof Error && error.message.includes('not initialized')) {
+        console.warn('[Stockfish] Worker lost, attempting to reinitialize...');
+        this.stockfishInitialized = false;
+        try {
+          // Terminar el worker anterior si existe
+          this.stockfishService.terminate();
+          await new Promise(resolve => setTimeout(resolve, 200));
+          
+          // Intentar reinicializar
+          await this.stockfishService.initialize({
+            depth: 15,
+            threads: 1,
+            hash: 16,
+            workerPath: 'assets/engine/stockfish-16.1-lite-single.js',
+          });
+          this.stockfishInitialized = true;
+          console.log('[Stockfish] Reinitialized successfully');
+          
+          // Intentar el análisis de nuevo
+          if (this.stockfishEnabled) {
+            await this.analyzeCurrentPosition();
+          }
+        } catch (reinitError) {
+          console.error('[Stockfish] Failed to reinitialize:', reinitError);
+          this.stockfishEnabled = false;
+          this.stockfishInitialized = false;
+        }
+        return;
+      }
+      
       // Si hay un error crítico, desactivar Stockfish
-      if (error instanceof Error && error.message.includes('memory')) {
-        console.error('[Stockfish] Critical memory error, disabling Stockfish');
+      if (error instanceof Error && (error.message.includes('memory') || error.message.includes('terminated'))) {
+        console.error('[Stockfish] Critical error, disabling Stockfish');
         this.stockfishEnabled = false;
         this.stockfishInitialized = false;
         try {
           this.stockfishService.terminate();
         } catch (e) {
-          console.error('[Stockfish] Error terminating after memory error:', e);
+          console.error('[Stockfish] Error terminating after critical error:', e);
         }
       }
     }

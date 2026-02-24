@@ -95,10 +95,22 @@ export class StockfishWorkerService {
    */
   sendCommand(command: string): void {
     if (!this.worker) {
+      console.error('[Stockfish Worker] Cannot send command - worker is null');
+      throw new Error('Worker not initialized. Call initialize() first.');
+    }
+    if (!this.isInitialized) {
+      console.error('[Stockfish Worker] Cannot send command - worker not initialized');
       throw new Error('Worker not initialized. Call initialize() first.');
     }
     console.log('[Stockfish Worker] Sending command:', command);
-    this.worker.postMessage(command);
+    try {
+      this.worker.postMessage(command);
+    } catch (error) {
+      console.error('[Stockfish Worker] Error sending command:', error);
+      // Si hay un error al enviar, el worker probablemente está muerto
+      this.isInitialized = false;
+      throw new Error('Failed to send command to worker. Worker may be terminated.');
+    }
   }
 
   /**

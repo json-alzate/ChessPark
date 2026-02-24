@@ -56,8 +56,16 @@ export class StockfishAnalysisService {
    * ```
    */
   async getBestMove(fen: string, options?: AnalysisOptions): Promise<BestMoveResult> {
+    // Verificar que el servicio y el worker estén realmente listos
     if (!this.stockfishService.isReady) {
+      console.error('[Stockfish Analysis] Service not ready, isReady:', this.stockfishService.isReady);
       throw new Error('Stockfish not initialized. Call stockfishService.initialize() first.');
+    }
+    
+    // Verificar también que el worker esté disponible
+    if (!this.workerService.isReady()) {
+      console.error('[Stockfish Analysis] Worker not ready');
+      throw new Error('Stockfish worker not initialized. Call stockfishService.initialize() first.');
     }
 
     const opts: Required<AnalysisOptions> = {

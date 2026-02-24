@@ -55,7 +55,18 @@ export class StockfishService implements OnDestroy {
      * Indica si el motor está listo para usar
      */
     get isReady(): boolean {
-        return this.status === StockfishStatus.Ready;
+        // Verificar tanto el estado del servicio como del worker
+        const serviceReady = this.status === StockfishStatus.Ready;
+        const workerReady = this.workerService.isReady();
+        
+        // Si el servicio dice que está listo pero el worker no, sincronizar el estado
+        if (serviceReady && !workerReady) {
+            console.warn('[Stockfish Service] State mismatch: service ready but worker not ready. Resetting state.');
+            this.statusSubject.next(StockfishStatus.Error);
+            return false;
+        }
+        
+        return serviceReady && workerReady;
     }
 
     /**
@@ -161,7 +172,9 @@ export class StockfishService implements OnDestroy {
      * ```
      */
     setPosition(fen: string, moves?: string[]): void {
-        if (!this.isReady) {
+        // Verificar que el worker esté realmente disponible
+        if (!this.isReady || !this.workerService.isReady()) {
+            console.error('[Stockfish Service] Worker not ready. isReady:', this.isReady, 'workerReady:', this.workerService.isReady());
             throw new Error('Stockfish not initialized. Call initialize() first.');
         }
         console.log('[Stockfish Service] Setting position, FEN:', fen, 'moves:', moves);
