@@ -96,6 +96,12 @@ export class AppComponent implements OnInit, OnDestroy {
       enabled: true
     },
     {
+      title: 'Recorrido del Caballo',
+      icon: 'extension-puzzle-outline',
+      route: '/knight-tour',
+      enabled: true
+    },
+    {
       title: 'Historial de Planes',
       icon: 'time-outline',
       route: '/puzzles/plans-history',

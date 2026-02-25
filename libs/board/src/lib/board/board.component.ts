@@ -1,7 +1,8 @@
 import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { Chessboard, BOARD_TYPE, ChessboardConfig } from 'cm-chessboard';
+import { Chessboard, BOARD_TYPE, ChessboardConfig, MarkerType } from 'cm-chessboard';
+import { Markers } from 'cm-chessboard/src/extensions/markers/Markers.js';
 
 @Component({
   selector: 'lib-board',
@@ -30,6 +31,9 @@ export class BoardComponent implements OnInit {
         file: 'pieces/standard.svg',
       }
     },
+    extensions: [
+      { class: Markers }
+    ],
   };
 
   private board: any = null;
@@ -147,6 +151,63 @@ export class BoardComponent implements OnInit {
     return this.config.style?.showCoordinates ?? false;
   }
 
+  /**
+   * Agrega un marcador a una casilla específica
+   * @param square Casilla en notación de ajedrez (ej: 'a1')
+   * @param markerType Tipo de marcador (ej: { class: 'marker-square', slice: 'markerSquare' })
+   */
+  public addMarker(square: string, markerType: MarkerType) {
+    if (this.board) {
+      this.board.addMarker(markerType, square);
+    }
+  }
 
+  /**
+   * Remueve marcadores de una casilla específica o todos los marcadores
+   * @param square Casilla en notación de ajedrez (opcional)
+   * @param markerType Tipo de marcador a remover (opcional)
+   */
+  public removeMarkers(square?: string, markerType?: MarkerType) {
+    if (this.board) {
+      if (square && markerType) {
+        this.board.removeMarkers(markerType, square);
+      } else if (square) {
+        this.board.removeMarkers(undefined, square);
+      } else {
+        this.board.removeMarkers();
+      }
+    }
+  }
+
+  /**
+   * Obtiene los marcadores de una casilla específica o todos los marcadores
+   * @param square Casilla en notación de ajedrez (opcional)
+   * @returns Array de marcadores
+   */
+  public getMarkers(square?: string): any[] {
+    if (this.board) {
+      return this.board.getMarkers(undefined, square);
+    }
+    return [];
+  }
+
+  /**
+   * Coloca una pieza en una casilla específica
+   * @param square Casilla en notación de ajedrez (ej: 'a1')
+   * @param piece Pieza en notación FEN (ej: 'N' para caballo blanco, 'n' para caballo negro)
+   */
+  public setPiece(square: string, piece: string | undefined) {
+    if (this.board) {
+      this.board.setPiece(square, piece, false);
+    }
+  }
+
+  /**
+   * Verifica si el board está listo
+   * @returns true si el board está inicializado, false en caso contrario
+   */
+  public isBoardReady(): boolean {
+    return this.board !== null;
+  }
 
 }

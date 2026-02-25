@@ -1,0 +1,162 @@
+<ion-content [fullscreen]="true">
+  <div class="main-container" data-theme="halloween">
+    <app-navbar></app-navbar>
+
+    <div class="container mx-auto px-4 py-6">
+      <!-- Header con navegación y título -->
+      <div class="mb-4">
+        <div class="flex items-center justify-between mb-2">
+          <div class="breadcrumbs">
+            <ul>
+              <li>
+                <a (click)="goToHome()" class="cursor-pointer text-sm">
+                  <ion-icon name="home-outline" class="h-4 w-4"></ion-icon>
+                  <span>{{ 'MENU.navigation.home' | transloco }}</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <h2 class="text-2xl font-bold">Recorrido del Caballo</h2>
+        <p class="text-sm text-base-content/70 mt-1">
+          Mueve el caballo por todo el tablero sin repetir casillas
+        </p>
+      </div>
+
+      <ion-grid class="ion-margin-top">
+        <ion-row>
+          <!-- Tablero y controles principales -->
+          <ion-col
+            size="12"
+            size-sm="12"
+            size-md="12"
+            size-lg="6"
+            size-xl="6"
+            offset-lg="2"
+            offset-xl="2"
+          >
+            <!-- Tablero -->
+            <div class="mb-4">
+              <lib-board (squareSelected)="onSquareSelected($event)"></lib-board>
+            </div>
+
+            <!-- Información del juego -->
+            <div class="card bg-base-100 shadow-sm mb-4">
+              <div class="card-body">
+                <div class="flex items-center justify-between mb-2">
+                  <div>
+                    <p class="text-sm text-base-content/70">Casillas visitadas</p>
+                    <h3 class="text-2xl font-bold">
+                      {{ visitedSquares.length }} / 64
+                    </h3>
+                  </div>
+                  <div class="text-right">
+                    <p class="text-sm text-base-content/70">Tiempo</p>
+                    <h3 class="text-2xl font-bold">
+                      {{ formatTime(elapsedTime) }}
+                    </h3>
+                  </div>
+                </div>
+
+                <!-- Barra de progreso -->
+                <div class="w-full bg-base-200 rounded-full h-2">
+                  <div
+                    class="bg-primary h-2 rounded-full transition-all duration-300"
+                    [style.width.%]="(visitedSquares.length / 64) * 100"
+                  ></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Botones de acción -->
+            @if (isPlaying || isCompleted || isGameOver) {
+            <div class="flex gap-2">
+              <button class="btn btn-error btn-lg flex-1" (click)="resetGame()">
+                <ion-icon name="refresh-outline"></ion-icon>
+                Reiniciar
+              </button>
+            </div>
+            }
+          </ion-col>
+
+          <!-- Panel de configuración e información -->
+          <ion-col size="12" size-sm="12" size-md="12" size-lg="4" size-xl="4">
+            <!-- Configuración -->
+            <div class="card bg-base-100 shadow-sm mb-4">
+              <div class="card-body">
+                <h3 class="text-lg font-semibold mb-4">Configuración</h3>
+
+                <!-- Selector de posición inicial -->
+                <div class="form-control mb-4">
+                  <label class="label">
+                    <span class="label-text">Posición inicial</span>
+                  </label>
+                  <ion-select
+                    [value]="startPosition"
+                    [disabled]="isPlaying"
+                    (ionChange)="onStartPositionChange($event)"
+                    interface="popover"
+                    class="select select-bordered w-full"
+                  >
+                    <ion-select-option value="random">Aleatoria</ion-select-option>
+                    <ion-select-option value="a1">a1 (esquina inferior izquierda)</ion-select-option>
+                    <ion-select-option value="h1">h1 (esquina inferior derecha)</ion-select-option>
+                    <ion-select-option value="a8">a8 (esquina superior izquierda)</ion-select-option>
+                    <ion-select-option value="h8">h8 (esquina superior derecha)</ion-select-option>
+                  </ion-select>
+                </div>
+
+                <!-- Toggle para mostrar casillas visitadas -->
+                <div class="form-control">
+                  <label class="label cursor-pointer">
+                    <span class="label-text">Mostrar casillas visitadas</span>
+                    <ion-toggle
+                      [checked]="showVisited"
+                      (ionChange)="onShowVisitedChange($event)"
+                    ></ion-toggle>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mensaje informativo antes de iniciar -->
+            @if (!isPlaying && !isCompleted && !isGameOver) {
+            <div class="card bg-info text-info-content shadow-sm mb-4">
+              <div class="card-body text-center">
+                <h3 class="text-lg font-bold mb-2">¡Listo para comenzar!</h3>
+                <p class="text-sm">El juego comenzará cuando muevas el caballo por primera vez</p>
+              </div>
+            </div>
+            }
+
+            <!-- Estado del juego -->
+            @if (isCompleted) {
+            <div class="card bg-success text-success-content shadow-sm mb-4">
+              <div class="card-body text-center">
+                <h3 class="text-xl font-bold mb-2">¡Felicidades!</h3>
+                <p class="mb-2">Has completado el recorrido del caballo</p>
+                <p class="text-sm">Tiempo: {{ formatTime(elapsedTime) }}</p>
+                <p class="text-sm">Casillas visitadas: {{ visitedSquares.length }} / 64</p>
+              </div>
+            </div>
+            }
+
+
+            <!-- Instrucciones -->
+            <div class="card bg-base-100 shadow-sm">
+              <div class="card-body">
+                <h3 class="text-lg font-semibold mb-2">Instrucciones</h3>
+                <ul class="text-sm text-base-content/70 space-y-1">
+                  <li>• Haz clic en una casilla para mover el caballo</li>
+                  <li>• El caballo se mueve en forma de L</li>
+                  <li>• No puedes repetir casillas</li>
+                  <li>• Completa las 64 casillas para ganar</li>
+                </ul>
+              </div>
+            </div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
+  </div>
+</ion-content>

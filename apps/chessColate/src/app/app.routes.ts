@@ -59,4 +59,8 @@ export const routes: Routes = [
     path: 'coordinates',
     loadComponent: () => import('./pages/coordinates/coordinates.page').then(m => m.CoordinatesPage),
   },
+  {
+    path: 'knight-tour',
+    loadComponent: () => import('./pages/knight-tour/knight-tour.page').then(m => m.KnightTourPage),
+  },
 ];
