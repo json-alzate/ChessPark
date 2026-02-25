@@ -5,9 +5,19 @@ import { PublicPlansGuard } from './guards/public-plans.guard';
 
 export const routes: Routes = [
   {
+    path: '',
+    redirectTo: 'home',
+    pathMatch: 'full',
+  },
+  {
     path: 'home',
     loadComponent: () =>
       import('./pages/home/home.page').then((m) => m.HomePage),
+  },
+  {
+    path: 'donation',
+    loadComponent: () =>
+      import('./pages/donation/donation.page').then((m) => m.DonationPage),
   },
   // {
   //   path: 'puzzles',
@@ -48,10 +58,5 @@ export const routes: Routes = [
   {
     path: 'coordinates',
     loadComponent: () => import('./pages/coordinates/coordinates.page').then(m => m.CoordinatesPage),
-  },
-  {
-    path: '',
-    redirectTo: 'home',
-    pathMatch: 'full',
   },
 ];

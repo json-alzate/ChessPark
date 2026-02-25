@@ -7,11 +7,12 @@ import { takeUntil } from 'rxjs/operators';
 import { IonContent, IonIcon, AlertController } from '@ionic/angular/standalone';
 import { TranslocoPipe } from '@jsverse/transloco';
 
-import { Plan } from '@cpark/models';
+import { Plan, Block } from '@cpark/models';
 
 import { PlanStorageService } from '@services/plan-storage.service';
 import { PlanFacadeService } from '@cpark/state';
 import { AppService } from '@services/app.service';
+import { SecondsToMinutesSecondsPipe } from '@chesspark/common-utils';
 
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 
@@ -22,7 +23,10 @@ import {
     trashOutline,
     calendarOutline,
     statsChartOutline,
-    extensionPuzzleOutline
+    extensionPuzzleOutline,
+    shuffle,
+    trendingDown,
+    infiniteOutline
 } from 'ionicons/icons';
 
 @Component({
@@ -34,6 +38,7 @@ import {
         IonContent,
         IonIcon,
         NavbarComponent,
+        SecondsToMinutesSecondsPipe,
     ],
     templateUrl: './plans-history.component.html',
     styleUrl: './plans-history.component.scss',
@@ -57,7 +62,10 @@ export class PlansHistoryComponent implements OnInit, OnDestroy {
             trashOutline,
             calendarOutline,
             statsChartOutline,
-            extensionPuzzleOutline
+            extensionPuzzleOutline,
+            shuffle,
+            trendingDown,
+            infiniteOutline
         });
     }
 
@@ -188,5 +196,63 @@ export class PlansHistoryComponent implements OnInit, OnDestroy {
         }, 0);
 
         return Math.round((correctPuzzles / totalPuzzles) * 100);
+    }
+
+    /**
+     * Calcula el tiempo total del plan en segundos
+     */
+    getTotalTime(plan: Plan): number {
+        return plan.blocks.reduce((total, block) => {
+            return total + (block.time > 0 ? block.time : 0);
+        }, 0);
+    }
+
+    /**
+     * Obtiene la configuración del bloque para mostrar
+     */
+    getBlockConfig(block: Block): { type: 'time' | 'puzzles' | 'both' | 'infinite'; time?: number; puzzles?: number } | null {
+        const hasTime = block.time > 0;
+        const hasPuzzles = block.puzzlesCount > 0;
+
+        if (hasTime && hasPuzzles) {
+            return { type: 'both', time: block.time, puzzles: block.puzzlesCount };
+        } else if (hasTime) {
+            return { type: 'time', time: block.time };
+        } else if (hasPuzzles) {
+            return { type: 'puzzles', puzzles: block.puzzlesCount };
+        } else {
+            return { type: 'infinite' };
+        }
+    }
+
+    /**
+     * Obtiene el nombre del tema
+     */
+    getThemeName(theme: string): string {
+        return this.appService.getNameThemePuzzleByValue(theme);
+    }
+
+    /**
+     * Obtiene el icono del tema
+     */
+    getThemeIcon(theme: string): { type: 'icon' | 'image'; value: string } | null {
+        if (theme === 'all') {
+            return { type: 'icon', value: 'shuffle' };
+        }
+        if (theme === 'weakness') {
+            return { type: 'icon', value: 'trending-down' };
+        }
+        const themeData = this.appService.getThemePuzzleByValue(theme);
+        if (themeData?.img) {
+            return { type: 'image', value: `/assets/images/puzzle-themes/${themeData.img}` };
+        }
+        return null;
+    }
+
+    /**
+     * Navega al inicio
+     */
+    goToHome(): void {
+        this.router.navigate(['/home']);
     }
 }

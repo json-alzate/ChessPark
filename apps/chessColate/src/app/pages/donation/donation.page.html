@@ -1,0 +1,102 @@
+<ion-content [fullscreen]="true">
+  <div class="main-container" data-theme="halloween">
+    <app-navbar></app-navbar>
+
+    <div class="container mx-auto px-4 py-6 max-w-2xl">
+      <!-- Header -->
+      <div class="text-center mb-8">
+        <div class="flex justify-center mb-4">
+          <div class="w-20 h-20 rounded-full bg-error/20 flex items-center justify-center">
+            <ion-icon name="heart" class="text-4xl text-error"></ion-icon>
+          </div>
+        </div>
+        <h1 class="text-3xl font-bold mb-2">Apoya el Proyecto</h1>
+        <p class="text-base opacity-90 mb-1">
+          Tu apoyo nos ayuda a mantener y mejorar ChessColate
+        </p>
+        <p class="text-sm opacity-70">
+          Las donaciones se renuevan mensualmente. Puedes cancelar en cualquier momento.
+        </p>
+      </div>
+
+      <!-- Opciones de donación -->
+      @if (isLoading) {
+        <div class="flex justify-center items-center py-12">
+          <span class="loading loading-spinner loading-lg"></span>
+        </div>
+      } @else {
+        <div class="space-y-4 mb-6">
+          @for (option of donationOptions; track option.id) {
+            <div
+              class="card bg-base-100 shadow-lg hover:shadow-xl transition-shadow cursor-pointer"
+              (click)="processDonation(option)"
+            >
+              <div class="card-body">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-4 flex-1">
+                    <div class="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
+                      <ion-icon name="heart" class="text-2xl text-primary"></ion-icon>
+                    </div>
+                    <div class="flex-1">
+                      <h2 class="card-title text-2xl mb-1">{{ option.label }}</h2>
+                      <p class="text-sm opacity-70">{{ option.description }}</p>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <ion-icon name="arrow-forward-outline" class="text-2xl opacity-50"></ion-icon>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Información adicional -->
+      <div class="card bg-base-200 shadow-md">
+        <div class="card-body">
+          <h3 class="card-title text-lg mb-4">Información importante</h3>
+          <ul class="space-y-2 text-sm">
+            <li class="flex items-start gap-2">
+              <span class="text-primary">•</span>
+              <span>Las donaciones son suscripciones recurrentes mensuales</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-primary">•</span>
+              <span>Puedes cancelar en cualquier momento desde la configuración de tu dispositivo</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-primary">•</span>
+              <span>Las donaciones se procesan de forma segura a través de RevenueCat</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-primary">•</span>
+              <span>Si cambias de dispositivo, puedes restaurar tus compras</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Botón restaurar compras -->
+      <div class="text-center mt-6">
+        <button
+          class="btn btn-link btn-sm text-primary"
+          (click)="restorePurchases()"
+        >
+          Restaurar compras
+        </button>
+      </div>
+
+      <!-- Botón volver -->
+      <div class="text-center mt-4">
+        <button
+          class="btn btn-outline btn-sm"
+          (click)="goBack()"
+        >
+          <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
+          Volver
+        </button>
+      </div>
+    </div>
+  </div>
+</ion-content>

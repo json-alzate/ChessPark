@@ -1,0 +1,74 @@
+<ion-modal
+  #donationModal
+  [presentingElement]="null"
+  [breakpoints]="[0, 0.5, 0.75]"
+  [initialBreakpoint]="0.75"
+  [backdropDismiss]="true"
+  class="donation-modal"
+>
+  <ng-template>
+    <ion-content>
+      <div data-theme="halloween" class="h-full">
+        <ion-header class="ion-no-border">
+          <ion-toolbar>
+            <ion-title class="text-center">
+              <ion-icon name="heart-outline" class="mr-2"></ion-icon>
+              Apoya el Proyecto
+            </ion-title>
+            <ion-button fill="clear" slot="end" (click)="dismiss()">
+              <ion-icon name="close-outline"></ion-icon>
+            </ion-button>
+          </ion-toolbar>
+        </ion-header>
+
+        <div class="space-y-6 p-4">
+          <!-- Mensaje de agradecimiento -->
+          <div class="text-center space-y-2">
+            <p class="text-base opacity-90">
+              Tu apoyo nos ayuda a mantener y mejorar ChessColate
+            </p>
+            <p class="text-sm opacity-70">
+              Las donaciones se renuevan mensualmente. Puedes cancelar en cualquier momento.
+            </p>
+          </div>
+
+          <!-- Opciones de donación -->
+          @if (isLoading) {
+            <div class="flex justify-center items-center py-8">
+              <span class="loading loading-spinner loading-lg"></span>
+            </div>
+          } @else {
+            <ion-list class="bg-base-100 rounded-box shadow-md">
+              @for (option of donationOptions; track option.id) {
+                <ion-item
+                  button
+                  (click)="processDonation(option)"
+                  class="donation-option"
+                >
+                  <ion-icon name="heart" slot="start" class="text-primary"></ion-icon>
+                  <ion-label>
+                    <h2 class="font-semibold text-lg">{{ option.label }}</h2>
+                    <p class="text-sm opacity-70">{{ option.description }}</p>
+                  </ion-label>
+                </ion-item>
+              }
+            </ion-list>
+          }
+
+          <!-- Información adicional -->
+          <div class="text-center space-y-2 pt-4">
+            <button
+              class="btn btn-link btn-sm text-primary"
+              (click)="restorePurchases()"
+            >
+              Restaurar compras
+            </button>
+            <p class="text-xs opacity-60">
+              Las donaciones se procesan de forma segura a través de RevenueCat
+            </p>
+          </div>
+        </div>
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>

@@ -6,7 +6,8 @@
     "declarationMap": true,
     "inlineSources": true,
     "types": [],
-    "composite": true
+    "composite": true,
+    "skipLibCheck": true
   },
   "exclude": [
     "src/**/*.spec.ts",

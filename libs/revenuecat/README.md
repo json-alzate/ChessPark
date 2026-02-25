@@ -1,10 +1,23 @@
 # @chesspark/revenuecat
 
-Librería Angular para integrar RevenueCat en aplicaciones móviles (Android e iOS) usando Capacitor. Permite gestionar suscripciones recurrentes y compras únicas (donaciones) de manera unificada.
+Librería Angular para integrar RevenueCat en aplicaciones móviles (Android e iOS) y web usando Capacitor. Permite gestionar suscripciones recurrentes y compras únicas (donaciones) de manera unificada, con soporte automático para web (API REST) y móvil (SDK nativo).
 
 ## Introducción
 
-RevenueCat es una plataforma que simplifica la gestión de suscripciones y compras in-app. Esta librería proporciona una abstracción unificada para trabajar con RevenueCat en aplicaciones Angular con Capacitor.
+RevenueCat es una plataforma que simplifica la gestión de suscripciones y compras in-app. Esta librería proporciona una abstracción unificada para trabajar con RevenueCat en aplicaciones Angular con Capacitor, funcionando tanto en plataformas nativas (Android/iOS) como en web.
+
+### ¿Cómo Funciona?
+
+La librería detecta automáticamente la plataforma y usa el método apropiado:
+
+- **En Móvil (Android/iOS)**: Usa el SDK nativo de RevenueCat (`@revenuecat/purchases-capacitor`) para funcionalidad completa (compras, suscripciones, restauración)
+- **En Web**: Usa la API REST de RevenueCat para consultas de solo lectura (verificar estado de suscripción, información del cliente)
+
+Esta arquitectura permite:
+- ✅ Verificar suscripciones en web sin necesidad de backend
+- ✅ Procesar compras y donaciones en dispositivos móviles
+- ✅ Mantener consistencia entre plataformas
+- ✅ Usar la misma API en todo el código
 
 ### Ventajas de usar RevenueCat
 
@@ -19,6 +32,75 @@ RevenueCat es una plataforma que simplifica la gestión de suscripciones y compr
 - **Donaciones**: Compras únicas sin renovación automática
 - **Suscripciones recurrentes**: Pagos mensuales, anuales, etc.
 - **Contenido premium**: Acceso a funcionalidades basado en entitlements
+
+## ¿Cómo Funciona la Librería?
+
+### Arquitectura Multiplataforma
+
+La librería detecta automáticamente la plataforma y usa el método apropiado:
+
+#### En Móvil (Android/iOS)
+- ✅ Usa el SDK nativo de RevenueCat (`@revenuecat/purchases-capacitor`)
+- ✅ Funcionalidad completa: compras, suscripciones, restauración
+- ✅ Integración directa con App Store y Google Play
+- ✅ Validación automática de recibos
+
+#### En Web
+- ✅ Usa la API REST de RevenueCat directamente desde el cliente
+- ✅ Consultas de solo lectura: verificar estado de suscripción, información del cliente
+- ✅ No requiere backend propio
+- ✅ Usa Public API Key (segura para cliente)
+
+### Flujo de Detección Automática
+
+```
+┌─────────────────────────────────────┐
+│  Método del servicio llamado        │
+│  (ej: getCustomerInfo())            │
+└──────────────┬──────────────────────┘
+               │
+               ▼
+    ┌──────────────────────┐
+    │ ¿Plataforma nativa?  │
+    └──────┬───────────────┘
+           │
+    ┌──────┴──────┐
+    │             │
+    ▼             ▼
+┌────────┐   ┌──────────┐
+│  SÍ    │   │    NO    │
+│ Móvil  │   │   Web    │
+└───┬────┘   └────┬─────┘
+    │             │
+    ▼             ▼
+┌──────────┐  ┌──────────────┐
+│ SDK      │  │ API REST     │
+│ Nativo   │  │ RevenueCat   │
+└──────────┘  └──────────────┘
+```
+
+### Ejemplo de Uso Unificado
+
+El mismo código funciona en ambas plataformas:
+
+```typescript
+// Este código funciona igual en web y móvil
+async checkSubscription() {
+  // En móvil: usa SDK nativo
+  // En web: usa API REST automáticamente
+  const isSubscribed = await this.revenueCat.checkSubscriptionStatus('donation');
+  
+  if (isSubscribed) {
+    console.log('Usuario tiene suscripción activa');
+  }
+}
+```
+
+### Limitaciones en Web
+
+- ❌ No se pueden procesar compras desde web (solo desde móvil)
+- ✅ Solo lectura: verificar estado, obtener información del cliente
+- ✅ Ideal para verificar suscripciones activas en la interfaz web
 
 ## Instalación
 
@@ -46,7 +128,10 @@ import { RevenueCatService } from '@chesspark/revenuecat';
 
 1. Crear cuenta en [RevenueCat Dashboard](https://app.revenuecat.com/)
 2. Crear un nuevo proyecto para tu aplicación
-3. Obtener la API Key pública (disponible en Project Settings > API Keys)
+3. Obtener la **Public API Key** (disponible en Project Settings > API Keys)
+   - ⚠️ **IMPORTANTE**: Usar la Public API Key (no la Secret Key)
+   - La Public API Key es segura para usar en el cliente y permite consultas de solo lectura
+   - La Secret Key solo debe usarse en backend (no incluida en esta librería)
 
 ### Configuración iOS
 
@@ -96,8 +181,9 @@ import { RevenueCatService } from '@chesspark/revenuecat';
 ### Inicialización
 
 ```typescript
-import { RevenueCatService } from '@chesspark/revenuecat';
+import { RevenueCatService, LogLevel } from '@chesspark/revenuecat';
 import { Component, OnInit, inject } from '@angular/core';
+import { environment } from '@environments/environment';
 
 @Component({
   selector: 'app-root',
@@ -107,13 +193,33 @@ export class AppComponent implements OnInit {
   private revenueCat = inject(RevenueCatService);
 
   async ngOnInit() {
-    // Inicializar con API Key pública
-    await this.revenueCat.initialize('tu_api_key_publica');
+    // Obtener API Key desde environment
+    const apiKey = environment.revenueCatApiKey;
     
-    // Opcional: Configurar usuario único para sincronización multiplataforma
-    // Usa el mismo user ID en todas las plataformas
-    const userId = 'user_12345'; // Por ejemplo, el UID de Firebase Auth
+    // Inicializar RevenueCat
+    // En móvil: inicializa el SDK nativo
+    // En web: guarda credenciales para API REST
+    await this.revenueCat.initialize(apiKey);
+    
+    // Configurar logging en desarrollo (solo móvil)
+    if (!environment.production) {
+      this.revenueCat.setLogLevel(LogLevel.DEBUG);
+    }
+  }
+
+  // Cuando el usuario se autentica
+  async onUserLogin(userId: string) {
+    // Configurar usuario (funciona en web y móvil)
     await this.revenueCat.configure(userId);
+    
+    // Verificar suscripción activa
+    // En móvil: usa SDK
+    // En web: usa API REST automáticamente
+    const isSubscribed = await this.revenueCat.checkSubscriptionStatus('donation');
+    
+    if (isSubscribed) {
+      console.log('Usuario tiene donación recurrente activa');
+    }
   }
 }
 ```
@@ -206,17 +312,20 @@ constructor(private revenueCat: RevenueCatService) {}
 async checkPremiumAccess() {
   try {
     // Verificar si el usuario tiene un entitlement activo
-    const isSubscribed = await this.revenueCat.isSubscribed('premium');
+    // Funciona automáticamente en web (API REST) y móvil (SDK)
+    const isSubscribed = await this.revenueCat.isSubscribed('donation');
 
     if (isSubscribed) {
-      console.log('Usuario tiene acceso premium');
-      // Mostrar contenido premium
+      console.log('Usuario tiene donación recurrente activa');
+      // Mostrar contenido premium o funcionalidades adicionales
     } else {
       console.log('Usuario no tiene suscripción activa');
-      // Mostrar opciones de compra
+      // Mostrar opciones de donación
     }
 
     // Obtener información completa del cliente
+    // En web: consulta API REST
+    // En móvil: consulta SDK nativo
     const customerInfo = await this.revenueCat.getCustomerInfo();
     const activeEntitlements = customerInfo.entitlements.active;
     
@@ -224,7 +333,7 @@ async checkPremiumAccess() {
     Object.keys(activeEntitlements).forEach(entitlementId => {
       const entitlement = activeEntitlements[entitlementId];
       if (entitlement.isActive) {
-        console.log(`Entitlement ${entitlementId} está activo hasta ${entitlement.expirationDate}`);
+        console.log(`Entitlement ${entitlementId} está activo`);
       }
     });
   } catch (error) {
@@ -458,9 +567,17 @@ if (!environment.production) {
 ### Problema: "RevenueCat no está disponible"
 
 **Soluciones:**
-- Verificar que estés ejecutando en un dispositivo nativo (no en el navegador)
-- Verificar que el plugin de Capacitor esté correctamente instalado: `npx cap sync`
-- Verificar que estés usando la versión correcta del plugin
+- **En móvil**: Verificar que el plugin de Capacitor esté correctamente instalado: `npx cap sync`
+- **En móvil**: Verificar que estés usando la versión correcta del plugin
+- **En web**: Verificar que la Public API Key esté configurada correctamente
+- **En web**: Verificar que el usuario esté configurado con `configure(userId)`
+
+### Problema: "Error de CORS en web"
+
+**Soluciones:**
+- RevenueCat API REST puede tener restricciones CORS
+- Si ocurre error CORS, verificar que estés usando la Public API Key correcta
+- Considerar usar un proxy si es necesario (aunque normalmente no debería ser necesario)
 
 ### Problema: "Error al inicializar"
 
@@ -490,11 +607,96 @@ const config: CapacitorConfig = {
 export default config;
 ```
 
+## Configuración de API Key
+
+### Obtener Public API Key
+
+1. Ve a [RevenueCat Dashboard](https://app.revenuecat.com/)
+2. Selecciona tu proyecto
+3. Ve a **Project Settings** > **API Keys**
+4. Copia la **Public API Key** (no la Secret Key)
+
+### Configurar en la Aplicación
+
+Agregar la API Key en `apps/chessColate/src/environments/private/keys.ts`:
+
+```typescript
+export const keys = {
+  firebase: { /* ... */ },
+  revenueCat: {
+    apiKey: 'tu_public_api_key_aqui' // Public API Key de RevenueCat
+  }
+};
+```
+
+Y en `apps/chessColate/src/environments/environment.ts`:
+
+```typescript
+export const environment = {
+  // ...
+  revenueCatApiKey: keys.revenueCat.apiKey
+};
+```
+
+⚠️ **IMPORTANTE**: 
+- Usar **Public API Key** (segura para cliente)
+- **NO** usar Secret Key (solo para backend)
+- La Public API Key permite consultas de solo lectura
+
+## Flujo Completo de Integración
+
+### 1. Inicialización en App Component
+
+```typescript
+// En app.component.ts
+async initRevenueCat() {
+  const apiKey = environment.revenueCatApiKey;
+  const userId = this.profile?.uid; // Firebase UID
+  
+  // Inicializar (funciona en web y móvil)
+  await this.revenueCat.initialize(apiKey, userId);
+}
+```
+
+### 2. Configurar Usuario al Autenticarse
+
+```typescript
+// Cuando el usuario se autentica
+async configureRevenueCatUser(userId: string) {
+  // Configurar usuario (web y móvil)
+  await this.revenueCat.configure(userId);
+  
+  // Verificar suscripción activa
+  const hasSubscription = await this.revenueCat.checkSubscriptionStatus('donation');
+  
+  if (hasSubscription) {
+    // Usuario tiene donación recurrente activa
+    console.log('Usuario tiene suscripción activa');
+  }
+}
+```
+
+### 3. Verificar Suscripción en Cualquier Momento
+
+```typescript
+// En cualquier componente
+async checkUserSubscription() {
+  try {
+    const isSubscribed = await this.revenueCat.isSubscribed('donation');
+    return isSubscribed;
+  } catch (error) {
+    console.error('Error verificando suscripción:', error);
+    return false;
+  }
+}
+```
+
 ## Referencias
 
 - [Documentación oficial de RevenueCat](https://docs.revenuecat.com/)
 - [Documentación del plugin Capacitor](https://docs.revenuecat.com/docs/capacitor)
 - [RevenueCat Dashboard](https://app.revenuecat.com/)
+- [RevenueCat REST API](https://docs.revenuecat.com/reference/subscriber)
 - [Guía de integración iOS](https://docs.revenuecat.com/docs/ios)
 - [Guía de integración Android](https://docs.revenuecat.com/docs/android)
 
