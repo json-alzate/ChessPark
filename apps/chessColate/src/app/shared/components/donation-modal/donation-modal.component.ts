@@ -61,22 +61,22 @@ export class DonationModalComponent implements OnInit {
   donationOptions: DonationOption[] = [
     {
       id: 'donation_small',
-      amount: 2.99,
-      label: '$2.99',
+      amount: 3,
+      label: '$3',
       description: 'Donación pequeña - Renovación mensual',
       packageIdentifier: 'donation_small',
     },
     {
       id: 'donation_medium',
-      amount: 4.99,
-      label: '$4.99',
+      amount: 5,
+      label: '$5',
       description: 'Donación mediana - Renovación mensual',
       packageIdentifier: 'donation_medium',
     },
     {
       id: 'donation_large',
-      amount: 9.99,
-      label: '$9.99',
+      amount: 10,
+      label: '$10',
       description: 'Donación grande - Renovación mensual',
       packageIdentifier: 'donation_large',
     },
