@@ -53,6 +53,7 @@ export class PlansHistoryComponent implements OnInit, OnDestroy {
     private destroy$ = new Subject<void>();
 
     plans: Plan[] = [];
+    groupedPlans: { date: string; plans: Plan[] }[] = [];
     isLoading = false;
 
     constructor() {
@@ -85,12 +86,39 @@ export class PlansHistoryComponent implements OnInit, OnDestroy {
         this.isLoading = true;
         try {
             this.plans = this.planStorageService.getAllPlans();
+            this.groupPlansByDate();
         } catch (error) {
             console.error('Error al cargar planes:', error);
             this.plans = [];
+            this.groupedPlans = [];
         } finally {
             this.isLoading = false;
         }
+    }
+
+    /**
+     * Agrupa los planes por fecha
+     */
+    groupPlansByDate(): void {
+        const grouped = new Map<string, Plan[]>();
+
+        this.plans.forEach(plan => {
+            const dateKey = this.formatDate(plan.createdAt);
+            if (!grouped.has(dateKey)) {
+                grouped.set(dateKey, []);
+            }
+            grouped.get(dateKey)!.push(plan);
+        });
+
+        // Convertir a array y ordenar por fecha (más recientes primero)
+        this.groupedPlans = Array.from(grouped.entries())
+            .map(([date, plans]) => ({ date, plans }))
+            .sort((a, b) => {
+                // Ordenar por la fecha del primer plan de cada grupo
+                const dateA = a.plans[0]?.createdAt || 0;
+                const dateB = b.plans[0]?.createdAt || 0;
+                return dateB - dateA;
+            });
     }
 
     /**
@@ -175,7 +203,7 @@ export class PlansHistoryComponent implements OnInit, OnDestroy {
                     role: 'destructive',
                     handler: () => {
                         this.planStorageService.deletePlan(plan.uid);
-                        this.loadPlans(); // Recargar la lista
+                        this.loadPlans(); // Recargar la lista y reagrupar
                     },
                 },
             ],

@@ -39,17 +39,18 @@
         </div>
       </div>
       } @else {
-      <ul class="timeline timeline-vertical">
-        @for (plan of plans; track plan.uid; let i = $index) {
-        <li>
-          @if (i < plans.length - 1) {
-          <hr />
-          }
-          <div class="timeline-start">{{ formatDate(plan.createdAt) }}</div>
-          <div class="timeline-middle">
-            <ion-icon name="time-outline" class="text-primary"></ion-icon>
+      <div class="space-y-6">
+        @for (group of groupedPlans; track group.date; let groupIndex = $index) {
+        <div class="timeline-group">
+          <!-- Cabecera de fecha -->
+          <div class="mb-4 flex items-center gap-2 text-primary font-semibold text-lg">
+            <ion-icon name="calendar-outline" class="h-5 w-5"></ion-icon>
+            <span>{{ group.date }}</span>
           </div>
-          <div class="timeline-end timeline-box">
+
+          <!-- Lista de planes -->
+          <div class="space-y-4">
+            @for (plan of group.plans; track plan.uid) {
             <div class="card bg-base-100 shadow-sm" (click)="viewPlanDetails(plan)">
               <div class="card-body p-4">
                 <!-- Header con título y acciones -->
@@ -65,7 +66,7 @@
                     </div>
 
                     <!-- Información del plan en una línea: tiempo, ejercicios, elo -->
-                    <div class="flex items-center gap-3 text-sm text-base-content/70 mb-2">
+                    <div class="flex items-center gap-3 text-sm text-base-content/70 mb-2 flex-wrap">
                       <div class="flex items-center gap-1">
                         <ion-icon name="time-outline" class="h-4 w-4"></ion-icon>
                         <span>{{ getTotalTime(plan) | secondsToMinutesSeconds }}</span>
@@ -81,8 +82,7 @@
                       </div>
                       }
                       @if (getTotalPuzzlesPlayed(plan) > 0) {
-                      <span class="badge badge-sm"
-                        [class.badge-success]="getSuccessRate(plan) >= 70"
+                      <span class="badge badge-sm" [class.badge-success]="getSuccessRate(plan) >= 70"
                         [class.badge-warning]="getSuccessRate(plan) >= 50 && getSuccessRate(plan) < 70"
                         [class.badge-error]="getSuccessRate(plan) < 50">
                         {{ getSuccessRate(plan) }}% correctos
@@ -115,7 +115,8 @@
                       @for (block of plan.blocks; track $index) {
                       <div class="card bg-base-100 shadow-xs p-2">
                         <div class="text-sm">
-                          <div class="font-medium">{{ block.title || ('PUBLIC_PLANS.block' | transloco) + ' ' + ($index + 1)
+                          <div class="font-medium">{{ block.title || ('PUBLIC_PLANS.block' | transloco) + ' ' + ($index
+                            + 1)
                             }}</div>
                           @if (block.description) {
                           <div class="text-xs text-base-content/70 mt-1">{{ block.description }}</div>
@@ -154,13 +155,11 @@
                 </div>
               </div>
             </div>
+            }
           </div>
-          @if (i < plans.length - 1) {
-          <hr />
-          }
-        </li>
+        </div>
         }
-      </ul>
+      </div>
       }
     </div>
   </div>
