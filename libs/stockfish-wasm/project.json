@@ -11,10 +11,7 @@
       "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
       "options": {
         "project": "libs/stockfish-wasm/ng-package.json",
-        "tsConfig": "libs/stockfish-wasm/tsconfig.lib.json",
-        "assets": [
-          "libs/stockfish-wasm/assets"
-        ]
+        "tsConfig": "libs/stockfish-wasm/tsconfig.lib.json"
       },
       "configurations": {
         "production": {
