@@ -13,6 +13,22 @@
   // Asegurar que el fondo sea sólido para evitar transparencia durante el scroll
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
+
+  // Asegurar que navbar-end sea visible
+  .navbar-end {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  // Asegurar que los botones sean visibles
+  button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.5rem;
+    min-height: 2.5rem;
+  }
 }
 
 // Spacer para compensar el navbar fixed y evitar que el contenido quede oculto

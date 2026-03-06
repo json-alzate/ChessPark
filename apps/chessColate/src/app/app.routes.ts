@@ -5,9 +5,19 @@ import { PublicPlansGuard } from './guards/public-plans.guard';
 
 export const routes: Routes = [
   {
+    path: '',
+    redirectTo: 'home',
+    pathMatch: 'full',
+  },
+  {
     path: 'home',
     loadComponent: () =>
       import('./pages/home/home.page').then((m) => m.HomePage),
+  },
+  {
+    path: 'donation',
+    loadComponent: () =>
+      import('./pages/donation/donation.page').then((m) => m.DonationPage),
   },
   // {
   //   path: 'puzzles',
@@ -20,6 +30,10 @@ export const routes: Routes = [
   {
     path: 'puzzles/plan-played',
     loadComponent: () => import('./pages/puzzles/containers/plan-played/plan-played.component').then(m => m.PlanPlayedComponent),
+  },
+  {
+    path: 'puzzles/plans-history',
+    loadComponent: () => import('./pages/puzzles/containers/plans-history/plans-history.component').then(m => m.PlansHistoryComponent),
   },
   {
     path: 'puzzles/custom-plans',
@@ -42,8 +56,11 @@ export const routes: Routes = [
     canActivate: [PublicPlansGuard],
   },
   {
-    path: '',
-    redirectTo: 'home',
-    pathMatch: 'full',
+    path: 'coordinates',
+    loadComponent: () => import('./pages/coordinates/coordinates.page').then(m => m.CoordinatesPage),
+  },
+  {
+    path: 'knight-tour',
+    loadComponent: () => import('./pages/knight-tour/knight-tour.page').then(m => m.KnightTourPage),
   },
 ];

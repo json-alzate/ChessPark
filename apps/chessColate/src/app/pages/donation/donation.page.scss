@@ -1,0 +1,19 @@
+.main-container {
+  min-height: 100vh;
+}
+
+.card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+ion-icon {
+  pointer-events: none;
+}

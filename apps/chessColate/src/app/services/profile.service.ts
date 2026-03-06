@@ -6,13 +6,13 @@ import { Store, select } from '@ngrx/store';
 import { Observable } from 'rxjs';
 
 // states
-import { 
-  AuthState, 
-  setProfile, 
-  requestUpdateProfile, 
+import {
+  AuthState,
+  setProfile,
+  requestUpdateProfile,
   updateProfile,
   getProfile,
-  IProfileService 
+  IProfileService
 } from '@cpark/state';
 
 // models
@@ -23,8 +23,19 @@ import { User as FirebaseUser } from 'firebase/auth';
 // services
 import { FirestoreService } from './firestore.service';
 import { AppService } from './app.service';
-import { LanguageService } from './language.service';
+import { LanguageService, SupportedLang } from './language.service';
 import { EloCalculatorService } from '@chesspark/common-utils';
+
+/**
+ * Información sobre récords alcanzados en un plan por defecto
+ */
+export interface DefaultPlanRecordInfo {
+  isNewTotalRecord: boolean;
+  isNewThemeRecord: boolean;
+  isNewOpeningRecord: boolean;
+  newThemeRecords: string[];
+  newOpeningRecord?: string;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -32,7 +43,7 @@ import { EloCalculatorService } from '@chesspark/common-utils';
 export class ProfileService implements IProfileService {
 
   private profile: Profile | null = null;
-  
+
   // Observable para suscribirse al perfil desde componentes
   public profile$: Observable<Profile | null>;
 
@@ -45,7 +56,7 @@ export class ProfileService implements IProfileService {
   ) {
     // Inicializar el observable del perfil
     this.profile$ = this.store.pipe(select(getProfile));
-    
+
     // Suscribirse internamente para mantener la propiedad profile actualizada
     this.profile$.subscribe(profile => {
       this.profile = profile;
@@ -69,7 +80,7 @@ export class ProfileService implements IProfileService {
 
     const elos = this.profile.elos[planType as keyof typeof this.profile.elos];
     const elosObj = (elos && typeof elos === 'object' && !Array.isArray(elos)) ? elos : {};
-    
+
     // se filtra solo para devolver los temas que existan en la lista de la app
     const themesList = this.appService.getThemesPuzzlesList;
     let filteredElos: { [key: string]: number } = {};
@@ -129,9 +140,9 @@ export class ProfileService implements IProfileService {
   async checkProfile(dataAuth: FirebaseUser) {
     const profile = await this.firestoreService.getProfile(dataAuth?.uid);
     if (profile) {
-      this.setProfile(profile);
+      await this.setProfile(profile);
     } else {
-      this.setInitialProfile(dataAuth);
+      await this.setInitialProfile(dataAuth);
     }
   }
 
@@ -148,15 +159,25 @@ export class ProfileService implements IProfileService {
   }
 
   // set profile
-  setProfile(profile: Profile) {
+  async setProfile(profile: Profile) {
     this.profile = profile;
+
+    // Cambiar el idioma de la aplicación si el perfil lo tiene definido y es válido
+    if (profile && profile.lang && this.languageService.isLanguageAvailable(profile.lang)) {
+      await this.languageService.setLanguage(profile.lang as SupportedLang);
+    }
+
     const action = setProfile({ profile });
     this.store.dispatch(action);
   }
 
   // clear profile
-  clearProfile() {
+  async clearProfile() {
     this.profile = null;
+
+    // Si no hay sesión, los textos deben estar en inglés
+    await this.languageService.setLanguage('en');
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const action = setProfile({ profile: null as any });
     this.store.dispatch(action);
@@ -187,7 +208,7 @@ export class ProfileService implements IProfileService {
   }
 
   addNewNickName(_nickname: string, _uidUser: string): Promise<void> {
-    return this.firestoreService.addNewNickName(_nickname, _uidUser).then(() => {}).catch(() => { throw new Error('Error al agregar nuevo nickname'); });
+    return this.firestoreService.addNewNickName(_nickname, _uidUser).then(() => { }).catch(() => { throw new Error('Error al agregar nuevo nickname'); });
   }
 
   /**
@@ -200,10 +221,18 @@ export class ProfileService implements IProfileService {
     planType: PlanTypes,
     themes: string[],
     openingFamily: string,
-  ): void {
+  ): DefaultPlanRecordInfo {
     // Usar Record para permitir acceso dinámico a propiedades
     const elos: Record<string, any> = this.profile?.elos ? { ...this.profile.elos } : {};
     let eloOpening = 1500;
+
+    const recordInfo: DefaultPlanRecordInfo = {
+      isNewTotalRecord: false,
+      isNewThemeRecord: false,
+      isNewOpeningRecord: false,
+      newThemeRecords: [],
+      newOpeningRecord: undefined
+    };
 
     if (this.profile?.elos) {
       // Copia profunda para el planType específico, evitando la mutación directa
@@ -221,21 +250,54 @@ export class ProfileService implements IProfileService {
       eloOpening = this.eloCalculator.calculateElo(1500, puzzleElo, result).newElo;
     }
 
+    // Inicializar máximos si no existen
+    const maxTotalKey = `${planType}MaxTotal`;
+    const maxThemesKey = `${planType}Max`;
+    const maxOpeningsKey = `${planType}MaxOpenings`;
+
+    if (!elos[maxTotalKey]) {
+      const currentTotal = this.profile?.elos && (this.profile.elos as Record<string, any>)[`${planType}Total`]
+        ? ((this.profile.elos as Record<string, any>)[`${planType}Total`] as number)
+        : 1500;
+      elos[maxTotalKey] = currentTotal;
+    }
+    if (!elos[maxThemesKey]) {
+      elos[maxThemesKey] = {};
+    }
+    if (!elos[maxOpeningsKey]) {
+      elos[maxOpeningsKey] = {};
+    }
+
     themes.forEach(theme => {
       if (!elos[planType]) {
         elos[planType] = {}; // Crea planType si no existe
       }
       const currentThemeElo = (elos[planType] && elos[planType][theme]) || 1500;
-      elos[planType][theme] = this.eloCalculator.calculateElo(currentThemeElo, puzzleElo, result).newElo;
+      const newThemeElo = this.eloCalculator.calculateElo(currentThemeElo, puzzleElo, result).newElo;
+      elos[planType][theme] = newThemeElo;
+
+      // Verificar si es nuevo récord para este tema
+      const currentMaxTheme = elos[maxThemesKey][theme];
+      if (currentMaxTheme === undefined || newThemeElo > currentMaxTheme) {
+        elos[maxThemesKey][theme] = newThemeElo;
+        recordInfo.isNewThemeRecord = true;
+        recordInfo.newThemeRecords.push(theme);
+      }
     });
 
     // Calcular el elo total del plan, con el parámetro del perfil
     const totalKey = `${planType}Total`;
-    const currentTotalElo = this.profile?.elos && (this.profile.elos as Record<string, any>)[totalKey] 
+    const currentTotalElo = this.profile?.elos && (this.profile.elos as Record<string, any>)[totalKey]
       ? ((this.profile.elos as Record<string, any>)[totalKey] as number)
       : 1500;
     const newTotalElo = this.eloCalculator.calculateElo(currentTotalElo, puzzleElo, result).newElo;
-    
+
+    // Verificar si es nuevo récord total
+    if (newTotalElo > elos[maxTotalKey]) {
+      elos[maxTotalKey] = newTotalElo;
+      recordInfo.isNewTotalRecord = true;
+    }
+
     // Inicializa el objeto de cambios con una copia de los elos existentes para evitar la sobrescritura
     // Usamos Record para permitir acceso dinámico a propiedades
     const changes: { elos: Record<string, any> } = { elos: { ...elos } };
@@ -246,16 +308,31 @@ export class ProfileService implements IProfileService {
     // Actualiza el total del plan con el nuevo valor en el parámetro correspondiente al plan
     changes.elos[`${planType}Total`] = newTotalElo;
 
+    // Actualizar máximos
+    changes.elos[maxTotalKey] = elos[maxTotalKey];
+    changes.elos[maxThemesKey] = { ...(changes.elos[maxThemesKey] || {}), ...elos[maxThemesKey] };
+
     if (openingFamily) {
       const openingsKey = `${planType}Openings`;
       changes.elos[openingsKey] = {
         ...(changes.elos[openingsKey] || {}),
         [openingFamily]: eloOpening
       };
+
+      // Verificar si es nuevo récord para esta apertura
+      const currentMaxOpening = elos[maxOpeningsKey][openingFamily];
+      if (currentMaxOpening === undefined || eloOpening > currentMaxOpening) {
+        elos[maxOpeningsKey][openingFamily] = eloOpening;
+        recordInfo.isNewOpeningRecord = true;
+        recordInfo.newOpeningRecord = openingFamily;
+      }
+      changes.elos[maxOpeningsKey] = { ...(changes.elos[maxOpeningsKey] || {}), ...elos[maxOpeningsKey] };
     }
-    
+
     // Se actualiza el perfil con los cambios
     this.requestUpdateProfile(changes);
+
+    return recordInfo;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -270,6 +347,6 @@ export class ProfileService implements IProfileService {
     };
 
     await this.firestoreService.createProfile(profileForSet);
-    this.setProfile(profileForSet);
+    await this.setProfile(profileForSet);
   }
 }

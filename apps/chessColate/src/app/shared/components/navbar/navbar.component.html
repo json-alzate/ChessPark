@@ -7,50 +7,59 @@
     </div>
 
     @if (!isInitialized) {
-      <!-- Estado de carga durante inicialización -->
-      <div class="flex items-center gap-2">
-        <span class="loading loading-spinner loading-sm"></span>
-        <span class="text-sm text-gray-500">Cargando...</span>
-      </div>
+    <!-- Estado de carga durante inicialización -->
+    <div class="flex items-center gap-2">
+      <span class="loading loading-spinner loading-sm"></span>
+      <span class="text-sm text-gray-500">Cargando...</span>
+    </div>
     } @else if (!isAuthenticated) {
-      <div class="flex gap-2">
-        <button class="btn btn-outline btn-sm" (click)="openLoginModal()">
-          Ingresar / Registrarse
-        </button>
-      </div>
+    <div class="flex gap-2">
+      <button class="btn btn-outline btn-sm" (click)="openLoginModal()">
+        Ingresar / Registrarse
+      </button>
+    </div>
     }
 
     <!-- Usuario autenticado -->
     @if (isInitialized && isAuthenticated) {
-      <div class="flex items-center gap-2">
+    <div class="flex items-center gap-2">
 
-        <div tabindex="0" class="btn btn-ghost btn-circle avatar">
-          <!-- Foto del usuario si existe -->
-          @if (photoURL) {
-            <div class="w-10 rounded-full">
-              <img [alt]="displayName || displayEmail" [src]="photoURL" />
-            </div>
-          }
-          <!-- Avatar con iniciales si no hay foto -->
-          @if (!photoURL) {
-            <div class="w-8 rounded-full bg-primary text-primary-content flex items-center justify-center">
-              <span class="text-lg font-bold">{{ getInitials() }}</span>
-            </div>
-          }
+      <div tabindex="0" class="btn btn-ghost btn-circle avatar">
+        <!-- Foto del usuario si existe -->
+        @if (photoURL) {
+        <div class="w-10 rounded-full">
+          <img [alt]="displayName || displayEmail" [src]="photoURL" />
         </div>
-
-        <div class="max-w-[110px] truncate text-sm font-medium" [title]="displayName || displayEmail">
-          {{ (displayName || displayEmail) || '' }}
+        }
+        <!-- Avatar con iniciales si no hay foto -->
+        @if (!photoURL) {
+        <div class="w-8 rounded-full bg-primary text-primary-content flex items-center justify-center">
+          <span class="text-lg font-bold">{{ getInitials() }}</span>
         </div>
-        
+        }
       </div>
+
+      <div class="max-w-[110px] truncate text-sm font-medium" [title]="displayName || displayEmail">
+        {{ (displayName || displayEmail) || '' }}
+      </div>
+
+    </div>
     }
   </div>
 
 
 
-  <div class="navbar-end">
-    <button class="btn btn-ghost btn-circle" (click)="openNotificationsMenu()">
+  <div class="navbar-end flex items-center gap-2">
+    <button class="btn btn-ghost btn-circle btn-sm" (click)="navigateToDonation()" title="Donar" aria-label="Donar"
+      type="button">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"
+        style="color: hsl(var(--er));">
+        <path
+          d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+      </svg>
+    </button>
+
+    <button class="btn btn-ghost btn-circle btn-sm" (click)="openNotificationsMenu()" type="button">
       <div class="indicator">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

@@ -233,7 +233,14 @@
     "playPlan": "Ir al inicio",
     "loadMore": "Cargar más",
     "like": "Me gusta",
-    "unlike": "Quitar me gusta"
+    "unlike": "Quitar me gusta",
+    "repeatPlan": "Repetir rutina",
+    "selectRoutine": "Seleccionar otra rutina",
+    "loginRequired": {
+      "title": "Inicia sesión para ver tus estadísticas",
+      "message": "Al iniciar sesión, podrás ver y registrar tu progreso en tiempo real. Tus estadísticas se guardarán automáticamente cada vez que completes una rutina.",
+      "loginButton": "Iniciar sesión"
+    }
   },
   "PLAN_CHART": {
     "themes": "Temas",
@@ -244,7 +251,18 @@
   },
   "PLANS_HISTORY": {
     "title": "Historial de planes",
-    "more": "Ver más"
+    "more": "Ver más",
+    "empty": "No hay planes guardados",
+    "emptyDescription": "Los planes que completes se guardarán aquí automáticamente",
+    "viewDetails": "Ver detalles",
+    "delete": "Eliminar",
+    "puzzlesPlayed": "Ejercicios jugados",
+    "elo": "ELO",
+    "blocks": "Bloques",
+    "successRate": "Tasa de aciertos",
+    "streak": "Racha",
+    "days": "días",
+    "day": "día"
   },
   "CUSTOM_PLANS": {
     "listTitle": "Rutinas personalizadas",
@@ -291,6 +309,58 @@
     "play": "Jugar",
     "loadingMore": "Cargando más...",
     "cannotLikeOwn": "No puedes dar me gusta a tu propia rutina"
+  },
+  "COORDINATES": {
+    "title": "Coordenadas de Ajedrez",
+    "actions": {
+      "play": "Jugar",
+      "stopGame": "Detener juego"
+    },
+    "game": {
+      "playingWith": "Jugando con",
+      "whites": "Blancas",
+      "blacks": "Negras",
+      "currentRecord": "Récord actual:",
+      "points": "puntos",
+      "beatRecord": "¡Supera tu récord!",
+      "firstTime": "Primera vez",
+      "setRecord": "¡Establece tu récord!"
+    },
+    "stats": {
+      "correct": "Aciertos",
+      "errors": "Errores",
+      "accuracy": "Precisión",
+      "bestScores": "Mejores Puntajes",
+      "rounds": "Rondas",
+      "noScores": "No hay puntajes aún.",
+      "playFirst": "¡Juega tu primera partida!"
+    },
+    "results": {
+      "title": "Resultado del Juego",
+      "newRecord": "¡NUEVO RÉCORD!",
+      "finalScore": "Puntaje Final",
+      "congratulations": "¡Felicidades!",
+      "doubleRecord": "Has logrado un DOBLE RÉCORD jugando con",
+      "overallRecord": "¡Nuevo RÉCORD GENERAL jugando con",
+      "colorRecord": "¡Nuevo RÉCORD jugando con",
+      "goodGame": "Buen juego",
+      "bestScoreWith": "Tu mejor puntaje con",
+      "is": "es",
+      "continue": "Continuar"
+    },
+    "settings": {
+      "title": "Configuración",
+      "showCoordinates": "Mostrar Coordenadas",
+      "showCoordinatesDesc": "Muestra las letras y números del tablero",
+      "showPieces": "Mostrar Piezas",
+      "showPiecesDesc": "Muestra las piezas de ajedrez en el tablero",
+      "showRandomPieces": "Mostrar Piezas en Posiciones Aleatorias",
+      "showRandomPiecesDesc": "Coloca las piezas en posiciones aleatorias del tablero",
+      "infiniteMode": "Modo Infinito",
+      "infiniteModeDesc": "Jugar sin límite de tiempo",
+      "playSound": "Reproducir Sonido",
+      "playSoundDesc": "Reproduce un sonido cuando se toca una casilla"
+    }
   },
   "COORDINATES_PUZZLES": {
     "coordinates": "Coordenadas",

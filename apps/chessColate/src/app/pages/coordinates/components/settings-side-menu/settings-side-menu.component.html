@@ -1,0 +1,114 @@
+<ion-modal
+  #settingsModal
+  trigger="settings-trigger"
+  [presentingElement]="null"
+  [breakpoints]="[0, 0.6, 0.8]"
+  [initialBreakpoint]="0.6"
+  [backdropDismiss]="true"
+  class="settings-modal"
+>
+  <ng-template >
+
+
+    <ion-content>
+
+      <div data-theme="halloween" class="h-full">
+
+        <ion-header class="ion-no-border">
+          <ion-toolbar>
+            <ion-title class="text-center">
+              <ion-icon name="settings-outline" class="mr-2"></ion-icon>
+              {{ 'COORDINATES.settings.title' | transloco }}
+            </ion-title>
+            <ion-button
+              fill="clear"
+              slot="end"
+              (click)="dismiss()"
+            >
+              <ion-icon name="close-outline"></ion-icon>
+            </ion-button>
+          </ion-toolbar>
+        </ion-header>
+
+      <div class="space-y-6 p-2">
+        <!-- Configuración del Tablero -->
+        <div class="space-y-4">
+
+          <ul class="list bg-base-100 rounded-box shadow-md">
+            <li class="list-row">
+              <div></div>
+              <div>
+                <div>{{ 'COORDINATES.settings.showCoordinates' | transloco }}</div>
+                <div class="text-xs font-semibold opacity-60">{{ 'COORDINATES.settings.showCoordinatesDesc' | transloco }}</div>
+              </div>
+              <input
+                type="checkbox"
+                [checked]="settings.showCoordinates"
+                class="toggle toggle-primary"
+                (change)="onCheckboxChange($event, 'showCoordinates')"              />
+            </li>
+
+            <li class="list-row">
+              <div></div>
+              <div>
+                <div>{{ 'COORDINATES.settings.showPieces' | transloco }}</div>
+                <div class="text-xs font-semibold opacity-60">{{ 'COORDINATES.settings.showPiecesDesc' | transloco }}</div>
+              </div>
+              <input
+                type="checkbox"
+                [checked]="settings.showPieces"
+                class="toggle toggle-primary"
+                (change)="onCheckboxChange($event, 'showPieces')"              />
+            </li>
+
+            <li class="list-row">
+              <div></div>
+              <div>
+                <div>{{ 'COORDINATES.settings.showRandomPieces' | transloco }}</div>
+                <div class="text-xs font-semibold opacity-60">{{ 'COORDINATES.settings.showRandomPiecesDesc' | transloco }}</div>
+              </div>
+              <input
+                type="checkbox"
+                [checked]="settings.showRandomPieces"
+                [disabled]="!settings.showPieces"
+                class="toggle toggle-primary"
+                [class.opacity-50]="!settings.showPieces"
+                (change)="onCheckboxChange($event, 'showRandomPieces')"              />
+            </li>
+
+            <li class="list-row">
+              <div></div>
+              <div>
+                <div>{{ 'COORDINATES.settings.infiniteMode' | transloco }}</div>
+                <div class="text-xs font-semibold opacity-60">{{ 'COORDINATES.settings.infiniteModeDesc' | transloco }}</div>
+              </div>
+              <input
+                type="checkbox"
+                [checked]="settings.infiniteMode"
+                class="toggle toggle-primary"
+                (change)="onCheckboxChange($event, 'infiniteMode')"              />
+            </li>
+
+            <li class="list-row">
+              <div></div>
+              <div>
+                <div>{{ 'COORDINATES.settings.playSound' | transloco }}</div>
+                <div class="text-xs font-semibold opacity-60">{{ 'COORDINATES.settings.playSoundDesc' | transloco }}</div>
+              </div>
+              <input
+                type="checkbox"
+                [checked]="settings.playSound"
+                class="toggle toggle-primary"
+                (change)="onCheckboxChange($event, 'playSound')"              />
+            </li>
+          </ul>
+
+  
+        </div>
+       
+      </div>
+    </div>
+    </ion-content>
+
+  </ng-template>
+</ion-modal>

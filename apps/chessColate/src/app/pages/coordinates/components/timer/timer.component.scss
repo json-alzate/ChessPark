@@ -1,0 +1,16 @@
+// Estilos específicos para el timer
+.progress {
+  transition: all 0.3s ease;
+}
+
+.progress-success {
+  background-color: hsl(var(--su));
+}
+
+.progress-warning {
+  background-color: hsl(var(--wa));
+}
+
+.progress-error {
+  background-color: hsl(var(--er));
+}

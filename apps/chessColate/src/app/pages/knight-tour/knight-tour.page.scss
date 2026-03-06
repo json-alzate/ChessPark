@@ -1,0 +1,39 @@
+// Estilos para la página del Recorrido del Caballo
+
+.main-container {
+  min-height: 100vh;
+}
+
+.card {
+  border-radius: 0.5rem;
+}
+
+.select {
+  width: 100%;
+}
+
+// Estilos para la barra de progreso
+.progress-bar {
+  transition: width 0.3s ease;
+}
+
+// Ajustes para el tablero
+lib-board {
+  display: block;
+  margin: 0 auto;
+}
+
+// Estilos para los botones
+.btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+// Ajustes responsive
+@media (max-width: 768px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}

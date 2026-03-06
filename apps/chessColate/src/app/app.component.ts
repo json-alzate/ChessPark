@@ -13,6 +13,8 @@ import { TranslocoPipe } from '@jsverse/transloco';
 import { AuthService } from '@services/auth.service';
 import { ProfileService } from '@services/profile.service';
 import { FirestoreService } from '@services/firestore.service';
+import { RevenueCatService, LogLevel } from '@chesspark/revenuecat';
+import { Capacitor } from '@capacitor/core';
 
 // Models
 import { Profile } from '@cpark/models';
@@ -68,6 +70,7 @@ export class AppComponent implements OnInit, OnDestroy {
   authService = inject(AuthService);
   profileService = inject(ProfileService);
   firestoreService = inject(FirestoreService);
+  revenueCat = inject(RevenueCatService);
   modalController = inject(ModalController);
   menuController = inject(MenuController);
   // Datos del usuario
@@ -84,6 +87,30 @@ export class AppComponent implements OnInit, OnDestroy {
       title: 'Inicio',
       icon: 'home-outline',
       route: '/home',
+      enabled: true
+    },
+    {
+      title: 'Coordenadas',
+      icon: 'grid-outline',
+      route: '/coordinates',
+      enabled: true
+    },
+    {
+      title: 'Recorrido del Caballo',
+      icon: 'extension-puzzle-outline',
+      route: '/knight-tour',
+      enabled: true
+    },
+    {
+      title: 'Historial de Planes',
+      icon: 'time-outline',
+      route: '/puzzles/plans-history',
+      enabled: true
+    },
+    {
+      title: 'Donar',
+      icon: 'heart-outline',
+      route: '/donation',
       enabled: true
     },
   ];
@@ -113,7 +140,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.profileSubscription = this.profileService.profile$.subscribe(profile => {
       this.profile = profile;
       this.isAuthenticated = !!profile;
-      
+
       if (profile) {
         this.displayName = profile.name || '';
         this.displayEmail = this.truncateEmail(profile.email);
@@ -138,31 +165,106 @@ export class AppComponent implements OnInit, OnDestroy {
   async initFirebase() {
     // Inicializar Firebase
     initializeApp(environment.firebase);
-    
+
     // Inicializar el servicio de autenticación
     await this.authService.init();
-    
+
     // Inicializar Firestore
     await this.firestoreService.init();
-    
+
+    // Inicializar RevenueCat (solo en plataformas nativas)
+    await this.initRevenueCat();
+
     // Escuchar el estado del usuario - login/logout
     this.authService.getAuthState().pipe(
       switchMap(async (dataAuth) => {
         console.log('Auth state changed:', dataAuth);
-        
+
         if (dataAuth) {
           // Usuario autenticado - obtener o crear perfil
           await this.profileService.checkProfile(dataAuth);
+          // Reconfigurar RevenueCat con el nuevo user ID
+          await this.configureRevenueCatUser(dataAuth.uid);
         } else {
           // Usuario no autenticado - limpiar perfil
-          this.profileService.clearProfile();
+          await this.profileService.clearProfile();
         }
-        
+
         // Marcar como inicializado después de procesar el perfil
         this.authService.markAsInitialized();
         return dataAuth;
       })
     ).subscribe();
+  }
+
+  /**
+   * Inicializa RevenueCat
+   */
+  async initRevenueCat() {
+    try {
+      // Obtener API Key de RevenueCat desde environment
+      const revenueCatApiKey = (environment as any).revenueCatApiKey || '';
+
+      if (!revenueCatApiKey) {
+        console.warn('RevenueCat API Key no configurada en environment');
+        return;
+      }
+
+      // Obtener el user ID del usuario autenticado si existe
+      const userId = this.profile?.uid || undefined;
+
+      // Inicializar RevenueCat (funciona tanto en web como móvil)
+      // En web usará API REST, en móvil usará SDK nativo
+      await this.revenueCat.initialize(revenueCatApiKey, userId);
+
+      // Configurar logging en desarrollo (solo en móvil)
+      if (!environment.production && Capacitor.isNativePlatform()) {
+        this.revenueCat.setLogLevel(LogLevel.DEBUG);
+      }
+
+      if (Capacitor.isNativePlatform()) {
+        console.log('RevenueCat inicializado correctamente (SDK nativo)');
+      } else {
+        console.log('RevenueCat inicializado correctamente (API REST para web)');
+      }
+    } catch (error: unknown) {
+      console.error('Error al inicializar RevenueCat:', error);
+    }
+  }
+
+  /**
+   * Configura el usuario en RevenueCat cuando se autentica
+   */
+  async configureRevenueCatUser(userId: string) {
+    try {
+      if (this.revenueCat) {
+        // Configurar usuario (funciona tanto en web como móvil)
+        await this.revenueCat.configure(userId);
+        console.log('RevenueCat configurado para usuario:', userId);
+
+        // Verificar si el usuario tiene una suscripción activa (donación recurrente)
+        // Usar el entitlement ID configurado en RevenueCat Dashboard
+        // Por defecto usamos 'donation' pero puede ser cualquier ID configurado
+        const entitlementId = 'donation'; // Cambiar según el entitlement ID configurado en RevenueCat
+
+        try {
+          const isSubscribed = await this.revenueCat.checkSubscriptionStatus(entitlementId);
+
+          if (isSubscribed) {
+            console.log('Usuario tiene suscripción activa:', entitlementId);
+            // Aquí puedes actualizar el estado del usuario o el perfil si es necesario
+            // Por ejemplo: this.profileService.updateSubscriptionStatus(true);
+          } else {
+            console.log('Usuario no tiene suscripción activa');
+          }
+        } catch (subscriptionError: unknown) {
+          // No bloquear el flujo si hay error al verificar suscripción
+          console.warn('Error al verificar suscripción:', subscriptionError);
+        }
+      }
+    } catch (error: unknown) {
+      console.error('Error al configurar usuario en RevenueCat:', error);
+    }
   }
 
   /**

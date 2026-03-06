@@ -1,0 +1,17 @@
+// Estilos específicos para el modal de resultados
+.avatar img {
+  object-fit: contain;
+}
+
+.stats {
+  .stat-value {
+    font-weight: bold;
+  }
+}
+
+.alert {
+  .alert-icon {
+    display: flex;
+    align-items: center;
+  }
+}

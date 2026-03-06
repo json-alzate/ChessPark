@@ -8,6 +8,9 @@
     padding-bottom: 5vh;
 }
 
-ion-img {
+img {
     max-height: 20vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
 }

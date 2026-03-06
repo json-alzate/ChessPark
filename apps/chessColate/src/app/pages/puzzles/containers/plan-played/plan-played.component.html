@@ -1,14 +1,23 @@
 <ion-content [fullscreen]="true">
-  <div class="container mx-auto px-4 py-6" data-theme="halloween">
-    <!-- Botón jugar plan - Desktop -->
-    <div class="hidden md:block mb-6">
-      <button class="btn btn-primary btn-lg w-full" (click)="onPlayPlan()" [disabled]="!plan">
-        <span>{{ 'PLAN_PLAYED.playPlan' | transloco }}</span>
-      </button>
-    </div>
-
-    @if (plan) {
+  <div class="main-container" data-theme="halloween">
+    <app-navbar></app-navbar>
+    
+    <div class="container mx-auto px-4 py-6">
+    @if (plan && !isLoadingPlan) {
     <div class="space-y-6">
+      <!-- Botón para repetir el plan -->
+      <div class="mb-4">
+        <button 
+          class="btn btn-primary btn-lg w-full" 
+          (click)="onRepeatPlan()" 
+          [disabled]="isLoadingToPlay">
+          @if (isLoadingToPlay) {
+            <span class="loading loading-spinner loading-sm"></span>
+          }
+          <span>{{ 'PLAN_PLAYED.repeatPlan' | transloco }}</span>
+        </button>
+      </div>
+
       <!-- Título del plan -->
       <div>
         @if (plan.title) {
@@ -106,25 +115,56 @@
           {{ 'PLAN_PLAYED.statistics' | transloco }}
         </h2>
 
-        <div class="card bg-base-100 shadow-sm">
-          <div class="card-body">
-            <div class="flex items-center justify-between">
-              <div>
-                <h6 class="text-sm text-base-content/70">Elo total:</h6>
-                <h1 class="text-4xl font-bold">{{ eloTotal }}</h1>
-              </div>
-              <div class="avatar">
-                <div class="w-16 rounded">
-                  <img [src]="'assets/images/plan-icons/' + plan.planType + '.png'" [alt]="plan.planType" />
+        <div class="relative overflow-hidden">
+          <div class="space-y-4" [class.opacity-50]="!isAuthenticated" [class.pointer-events-none]="!isAuthenticated">
+            <div class="card bg-base-100 shadow-sm">
+              <div class="card-body">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <h6 class="text-sm text-base-content/70">Elo total:</h6>
+                    <h1 class="text-4xl font-bold">{{ isAuthenticated ? eloTotal : exampleEloTotal }}</h1>
+                  </div>
+                  <div class="avatar">
+                    <div class="w-16 rounded">
+                      <img [src]="'/assets/images/plan-icons/' + plan.planType + '.png'" [alt]="plan.planType" />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        @if (plan.planType) {
-        <app-plan-chart [plan]="plan" [showEloPlanHeader]="false"></app-plan-chart>
-        }
+            @if (plan.planType) {
+            <app-plan-chart [plan]="isAuthenticated ? plan : (examplePlan || plan)" [showEloPlanHeader]="false"></app-plan-chart>
+            }
+          </div>
+
+          <!-- Overlay para usuarios no autenticados - Solo cubre las estadísticas -->
+          @if (!isAuthenticated) {
+          <div class="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-base-100/60 backdrop-blur-sm rounded-lg z-10 pointer-events-auto">
+            <div class="card bg-base-200 shadow-lg max-w-md mx-4">
+              <div class="card-body text-center space-y-4">
+                <h3 class="text-xl font-bold">
+                  {{ 'PLAN_PLAYED.loginRequired.title' | transloco }}
+                </h3>
+                <p class="text-base-content/70">
+                  {{ 'PLAN_PLAYED.loginRequired.message' | transloco }}
+                </p>
+                <button class="btn btn-primary w-full" (click)="openLoginModal()">
+                  {{ 'PLAN_PLAYED.loginRequired.loginButton' | transloco }}
+                </button>
+              </div>
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+
+      <!-- Carrusel de rutinas -->
+      <div class="mt-6">
+        <h2 class="text-2xl font-bold mb-4">
+          {{ 'PLAN_PLAYED.selectRoutine' | transloco }}
+        </h2>
+        <app-training-menu></app-training-menu>
       </div>
     </div>
     } @else {
@@ -141,14 +181,6 @@
       }
     </div>
     }
+    </div>
   </div>
 </ion-content>
-
-<!-- Botón jugar plan - Mobile -->
-<ion-footer class="md:hidden">
-  <ion-toolbar>
-    <button class="btn btn-primary btn-lg w-full" (click)="onPlayPlan()" [disabled]="!plan">
-      <span>{{ 'PLAN_PLAYED.playPlan' | transloco }}</span>
-    </button>
-  </ion-toolbar>
-</ion-footer>

@@ -1,4 +1,10 @@
 {
   "name": "chessColate",
-  "description": "App para aprender y entrenar ajedrez"
+  "description": "App para aprender y entrenar ajedrez",
+  "scripts": {
+    "android:build": "cd ../.. && nx build chessColate && cd apps/chessColate && npx cap sync android",
+    "android:sync": "cd ../.. && nx build chessColate && cd apps/chessColate && npx cap sync android",
+    "android:open": "npx cap open android",
+    "android:run": "npx cap run android"
+  }
 }

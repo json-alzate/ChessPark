@@ -1,9 +1,11 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { ModalController, MenuController } from '@ionic/angular/standalone';
 import { Subscription } from 'rxjs';
 
 import { LoginComponent } from '../login/login.component';
+import { DonationModalComponent } from '../donation-modal/donation-modal.component';
 import { ProfileService } from '@services/profile.service';
 import { AuthService } from '@services/auth.service';
 import { Profile } from '@cpark/models';
@@ -19,6 +21,7 @@ import { AuthState, getIsInitialized } from '@cpark/state';
 })
 export class NavbarComponent implements OnInit, OnDestroy {
 
+  router = inject(Router);
   modalController = inject(ModalController);
   menuController = inject(MenuController);
   profileService = inject(ProfileService);
@@ -115,5 +118,12 @@ export class NavbarComponent implements OnInit, OnDestroy {
    */
   openNotificationsMenu() {
     this.menuController.open('notifications-menu');
+  }
+
+  /**
+   * Navega a la página de donación
+   */
+  navigateToDonation() {
+    this.router.navigate(['/donation']);
   }
 }

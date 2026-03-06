@@ -17,3 +17,21 @@
   height: 100%;
 }
 
+// Estilos para marcadores de Stockfish
+:host ::ng-deep .cm-chessboard .markers .marker.marker-square-stockfish-best-move {
+  fill: #7974ff;
+  opacity: 0.8;
+}
+
+// Estilos para flechas de Stockfish (si se usan en el futuro)
+:host ::ng-deep .cm-chessboard .arrow-stockfish-best-move .arrow-head {
+  fill: #7974ff;
+  fill-rule: nonzero;
+  fill-opacity: 1;
+}
+
+:host ::ng-deep .cm-chessboard .arrow-stockfish-best-move .arrow-line {
+  stroke: #7974ff;
+  stroke-linecap: round;
+  opacity: 0.5;
+}

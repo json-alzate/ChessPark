@@ -1,0 +1,176 @@
+<ion-content [fullscreen]="true">
+  <div class="main-container" data-theme="halloween">
+    <app-navbar></app-navbar>
+
+    <div class="container mx-auto px-4 py-6">
+      <div class="mb-4">
+        <div class="flex items-center justify-between mb-2">
+          <div class="breadcrumbs">
+            <ul>
+              <li>
+                <a (click)="goToHome()" class="cursor-pointer text-sm">
+                  <ion-icon name="home-outline" class="h-4 w-4"></ion-icon>
+                  <span>{{ 'MENU.navigation.home' | transloco }}</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="flex items-center justify-between mb-2">
+          <h2 class="text-2xl font-bold">{{ 'PLANS_HISTORY.title' | transloco }}</h2>
+          <!-- Racha Section -->
+          <div class="flex items-center gap-2 bg-base-200 px-3 py-1.5 rounded-full shadow-sm border border-base-300">
+            <ion-icon [name]="isStreakActive ? 'flame' : 'flame-outline'" [class.text-orange-500]="isStreakActive"
+              [class.text-base-content/30]="!isStreakActive" class="text-xl"></ion-icon>
+            <span class="text-sm font-bold" [class.text-base-content/50]="!isStreakActive">
+              {{ streakDays }} {{ (streakDays === 1 ? 'PLANS_HISTORY.day' : 'PLANS_HISTORY.days') | transloco }}
+            </span>
+          </div>
+        </div>
+        @if (plans.length > 0) {
+        <p class="text-sm text-base-content/70 mt-1">
+          {{ plans.length }} {{ plans.length === 1 ? 'plan' : 'planes' }} guardados
+        </p>
+        }
+      </div>
+
+      @if (isLoading) {
+      <div class="flex justify-center py-8">
+        <span class="loading loading-spinner loading-lg text-primary"></span>
+      </div>
+      } @else if (plans.length === 0) {
+      <div class="card bg-base-100 shadow-sm">
+        <div class="card-body items-center text-center py-12">
+          <ion-icon name="time-outline" class="text-6xl text-base-content/30 mb-4"></ion-icon>
+          <p class="text-base-content/70 text-lg mb-2">{{ 'PLANS_HISTORY.empty' | transloco }}</p>
+          <p class="text-base-content/50 text-sm">
+            {{ 'PLANS_HISTORY.emptyDescription' | transloco }}
+          </p>
+        </div>
+      </div>
+      } @else {
+      <div class="space-y-6">
+        @for (group of groupedPlans; track group.date; let groupIndex = $index) {
+        <div class="timeline-group">
+          <!-- Cabecera de fecha -->
+          <div class="mb-4 flex items-center gap-2 text-primary font-semibold text-lg">
+            <ion-icon name="calendar-outline" class="h-5 w-5"></ion-icon>
+            <span>{{ group.date }}</span>
+          </div>
+
+          <!-- Lista de planes -->
+          <div class="space-y-4">
+            @for (plan of group.plans; track plan.uid) {
+            <div class="card bg-base-100 shadow-sm" (click)="viewPlanDetails(plan)">
+              <div class="card-body p-4">
+                <!-- Header con título y acciones -->
+                <div class="flex items-start justify-between gap-4 mb-3">
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-2">
+                      <h3 class="text-lg font-semibold truncate">
+                        {{ plan.title || getPlanTypeName(plan.planType) }}
+                      </h3>
+                      @if (!plan.title) {
+                      <span class="badge badge-sm badge-outline">{{ getPlanTypeName(plan.planType) }}</span>
+                      }
+                    </div>
+
+                    <!-- Información del plan en una línea: tiempo, ejercicios, elo -->
+                    <div class="flex items-center gap-3 text-sm text-base-content/70 mb-2 flex-wrap">
+                      <div class="flex items-center gap-1">
+                        <ion-icon name="time-outline" class="h-4 w-4"></ion-icon>
+                        <span>{{ getTotalTime(plan) | secondsToMinutesSeconds }}</span>
+                      </div>
+                      <div class="flex items-center gap-1">
+                        <ion-icon name="extension-puzzle-outline" class="h-4 w-4"></ion-icon>
+                        <span>{{ getTotalPuzzlesPlayed(plan) }} {{ 'COMMON.chess.puzzles' | transloco }}</span>
+                      </div>
+                      @if (plan.eloTotal) {
+                      <div class="flex items-center gap-1">
+                        <ion-icon name="stats-chart-outline" class="h-4 w-4"></ion-icon>
+                        <span>ELO: {{ plan.eloTotal }}</span>
+                      </div>
+                      }
+                      @if (getTotalPuzzlesPlayed(plan) > 0) {
+                      <span class="badge badge-sm" [class.badge-success]="getSuccessRate(plan) >= 70"
+                        [class.badge-warning]="getSuccessRate(plan) >= 50 && getSuccessRate(plan) < 70"
+                        [class.badge-error]="getSuccessRate(plan) < 50">
+                        {{ getSuccessRate(plan) }}% correctos
+                      </span>
+                      }
+                    </div>
+                  </div>
+
+                  <!-- Botones de acción -->
+                  <div class="flex gap-2 flex-shrink-0" (click)="$event.stopPropagation()">
+                    <button type="button" class="btn btn-sm btn-ghost" (click)="viewPlanDetails(plan)"
+                      [attr.aria-label]="'PLANS_HISTORY.viewDetails' | transloco">
+                      <ion-icon name="eye-outline"></ion-icon>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-ghost btn-error" (click)="deletePlan(plan, $event)"
+                      [attr.aria-label]="'PLANS_HISTORY.delete' | transloco">
+                      <ion-icon name="trash-outline"></ion-icon>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Accordion para bloques -->
+                <div class="collapse collapse-arrow bg-base-200" (click)="$event.stopPropagation()">
+                  <input type="checkbox" />
+                  <div class="collapse-title text-sm font-medium">
+                    {{ 'PUBLIC_PLANS.viewBlocks' | transloco }} ({{ plan.blocks.length }})
+                  </div>
+                  <div class="collapse-content">
+                    <div class="space-y-2">
+                      @for (block of plan.blocks; track $index) {
+                      <div class="card bg-base-100 shadow-xs p-2">
+                        <div class="text-sm">
+                          <div class="font-medium">{{ block.title || ('PUBLIC_PLANS.block' | transloco) + ' ' + ($index
+                            + 1)
+                            }}</div>
+                          @if (block.description) {
+                          <div class="text-xs text-base-content/70 mt-1">{{ block.description }}</div>
+                          }
+                          <div class="flex items-center gap-2 text-xs text-base-content/60 mt-1">
+                            <!-- Icono del tema -->
+                            @if (getThemeIcon(block.theme); as themeIcon) {
+                            @if (themeIcon.type === 'icon') {
+                            <ion-icon [name]="themeIcon.value" class="h-4 w-4"></ion-icon>
+                            } @else {
+                            <img [src]="themeIcon.value" alt="" class="h-4 w-4" />
+                            }
+                            }
+                            <!-- Tema traducido -->
+                            <span>{{ getThemeName(block.theme) }}</span>
+                            <span>·</span>
+                            <!-- Configuración del bloque (tiempo/puzzles) -->
+                            @if (getBlockConfig(block); as config) {
+                            @if (config.type === 'time') {
+                            <span>{{ (config.time ?? 0) | secondsToMinutesSeconds }}</span>
+                            } @else if (config.type === 'puzzles') {
+                            <span>{{ config.puzzles }} {{ 'NEW_BLOCK.fields.puzzles' | transloco }}</span>
+                            } @else if (config.type === 'both') {
+                            <span>{{ (config.time ?? 0) | secondsToMinutesSeconds }} {{ 'NEW_BLOCK.or' | transloco }} {{
+                              config.puzzles }} {{ 'NEW_BLOCK.fields.puzzles' | transloco }}</span>
+                            } @else {
+                            <ion-icon name="infinite-outline" class="h-4 w-4"></ion-icon>
+                            }
+                            }
+                          </div>
+                        </div>
+                      </div>
+                      }
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            }
+          </div>
+        </div>
+        }
+      </div>
+      }
+    </div>
+  </div>
+</ion-content>
