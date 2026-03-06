@@ -259,7 +259,10 @@
     "puzzlesPlayed": "Puzzles played",
     "elo": "ELO",
     "blocks": "Blocks",
-    "successRate": "Success rate"
+    "successRate": "Success rate",
+    "streak": "Streak",
+    "days": "days",
+    "day": "day"
   },
   "CUSTOM_PLANS": {
     "listTitle": "Custom routines",

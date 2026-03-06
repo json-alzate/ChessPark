@@ -6,13 +6,13 @@ import { Store, select } from '@ngrx/store';
 import { Observable } from 'rxjs';
 
 // states
-import { 
-  AuthState, 
-  setProfile, 
-  requestUpdateProfile, 
+import {
+  AuthState,
+  setProfile,
+  requestUpdateProfile,
   updateProfile,
   getProfile,
-  IProfileService 
+  IProfileService
 } from '@cpark/state';
 
 // models
@@ -23,7 +23,7 @@ import { User as FirebaseUser } from 'firebase/auth';
 // services
 import { FirestoreService } from './firestore.service';
 import { AppService } from './app.service';
-import { LanguageService } from './language.service';
+import { LanguageService, SupportedLang } from './language.service';
 import { EloCalculatorService } from '@chesspark/common-utils';
 
 /**
@@ -43,7 +43,7 @@ export interface DefaultPlanRecordInfo {
 export class ProfileService implements IProfileService {
 
   private profile: Profile | null = null;
-  
+
   // Observable para suscribirse al perfil desde componentes
   public profile$: Observable<Profile | null>;
 
@@ -56,7 +56,7 @@ export class ProfileService implements IProfileService {
   ) {
     // Inicializar el observable del perfil
     this.profile$ = this.store.pipe(select(getProfile));
-    
+
     // Suscribirse internamente para mantener la propiedad profile actualizada
     this.profile$.subscribe(profile => {
       this.profile = profile;
@@ -80,7 +80,7 @@ export class ProfileService implements IProfileService {
 
     const elos = this.profile.elos[planType as keyof typeof this.profile.elos];
     const elosObj = (elos && typeof elos === 'object' && !Array.isArray(elos)) ? elos : {};
-    
+
     // se filtra solo para devolver los temas que existan en la lista de la app
     const themesList = this.appService.getThemesPuzzlesList;
     let filteredElos: { [key: string]: number } = {};
@@ -140,9 +140,9 @@ export class ProfileService implements IProfileService {
   async checkProfile(dataAuth: FirebaseUser) {
     const profile = await this.firestoreService.getProfile(dataAuth?.uid);
     if (profile) {
-      this.setProfile(profile);
+      await this.setProfile(profile);
     } else {
-      this.setInitialProfile(dataAuth);
+      await this.setInitialProfile(dataAuth);
     }
   }
 
@@ -159,15 +159,25 @@ export class ProfileService implements IProfileService {
   }
 
   // set profile
-  setProfile(profile: Profile) {
+  async setProfile(profile: Profile) {
     this.profile = profile;
+
+    // Cambiar el idioma de la aplicación si el perfil lo tiene definido y es válido
+    if (profile && profile.lang && this.languageService.isLanguageAvailable(profile.lang)) {
+      await this.languageService.setLanguage(profile.lang as SupportedLang);
+    }
+
     const action = setProfile({ profile });
     this.store.dispatch(action);
   }
 
   // clear profile
-  clearProfile() {
+  async clearProfile() {
     this.profile = null;
+
+    // Si no hay sesión, los textos deben estar en inglés
+    await this.languageService.setLanguage('en');
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const action = setProfile({ profile: null as any });
     this.store.dispatch(action);
@@ -198,7 +208,7 @@ export class ProfileService implements IProfileService {
   }
 
   addNewNickName(_nickname: string, _uidUser: string): Promise<void> {
-    return this.firestoreService.addNewNickName(_nickname, _uidUser).then(() => {}).catch(() => { throw new Error('Error al agregar nuevo nickname'); });
+    return this.firestoreService.addNewNickName(_nickname, _uidUser).then(() => { }).catch(() => { throw new Error('Error al agregar nuevo nickname'); });
   }
 
   /**
@@ -277,7 +287,7 @@ export class ProfileService implements IProfileService {
 
     // Calcular el elo total del plan, con el parámetro del perfil
     const totalKey = `${planType}Total`;
-    const currentTotalElo = this.profile?.elos && (this.profile.elos as Record<string, any>)[totalKey] 
+    const currentTotalElo = this.profile?.elos && (this.profile.elos as Record<string, any>)[totalKey]
       ? ((this.profile.elos as Record<string, any>)[totalKey] as number)
       : 1500;
     const newTotalElo = this.eloCalculator.calculateElo(currentTotalElo, puzzleElo, result).newElo;
@@ -287,7 +297,7 @@ export class ProfileService implements IProfileService {
       elos[maxTotalKey] = newTotalElo;
       recordInfo.isNewTotalRecord = true;
     }
-    
+
     // Inicializa el objeto de cambios con una copia de los elos existentes para evitar la sobrescritura
     // Usamos Record para permitir acceso dinámico a propiedades
     const changes: { elos: Record<string, any> } = { elos: { ...elos } };
@@ -318,7 +328,7 @@ export class ProfileService implements IProfileService {
       }
       changes.elos[maxOpeningsKey] = { ...(changes.elos[maxOpeningsKey] || {}), ...elos[maxOpeningsKey] };
     }
-    
+
     // Se actualiza el perfil con los cambios
     this.requestUpdateProfile(changes);
 
@@ -337,6 +347,6 @@ export class ProfileService implements IProfileService {
     };
 
     await this.firestoreService.createProfile(profileForSet);
-    this.setProfile(profileForSet);
+    await this.setProfile(profileForSet);
   }
 }

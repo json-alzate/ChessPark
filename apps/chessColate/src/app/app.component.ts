@@ -187,7 +187,7 @@ export class AppComponent implements OnInit, OnDestroy {
           await this.configureRevenueCatUser(dataAuth.uid);
         } else {
           // Usuario no autenticado - limpiar perfil
-          this.profileService.clearProfile();
+          await this.profileService.clearProfile();
         }
 
         // Marcar como inicializado después de procesar el perfil

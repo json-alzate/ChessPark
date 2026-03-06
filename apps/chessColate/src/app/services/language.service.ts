@@ -11,7 +11,7 @@ export class LanguageService {
 
   private translocoService = inject(TranslocoService);
 
-  constructor() {}
+  constructor() { }
 
   /**
    * Obtiene el idioma actual
@@ -43,25 +43,17 @@ export class LanguageService {
   detectBrowserLanguage(): SupportedLang {
     const browserLang = navigator.language || (navigator as any).userLanguage || 'en';
     const browserLangCode = browserLang.split('-')[0];
-    
+
     // Si el navegador está en español, retornar 'es', sino 'en'
     return browserLangCode === 'es' ? 'es' : 'en';
   }
 
   /**
    * Inicializa el idioma basado en el perfil del usuario o el navegador
+   * Por defecto, si no se ha iniciado sesión, el idioma será inglés
    */
   async initializeLanguage(): Promise<void> {
-    // const profile = this.profileService.getProfile;
-    
-    // if (profile && profile.lang) {
-      // Si el usuario tiene un idioma guardado en su perfil, usarlo
-    //   await this.setLanguage(profile.lang);
-    // } else {
-      // Si no, detectar el idioma del navegador
-      const browserLang = this.detectBrowserLanguage();
-      await this.setLanguage(browserLang);
-    // }
+    await this.setLanguage('en');
   }
 
   /**

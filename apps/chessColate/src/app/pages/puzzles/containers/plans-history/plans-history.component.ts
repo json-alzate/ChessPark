@@ -26,7 +26,9 @@ import {
     extensionPuzzleOutline,
     shuffle,
     trendingDown,
-    infiniteOutline
+    infiniteOutline,
+    flame,
+    flameOutline
 } from 'ionicons/icons';
 
 @Component({
@@ -55,6 +57,8 @@ export class PlansHistoryComponent implements OnInit, OnDestroy {
     plans: Plan[] = [];
     groupedPlans: { date: string; plans: Plan[] }[] = [];
     isLoading = false;
+    streakDays = 0;
+    isStreakActive = false;
 
     constructor() {
         addIcons({
@@ -66,7 +70,9 @@ export class PlansHistoryComponent implements OnInit, OnDestroy {
             extensionPuzzleOutline,
             shuffle,
             trendingDown,
-            infiniteOutline
+            infiniteOutline,
+            flame,
+            flameOutline
         });
     }
 
@@ -87,6 +93,7 @@ export class PlansHistoryComponent implements OnInit, OnDestroy {
         try {
             this.plans = this.planStorageService.getAllPlans();
             this.groupPlansByDate();
+            this.calculateStreak();
         } catch (error) {
             console.error('Error al cargar planes:', error);
             this.plans = [];
@@ -94,6 +101,54 @@ export class PlansHistoryComponent implements OnInit, OnDestroy {
         } finally {
             this.isLoading = false;
         }
+    }
+
+    /**
+     * Calcula la racha actual de días consecutivos con planes completados
+     */
+    calculateStreak(): void {
+        if (this.plans.length === 0) {
+            this.streakDays = 0;
+            this.isStreakActive = false;
+            return;
+        }
+
+        const today = new Date();
+        const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
+        // Obtener fechas únicas ordenadas descending
+        const uniqueDates = Array.from(new Set(
+            this.plans.map(plan => {
+                const date = new Date(plan.createdAt);
+                return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+            })
+        )).sort((a, b) => b.localeCompare(a));
+
+        const hasPlanToday = uniqueDates[0] === todayStr;
+
+        if (!hasPlanToday) {
+            this.isStreakActive = false;
+            this.streakDays = 0;
+            return;
+        }
+
+        this.isStreakActive = true;
+
+        let days = 0;
+        let currentDate = new Date(today);
+
+        // Contar días consecutivos hacia atrás desde hoy
+        while (true) {
+            const expectedStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
+            if (uniqueDates.includes(expectedStr)) {
+                days++;
+                currentDate.setDate(currentDate.getDate() - 1);
+            } else {
+                break;
+            }
+        }
+
+        this.streakDays = days;
     }
 
     /**

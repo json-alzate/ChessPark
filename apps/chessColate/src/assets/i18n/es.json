@@ -259,7 +259,10 @@
     "puzzlesPlayed": "Ejercicios jugados",
     "elo": "ELO",
     "blocks": "Bloques",
-    "successRate": "Tasa de aciertos"
+    "successRate": "Tasa de aciertos",
+    "streak": "Racha",
+    "days": "días",
+    "day": "día"
   },
   "CUSTOM_PLANS": {
     "listTitle": "Rutinas personalizadas",
