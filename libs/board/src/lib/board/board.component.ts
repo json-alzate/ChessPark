@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { Chessboard, BOARD_TYPE, ChessboardConfig, MarkerType } from 'cm-chessboard';
@@ -10,7 +10,9 @@ import { Markers } from 'cm-chessboard/src/extensions/markers/Markers.js';
   templateUrl: './board.component.html',
   styleUrl: './board.component.css',
 })
-export class BoardComponent implements OnInit {
+export class BoardComponent implements OnInit, AfterViewInit {
+
+  @ViewChild('boardContainer') boardContainer!: ElementRef;
 
   @Output() squareSelected = new EventEmitter<string>();
 
@@ -39,6 +41,10 @@ export class BoardComponent implements OnInit {
   private board: any = null;
 
   ngOnInit() {
+    // Initialization that doesn't depend on the DOM can go here
+  }
+
+  ngAfterViewInit() {
     this.buildBoard();
   }
 
@@ -46,7 +52,7 @@ export class BoardComponent implements OnInit {
 
     console.log('buildBoard');
 
-    this.board = await new Chessboard(document.getElementById('boardPuzzle') as HTMLElement, this.config);
+    this.board = await new Chessboard(this.boardContainer.nativeElement as HTMLElement, this.config);
 
     // Agregar evento de clic en casillas usando enableSquareSelect
     this.board.enableSquareSelect('pointerdown', (eventData: any) => {
@@ -63,14 +69,14 @@ export class BoardComponent implements OnInit {
     this.config = { ...this.config, style: { ...this.config.style, showCoordinates } };
 
     // Buscar el elemento SVG cm-chessboard
-    const boardElement = document.getElementById('boardPuzzle');
+    const boardElement = this.boardContainer?.nativeElement;
     if (boardElement) {
       const chessboardSVG = boardElement.querySelector('.cm-chessboard') as SVGElement;
-      
+
       if (chessboardSVG) {
         // Buscar el grupo de coordenadas dentro del SVG
         const coordinatesGroup = chessboardSVG.querySelector('g.coordinates') as SVGElement;
-        
+
         if (coordinatesGroup) {
           if (showCoordinates) {
             // Mostrar coordenadas
@@ -104,7 +110,7 @@ export class BoardComponent implements OnInit {
   }
 
   public setPosition(position: string) {
-    this.config = { ...this.config, position };  
+    this.config = { ...this.config, position };
     if (this.board) {
       this.board.setPosition(position);
     }
@@ -136,13 +142,13 @@ export class BoardComponent implements OnInit {
    * @returns true si las coordenadas están visibles, false en caso contrario
    */
   areCoordinatesVisible(): boolean {
-    const boardElement = document.getElementById('boardPuzzle');
+    const boardElement = this.boardContainer?.nativeElement;
     if (boardElement) {
       const chessboardSVG = boardElement.querySelector('.cm-chessboard') as SVGElement;
-      
+
       if (chessboardSVG) {
         const coordinatesGroup = chessboardSVG.querySelector('g.coordinates') as SVGElement;
-        
+
         if (coordinatesGroup) {
           return coordinatesGroup.style.display !== 'none';
         }
