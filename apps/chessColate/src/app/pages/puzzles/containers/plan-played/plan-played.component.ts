@@ -27,7 +27,7 @@ import { TrainingMenuComponent } from '@pages/home/components/training-menu.comp
 import { ConfettiService } from '@chesspark/common-utils';
 
 import { addIcons } from 'ionicons';
-import { heartOutline, heart } from 'ionicons/icons';
+import { heartOutline, heart, homeOutline, timeOutline, trophyOutline, lockClosed } from 'ionicons/icons';
 import { Subject, Subscription } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -62,14 +62,17 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
   isLiked: boolean = false;
   isLoadingLike: boolean = false;
   isLoadingToPlay: boolean = false;
+  isNewRecord: boolean = false;
+  isConfettiLaunching: boolean = false;
 
   isAuthenticated: boolean = false;
   isLoadingPlan: boolean = false;
+  isFromHistory: boolean = false;
   private hasHadPlan: boolean = false; // Flag para saber si alguna vez tuvimos un plan
   private destroy$ = new Subject<void>();
 
   constructor() {
-    addIcons({ heartOutline, heart });
+    addIcons({ heartOutline, heart, homeOutline, timeOutline, trophyOutline, lockClosed });
   }
 
   ngOnInit() {
@@ -97,6 +100,9 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
     this.route.queryParams
       .pipe(takeUntil(this.destroy$))
       .subscribe(params => {
+        if (params['uid']) {
+          this.isFromHistory = true;
+        }
         if (params['uid'] && !this.plan) {
           // Intentar cargar el plan desde el historial
           const planFromHistory = this.planStorageService.getPlanById(params['uid']);
@@ -206,20 +212,22 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
     if (this.plan.planType === 'custom' && this.plan.uidCustomPlan) {
       const planElos = await this.plansElosService.getOnePlanElo(this.plan.uidCustomPlan);
       this.eloTotal = planElos?.total || 0;
-      
+
       // Verificar si se superó el máximo histórico inicial (antes de empezar este juego)
       // Comparar con initialMaxElo guardado al empezar, o con maxTotal si no existe
       const initialMax = this.plan.initialMaxElo ?? planElos?.maxTotal ?? 1500;
       if (this.eloTotal > initialMax) {
+        this.isNewRecord = true;
         this.launchConfetti();
       }
     } else {
       this.eloTotal = this.profileService.getEloTotalByPlanType(this.plan.planType);
-      
+
       // Verificar si se superó el máximo histórico inicial (antes de empezar este juego)
       // Comparar con initialMaxElo guardado al empezar
       const initialMax = this.plan.initialMaxElo;
       if (initialMax !== undefined && this.eloTotal > initialMax) {
+        this.isNewRecord = true;
         this.launchConfetti();
       }
     }
@@ -228,13 +236,20 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
   /**
    * Lanza confetti para celebrar un nuevo récord de ELO total
    */
-  private launchConfetti() {
+  launchConfetti() {
+    if (this.isConfettiLaunching) return;
+    this.isConfettiLaunching = true;
+
     // Usar colores dorados para récord de ELO total
     const confettiColors = ['#FFD700', '#FFA500', '#FF8C00', '#FF6347'];
     const duration = 5000;
     const intensity: 'high' = 'high';
 
     this.confettiService.launch(confettiColors, duration, intensity);
+
+    setTimeout(() => {
+      this.isConfettiLaunching = false;
+    }, duration + 500);
   }
 
   loadMorePuzzles(blockIndex: number) {
@@ -359,6 +374,14 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
       console.error('Error al repetir el plan:', error);
       this.isLoadingToPlay = false;
     }
+  }
+
+  goToHome(): void {
+    this.router.navigate(['/home']);
+  }
+
+  goToHistory(): void {
+    this.router.navigate(['/puzzles/plans-history']);
   }
 }
 
