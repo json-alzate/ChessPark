@@ -220,7 +220,16 @@ export class TrainingComponent implements OnInit, OnDestroy {
     this.countPuzzlesPlayedBlock = 0;
     this.showBlockTimer = false;
     this.pausePlanTimer();
-    this.showBlockPresentation();
+
+    if (this.plan.planType === 'infinity') {
+      this.isProcessingBlock = false;
+      this.forceStopTimerInPuzzleBoard = false;
+      this.selectPuzzleToPlay();
+      this.showBlockTimer = false;
+      this.stopBlockTimer();
+    } else {
+      this.showBlockPresentation();
+    }
   }
 
   async showBlockPresentation() {

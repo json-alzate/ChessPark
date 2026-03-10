@@ -5,6 +5,7 @@
     <div class="navbar bg-base-100 shadow-sm">
       <div class="flex-1">
         <div class="flex items-center gap-2">
+          @if (plan?.planType !== 'infinity') {
           <div class="dropdown dropdown-bottom" [class.dropdown-open]="isDropdownOpen">
             <div tabindex="0" role="button" class="btn btn-ghost btn-sm" (click)="isDropdownOpen = !isDropdownOpen"
               (blur)="closeDropdown()">
@@ -43,6 +44,7 @@
               }
             </ul>
           </div>
+          }
           <div class="flex flex-col">
             <div class="flex items-center gap-2">
               @if (($any(plan)?.blocks?.[currentIndexBlock])) {
@@ -115,10 +117,13 @@
           </div>
         </div>
         @if (isGoshHelperShow) {
-        <ion-note class="flex items-start gap-2 text-base-content/80 text-sm bg-warning/10 p-3 rounded-lg border border-warning/20">
+        <ion-note
+          class="flex items-start gap-2 text-base-content/80 text-sm bg-warning/10 p-3 rounded-lg border border-warning/20">
           <ion-icon name="eye-outline" class="h-5 w-5 mt-0.5 flex-shrink-0"></ion-icon>
           <div class="flex flex-col gap-1">
-            <span class="font-semibold">{{ 'PUZZLES.help.gosh' | transloco}} <span class="font-mono font-normal">{{ (puzzleToPlay?.goshPuzzleTime ?? 0) | secondsToMinutesSeconds }}</span> {{ 'PUZZLES.help.gosh2' | transloco}}</span>
+            <span class="font-semibold">{{ 'PUZZLES.help.gosh' | transloco}} <span class="font-mono font-normal">{{
+                (puzzleToPlay?.goshPuzzleTime ?? 0) | secondsToMinutesSeconds }}</span> {{ 'PUZZLES.help.gosh2' |
+              transloco}}</span>
           </div>
         </ion-note>
         }

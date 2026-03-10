@@ -649,6 +649,22 @@ export class BlockService {
           resolve(blockBackToCalm);
 
           break;
+
+        case 'infinity':
+          const blockInfinity: Block[] = [
+            {
+              time: -1,
+              puzzlesCount: 0,
+              theme: this.getRandomTheme(),
+              elo: defaultElo,
+              color: Math.random() > 0.5 ? 'white' : 'black',
+              puzzlesPlayed: [],
+              nextPuzzleImmediately: true,
+              showPuzzleSolution: true
+            }
+          ];
+          resolve(blockInfinity);
+          break;
       }
 
     });

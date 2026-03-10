@@ -192,6 +192,7 @@ export class PlansHistoryComponent implements OnInit, OnDestroy {
             plan30: 'Plan 30',
             backToCalm: 'Vuelta a la calma',
             custom: 'Personalizado',
+            infinity: 'Infinito'
         };
         return typeNames[planType] || planType;
     }

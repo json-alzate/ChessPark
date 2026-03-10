@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, Renderer2, Injectable, inject } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, Input, Output, EventEmitter, Renderer2, Injectable, inject, ViewChild, ElementRef } from '@angular/core';
 
 
 import {
@@ -60,7 +60,7 @@ import { UidGeneratorService, SecondsToMinutesSecondsPipe, SoundsService } from 
   styleUrls: ['./board-puzzle.component.scss'],
   imports: [SecondsToMinutesSecondsPipe, IonIcon],
 })
-export class BoardPuzzleComponent implements OnInit {
+export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
 
   soundsService = inject(SoundsService);
 
@@ -92,12 +92,16 @@ export class BoardPuzzleComponent implements OnInit {
   goshPuzzleTime = 0;
   board!: Chessboard;
   chessInstance = new Chess();
+  isViewInitialized = false;
+  pendingInit = false;
+  boardId = 'boardPuzzle_' + Math.random().toString(36).substr(2, 9);
 
+  @ViewChild('boardContainer', { static: true }) boardContainer!: ElementRef;
 
   constructor(
     private renderer: Renderer2,
-      // public uiService: UiService,
-      // private toolsService: ToolsService,
+    // public uiService: UiService,
+    // private toolsService: ToolsService,
     private uidGenerator: UidGeneratorService
   ) {
     // Registrar iconos de Ionic
@@ -115,7 +119,11 @@ export class BoardPuzzleComponent implements OnInit {
     if (data) {
       this.puzzle = data;
       this.stopTimer();
-      this.initPuzzle();
+      if (this.isViewInitialized) {
+        this.initPuzzle();
+      } else {
+        this.pendingInit = true;
+      }
     }
   }
 
@@ -126,24 +134,37 @@ export class BoardPuzzleComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log('ngOnInit para construir el tablero');
-    
-      if (!this.board) {
-        this.buildBoard('8/8/8/8/8/8/8/8 w - - 0 1');
+    console.log('ngOnInit board-puzzle - eliminada carga inicial prematura');
+  }
+
+  ngAfterViewInit() {
+    this.isViewInitialized = true;
+    if (this.pendingInit) {
+      this.initPuzzle();
+      this.pendingInit = false;
+    } else if (!this.puzzle && !this.board) {
+      this.buildBoard('8/8/8/8/8/8/8/8 w - - 0 1');
+    }
+  }
+
+  ngOnDestroy() {
+    this.stopTimer();
+    if (this.board) {
+      this.board.destroy();
     }
   }
 
 
-  initPuzzle() {
+  async initPuzzle() {
     if (this.board) {
       // en caso de que se haya jugado un puzzle a ciegas anteriormente, se muestra las piezas
-      const pieces = document.querySelectorAll('#boardPuzzle .pieces');;
+      const pieces = document.querySelectorAll(`#${this.boardId} .pieces`);;
       if (pieces.length > 0) {
         this.renderer.setStyle(pieces[0], 'opacity', '1');
       }
       this.board.setPosition(this.puzzle.fen);
     } else {
-      this.buildBoard(this.puzzle.fen);
+      await this.buildBoard(this.puzzle.fen);
     }
     console.log('puzzle: ', this.puzzle);
     this.chessInstance.load(this.puzzle.fen);
@@ -159,8 +180,8 @@ export class BoardPuzzleComponent implements OnInit {
     // se construye un arreglo con los fen de la solución
     this.arrayMovesSolution = this.puzzle.moves.split(' ');
     this.arrayFenSolution.push(this.chessInstance.fen());
-   
-    
+
+
 
     for (const move of this.arrayMovesSolution) {
       this.chessInstance.move(move);
@@ -199,7 +220,7 @@ export class BoardPuzzleComponent implements OnInit {
     // const cssClass = this.uiService.currentBoardStyleSelected.name !== 'default' ? this.uiService.currentBoardStyleSelected.name : null;
 
 
-    this.board = await new Chessboard(document.getElementById('boardPuzzle') as HTMLElement, {
+    this.board = await new Chessboard(this.boardContainer.nativeElement, {
       responsive: true,
       position: fen,
       assetsUrl: 'assets/cm-chessboard/assets/',
@@ -219,8 +240,8 @@ export class BoardPuzzleComponent implements OnInit {
     });
 
     console.log('buildBoard', fen);
-    
-    
+
+
 
     this.board.enableMoveInput((event) => {
 
@@ -247,19 +268,19 @@ export class BoardPuzzleComponent implements OnInit {
         case 'validateMoveInput':
 
           if (event.squareTo && event.piece && event.squareFrom &&
-              (event.squareTo.charAt(1) === '8' || event.squareTo.charAt(1) === '1') && 
-              event.piece.charAt(1) === 'p') {
+            (event.squareTo.charAt(1) === '8' || event.squareTo.charAt(1) === '1') &&
+            event.piece.charAt(1) === 'p') {
 
             // Validar primero si el movimiento básico del peón es válido
             try {
               // Verificar que hay movimientos posibles desde la casilla de origen
-              const possibleMoves = this.chessInstance.moves({ 
-                square: event.squareFrom as any, 
-                verbose: true 
+              const possibleMoves = this.chessInstance.moves({
+                square: event.squareFrom as any,
+                verbose: true
               });
-              
+
               const isValidPawnMove = possibleMoves.some(move => move.to === event.squareTo);
-              
+
               if (!isValidPawnMove) {
                 this.board.removeMarkers();
                 this.showLastMove();
@@ -270,20 +291,20 @@ export class BoardPuzzleComponent implements OnInit {
               // Mostrar diálogo de promoción solo si el movimiento básico es válido
               this.board.showPromotionDialog(event.squareTo, colorToShow, (result) => {
                 if (result && result.piece && event.squareFrom && event.squareTo) {
-                  const objectMovePromotion = { 
-                    from: event.squareFrom, 
-                    to: event.squareTo, 
-                    promotion: result.piece.charAt(1) 
+                  const objectMovePromotion = {
+                    from: event.squareFrom,
+                    to: event.squareTo,
+                    promotion: result.piece.charAt(1)
                   };
-                  
+
                   // Validar primero con chess.js antes de actualizar el tablero
                   try {
                     const theMovePromotion = this.chessInstance.move(objectMovePromotion);
-                    
+
                     if (theMovePromotion) {
                       // Solo si el movimiento es válido, sincronizar el tablero con el estado de chess.js
                       this.board.setPosition(this.chessInstance.fen(), false);
-                      
+
                       this.board.removeArrows();
                       this.showLastMove();
                       this.validateMove();
@@ -304,7 +325,7 @@ export class BoardPuzzleComponent implements OnInit {
                   this.showLastMove();
                 }
               });
-              
+
               // Retornar true para aceptar el movimiento pendiente de promoción
               return true;
             } catch (error) {
@@ -551,7 +572,7 @@ export class BoardPuzzleComponent implements OnInit {
         this.goshPuzzleTime--;
         if (this.goshPuzzleTime === 0) {
           // Se ocultan las piezas tomando el elemento con la clase "pieces"
-          const pieces = document.querySelectorAll('#boardPuzzle .pieces');
+          const pieces = document.querySelectorAll(`#${this.boardId} .pieces`);
           console.log('pieces', pieces, pieces.length);
 
           if (pieces.length > 0) {
@@ -665,6 +686,6 @@ export class BoardPuzzleComponent implements OnInit {
     }
   }
 
- 
+
 
 }
