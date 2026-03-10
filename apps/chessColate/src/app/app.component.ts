@@ -4,7 +4,24 @@ import { initializeApp } from 'firebase/app';
 import { Subscription } from 'rxjs';
 
 // Ionic imports
-import { IonMenu, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonIcon, IonLabel, IonRouterOutlet, IonButtons, IonButton, IonAvatar, IonMenuToggle, ModalController, MenuController } from '@ionic/angular/standalone';
+import {
+  IonMenu,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent,
+  IonList,
+  IonItem,
+  IonIcon,
+  IonLabel,
+  IonRouterOutlet,
+  IonButtons,
+  IonButton,
+  IonAvatar,
+  IonMenuToggle,
+  ModalController,
+  MenuController,
+} from '@ionic/angular/standalone';
 
 // Transloco
 import { TranslocoPipe } from '@jsverse/transloco';
@@ -46,7 +63,8 @@ interface Notification {
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [IonAvatar,
+  imports: [
+    IonAvatar,
     IonMenu,
     IonHeader,
     IonToolbar,
@@ -59,7 +77,9 @@ interface Notification {
     IonRouterOutlet,
     IonButtons,
     IonButton,
-    TranslocoPipe, IonMenuToggle],
+    TranslocoPipe,
+    IonMenuToggle,
+  ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
@@ -87,31 +107,37 @@ export class AppComponent implements OnInit, OnDestroy {
       title: 'Inicio',
       icon: 'home-outline',
       route: '/home',
-      enabled: true
+      enabled: true,
     },
     {
       title: 'Coordenadas',
       icon: 'grid-outline',
       route: '/coordinates',
-      enabled: true
+      enabled: true,
     },
     {
       title: 'Recorrido del Caballo',
       icon: 'extension-puzzle-outline',
       route: '/knight-tour',
-      enabled: true
+      enabled: true,
+    },
+    {
+      title: 'Ajedrez 960',
+      icon: 'shuffle-outline',
+      route: '/chess960',
+      enabled: true,
     },
     {
       title: 'Historial de Planes',
       icon: 'time-outline',
       route: '/puzzles/plans-history',
-      enabled: true
+      enabled: true,
     },
     {
       title: 'Donar',
       icon: 'heart-outline',
       route: '/donation',
-      enabled: true
+      enabled: true,
     },
   ];
 
@@ -126,7 +152,6 @@ export class AppComponent implements OnInit, OnDestroy {
     //   time: 'Hace 2 horas',
     //   read: false
     // },
-
   ];
 
   private profileSubscription?: Subscription;
@@ -137,20 +162,22 @@ export class AppComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     // Suscribirse al perfil del usuario
-    this.profileSubscription = this.profileService.profile$.subscribe(profile => {
-      this.profile = profile;
-      this.isAuthenticated = !!profile;
+    this.profileSubscription = this.profileService.profile$.subscribe(
+      (profile) => {
+        this.profile = profile;
+        this.isAuthenticated = !!profile;
 
-      if (profile) {
-        this.displayName = profile.name || '';
-        this.displayEmail = this.truncateEmail(profile.email);
-        this.photoURL = ''; // Firebase user photoURL puede agregarse al Profile model
-      } else {
-        this.displayName = '';
-        this.displayEmail = '';
-        this.photoURL = '';
+        if (profile) {
+          this.displayName = profile.name || '';
+          this.displayEmail = this.truncateEmail(profile.email);
+          this.photoURL = ''; // Firebase user photoURL puede agregarse al Profile model
+        } else {
+          this.displayName = '';
+          this.displayEmail = '';
+          this.photoURL = '';
+        }
       }
-    });
+    );
   }
 
   ngOnDestroy(): void {
@@ -176,25 +203,28 @@ export class AppComponent implements OnInit, OnDestroy {
     await this.initRevenueCat();
 
     // Escuchar el estado del usuario - login/logout
-    this.authService.getAuthState().pipe(
-      switchMap(async (dataAuth) => {
-        console.log('Auth state changed:', dataAuth);
+    this.authService
+      .getAuthState()
+      .pipe(
+        switchMap(async (dataAuth) => {
+          console.log('Auth state changed:', dataAuth);
 
-        if (dataAuth) {
-          // Usuario autenticado - obtener o crear perfil
-          await this.profileService.checkProfile(dataAuth);
-          // Reconfigurar RevenueCat con el nuevo user ID
-          await this.configureRevenueCatUser(dataAuth.uid);
-        } else {
-          // Usuario no autenticado - limpiar perfil
-          await this.profileService.clearProfile();
-        }
+          if (dataAuth) {
+            // Usuario autenticado - obtener o crear perfil
+            await this.profileService.checkProfile(dataAuth);
+            // Reconfigurar RevenueCat con el nuevo user ID
+            await this.configureRevenueCatUser(dataAuth.uid);
+          } else {
+            // Usuario no autenticado - limpiar perfil
+            await this.profileService.clearProfile();
+          }
 
-        // Marcar como inicializado después de procesar el perfil
-        this.authService.markAsInitialized();
-        return dataAuth;
-      })
-    ).subscribe();
+          // Marcar como inicializado después de procesar el perfil
+          this.authService.markAsInitialized();
+          return dataAuth;
+        })
+      )
+      .subscribe();
   }
 
   /**
@@ -225,7 +255,9 @@ export class AppComponent implements OnInit, OnDestroy {
       if (Capacitor.isNativePlatform()) {
         console.log('RevenueCat inicializado correctamente (SDK nativo)');
       } else {
-        console.log('RevenueCat inicializado correctamente (API REST para web)');
+        console.log(
+          'RevenueCat inicializado correctamente (API REST para web)'
+        );
       }
     } catch (error: unknown) {
       console.error('Error al inicializar RevenueCat:', error);
@@ -248,7 +280,9 @@ export class AppComponent implements OnInit, OnDestroy {
         const entitlementId = 'donation'; // Cambiar según el entitlement ID configurado en RevenueCat
 
         try {
-          const isSubscribed = await this.revenueCat.checkSubscriptionStatus(entitlementId);
+          const isSubscribed = await this.revenueCat.checkSubscriptionStatus(
+            entitlementId
+          );
 
           if (isSubscribed) {
             console.log('Usuario tiene suscripción activa:', entitlementId);
@@ -295,14 +329,15 @@ export class AppComponent implements OnInit, OnDestroy {
     return '?';
   }
 
-
   openLoginModal() {
-    this.modalController.create({
-      component: LoginComponent,
-      componentProps: {
-        segmentEmailPassword: 'login'
-      }
-    }).then(modal => modal.present());
+    this.modalController
+      .create({
+        component: LoginComponent,
+        componentProps: {
+          segmentEmailPassword: 'login',
+        },
+      })
+      .then((modal) => modal.present());
   }
 
   /**
@@ -330,7 +365,9 @@ export class AppComponent implements OnInit, OnDestroy {
    * Marca una notificación como leída
    */
   markAsRead(notificationId: string) {
-    const notification = this.notifications.find(n => n.id === notificationId);
+    const notification = this.notifications.find(
+      (n) => n.id === notificationId
+    );
     if (notification) {
       notification.read = true;
     }
@@ -340,7 +377,7 @@ export class AppComponent implements OnInit, OnDestroy {
    * Marca todas las notificaciones como leídas
    */
   markAllAsRead() {
-    this.notifications.forEach(notification => {
+    this.notifications.forEach((notification) => {
       notification.read = true;
     });
   }

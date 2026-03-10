@@ -1,7 +1,21 @@
-import { Component, OnInit, Output, EventEmitter, Input, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Output,
+  EventEmitter,
+  Input,
+  ViewChild,
+  ElementRef,
+  AfterViewInit,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { Chessboard, BOARD_TYPE, ChessboardConfig, MarkerType } from 'cm-chessboard';
+import {
+  Chessboard,
+  BOARD_TYPE,
+  ChessboardConfig,
+  MarkerType,
+} from 'cm-chessboard';
 import { Markers } from 'cm-chessboard/src/extensions/markers/Markers.js';
 
 @Component({
@@ -11,7 +25,6 @@ import { Markers } from 'cm-chessboard/src/extensions/markers/Markers.js';
   styleUrl: './board.component.css',
 })
 export class BoardComponent implements OnInit, AfterViewInit {
-
   @ViewChild('boardContainer') boardContainer!: ElementRef;
 
   @Output() squareSelected = new EventEmitter<string>();
@@ -31,11 +44,9 @@ export class BoardComponent implements OnInit, AfterViewInit {
       showCoordinates: true,
       pieces: {
         file: 'pieces/standard.svg',
-      }
+      },
     },
-    extensions: [
-      { class: Markers }
-    ],
+    extensions: [{ class: Markers }],
   };
 
   private board: any = null;
@@ -49,10 +60,12 @@ export class BoardComponent implements OnInit, AfterViewInit {
   }
 
   async buildBoard() {
-
     console.log('buildBoard');
 
-    this.board = await new Chessboard(this.boardContainer.nativeElement as HTMLElement, this.config);
+    this.board = await new Chessboard(
+      this.boardContainer.nativeElement as HTMLElement,
+      this.config
+    );
 
     // Agregar evento de clic en casillas usando enableSquareSelect
     this.board.enableSquareSelect('pointerdown', (eventData: any) => {
@@ -66,16 +79,23 @@ export class BoardComponent implements OnInit, AfterViewInit {
    * muestra u oculta las coordenadas del tablero
    */
   public toggleCoordinates(showCoordinates: boolean) {
-    this.config = { ...this.config, style: { ...this.config.style, showCoordinates } };
+    this.config = {
+      ...this.config,
+      style: { ...this.config.style, showCoordinates },
+    };
 
     // Buscar el elemento SVG cm-chessboard
     const boardElement = this.boardContainer?.nativeElement;
     if (boardElement) {
-      const chessboardSVG = boardElement.querySelector('.cm-chessboard') as SVGElement;
+      const chessboardSVG = boardElement.querySelector(
+        '.cm-chessboard'
+      ) as SVGElement;
 
       if (chessboardSVG) {
         // Buscar el grupo de coordenadas dentro del SVG
-        const coordinatesGroup = chessboardSVG.querySelector('g.coordinates') as SVGElement;
+        const coordinatesGroup = chessboardSVG.querySelector(
+          'g.coordinates'
+        ) as SVGElement;
 
         if (coordinatesGroup) {
           if (showCoordinates) {
@@ -94,13 +114,15 @@ export class BoardComponent implements OnInit, AfterViewInit {
     }
   }
 
-
   /**
    * muestra u oculta las piezas del tablero
    */
   public togglePieces(showPieces: boolean) {
     if (showPieces) {
-      this.config = { ...this.config, position: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1' };
+      this.config = {
+        ...this.config,
+        position: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+      };
     } else {
       this.config = { ...this.config, position: '8/8/8/8/8/8/8/8 w - - 0 1' };
     }
@@ -117,17 +139,14 @@ export class BoardComponent implements OnInit, AfterViewInit {
   }
 
   /**
- * Cambia la orientación del tablero
- * @param orientation 'w' para blanco, 'b' para negro
- */
+   * Cambia la orientación del tablero
+   * @param orientation 'w' para blanco, 'b' para negro
+   */
   public changeOrientation(orientation: 'w' | 'b') {
     if (this.board) {
       this.board.setOrientation(orientation);
     }
   }
-
-
-
 
   /**
    * Obtiene la orientación actual del tablero
@@ -144,10 +163,14 @@ export class BoardComponent implements OnInit, AfterViewInit {
   areCoordinatesVisible(): boolean {
     const boardElement = this.boardContainer?.nativeElement;
     if (boardElement) {
-      const chessboardSVG = boardElement.querySelector('.cm-chessboard') as SVGElement;
+      const chessboardSVG = boardElement.querySelector(
+        '.cm-chessboard'
+      ) as SVGElement;
 
       if (chessboardSVG) {
-        const coordinatesGroup = chessboardSVG.querySelector('g.coordinates') as SVGElement;
+        const coordinatesGroup = chessboardSVG.querySelector(
+          'g.coordinates'
+        ) as SVGElement;
 
         if (coordinatesGroup) {
           return coordinatesGroup.style.display !== 'none';
@@ -215,5 +238,4 @@ export class BoardComponent implements OnInit, AfterViewInit {
   public isBoardReady(): boolean {
     return this.board !== null;
   }
-
 }

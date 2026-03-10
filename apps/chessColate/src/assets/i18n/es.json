@@ -409,5 +409,20 @@
     "menu": {
       "logout": "Cerrar Sesión"
     }
+  },
+  "CHESS960": {
+    "title": "Ajedrez 960",
+    "description": "Una variante creada por Bobby Fischer donde las piezas de la primera fila se colocan casi al azar, dándole al juego nuevas dimensiones desde el primer movimiento.",
+    "rules": {
+      "title": "Reglas Básicas",
+      "p1": "- Los reyes se colocan entre las dos torres.",
+      "p2": "- La disposición es simétrica para ambos colores.",
+      "p3": "- El enroque sigue las reglas de que el Rey y la Torre terminan en sus casillas de destino normales: g1/c1 y f1/d1."
+    },
+    "controls": {
+      "positionLabel": "Posición ID (0-959)",
+      "randomButton": "Aleatorio",
+      "standardInfo": "La posición 518 es el ajedrez estándar."
+    }
   }
 }

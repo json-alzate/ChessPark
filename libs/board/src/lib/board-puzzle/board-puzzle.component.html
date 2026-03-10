@@ -1,11 +1,12 @@
-<div #boardContainer class="board" [id]="boardId">
-</div>
+<div #boardContainer class="board" [id]="boardId"></div>
 
 <div class="flex flex-col w-full bg-base-100">
   @if (showBoardControls) {
   <div class="flex items-center justify-between w-full p-4">
     @if (showTimer && isPlaying) {
-    <span [class]="'text-' + timeColor + ' font-semibold'">{{ time | secondsToMinutesSeconds }}</span>
+    <span [class]="'text-' + timeColor + ' font-semibold'">{{
+      time | secondsToMinutesSeconds
+    }}</span>
     } @else {
     <span></span>
     }
@@ -14,7 +15,10 @@
       @if (puzzle && puzzle.goshPuzzleTime) {
       <button class="btn btn-ghost btn-lg">
         <span class="flex items-center gap-2">
-          <ion-icon [name]="goshPuzzleTime > 0 ? 'eye-outline' : 'eye-off-outline'" class="text-lg"></ion-icon>
+          <ion-icon
+            [name]="goshPuzzleTime > 0 ? 'eye-outline' : 'eye-off-outline'"
+            class="text-lg"
+          ></ion-icon>
           {{ goshPuzzleTime | secondsToMinutesSeconds }}
         </span>
       </button>
@@ -24,10 +28,13 @@
       </button>
     </div>
   </div>
-  }
-  @if (showTimer && puzzle && puzzle.times && puzzle.times.total) {
+  } @if (showTimer && puzzle && puzzle.times && puzzle.times.total) {
   <div class="px-4 pb-4">
-    <progress [class]="'progress progress-' + timeColor" [value]="smoothProgress" [max]="puzzle.times.total"></progress>
+    <progress
+      [class]="'progress progress-' + timeColor"
+      [value]="smoothProgress"
+      [max]="puzzle.times.total"
+    ></progress>
   </div>
   }
 </div>

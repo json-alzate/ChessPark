@@ -1,5 +1,17 @@
-import { Component, OnInit, AfterViewInit, OnDestroy, Input, Output, EventEmitter, Renderer2, Injectable, inject, ViewChild, ElementRef } from '@angular/core';
-
+import {
+  Component,
+  OnInit,
+  AfterViewInit,
+  OnDestroy,
+  Input,
+  Output,
+  EventEmitter,
+  Renderer2,
+  Injectable,
+  inject,
+  ViewChild,
+  ElementRef,
+} from '@angular/core';
 
 import {
   COLOR,
@@ -7,10 +19,16 @@ import {
   MOVE_INPUT_MODE,
   SQUARE_SELECT_TYPE,
   Chessboard,
-  BORDER_TYPE
+  BORDER_TYPE,
 } from 'cm-chessboard';
-import { MARKER_TYPE, Markers } from 'cm-chessboard/src/extensions/markers/Markers.js';
-import { ARROW_TYPE, Arrows } from 'cm-chessboard/src/extensions/arrows/Arrows.js';
+import {
+  MARKER_TYPE,
+  Markers,
+} from 'cm-chessboard/src/extensions/markers/Markers.js';
+import {
+  ARROW_TYPE,
+  Arrows,
+} from 'cm-chessboard/src/extensions/arrows/Arrows.js';
 import { PromotionDialog } from 'cm-chessboard/src/extensions/promotion-dialog/PromotionDialog.js';
 import { Chess } from 'chess.js';
 
@@ -28,7 +46,7 @@ import {
   playSkipBackOutline,
   chevronBackOutline,
   chevronForwardOutline,
-  playSkipForwardOutline
+  playSkipForwardOutline,
 } from 'ionicons/icons';
 
 // models
@@ -40,7 +58,13 @@ interface UISettings {
   allowNextPuzzle: boolean;
   currentMoveNumber: number;
   isRetrying: boolean;
-  puzzleStatus: 'start' | 'wrong' | 'good' | 'finished' | 'showSolution' | 'isRetrying';
+  puzzleStatus:
+    | 'start'
+    | 'wrong'
+    | 'good'
+    | 'finished'
+    | 'showSolution'
+    | 'isRetrying';
   isPuzzleCompleted: boolean;
 }
 
@@ -48,9 +72,12 @@ interface UISettings {
 // import { UiService } from '@services/ui.service';
 // import { ToolsService } from '@services/tools.service';
 
-
 // Utils
-import { UidGeneratorService, SecondsToMinutesSecondsPipe, SoundsService } from '@chesspark/common-utils';
+import {
+  UidGeneratorService,
+  SecondsToMinutesSecondsPipe,
+  SoundsService,
+} from '@chesspark/common-utils';
 
 // Components
 @Injectable()
@@ -61,7 +88,6 @@ import { UidGeneratorService, SecondsToMinutesSecondsPipe, SoundsService } from 
   imports: [SecondsToMinutesSecondsPipe, IonIcon],
 })
 export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
-
   soundsService = inject(SoundsService);
 
   @Output() puzzleCompleted = new EventEmitter<Puzzle>();
@@ -77,7 +103,6 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
   totalMoves = 0;
   allowMoveArrows = false;
   fenToCompareAndPlaySound!: string;
-
 
   // timer
   showTimer = true;
@@ -112,7 +137,7 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
       playSkipBackOutline,
       chevronBackOutline,
       chevronForwardOutline,
-      playSkipForwardOutline
+      playSkipForwardOutline,
     });
   }
   @Input() set setPuzzle(data: Puzzle) {
@@ -156,11 +181,10 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-
   async initPuzzle() {
     if (this.board) {
       // en caso de que se haya jugado un puzzle a ciegas anteriormente, se muestra las piezas
-      const pieces = document.querySelectorAll(`#${this.boardId} .pieces`);;
+      const pieces = document.querySelectorAll(`#${this.boardId} .pieces`);
       if (pieces.length > 0) {
         this.renderer.setStyle(pieces[0], 'opacity', '1');
       }
@@ -183,8 +207,6 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
     this.arrayMovesSolution = this.puzzle.moves.split(' ');
     this.arrayFenSolution.push(this.chessInstance.fen());
 
-
-
     for (const move of this.arrayMovesSolution) {
       this.chessInstance.move(move);
       const fen = this.chessInstance.fen();
@@ -205,22 +227,18 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
       this.showTimer = false;
     }
 
-
     this.initGoshTimer();
   }
-
 
   /**
    * Build board ui
    */
   async buildBoard(fen: string) {
-
     // Se configura la ruta de las piezas con un timestamp para que no se guarde en cache (assetsCache: false, no se ven bien las piezas)
     const uniqueTimestamp = new Date().getTime();
     // const piecesPath = `${this.uiService.pieces}?t=${uniqueTimestamp}`;
 
     // const cssClass = this.uiService.currentBoardStyleSelected.name !== 'default' ? this.uiService.currentBoardStyleSelected.name : null;
-
 
     this.board = await new Chessboard(this.boardContainer.nativeElement, {
       responsive: true,
@@ -232,56 +250,69 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
         borderType: BORDER_TYPE.thin,
         pieces: {
           file: 'pieces/standard.svg',
-        }
+        },
       },
       extensions: [
         { class: Markers },
         { class: Arrows },
-        { class: PromotionDialog }
-      ]
+        { class: PromotionDialog },
+      ],
     });
 
     console.log('buildBoard', fen);
 
-
-
     this.board.enableMoveInput((event) => {
-
       // handle user input here
       switch (event.type) {
-
         case 'moveInputStarted':
           this.board.removeMarkers();
           this.showLastMove();
           this.board.removeArrows();
 
           // mostrar indicadores para donde se puede mover la pieza
-          if (event.square && this.chessInstance.moves({ square: event.square as any }).length > 0) {
+          if (
+            event.square &&
+            this.chessInstance.moves({ square: event.square as any }).length > 0
+          ) {
             // adiciona el marcador para la casilla seleccionada
-            const markerSquareSelected = { class: 'marker-square-green', slice: 'markerSquare' };
+            const markerSquareSelected = {
+              class: 'marker-square-green',
+              slice: 'markerSquare',
+            };
             this.board.addMarker(markerSquareSelected, event.square);
-            const possibleMoves = this.chessInstance.moves({ square: event.square as any, verbose: true });
+            const possibleMoves = this.chessInstance.moves({
+              square: event.square as any,
+              verbose: true,
+            });
             for (const move of possibleMoves) {
-              const markerDotMove = { class: 'marker-dot-green', slice: 'markerDot' };
+              const markerDotMove = {
+                class: 'marker-dot-green',
+                slice: 'markerDot',
+              };
               this.board.addMarker(markerDotMove, move.to);
             }
           }
           return true;
         case 'validateMoveInput':
-
-          if (event.squareTo && event.piece && event.squareFrom &&
-            (event.squareTo.charAt(1) === '8' || event.squareTo.charAt(1) === '1') &&
-            event.piece.charAt(1) === 'p') {
-
+          if (
+            event.squareTo &&
+            event.piece &&
+            event.squareFrom &&
+            (event.squareTo.charAt(1) === '8' ||
+              event.squareTo.charAt(1) === '1') &&
+            event.piece.charAt(1) === 'p'
+          ) {
             // Validar primero si el movimiento básico del peón es válido
             try {
               // Verificar que hay movimientos posibles desde la casilla de origen
               const possibleMoves = this.chessInstance.moves({
                 square: event.squareFrom as any,
-                verbose: true
+                verbose: true,
               });
 
-              const isValidPawnMove = possibleMoves.some(move => move.to === event.squareTo);
+              const isValidPawnMove = possibleMoves.some(
+                (move) => move.to === event.squareTo
+              );
 
               if (!isValidPawnMove) {
                 this.board.removeMarkers();
@@ -289,44 +320,55 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
                 return false;
               }
 
-              const colorToShow = event.piece.charAt(0) === 'w' ? COLOR.white : COLOR.black;
+              const colorToShow =
+                event.piece.charAt(0) === 'w' ? COLOR.white : COLOR.black;
               // Mostrar diálogo de promoción solo si el movimiento básico es válido
-              this.board.showPromotionDialog(event.squareTo, colorToShow, (result) => {
-                if (result && result.piece && event.squareFrom && event.squareTo) {
-                  const objectMovePromotion = {
-                    from: event.squareFrom,
-                    to: event.squareTo,
-                    promotion: result.piece.charAt(1)
-                  };
+              this.board.showPromotionDialog(
+                event.squareTo,
+                colorToShow,
+                (result) => {
+                  if (
+                    result &&
+                    result.piece &&
+                    event.squareFrom &&
+                    event.squareTo
+                  ) {
+                    const objectMovePromotion = {
+                      from: event.squareFrom,
+                      to: event.squareTo,
+                      promotion: result.piece.charAt(1),
+                    };
 
-                  // Validar primero con chess.js antes de actualizar el tablero
-                  try {
-                    const theMovePromotion = this.chessInstance.move(objectMovePromotion);
+                    // Validar primero con chess.js antes de actualizar el tablero
+                    try {
+                      const theMovePromotion =
+                        this.chessInstance.move(objectMovePromotion);
 
-                    if (theMovePromotion) {
-                      // Solo si el movimiento es válido, sincronizar el tablero con el estado de chess.js
-                      this.board.setPosition(this.chessInstance.fen(), false);
+                      if (theMovePromotion) {
+                        // Solo si el movimiento es válido, sincronizar el tablero con el estado de chess.js
+                        this.board.setPosition(this.chessInstance.fen(), false);
 
-                      this.board.removeArrows();
-                      this.showLastMove();
-                      this.validateMove();
-                    } else {
+                        this.board.removeArrows();
+                        this.showLastMove();
+                        this.validateMove();
+                      } else {
+                        this.board.setPosition(this.chessInstance.fen(), false);
+                        this.board.removeMarkers();
+                        this.showLastMove();
+                      }
+                    } catch (error) {
                       this.board.setPosition(this.chessInstance.fen(), false);
                       this.board.removeMarkers();
                       this.showLastMove();
+                      console.log('Invalid promotion move:', error);
                     }
-                  } catch (error) {
+                  } else {
                     this.board.setPosition(this.chessInstance.fen(), false);
                     this.board.removeMarkers();
                     this.showLastMove();
-                    console.log('Invalid promotion move:', error);
                   }
-                } else {
-                  this.board.setPosition(this.chessInstance.fen(), false);
-                  this.board.removeMarkers();
-                  this.showLastMove();
                 }
-              });
+              );
 
               // Retornar true para aceptar el movimiento pendiente de promoción
               return true;
@@ -367,13 +409,11 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
           this.board.removeArrows();
           return true;
         case 'moveInputFinished':
-
           return true;
         default:
           return true;
       }
     });
-
 
     // let startSquare;
     // let endSquare;
@@ -413,7 +453,6 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
     //     this.board.addArrow(arrowType, startSquare, endSquare);
     //   }
 
-
     //   if (event.type === SQUARE_SELECT_TYPE.primary && event.mouseEvent.type === 'mousedown') {
 
     //     if (!this.chessInstance.get(event.square)) {
@@ -441,7 +480,6 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
     //       myOwnMarker = MARKER_TYPE.frame;
     //     }
 
-
     //     const markersOnSquare = this.board.getMarkers(undefined, event.square);
 
     //     // remueve las marcas de la casilla diferentes a la del id 'lastMove'
@@ -453,23 +491,22 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
 
     //   }
     // });
-
   }
 
   removeMarkerNotLastMove(square?: string) {
-
     let markersToProcess: { type: any; square?: string }[] = [];
     if (square) {
       markersToProcess = this.board.getMarkers(undefined, square);
     } else {
       markersToProcess = this.board.getMarkers();
     }
-    markersToProcess.forEach((marker: { type: { id?: string }; square?: string }) => {
-      if (marker.type?.id !== 'lastMove') {
-        this.board.removeMarkers(marker.type, square ?? marker.square);
+    markersToProcess.forEach(
+      (marker: { type: { id?: string }; square?: string }) => {
+        if (marker.type?.id !== 'lastMove') {
+          this.board.removeMarkers(marker.type, square ?? marker.square);
+        }
       }
-    });
-
+    );
   }
 
   // Muestra la ultima jugada utilizando marcadores
@@ -484,19 +521,20 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
         from = this.arrayMovesSolution[this.currentMoveNumber - 1]?.slice(0, 2);
         to = this.arrayMovesSolution[this.currentMoveNumber - 1]?.slice(2, 4);
       }
-
     }
     if (from && to) {
-      const marker = { id: 'lastMove', class: 'marker-square-green', slice: 'markerSquare' };
+      const marker = {
+        id: 'lastMove',
+        class: 'marker-square-green',
+        slice: 'markerSquare',
+      };
       this.board.addMarker(marker, from);
       this.board.addMarker(marker, to);
     }
-
   }
 
   // Timer --------------------------------------------
   initTimer() {
-
     // el puzzle tiene un tiempo limite para resolverlo
     let warningColorOn = 0;
     let dangerColorOn = 0;
@@ -516,18 +554,20 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Timer principal en segundos (mantiene toda la lógica original)
     this.subsSeconds = interval(1000);
-    this.subsSeconds.pipe(
-      takeUntil(this.timerUnsubscribe$)
-    ).subscribe(() => {
-
+    this.subsSeconds.pipe(takeUntil(this.timerUnsubscribe$)).subscribe(() => {
       this.timeUsed++;
 
       if (this.puzzle?.times?.total) {
         this.time--;
         if (this.time === 0) {
           this.puzzleEndByTime.emit({
-            ...this.puzzle, timeUsed: this.timeUsed, fenStartUserPuzzle: this.arrayFenSolution[1],
-            firstMoveSquaresHighlight: [this.arrayMovesSolution[0].slice(0, 2), this.arrayMovesSolution[0].slice(2, 4)]
+            ...this.puzzle,
+            timeUsed: this.timeUsed,
+            fenStartUserPuzzle: this.arrayFenSolution[1],
+            firstMoveSquaresHighlight: [
+              this.arrayMovesSolution[0].slice(0, 2),
+              this.arrayMovesSolution[0].slice(2, 4),
+            ],
           });
           this.stopTimer();
           this.isPlaying = false;
@@ -547,9 +587,7 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
     // Timer suave para actualizar la barra de progreso cada 100ms
     if (this.puzzle?.times?.total) {
       const smoothTimer = interval(100);
-      smoothTimer.pipe(
-        takeUntil(this.timerUnsubscribe$)
-      ).subscribe(() => {
+      smoothTimer.pipe(takeUntil(this.timerUnsubscribe$)).subscribe(() => {
         if (this.puzzle?.times?.total) {
           const elapsed = (Date.now() - this.timerStartTime) / 1000; // Tiempo transcurrido en segundos
           this.smoothProgress = Math.max(0, this.puzzle.times.total - elapsed);
@@ -561,31 +599,31 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
   initGoshTimer() {
     console.log('initGoshTimer', this.puzzle.goshPuzzleTime);
 
-
     this.goshPuzzleTime = this.puzzle.goshPuzzleTime || 0;
     if (this.goshPuzzleTime > 0) {
       // Se crea una cuenta regresiva según puzzle.goshPuzzleTime para ocultar las piezas
       // se cancela con timerUnsubscribe$ o cuando llegue a 0
       const goshUnsubscribe$ = new Subject<void>();
       const subsGoshSeconds = interval(1000);
-      subsGoshSeconds.pipe(
-        takeUntil(merge(this.timerUnsubscribe$, goshUnsubscribe$)),
-      ).subscribe(() => {
-        this.goshPuzzleTime--;
-        if (this.goshPuzzleTime === 0) {
-          // Se ocultan las piezas tomando el elemento con la clase "pieces"
-          const pieces = document.querySelectorAll(`#${this.boardId} .pieces`);
-          console.log('pieces', pieces, pieces.length);
+      subsGoshSeconds
+        .pipe(takeUntil(merge(this.timerUnsubscribe$, goshUnsubscribe$)))
+        .subscribe(() => {
+          this.goshPuzzleTime--;
+          if (this.goshPuzzleTime === 0) {
+            // Se ocultan las piezas tomando el elemento con la clase "pieces"
+            const pieces = document.querySelectorAll(
+              `#${this.boardId} .pieces`
+            );
+            console.log('pieces', pieces, pieces.length);
 
-          if (pieces.length > 0) {
-            this.renderer.setStyle(pieces[0], 'opacity', '0');
+            if (pieces.length > 0) {
+              this.renderer.setStyle(pieces[0], 'opacity', '0');
+            }
+            goshUnsubscribe$.next();
+            goshUnsubscribe$.complete();
           }
-          goshUnsubscribe$.next();
-          goshUnsubscribe$.complete();
-        }
-      });
+        });
     }
-
   }
 
   stopTimer() {
@@ -599,19 +637,29 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
     this.timerStartTime = 0;
   }
 
-
   validateMove() {
     const fenChessInstance = this.chessInstance.fen();
 
-    this.soundsService.determineChessMoveType(this.fenToCompareAndPlaySound, fenChessInstance);
+    this.soundsService.determineChessMoveType(
+      this.fenToCompareAndPlaySound,
+      fenChessInstance
+    );
 
     this.currentMoveNumber++;
-    if (fenChessInstance === this.arrayFenSolution[this.currentMoveNumber] || this.chessInstance.isCheckmate()) {
+    if (
+      fenChessInstance === this.arrayFenSolution[this.currentMoveNumber] ||
+      this.chessInstance.isCheckmate()
+    ) {
       this.puzzleMoveResponse();
     } else {
       this.puzzleFailed.emit({
-        ...this.puzzle, timeUsed: this.timeUsed, fenStartUserPuzzle: this.arrayFenSolution[1],
-        firstMoveSquaresHighlight: [this.arrayMovesSolution[0].slice(0, 2), this.arrayMovesSolution[0].slice(2, 4)]
+        ...this.puzzle,
+        timeUsed: this.timeUsed,
+        fenStartUserPuzzle: this.arrayFenSolution[1],
+        firstMoveSquaresHighlight: [
+          this.arrayMovesSolution[0].slice(0, 2),
+          this.arrayMovesSolution[0].slice(2, 4),
+        ],
       });
       this.stopTimer();
       this.isPlaying = false;
@@ -619,8 +667,15 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Actualiza el tablero después de un movimiento de enroque
     if (
-      this.chessInstance.history({ verbose: true }).slice(-1)[0]?.flags.includes('k') ||
-      this.chessInstance.history({ verbose: true }).slice(-1)[0]?.flags.includes('q')) {
+      this.chessInstance
+        .history({ verbose: true })
+        .slice(-1)[0]
+        ?.flags.includes('k') ||
+      this.chessInstance
+        .history({ verbose: true })
+        .slice(-1)[0]
+        ?.flags.includes('q')
+    ) {
       this.board.setPosition(this.chessInstance.fen());
     }
   }
@@ -638,35 +693,43 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
       this.allowMoveArrows = true;
       this.currentMoveNumber--;
       this.puzzleCompleted.emit({
-        ...this.puzzle, timeUsed: this.timeUsed,
+        ...this.puzzle,
+        timeUsed: this.timeUsed,
         fenStartUserPuzzle: this.arrayFenSolution[1],
-        firstMoveSquaresHighlight: [this.arrayMovesSolution[0].slice(0, 2), this.arrayMovesSolution[0].slice(2, 4)]
+        firstMoveSquaresHighlight: [
+          this.arrayMovesSolution[0].slice(0, 2),
+          this.arrayMovesSolution[0].slice(2, 4),
+        ],
       });
       this.stopTimer();
       this.isPlaying = false;
     } else {
-
       await new Promise<void>((resolve, reject) => {
         setTimeout(() => resolve(), 500);
       });
 
       this.chessInstance.load(this.arrayFenSolution[this.currentMoveNumber]);
       const fen = this.chessInstance.fen();
-      this.soundsService.determineChessMoveType(this.fenToCompareAndPlaySound, fen);
+      this.soundsService.determineChessMoveType(
+        this.fenToCompareAndPlaySound,
+        fen
+      );
       this.fenToCompareAndPlaySound = fen;
       this.board.removeMarkers();
       this.board.removeArrows();
 
       await this.board.setPosition(fen, true);
-      const from = this.arrayMovesSolution[this.currentMoveNumber - 1].slice(0, 2);
-      const to = this.arrayMovesSolution[this.currentMoveNumber - 1].slice(2, 4);
+      const from = this.arrayMovesSolution[this.currentMoveNumber - 1].slice(
+        0,
+        2
+      );
+      const to = this.arrayMovesSolution[this.currentMoveNumber - 1].slice(
+        2,
+        4
+      );
       this.showLastMove(from, to);
-
     }
-
-
   }
-
 
   // Board controls -----------------------------------
 
@@ -687,7 +750,4 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }
   }
-
-
-
 }

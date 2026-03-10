@@ -17,24 +17,32 @@
           </ul>
         </div>
       </div>
-      }
-
-      @if (plan && !isLoadingPlan) {
+      } @if (plan && !isLoadingPlan) {
       <div class="space-y-6">
         <!-- Resumen General y Acción -->
         <div class="card bg-base-100 shadow-sm border border-base-200">
           <div class="card-body">
             <!-- Sección de ELO (con overlay si no está autenticado) -->
-            <div class="relative overflow-hidden mb-4 p-2 rounded-lg bg-base-200/50">
-              <div class="flex items-center justify-between transition-all duration-300"
-                [class.opacity-40]="!isAuthenticated" [class.blur-[2px]]="!isAuthenticated">
+            <div
+              class="relative overflow-hidden mb-4 p-2 rounded-lg bg-base-200/50"
+            >
+              <div
+                class="flex items-center justify-between transition-all duration-300"
+                [class.opacity-40]="!isAuthenticated"
+                [class.blur-[2px]]="!isAuthenticated"
+              >
                 <div>
                   <h6 class="text-sm text-base-content/70">Elo total:</h6>
                   <div class="flex items-center gap-3">
-                    <h1 class="text-4xl font-bold">{{ isAuthenticated ? eloTotal : exampleEloTotal }}</h1>
+                    <h1 class="text-4xl font-bold">
+                      {{ isAuthenticated ? eloTotal : exampleEloTotal }}
+                    </h1>
                     @if (isNewRecord) {
-                    <div class="badge badge-warning gap-1 shadow-sm cursor-pointer"
-                      [class.animate-bounce]="!isConfettiLaunching" (click)="launchConfetti()">
+                    <div
+                      class="badge badge-warning gap-1 shadow-sm cursor-pointer"
+                      [class.animate-bounce]="!isConfettiLaunching"
+                      (click)="launchConfetti()"
+                    >
                       <ion-icon name="trophy-outline"></ion-icon>
                       <span class="font-bold">¡Récord!</span>
                     </div>
@@ -43,26 +51,43 @@
                 </div>
                 <div class="avatar">
                   <div class="w-16 rounded">
-                    <img [src]="'/assets/images/plan-icons/' + plan.planType + '.png'" [alt]="plan.planType" />
+                    <img
+                      [src]="
+                        '/assets/images/plan-icons/' + plan.planType + '.png'
+                      "
+                      [alt]="plan.planType"
+                    />
                   </div>
                 </div>
               </div>
 
               <!-- Mini Overlay Si no está logueado -->
               @if (!isAuthenticated) {
-              <div class="absolute inset-0 flex items-center justify-center z-10 pointer-events-auto cursor-pointer"
-                (click)="openLoginModal()">
+              <div
+                class="absolute inset-0 flex items-center justify-center z-10 pointer-events-auto cursor-pointer"
+                (click)="openLoginModal()"
+              >
                 <div
-                  class="bg-base-100/90 px-3 py-2 rounded-xl shadow-md flex items-center gap-2 hover:bg-base-200 transition-colors border border-base-300">
-                  <ion-icon name="lock-closed" class="text-primary text-lg"></ion-icon>
-                  <span class="text-sm font-semibold">Inicia sesión para ver tu ELO</span>
+                  class="bg-base-100/90 px-3 py-2 rounded-xl shadow-md flex items-center gap-2 hover:bg-base-200 transition-colors border border-base-300"
+                >
+                  <ion-icon
+                    name="lock-closed"
+                    class="text-primary text-lg"
+                  ></ion-icon>
+                  <span class="text-sm font-semibold"
+                    >Inicia sesión para ver tu ELO</span
+                  >
                 </div>
               </div>
               }
             </div>
 
             <!-- Botón para repetir el plan -->
-            <button class="btn btn-primary btn-lg w-full" (click)="onRepeatPlan()" [disabled]="isLoadingToPlay">
+            <button
+              class="btn btn-primary btn-lg w-full"
+              (click)="onRepeatPlan()"
+              [disabled]="isLoadingToPlay"
+            >
               @if (isLoadingToPlay) {
               <span class="loading loading-spinner loading-sm"></span>
               }
@@ -86,50 +111,83 @@
           @for (block of plan.blocks; track $index; let i = $index) {
           <div class="collapse collapse-arrow bg-base-200">
             <input type="checkbox" [checked]="true" />
-            <div class="collapse-title text-xl font-medium flex items-center justify-between">
+            <div
+              class="collapse-title text-xl font-medium flex items-center justify-between"
+            >
               <div class="flex-1">
                 @if (block.title) {
                 <h3 class="font-semibold">{{ block.title }}</h3>
-                }
-                @if (block.theme) {
-                <h3 class="font-semibold">{{ appService.getNameThemePuzzleByValue(block.theme) }}</h3>
-                }
-                @if (block.openingFamily) {
-                <h3 class="font-semibold">{{ appService.getNameOpeningByValue(block.openingFamily) }}</h3>
-                }
-                @if (block.description) {
-                <p class="text-sm text-base-content/70 mt-1">{{ block.description }}</p>
+                } @if (block.theme) {
+                <h3 class="font-semibold">
+                  {{ appService.getNameThemePuzzleByValue(block.theme) }}
+                </h3>
+                } @if (block.openingFamily) {
+                <h3 class="font-semibold">
+                  {{ appService.getNameOpeningByValue(block.openingFamily) }}
+                </h3>
+                } @if (block.description) {
+                <p class="text-sm text-base-content/70 mt-1">
+                  {{ block.description }}
+                </p>
                 }
               </div>
-              <div class="badge badge-neutral ml-4">{{ block.puzzlesPlayed.length }}</div>
+              <div class="badge badge-neutral ml-4">
+                {{ block.puzzlesPlayed.length }}
+              </div>
             </div>
             <div class="collapse-content">
-              <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 mt-4">
-                @for (userPuzzle of userPuzzlesToShowInBoards[i]; track userPuzzle.uid) {
+              <div
+                class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 mt-4"
+              >
+                @for (userPuzzle of userPuzzlesToShowInBoards[i]; track
+                userPuzzle.uid) {
                 <div class="card bg-base-100 shadow-sm relative">
                   <div class="card-body p-2">
-                    <lib-fen-board [fen]="userPuzzle.fenStartUserPuzzle ?? ''"
-                      [firstMoveSquaresHighlight]="userPuzzle.firstMoveSquaresHighlight" [puzzle]="userPuzzle.rawPuzzle"
-                      (onPuzzleShowSolution)="onPuzzleShowSolution($event)">
+                    <lib-fen-board
+                      [fen]="userPuzzle.fenStartUserPuzzle ?? ''"
+                      [firstMoveSquaresHighlight]="
+                        userPuzzle.firstMoveSquaresHighlight
+                      "
+                      [puzzle]="userPuzzle.rawPuzzle"
+                      (onPuzzleShowSolution)="onPuzzleShowSolution($event)"
+                    >
                     </lib-fen-board>
                   </div>
                   <div
-                    class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-70 z-10">
+                    class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-70 z-10"
+                  >
                     @if (userPuzzle.failByTime) {
-                    <img src="assets/images/icons/alarm.png" class="w-8 h-8" alt="timeout" />
+                    <img
+                      src="assets/images/icons/alarm.png"
+                      class="w-8 h-8"
+                      alt="timeout"
+                    />
                     } @else if (userPuzzle.resolved) {
-                    <img src="assets/images/icons/checkmark-circle.png" class="w-8 h-8" alt="correct" />
+                    <img
+                      src="assets/images/icons/checkmark-circle.png"
+                      class="w-8 h-8"
+                      alt="correct"
+                    />
                     } @else {
-                    <img src="assets/images/icons/close-circle.png" class="w-8 h-8" alt="incorrect" />
+                    <img
+                      src="assets/images/icons/close-circle.png"
+                      class="w-8 h-8"
+                      alt="incorrect"
+                    />
                     }
                   </div>
-                  <div class="absolute inset-0 cursor-pointer" (click)="onPuzzleShowSolution(userPuzzle.rawPuzzle!)">
-                  </div>
+                  <div
+                    class="absolute inset-0 cursor-pointer"
+                    (click)="onPuzzleShowSolution(userPuzzle.rawPuzzle!)"
+                  ></div>
                 </div>
                 }
               </div>
               @if (showMoreButtons[i]) {
-              <button class="btn btn-ghost btn-block mt-4" (click)="loadMorePuzzles(i)">
+              <button
+                class="btn btn-ghost btn-block mt-4"
+                (click)="loadMorePuzzles(i)"
+              >
                 {{ 'PLAN_PLAYED.loadMore' | transloco }}
               </button>
               }
@@ -142,8 +200,14 @@
         @if (canLike) {
         <div class="card bg-base-100 shadow-sm">
           <div class="card-body">
-            <button type="button" class="btn w-full" [class.btn-primary]="isLiked" [class.btn-ghost]="!isLiked"
-              [disabled]="isLoadingLike" (click)="onToggleLike()">
+            <button
+              type="button"
+              class="btn w-full"
+              [class.btn-primary]="isLiked"
+              [class.btn-ghost]="!isLiked"
+              [disabled]="isLoadingLike"
+              (click)="onToggleLike()"
+            >
               <ion-icon [name]="isLiked ? 'heart' : 'heart-outline'"></ion-icon>
               <span>
                 @if (isLiked) {
@@ -164,19 +228,24 @@
           </h2>
 
           <div class="relative overflow-hidden">
-            <div class="space-y-4" [class.opacity-50]="!isAuthenticated" [class.pointer-events-none]="!isAuthenticated">
-
-
+            <div
+              class="space-y-4"
+              [class.opacity-50]="!isAuthenticated"
+              [class.pointer-events-none]="!isAuthenticated"
+            >
               @if (plan.planType) {
-              <app-plan-chart [plan]="isAuthenticated ? plan : (examplePlan || plan)"
-                [showEloPlanHeader]="false"></app-plan-chart>
+              <app-plan-chart
+                [plan]="isAuthenticated ? plan : examplePlan || plan"
+                [showEloPlanHeader]="false"
+              ></app-plan-chart>
               }
             </div>
 
             <!-- Overlay para usuarios no autenticados - Solo cubre las estadísticas -->
             @if (!isAuthenticated) {
             <div
-              class="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-base-100/60 backdrop-blur-sm rounded-lg z-10 pointer-events-auto">
+              class="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-base-100/60 backdrop-blur-sm rounded-lg z-10 pointer-events-auto"
+            >
               <div class="card bg-base-200 shadow-lg max-w-md mx-4">
                 <div class="card-body text-center space-y-4">
                   <h3 class="text-xl font-bold">
@@ -185,7 +254,10 @@
                   <p class="text-base-content/70">
                     {{ 'PLAN_PLAYED.loginRequired.message' | transloco }}
                   </p>
-                  <button class="btn btn-primary w-full" (click)="openLoginModal()">
+                  <button
+                    class="btn btn-primary w-full"
+                    (click)="openLoginModal()"
+                  >
                     {{ 'PLAN_PLAYED.loginRequired.loginButton' | transloco }}
                   </button>
                 </div>

@@ -409,5 +409,20 @@
     "menu": {
       "logout": "Cerrar Sesión"
     }
+  },
+  "CHESS960": {
+    "title": "Chess960",
+    "description": "A variant created by Bobby Fischer where the pieces on the first rank are set up almost randomly, giving the game entirely new dimensions from the very first move.",
+    "rules": {
+      "title": "Basic Rules",
+      "p1": "- Kings are placed somewhere between the two rooks.",
+      "p2": "- The arrangement is symmetrical for both colors.",
+      "p3": "- Castling follows rules where the King and Rook land on their normal destination squares: g1/c1 and f1/d1."
+    },
+    "controls": {
+      "positionLabel": "Position ID (0-959)",
+      "randomButton": "Random",
+      "standardInfo": "Position 518 is the standard chess setup."
+    }
   }
 }

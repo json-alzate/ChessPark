@@ -1,7 +1,13 @@
 import { Component, OnInit, inject, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
-import { IonContent, IonIcon, LoadingController, ViewWillEnter, ViewWillLeave } from '@ionic/angular/standalone';
+import {
+  IonContent,
+  IonIcon,
+  LoadingController,
+  ViewWillEnter,
+  ViewWillLeave,
+} from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { arrowForward, statsChartOutline } from 'ionicons/icons';
 
@@ -32,13 +38,12 @@ import { BoardPuzzleComponent } from '@chesspark/board';
     TranslocoPipe,
     NavbarComponent,
     TrainingMenuComponent,
-    BoardPuzzleComponent
+    BoardPuzzleComponent,
   ],
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
 export class HomePage implements OnInit, ViewWillEnter, ViewWillLeave {
-
   infinitePuzzle: Puzzle | null = null;
   isInfinitePuzzleSolved = false;
   infinitePuzzleProblemState: 'none' | 'good' | 'bad' | 'timeOut' = 'none';
@@ -90,7 +95,7 @@ export class HomePage implements OnInit, ViewWillEnter, ViewWillLeave {
     this.isLoadingPuzzle = true;
     this.isInfinitePuzzleSolved = false;
     const puzzles = await this.puzzlesProvider.getPuzzles({
-      elo: 1500
+      elo: 1500,
     });
     if (puzzles && puzzles.length > 0) {
       this.infinitePuzzle = puzzles[0];
@@ -112,7 +117,9 @@ export class HomePage implements OnInit, ViewWillEnter, ViewWillLeave {
     await loader.present();
 
     try {
-      const blocks: Block[] = await this.blockService.generateBlocksForPlan('infinity');
+      const blocks: Block[] = await this.blockService.generateBlocksForPlan(
+        'infinity'
+      );
 
       // Cargar puzzles iniciales
       const puzzles = await this.blockService.getPuzzlesForBlock(blocks[0]);
@@ -127,5 +134,4 @@ export class HomePage implements OnInit, ViewWillEnter, ViewWillLeave {
       console.error('Error al iniciar el plan infinito:', error);
     }
   }
-
 }
