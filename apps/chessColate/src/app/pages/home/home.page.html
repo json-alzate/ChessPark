@@ -12,66 +12,7 @@
 
     <app-training-menu></app-training-menu>
 
-    <!-- Problema del día movido debajo de las rutinas por defecto -->
-    <div class="p-2 mt-4">
-      <h4 class="text-lg mb-2 font-bold text-center">
-        Problema del día
-      </h4>
-
-      @if (isLoadingPuzzle) {
-      <div class="w-full relative max-w-md mx-auto p-4 flex flex-col gap-4">
-        <ion-skeleton-text animated style="width: 100%; aspect-ratio: 1; border-radius: 8px;"></ion-skeleton-text>
-        <div class="flex items-center gap-3 mt-4">
-          <ion-skeleton-text animated style="width: 32px; height: 32px; border-radius: 50%;"></ion-skeleton-text>
-          <div class="flex flex-col gap-1 w-full">
-            <ion-skeleton-text animated style="width: 40%; height: 16px;"></ion-skeleton-text>
-            <ion-skeleton-text animated style="width: 70%; height: 12px;"></ion-skeleton-text>
-          </div>
-        </div>
-      </div>
-      } @else if (infinitePuzzle) {
-      <div class="w-full relative max-w-md mx-auto">
-
-        <ion-row>
-          <ion-col class="flex flex-col gap-2 p-4 pt-0 pb-2">
-            <div class="flex items-center gap-3">
-              <img [src]="'assets/images/king-' + playerColor + '.svg'" [alt]="playerColor" class="h-8 w-8" />
-              <div class="flex flex-col">
-                <span class="font-semibold text-base">{{ 'PUZZLES.help.yourTurn' | transloco }}</span>
-                <span class="text-sm text-base-content/80">
-                  @if (playerColor === 'white') {
-                  {{ 'PUZZLES.help.findBestMoveWhite' | transloco }}
-                  } @else {
-                  {{ 'PUZZLES.help.findBestMoveBlack' | transloco }}
-                  }
-                </span>
-              </div>
-            </div>
-          </ion-col>
-        </ion-row>
-
-        <lib-board-puzzle [setPuzzle]="infinitePuzzle" [setForceStopTimer]="false"
-          (puzzleCompleted)="onInfinitePuzzleCompleted('good')" (puzzleFailed)="onInfinitePuzzleCompleted('bad')"
-          (puzzleEndByTime)="onInfinitePuzzleCompleted('timeOut')">
-        </lib-board-puzzle>
-
-        @if (isInfinitePuzzleSolved) {
-        <div class="mt-4 flex flex-col gap-2 justify-center fade-in">
-          @if (infinitePuzzleProblemState === 'bad' || infinitePuzzleProblemState === 'timeOut') {
-          <button class="btn btn-outline btn-error w-full font-bold"
-            [routerLink]="['/puzzles/solution', infinitePuzzle?.uid]">
-            Ver Solución <ion-icon name="eye"></ion-icon>
-          </button>
-          }
-          <button class="btn btn-primary w-full shadow-lg font-bold" (click)="startInfinityPlan()">
-            Continuar entrenamiento <ion-icon name="arrow-forward"></ion-icon>
-          </button>
-        </div>
-        }
-      </div>
-      }
-    </div>
-
+    <!-- Espacio libre donde antes estaba el Problema del día -->
     <div class="p-2">
       <div class="flex flex-row gap-1 mt-2 mb-2">
         <a class="btn btn-sm btn-soft btn-info" [routerLink]="['/puzzles/custom-plans']">{{ 'CUSTOM_PLANS.listTitle' |
@@ -81,7 +22,90 @@
       </div>
     </div>
 
+    <!-- Sección Entrenamiento Continuo movida debajo de los botones, usando DaisyUI -->
+    <div class="px-2">
+      @if (isLoadingPuzzle) {
+      <div class="card bg-base-100 shadow-sm max-w-4xl mx-auto">
+        <div class="card-body flex flex-col md:flex-row gap-6 p-4 md:p-6">
+          <div class="w-full md:w-1/2 flex flex-col gap-4">
+            <div class="skeleton w-full aspect-square rounded-lg"></div>
+            <div class="flex items-center gap-3 mt-2">
+              <div class="skeleton w-8 h-8 rounded-full"></div>
+              <div class="flex flex-col gap-1 w-full">
+                <div class="skeleton h-4 w-1/3"></div>
+                <div class="skeleton h-3 w-2/3"></div>
+              </div>
+            </div>
+          </div>
+          <div class="w-full md:w-1/2 flex flex-col justify-center gap-4">
+            <div class="skeleton h-8 w-3/4"></div>
+            <div class="skeleton h-4 w-full"></div>
+            <div class="skeleton h-4 w-5/6"></div>
+            <div class="skeleton h-12 w-full mt-4"></div>
+          </div>
+        </div>
+      </div>
+      } @else if (infinitePuzzle) {
+      <div class="card bg-base-100 shadow-sm max-w-4xl mx-auto overflow-hidden">
+        <div class="card-body flex flex-row gap-3 md:gap-6 p-3 md:p-6 w-full max-w-full items-center">
 
+          <!-- Lado izquierdo: Tablero -->
+          <div class="w-[55%] md:w-[60%] lg:w-[65%] relative flex-shrink-0">
+            <div class="flex items-center gap-2 pb-2">
+              <img [src]="'assets/images/king-' + playerColor + '.svg'" [alt]="playerColor"
+                class="h-6 w-6 md:h-8 md:w-8" />
+              <div class="flex flex-col">
+                <span class="font-semibold text-xs md:text-base leading-tight">{{ 'PUZZLES.help.yourTurn' | transloco
+                  }}</span>
+                <span class="text-[10px] md:text-sm text-base-content/80 leading-tight">
+                  @if (playerColor === 'white') {
+                  {{ 'PUZZLES.help.findBestMoveWhite' | transloco }}
+                  } @else {
+                  {{ 'PUZZLES.help.findBestMoveBlack' | transloco }}
+                  }
+                </span>
+              </div>
+            </div>
+
+            <lib-board-puzzle [setPuzzle]="infinitePuzzle" [setForceStopTimer]="false" [showBoardControls]="false"
+              (puzzleCompleted)="onInfinitePuzzleCompleted('good')" (puzzleFailed)="onInfinitePuzzleCompleted('bad')"
+              (puzzleEndByTime)="onInfinitePuzzleCompleted('timeOut')">
+            </lib-board-puzzle>
+          </div>
+
+          <!-- Lado derecho: Textos y botones -->
+          <div class="w-[45%] md:w-[40%] lg:w-[35%] flex flex-col justify-center text-left pl-1">
+            <h3 class="text-sm md:text-2xl font-bold mb-1 md:mb-3 leading-tight">Entrenamiento continuo</h3>
+            <p
+              class="text-[10px] md:text-base text-base-content/80 mb-2 md:mb-6 font-medium leading-tight line-clamp-4 md:line-clamp-none">
+              Resuelve problemas ilimitados
+            </p>
+
+            <div class="flex flex-col w-full gap-2 md:gap-3">
+              @if (isInfinitePuzzleSolved) {
+              <!-- Si resolvió o falló este puzzle mostrado aquí -->
+              @if (infinitePuzzleProblemState === 'bad' || infinitePuzzleProblemState === 'timeOut') {
+              <button class="btn btn-xs md:btn-md btn-outline btn-error w-full font-bold"
+                [routerLink]="['/puzzles/solution', infinitePuzzle?.uid]">
+                <span>Solución</span> <ion-icon name="eye" class="hidden md:inline"></ion-icon>
+              </button>
+              }
+              <button class="btn btn-xs md:btn-md btn-primary w-full shadow-md font-bold" (click)="startInfinityPlan()">
+                <span>Continuar</span> <ion-icon name="arrow-forward" class="hidden md:inline"></ion-icon>
+              </button>
+              } @else {
+              <!-- Antes de resolver este puzzle, de todas formas el botón puede estar aquí -->
+              <button class="btn btn-xs md:btn-md btn-primary w-full shadow-md font-bold" (click)="startInfinityPlan()">
+                <span>Entrenar ahora</span> <ion-icon name="arrow-forward" class="hidden md:inline"></ion-icon>
+              </button>
+              }
+            </div>
+          </div>
+
+        </div>
+      </div>
+      }
+    </div>
 
   </div>
 </ion-content>

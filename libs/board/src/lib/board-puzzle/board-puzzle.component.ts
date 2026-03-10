@@ -133,6 +133,8 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  @Input() showBoardControls = true;
+
   ngOnInit() {
     console.log('ngOnInit board-puzzle - eliminada carga inicial prematura');
   }

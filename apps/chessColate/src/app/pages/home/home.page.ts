@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
-import { IonContent, IonIcon, LoadingController, IonSkeletonText, IonRow, IonCol, ViewWillEnter, ViewWillLeave } from '@ionic/angular/standalone';
+import { IonContent, IonIcon, LoadingController, ViewWillEnter, ViewWillLeave } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { arrowForward } from 'ionicons/icons';
 
@@ -25,9 +25,6 @@ import { BoardPuzzleComponent } from '@chesspark/board';
   imports: [
     IonContent,
     IonIcon,
-    IonSkeletonText,
-    IonRow,
-    IonCol,
     CommonModule,
     RouterLink,
     TranslocoPipe,
@@ -47,7 +44,7 @@ export class HomePage implements OnInit, ViewWillEnter, ViewWillLeave {
 
   get playerColor(): 'white' | 'black' {
     if (!this.infinitePuzzle) return 'white';
-    return this.infinitePuzzle.fen.split(' ')[1] === 'w' ? 'white' : 'black';
+    return this.infinitePuzzle.fen.split(' ')[1] === 'w' ? 'black' : 'white';
   }
 
   private router = inject(Router);

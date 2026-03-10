@@ -2,6 +2,7 @@
 </div>
 
 <div class="flex flex-col w-full bg-base-100">
+  @if (showBoardControls) {
   <div class="flex items-center justify-between w-full p-4">
     @if (showTimer && isPlaying) {
     <span [class]="'text-' + timeColor + ' font-semibold'">{{ time | secondsToMinutesSeconds }}</span>
@@ -23,6 +24,7 @@
       </button>
     </div>
   </div>
+  }
   @if (showTimer && puzzle && puzzle.times && puzzle.times.total) {
   <div class="px-4 pb-4">
     <progress [class]="'progress progress-' + timeColor" [value]="smoothProgress" [max]="puzzle.times.total"></progress>
