@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { IonContent, IonIcon, LoadingController, ViewWillEnter, ViewWillLeave } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { arrowForward } from 'ionicons/icons';
+import { arrowForward, statsChartOutline } from 'ionicons/icons';
 
 import { TranslocoPipe } from '@jsverse/transloco';
 
@@ -13,6 +13,8 @@ import { Block, PlanTypes, Puzzle } from '@cpark/models';
 import { BlockService } from '@services/block.service';
 import { PlanService } from '@services/plan.service';
 import { PuzzlesProvider } from '@chesspark/puzzles-provider';
+
+import { ProfileService } from '@services/profile.service';
 
 // Components
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
@@ -47,13 +49,24 @@ export class HomePage implements OnInit, ViewWillEnter, ViewWillLeave {
     return this.infinitePuzzle.fen.split(' ')[1] === 'w' ? 'black' : 'white';
   }
 
+  get infinityElo(): number | string {
+    const profile = this.profileService.getProfile;
+    // We cast to any to avoid strict type error since 'infinityTotal' might not be explicitly typed yet
+    const elos = profile?.elos as any;
+    if (elos && typeof elos['infinityTotal'] === 'number') {
+      return elos['infinityTotal'];
+    }
+    return '1500?';
+  }
+
   private router = inject(Router);
   private planService = inject(PlanService);
   private puzzlesProvider = inject(PuzzlesProvider);
   private loadingController = inject(LoadingController);
+  private profileService = inject(ProfileService);
 
   constructor(private blockService: BlockService) {
-    addIcons({ arrowForward });
+    addIcons({ arrowForward, statsChartOutline });
   }
 
   async ngOnInit() {

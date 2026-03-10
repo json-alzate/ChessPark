@@ -75,6 +75,15 @@
 
           <!-- Lado derecho: Textos y botones -->
           <div class="w-[45%] md:w-[40%] lg:w-[35%] flex flex-col justify-center text-left pl-1">
+            <div class="flex items-center justify-between mb-1 md:mb-2 w-full">
+              <div class="badge font-bold text-xs md:text-sm shadow-sm text-primary">
+                ELO {{ infinityElo }}
+              </div>
+              <button class="btn btn-circle btn-ghost btn-xs md:btn-sm text-primary"
+                [routerLink]="['/puzzles/plans-history']">
+                <ion-icon name="stats-chart-outline" class="text-lg"></ion-icon>
+              </button>
+            </div>
             <h3 class="text-sm md:text-2xl font-bold mb-1 md:mb-3 leading-tight">Entrenamiento continuo</h3>
             <p
               class="text-[10px] md:text-base text-base-content/80 mb-2 md:mb-6 font-medium leading-tight line-clamp-4 md:line-clamp-none">
