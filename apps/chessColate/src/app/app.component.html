@@ -1,90 +1,72 @@
 <!-- Menú lateral izquierdo (navegación principal) -->
 <ion-menu [swipeGesture]="false" side="start" menuId="side-menu" contentId="main-content">
+  <div class="h-full flex flex-col bg-base-100 text-base-content" data-theme="halloween">
 
-<div class="main-container" data-theme="halloween">
-
-
-
-  <ion-header class="ion-no-border">
-    <ion-toolbar color="light">
-      <!-- Información del usuario autenticado -->
+    <!-- User Profile / Header -->
+    <div class="p-4 border-b border-base-200">
       @if (isAuthenticated) {
-        <ion-item lines="none" class="user-info" style="--background: transparent;">
-          <ion-avatar slot="start">
-            @if (photoURL) {
-              <img [alt]="displayName || displayEmail" [src]="photoURL" />
-            } @else {
-              <ion-label>
-                <span class="initials">{{ getInitials() }}</span>
-              </ion-label>
-            }
-          </ion-avatar>
-          <ion-label>
-            <h3 class="user-name" class="ion-no-margin">
-              {{ displayName || ('APP.user.user' | transloco) }}
-            </h3>
-            <p class="user-email" class="ion-no-margin">
-              {{ displayEmail }}
-            </p>
-          </ion-label>
-        </ion-item>
-      }
-
-      <!-- Usuario no autenticado -->
-      @if (!isAuthenticated) {
-        <div class="flex justify-center w-full">
-          <ion-menu-toggle>
-            <button
-              class="btn btn-wide btn-outline btn-primary"
-              type="button"
-              (click)="openLoginModal()"
-            >
-              Ingresar / Registrarse
-            </button>
-          </ion-menu-toggle>
+      <div class="flex items-center gap-3">
+        <div class="avatar">
+          @if (photoURL) {
+          <div class="w-12 rounded-full">
+            <img [alt]="displayName || displayEmail" [src]="photoURL" />
+          </div>
+          } @else {
+          <div class="w-12 h-12 rounded-full bg-primary text-primary-content flex items-center justify-center">
+            <span class="text-xl font-bold">{{ getInitials() }}</span>
+          </div>
+          }
         </div>
+        <div class="overflow-hidden">
+          <h3 class="font-bold truncate" [title]="displayName || ('APP.user.user' | transloco)">
+            {{ displayName || ('APP.user.user' | transloco) }}
+          </h3>
+          <p class="text-sm opacity-70 truncate" [title]="displayEmail">
+            {{ displayEmail }}
+          </p>
+        </div>
+      </div>
+      } @else {
+      <div class="flex justify-center w-full py-2">
+        <ion-menu-toggle>
+          <button class="btn btn-wide btn-primary" type="button" (click)="openLoginModal()">
+            Ingresar / Registrarse
+          </button>
+        </ion-menu-toggle>
+      </div>
       }
-    </ion-toolbar>
-  </ion-header>
-
-  <ion-content>
-
-
-    <!-- Opciones del menú -->
-    <ion-list>
-      @for (option of menuOptions; track option.title) {
-        <ion-item 
-          button 
-          (click)="navigateTo(option.route)"
-          [disabled]="!option.enabled"
-          class="menu-item">
-          <ion-icon 
-            [name]="option.icon" 
-            slot="start" 
-            class="menu-icon">
-          </ion-icon>
-          <ion-label class="menu-label">{{ option.title }}</ion-label>
-        </ion-item>
-      }
-    </ion-list>
-
-    <!-- Opción de cerrar sesión (solo si está autenticado) -->
-    @if (isAuthenticated) {
-      <ion-list>
-        <ion-item button (click)="logout()" class="menu-item logout-item">
-          <!-- <ion-icon name="log-out-outline" slot="start" class="menu-icon logout-icon"></ion-icon> -->
-          <ion-label class="menu-label logout-label">{{ 'APP.menu.logout' | transloco }}</ion-label>
-        </ion-item>
-      </ion-list>
-    }
-
-    <!-- Información de versión -->
-    <div class="version-info">
-      <p class="version-text">Versión {{ version }}</p>
     </div>
-  </ion-content>
 
-</div>
+    <!-- Menu Content -->
+    <div class="flex-1 overflow-y-auto p-2">
+      <ul class="menu bg-base-100 w-full rounded-box gap-1">
+        @for (option of menuOptions; track option.title) {
+        <li [class.disabled]="!option.enabled">
+          <a (click)="option.enabled ? navigateTo(option.route) : null" class="flex gap-4 py-3">
+            <ion-icon [name]="option.icon" class="text-xl"></ion-icon>
+            <span class="text-base">{{ option.title }}</span>
+          </a>
+        </li>
+        }
+
+        @if (isAuthenticated) {
+        <div class="divider my-1"></div>
+        <li>
+          <a (click)="logout()" class="text-error hover:bg-error/20 hover:text-error flex gap-4 py-3">
+            <ion-icon name="log-out-outline" class="text-xl"></ion-icon>
+            <span class="text-base">{{ 'APP.menu.logout' | transloco }}</span>
+          </a>
+        </li>
+        }
+      </ul>
+    </div>
+
+    <!-- Version Info -->
+    <div class="p-4 mt-auto text-center border-t border-base-200">
+      <p class="text-xs opacity-50">Versión {{ version }}</p>
+    </div>
+
+  </div>
 </ion-menu>
 
 <!-- Menú lateral derecho (notificaciones) -->
@@ -104,37 +86,37 @@
     <!-- Lista de notificaciones -->
     <ion-list>
       @for (notification of notifications; track notification.id) {
-        <ion-item class="notification-item">
-          <ion-icon [name]="notification.icon" slot="start" [color]="notification.color"></ion-icon>
-          <ion-label>
-            <h3>{{ notification.title }}</h3>
-            <p>{{ notification.message }}</p>
-            <p class="notification-time">{{ notification.time }}</p>
-          </ion-label>
-          <ion-button fill="clear" slot="end" (click)="markAsRead(notification.id)">
-            <!-- <ion-icon name="checkmark-circle-outline"></ion-icon> -->
-          </ion-button>
-        </ion-item>
+      <ion-item class="notification-item">
+        <ion-icon [name]="notification.icon" slot="start" [color]="notification.color"></ion-icon>
+        <ion-label>
+          <h3>{{ notification.title }}</h3>
+          <p>{{ notification.message }}</p>
+          <p class="notification-time">{{ notification.time }}</p>
+        </ion-label>
+        <ion-button fill="clear" slot="end" (click)="markAsRead(notification.id)">
+          <!-- <ion-icon name="checkmark-circle-outline"></ion-icon> -->
+        </ion-button>
+      </ion-item>
       }
     </ion-list>
 
     <!-- Estado vacío -->
     @if (notifications.length === 0) {
-      <div class="empty-state">
-        <!-- <ion-icon name="notifications-off-outline" class="empty-icon"></ion-icon> -->
-        <h3>No notifications</h3>
-        <p>We'll notify you when you have new activities</p>
-      </div>
+    <div class="empty-state">
+      <!-- <ion-icon name="notifications-off-outline" class="empty-icon"></ion-icon> -->
+      <h3>No notifications</h3>
+      <p>We'll notify you when you have new activities</p>
+    </div>
     }
 
     <!-- Botón para marcar todas como leídas -->
     @if (notifications.length > 0) {
-      <div class="notifications-actions">
-        <ion-button expand="block" fill="outline" (click)="markAllAsRead()">
-          <!-- <ion-icon name="checkmark-done-outline" slot="start"></ion-icon> -->
-          Mark all as read
-        </ion-button>
-      </div>
+    <div class="notifications-actions">
+      <ion-button expand="block" fill="outline" (click)="markAllAsRead()">
+        <!-- <ion-icon name="checkmark-done-outline" slot="start"></ion-icon> -->
+        Mark all as read
+      </ion-button>
+    </div>
     }
   </ion-content>
 </ion-menu>

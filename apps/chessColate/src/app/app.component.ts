@@ -4,6 +4,16 @@ import { initializeApp } from 'firebase/app';
 import { Subscription } from 'rxjs';
 
 // Ionic imports
+import { addIcons } from 'ionicons';
+import {
+  homeOutline,
+  gridOutline,
+  extensionPuzzleOutline,
+  shuffleOutline,
+  timeOutline,
+  heartOutline,
+  logOutOutline
+} from 'ionicons/icons';
 import {
   IonMenu,
   IonHeader,
@@ -157,6 +167,15 @@ export class AppComponent implements OnInit, OnDestroy {
   private profileSubscription?: Subscription;
 
   constructor() {
+    addIcons({
+      'home-outline': homeOutline,
+      'grid-outline': gridOutline,
+      'extension-puzzle-outline': extensionPuzzleOutline,
+      'shuffle-outline': shuffleOutline,
+      'time-outline': timeOutline,
+      'heart-outline': heartOutline,
+      'log-out-outline': logOutOutline
+    });
     this.initApp();
   }
 
