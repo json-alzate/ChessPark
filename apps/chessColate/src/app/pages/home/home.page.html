@@ -151,11 +151,13 @@
               <!-- Si resolvió o falló este puzzle mostrado aquí -->
               @if (infinitePuzzleProblemState === 'bad' ||
               infinitePuzzleProblemState === 'timeOut') {
-              <button class="btn btn-xs md:btn-md btn-outline btn-error w-full font-bold"
-                [routerLink]="['/puzzles/solution', infinitePuzzle?.uid]">
-                <span>Solución</span>
+              <div class="text-error font-bold text-center text-xs md:text-sm animate-pulse">¡Incorrecto!</div>
+              <button class="btn btn-xs md:btn-md btn-outline btn-error w-full font-bold" (click)="showSolution()">
+                <span>Ver solución</span>
                 <ion-icon name="eye" class="hidden md:inline"></ion-icon>
               </button>
+              } @else if (infinitePuzzleProblemState === 'good') {
+              <div class="text-success font-bold text-center text-xs md:text-sm animate-bounce">¡Excelente!</div>
               }
               <button class="btn btn-xs md:btn-md btn-primary w-full shadow-md font-bold" (click)="startInfinityPlan()">
                 <span>Continuar</span>

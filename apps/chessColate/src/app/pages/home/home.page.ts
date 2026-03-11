@@ -5,11 +5,12 @@ import {
   IonContent,
   IonIcon,
   LoadingController,
+  ModalController,
   ViewWillEnter,
   ViewWillLeave,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { arrowForward, statsChartOutline } from 'ionicons/icons';
+import { arrowForward, statsChartOutline, eye } from 'ionicons/icons';
 
 import { TranslocoPipe } from '@jsverse/transloco';
 
@@ -22,10 +23,12 @@ import { PuzzlesProvider } from '@chesspark/puzzles-provider';
 
 import { ProfileService } from '@services/profile.service';
 
+import { AppService } from '@services/app.service';
+
 // Components
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 import { TrainingMenuComponent } from './components/training-menu.component';
-import { BoardPuzzleComponent } from '@chesspark/board';
+import { BoardPuzzleComponent, BoardPuzzleSolutionComponent } from '@chesspark/board';
 
 @Component({
   selector: 'app-home',
@@ -69,9 +72,28 @@ export class HomePage implements OnInit, ViewWillEnter, ViewWillLeave {
   private puzzlesProvider = inject(PuzzlesProvider);
   private loadingController = inject(LoadingController);
   private profileService = inject(ProfileService);
+  private appService = inject(AppService);
+  private modalController = inject(ModalController);
 
   constructor(private blockService: BlockService) {
-    addIcons({ arrowForward, statsChartOutline });
+    addIcons({ arrowForward, statsChartOutline, eye });
+  }
+
+  async showSolution() {
+    if (!this.infinitePuzzle) return;
+
+    const themesTranslated = this.infinitePuzzle.themes.map((theme) =>
+      this.appService.getNameThemePuzzleByValue(theme)
+    );
+
+    const modal = await this.modalController.create({
+      component: BoardPuzzleSolutionComponent,
+      componentProps: {
+        puzzle: this.infinitePuzzle,
+        themesTranslated,
+      },
+    });
+    await modal.present();
   }
 
   async ngOnInit() {
