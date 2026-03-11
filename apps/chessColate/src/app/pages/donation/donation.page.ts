@@ -13,13 +13,13 @@ import {
 } from '@ionic/angular/standalone';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
-import { heartOutline, heart, arrowBackOutline, arrowForwardOutline } from 'ionicons/icons';
+import { heartOutline, heart, arrowBackOutline, arrowForwardOutline, informationCircleOutline } from 'ionicons/icons';
 import { RevenueCatService } from '@chesspark/revenuecat';
 import { Package, PurchasesError, PURCHASES_ERROR_CODE } from '@chesspark/revenuecat';
 import { Capacitor } from '@capacitor/core';
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 
-addIcons({ heartOutline, heart, arrowBackOutline, arrowForwardOutline });
+addIcons({ heartOutline, heart, arrowBackOutline, arrowForwardOutline, informationCircleOutline });
 
 export interface DonationOption {
   id: string;
