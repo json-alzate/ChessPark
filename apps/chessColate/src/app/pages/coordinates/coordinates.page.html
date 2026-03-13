@@ -5,23 +5,28 @@
     
     <div class="container mx-auto px-4 py-6">
       <!-- Header con navegación y título -->
-      <div class="mb-4">
+      <div class="mb-6">
         <div class="flex items-center justify-between mb-2">
           <div class="breadcrumbs">
             <ul>
               <li>
-                <a (click)="goToHome()" class="cursor-pointer text-sm">
+                <a (click)="goToHome()" class="cursor-pointer text-sm gap-2">
                   <ion-icon name="home-outline" class="h-4 w-4"></ion-icon>
                   <span>{{ 'MENU.navigation.home' | transloco }}</span>
                 </a>
               </li>
             </ul>
           </div>
-          <button class="btn btn-lg btn-ghost" id="settings-trigger">
-            <ion-icon name="settings-outline"></ion-icon>
+        </div>
+        
+        <div class="flex items-center justify-between">
+          <h2 class="text-2xl font-bold transition-all duration-300">
+            {{ 'COORDINATES.title' | transloco }}
+          </h2>
+          <button class="btn btn-circle btn-ghost btn-sm" id="settings-trigger">
+            <ion-icon name="settings-outline" class="text-xl"></ion-icon>
           </button>
         </div>
-        <h2 class="text-2xl font-bold">{{ 'COORDINATES.title' | transloco }}</h2>
       </div>
 
       <ion-grid class="ion-margin-top">
@@ -36,7 +41,9 @@
             offset-xl="2"
           >
             <lib-board (squareSelected)="onSquareSelected($event)"></lib-board>
-            <h1 class="current-puzzle">{{ currentPuzzle }}</h1>
+            @if (currentPuzzle) {
+              <h1 class="current-puzzle">{{ currentPuzzle }}</h1>
+            }
 
             <!-- Componente Timer -->
             <app-timer
@@ -61,6 +68,7 @@
               [currentColorInBoard]="currentColorInBoard"
               [showLabel]="true"
               [showRecord]="true"
+              size="md"
               [bestScore]="getBestScoreByColor(currentColorInBoard === 'white' ? 'w' : 'b')"
             ></app-king-avatar>
             }

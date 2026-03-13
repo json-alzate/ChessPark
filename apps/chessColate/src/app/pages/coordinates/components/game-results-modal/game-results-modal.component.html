@@ -1,95 +1,91 @@
-<ion-modal #resultsModal>
+<ion-modal #resultsModal [initialBreakpoint]="0.8" [breakpoints]="[0, 0.8]" handleBehavior="cycle" class="results-modal">
     <ng-template>
-        <ion-header class="ion-no-border">
-            <ion-toolbar>
-                <ion-title class="text-center">
-                    @if (isNewRecord) { 🏆 {{ 'COORDINATES.results.newRecord' | transloco }} 🏆 } @else { 🎯 {{
-                    'COORDINATES.results.title' | transloco }} }
-                </ion-title>
-            </ion-toolbar>
-        </ion-header>
 
-        <ion-content class="ion-padding">
-            <div class="text-center space-y-6">
-                <!-- Imagen del rey del color con el que se jugó -->
-                <div class="flex justify-center">
-                    <div class="avatar">
-                        <div class="w-20 h-20 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-                            <img [src]="currentColorInBoard === 'white' ? 'assets/images/king-white.svg' : 'assets/images/king-black.svg'"
-                                [alt]="currentColorInBoard === 'white' ? 'Rey Blanco' : 'Rey Negro'"
-                                class="w-full h-full p-3" />
+        <ion-content class="bg-base-200">
+            <div class="px-4 py-8 space-y-6" data-theme="halloween">
+                
+                <!-- Main Header Card / Score -->
+                <div class="card bg-base-100 shadow-xl border border-base-content/5 overflow-hidden">
+                    <div class="card-body p-6 items-center text-center relative">
+                        <!-- BG Glow -->
+                        <div class="absolute -top-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-3xl"></div>
+                        <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-secondary/10 rounded-full blur-3xl"></div>
+                        
+                        <h6 class="text-xs uppercase font-black tracking-widest text-base-content/40 mb-2">
+                             {{ 'COORDINATES.results.finalScore' | transloco }}
+                        </h6>
+                        
+                        <div class="flex items-center gap-4 py-2">
+                            <span class="text-6xl font-black text-primary drop-shadow-sm">{{ score }}</span>
+                            @if (isNewRecord) {
+                                <div class="badge badge-warning p-3 h-auto font-black shadow-lg animate-bounce gap-1">
+                                    <ion-icon name="trophy"></ion-icon>
+                                    NEW
+                                </div>
+                            }
+                        </div>
+
+                        <div class="divider my-1 opacity-10"></div>
+
+                        <div class="flex items-center gap-3 mt-2">
+                            <div class="avatar">
+                                <div class="w-14 rounded-full ring ring-primary ring-offset-base-100 ring-offset-4 shadow-lg">
+                                    <img [src]="currentColorInBoard === 'white' ? 'assets/images/king-white.svg' : 'assets/images/king-black.svg'" />
+                                </div>
+                            </div>
+                            <div class="text-left">
+                                <p class="text-[10px] uppercase font-bold opacity-40 leading-none mb-1">{{ 'COORDINATES.game.playingWith' | transloco }}</p>
+                                <p class="text-sm font-black uppercase tracking-tight">
+                                    {{ currentColorInBoard === 'white' ? ('COORDINATES.game.whites' | transloco) : ('COORDINATES.game.blacks' | transloco) }}
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Información del juego -->
-                <div class="space-y-4">
-                    <div class="stats stats-vertical w-full">
-                        <div class="stat place-items-center">
-                            <div class="stat-title">{{ 'COORDINATES.results.finalScore' | transloco }}</div>
-                            <div class="stat-value text-4xl text-primary">{{ score }}</div>
-                        </div>
-
-                        <div class="stat place-items-center">
-                            <div class="stat-title">{{ 'COORDINATES.stats.correct' | transloco }}</div>
-                            <div class="stat-value text-success">
-                                {{ squaresGood.length }}
-                            </div>
-                        </div>
-
-                        <div class="stat place-items-center">
-                            <div class="stat-title">{{ 'COORDINATES.stats.errors' | transloco }}</div>
-                            <div class="stat-value text-error">{{ squaresBad.length }}</div>
-                        </div>
-
-                        <div class="stat place-items-center">
-                            <div class="stat-title">{{ 'COORDINATES.stats.accuracy' | transloco }}</div>
-                            <div class="stat-value text-info">
-                                {{ currentGameStats.accuracy | number:'1.0-1' }}%
-                            </div>
-                        </div>
+                <!-- Stats Grid -->
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="p-4 rounded-3xl bg-base-100 shadow-sm border border-base-content/5 flex flex-col items-center justify-center text-center">
+                        <span class="text-xl font-black text-success">{{ squaresGood.length }}</span>
+                        <span class="text-[9px] uppercase font-bold text-base-content/30 mt-1">{{ 'COORDINATES.stats.correct' | transloco }}</span>
                     </div>
-
-                    <!-- Información del récord -->
-                    @if (isNewRecord) {
-                    <div class="alert alert-success shadow-lg">
-                        <ion-icon name="trophy" class="text-2xl"></ion-icon>
-                        <div>
-                            <h3 class="font-bold">{{ 'COORDINATES.results.congratulations' | transloco }}</h3>
-                            <div class="text-xs">
-                                @if (recordType === 'both') { {{ 'COORDINATES.results.doubleRecord' | transloco }} {{
-                                currentColorInBoard === 'white' ? ('COORDINATES.game.whites' | transloco) :
-                                ('COORDINATES.game.blacks' | transloco) }}! }
-                                @else if (recordType === 'overall') { {{ 'COORDINATES.results.overallRecord' | transloco
-                                }} {{
-                                currentColorInBoard === 'white' ? ('COORDINATES.game.whites' | transloco) :
-                                ('COORDINATES.game.blacks' | transloco) }}! }
-                                @else { {{ 'COORDINATES.results.colorRecord' | transloco }} {{
-                                currentColorInBoard === 'white' ? ('COORDINATES.game.whites' | transloco) :
-                                ('COORDINATES.game.blacks' | transloco) }}! }
-                            </div>
-                        </div>
+                    <div class="p-4 rounded-3xl bg-base-100 shadow-sm border border-base-content/5 flex flex-col items-center justify-center text-center">
+                        <span class="text-xl font-black text-error">{{ squaresBad.length }}</span>
+                        <span class="text-[9px] uppercase font-bold text-base-content/30 mt-1">{{ 'COORDINATES.stats.errors' | transloco }}</span>
                     </div>
-                    } @else {
-                    <div class="alert alert-info shadow-lg">
-                        <ion-icon name="information-circle" class="text-2xl"></ion-icon>
-                        <div>
-                            <h3 class="font-bold">{{ 'COORDINATES.results.goodGame' | transloco }}</h3>
-                            <div class="text-xs">
-                                {{ 'COORDINATES.results.bestScoreWith' | transloco }} {{ currentColorInBoard === 'white'
-                                ?
-                                ('COORDINATES.game.whites' | transloco) : ('COORDINATES.game.blacks' | transloco) }} {{
-                                'COORDINATES.results.is' | transloco }} {{ bestScoreByColor }} {{
-                                'COORDINATES.game.points' | transloco }}.
-                            </div>
-                        </div>
+                    <div class="p-4 rounded-3xl bg-base-100 shadow-sm border border-base-content/5 flex flex-col items-center justify-center text-center">
+                        <span class="text-xl font-black text-info">{{ currentGameStats.accuracy | number:'1.0-0' }}%</span>
+                        <span class="text-[9px] uppercase font-bold text-base-content/30 mt-1">{{ 'COORDINATES.stats.accuracy' | transloco }}</span>
                     </div>
-                    }
                 </div>
+
+                <!-- Feedback Message -->
+                <div class="card bg-base-300 shadow-inner border border-base-content/5">
+                    <div class="card-body p-5">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-2xl bg-primary/20 flex items-center justify-center text-primary text-2xl">
+                                <ion-icon [name]="isNewRecord ? 'trophy' : 'medal'"></ion-icon>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="font-bold text-sm">
+                                    {{ isNewRecord ? ('COORDINATES.results.congratulations' | transloco) : ('COORDINATES.results.goodGame' | transloco) }}
+                                </h3>
+                                <p class="text-xs opacity-70">
+                                    @if (isNewRecord) {
+                                        {{ 'COORDINATES.results.newRecordShort' | transloco }} {{ currentColorInBoard === 'white' ? ('COORDINATES.game.whites' | transloco) : ('COORDINATES.game.blacks' | transloco) }}: {{ score }}!
+                                    } @else {
+                                        {{ 'COORDINATES.results.bestScoreWith' | transloco }} {{ currentColorInBoard === 'white' ? ('COORDINATES.game.whites' | transloco) : ('COORDINATES.game.blacks' | transloco) }} {{ 'COORDINATES.results.is' | transloco }} <span class="font-black text-primary">{{ bestScoreByColor }}</span>.
+                                    }
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </ion-content>
 
-        <ion-footer class="ion-no-border">
+        <ion-footer class="ion-no-border" data-theme="halloween">
             <ion-toolbar class="ion-padding-horizontal">
                 <button class="btn btn-lg btn-primary w-full" (click)="onCloseModal()">
                     {{ 'COORDINATES.results.continue' | transloco }}

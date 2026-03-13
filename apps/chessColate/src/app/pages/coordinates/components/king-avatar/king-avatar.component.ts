@@ -19,22 +19,22 @@ export class KingAvatarComponent {
   getSizeClasses(): string {
     switch (this.size) {
       case 'sm':
-        return 'w-8 h-8';
+        return 'w-14 h-14';
       case 'lg':
-        return 'w-16 h-16';
+        return 'w-28 h-28';
       default:
-        return 'w-12 h-12';
+        return 'w-20 h-20';
     }
   }
 
   getRingSize(): string {
     switch (this.size) {
       case 'sm':
-        return 'ring-1 ring-offset-1';
+        return 'ring ring-offset-1';
       case 'lg':
         return 'ring-4 ring-offset-4';
       default:
-        return 'ring-2 ring-offset-2';
+        return 'ring-4 ring-offset-4';
     }
   }
 }

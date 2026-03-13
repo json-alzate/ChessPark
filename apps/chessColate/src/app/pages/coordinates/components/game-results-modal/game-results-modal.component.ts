@@ -10,10 +10,10 @@ import {
   IonIcon,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { trophy, informationCircle, checkmark } from 'ionicons/icons';
+import { trophy, informationCircle, checkmark, podium, medal } from 'ionicons/icons';
 import { TranslocoPipe } from '@jsverse/transloco';
 
-addIcons({ trophy, informationCircle, checkmark });
+addIcons({ trophy, informationCircle, checkmark, podium, medal });
 
 @Component({
   selector: 'app-game-results-modal',
