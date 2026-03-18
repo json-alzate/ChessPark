@@ -7,7 +7,8 @@
       "add": "Add",
       "save": "Save",
       "login": "Login",
-      "register": "Register"
+      "register": "Register",
+      "continue": "Continue"
     },
     "time": {
       "unlimited": "Unlimited",
@@ -108,7 +109,10 @@
       "theme": "Theme",
       "opening": "Opening",
       "panel": "Panel",
-      "continueTraining": "Continue training"
+      "continueTraining": "Continue training",
+      "continuousTraining": "Continuous training",
+      "resolveUnlimited": "Solve unlimited puzzles",
+      "trainNow": "Train now"
     },
     "colors": {
       "white": "White",
@@ -225,6 +229,15 @@
     },
     "actions": {
       "add": "Add"
+    },
+    "ariaLabels": {
+      "rangeTime": "Time range",
+      "rangeCount": "Count range",
+      "rangeTimePuzzles": "Puzzles time range",
+      "rangeTimeVisible": "Visible time range",
+      "all": "All",
+      "weakness": "Weakness",
+      "rangeElo": "Elo range"
     }
   },
   "PLAN_PLAYED": {
@@ -389,7 +402,9 @@
       "goodMove": "The best move!",
       "continue": "Continue...",
       "wrongMove": "Ups!, that's not the best move",
-      "tryAgain": "Try something different..."
+      "tryAgain": "Try something different...",
+      "wrong": "Incorrect!",
+      "excellent": "Excellent!"
     },
     "actions": {
       "clue": "Ask a clue",
@@ -403,11 +418,28 @@
   "APP": {
     "user": {
       "guest": "Guest",
-      "user": "Usuario",
-      "signInMessage": "Inicia sesión para más opciones"
+      "user": "User",
+      "signInMessage": "Sign in for more options"
     },
     "menu": {
-      "logout": "Cerrar Sesión"
+      "logout": "Logout"
+    },
+    "components": {
+      "loading": "Loading...",
+      "donate": "Donate",
+      "googleLogo": "Google Logo",
+      "chessColateLogo": "ChessColate Logo",
+      "whiteKing": "White King",
+      "blackKing": "Black King",
+      "timeout": "Timeout",
+      "correct": "Correct",
+      "incorrect": "Incorrect"
+    },
+    "navigation": {
+      "version": "Version",
+      "notifications": "Notifications",
+      "noNotifications": "No notifications",
+      "notifyWhenNew": "We'll notify you when you have new activities"
     }
   },
   "CHESS960": {
@@ -424,5 +456,32 @@
       "randomButton": "Random",
       "standardInfo": "Position 518 is the standard chess setup."
     }
+  },
+  "DONATION": {
+    "perMonth": "/ month"
+  },
+  "KNIGHT_TOUR": {
+    "title": "Knight Tour",
+    "subtitle": "Move the knight across the board without repeating squares",
+    "restart": "Restart",
+    "visitedSquares": "Visited squares",
+    "time": "Time",
+    "settings": "Settings",
+    "startPosition": "Starting position",
+    "random": "Random",
+    "a1": "a1 (bottom left corner)",
+    "h1": "h1 (bottom right corner)",
+    "a8": "a8 (top left corner)",
+    "h8": "h8 (top right corner)",
+    "showVisitedSquares": "Show visited squares",
+    "readyToStart": "Ready to start!",
+    "gameStartsWhenMove": "The game will start when you move the knight for the first time",
+    "congratulations": "Congratulations!",
+    "completedTour": "You have completed the knight tour",
+    "instructions": "Instructions",
+    "rule1": "Click on a square to move the knight",
+    "rule2": "The knight moves in an L shape",
+    "rule3": "You cannot revisit squares",
+    "rule4": "Complete all 64 squares to win"
   }
 }

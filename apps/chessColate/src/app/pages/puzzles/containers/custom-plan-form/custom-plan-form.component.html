@@ -107,9 +107,9 @@
                     <p class="text-sm">
                       @if (block.time > 0 || block.puzzlesCount) {
                         @if (block.time > 0) {
-                          <span>{{ block.time | secondsToMinutesSeconds }} <small class="opacity-70">(min:seg)</small></span>
+                          <span>{{ block.time | secondsToMinutesSeconds }} <small class="opacity-70">({{ 'NEW_BLOCK.fields.minSec' | transloco }})</small></span>
                         }
-                        @if (block.time > 0 && block.puzzlesCount) { ó }
+                        @if (block.time > 0 && block.puzzlesCount) { {{ 'NEW_BLOCK.form.or' | transloco }} }
                         @if (block.puzzlesCount) {
                           {{ block.puzzlesCount }} {{ 'NEW_BLOCK.fields.puzzles' | transloco }}
                         }

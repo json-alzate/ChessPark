@@ -32,7 +32,7 @@
                 [class.blur-[2px]]="!isAuthenticated"
               >
                 <div>
-                  <h6 class="text-sm text-base-content/70">Elo total:</h6>
+                  <h6 class="text-sm text-base-content/70">{{ 'PLAN_PLAYED.totalElo' | transloco }}:</h6>
                   <div class="flex items-center gap-3">
                     <h1 class="text-4xl font-bold">
                       {{ isAuthenticated ? eloTotal : exampleEloTotal }}
@@ -44,7 +44,7 @@
                       (click)="launchConfetti()"
                     >
                       <ion-icon name="trophy-outline"></ion-icon>
-                      <span class="font-bold">¡Récord!</span>
+                      <span class="font-bold">{{ 'PLAN_PLAYED.record' | transloco }}</span>
                     </div>
                     }
                   </div>
@@ -75,7 +75,7 @@
                     class="text-primary text-lg"
                   ></ion-icon>
                   <span class="text-sm font-semibold"
-                    >Inicia sesión para ver tu ELO</span
+                    >{{ 'PLAN_PLAYED.loginToSeeElo' | transloco }}</span
                   >
                 </div>
               </div>
@@ -160,19 +160,19 @@
                     <img
                       src="assets/images/icons/alarm.png"
                       class="w-8 h-8"
-                      alt="timeout"
+                      [alt]="'APP.components.timeout' | transloco"
                     />
                     } @else if (userPuzzle.resolved) {
                     <img
                       src="assets/images/icons/checkmark-circle.png"
                       class="w-8 h-8"
-                      alt="correct"
+                      [alt]="'APP.components.correct' | transloco"
                     />
                     } @else {
                     <img
                       src="assets/images/icons/close-circle.png"
                       class="w-8 h-8"
-                      alt="incorrect"
+                      [alt]="'APP.components.incorrect' | transloco"
                     />
                     }
                   </div>

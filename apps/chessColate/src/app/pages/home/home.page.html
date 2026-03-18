@@ -49,7 +49,7 @@
     </div>
     } @else {
     <div class="p-2 mt-4">
-      <h4 class="text-lg mb-1 font-bold">Rutinas de entrenamiento</h4>
+      <h4 class="text-lg mb-1 font-bold">{{ 'PUZZLES.menu.title' | transloco }}</h4>
     </div>
 
     <app-training-menu></app-training-menu>
@@ -139,11 +139,11 @@
               </button>
             </div>
             <h3 class="text-sm md:text-2xl font-bold mb-1 md:mb-3 leading-tight">
-              Entrenamiento continuo
+              {{ 'PUZZLES.general.continuousTraining' | transloco }}
             </h3>
             <p
               class="text-[10px] md:text-base text-base-content/80 mb-2 md:mb-6 font-medium leading-tight line-clamp-4 md:line-clamp-none">
-              Resuelve problemas ilimitados
+              {{ 'PUZZLES.general.resolveUnlimited' | transloco }}
             </p>
 
             <div class="flex flex-col w-full gap-2 md:gap-3">
@@ -151,22 +151,22 @@
               <!-- Si resolvió o falló este puzzle mostrado aquí -->
               @if (infinitePuzzleProblemState === 'bad' ||
               infinitePuzzleProblemState === 'timeOut') {
-              <div class="text-error font-bold text-center text-xs md:text-sm animate-pulse">¡Incorrecto!</div>
+              <div class="text-error font-bold text-center text-xs md:text-sm animate-pulse">{{ 'PUZZLE_SOLUTION.feedback.wrong' | transloco }}</div>
               <button class="btn btn-xs md:btn-md btn-outline btn-error w-full font-bold" (click)="showSolution()">
-                <span>Ver solución</span>
+                <span>{{ 'PUZZLE_SOLUTION.actions.solution' | transloco }}</span>
                 <ion-icon name="eye" class="hidden md:inline"></ion-icon>
               </button>
               } @else if (infinitePuzzleProblemState === 'good') {
-              <div class="text-success font-bold text-center text-xs md:text-sm animate-bounce">¡Excelente!</div>
+              <div class="text-success font-bold text-center text-xs md:text-sm animate-bounce">{{ 'PUZZLE_SOLUTION.feedback.excellent' | transloco }}</div>
               }
               <button class="btn btn-xs md:btn-md btn-primary w-full shadow-md font-bold" (click)="startInfinityPlan()">
-                <span>Continuar</span>
+                <span>{{ 'COMMON.actions.continue' | transloco }}</span>
                 <ion-icon name="arrow-forward" class="hidden md:inline"></ion-icon>
               </button>
               } @else {
               <!-- Antes de resolver este puzzle, de todas formas el botón puede estar aquí -->
               <button class="btn btn-xs md:btn-md btn-primary w-full shadow-md font-bold" (click)="startInfinityPlan()">
-                <span>Entrenar ahora</span>
+                <span>{{ 'PUZZLES.general.trainNow' | transloco }}</span>
                 <ion-icon name="arrow-forward" class="hidden md:inline"></ion-icon>
               </button>
               }

@@ -138,7 +138,7 @@ export class LoginComponent implements OnInit {
       } catch (error) {
         console.error('Error en login', error);
         // El mensaje de error ahora viene de las traducciones en el HTML
-        this.errorLogin = 'error'; // Solo marcamos que hay un error
+        this.errorLogin = 'loginFailed'; // Solo marcamos que hay un error
       }
     } else {
       this.emailFieldLogin?.markAsDirty();

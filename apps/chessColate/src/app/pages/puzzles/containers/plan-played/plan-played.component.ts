@@ -260,7 +260,9 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
       const initialMax = this.plan.initialMaxElo ?? planElos?.maxTotal ?? 1500;
       if (this.eloTotal > initialMax) {
         this.isNewRecord = true;
-        this.launchConfetti();
+        if (!this.isFromHistory) {
+          this.launchConfetti();
+        }
       }
     } else {
       this.eloTotal = this.profileService.getEloTotalByPlanType(
@@ -272,7 +274,9 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
       const initialMax = this.plan.initialMaxElo;
       if (initialMax !== undefined && this.eloTotal > initialMax) {
         this.isNewRecord = true;
-        this.launchConfetti();
+        if (!this.isFromHistory) {
+          this.launchConfetti();
+        }
       }
     }
   }

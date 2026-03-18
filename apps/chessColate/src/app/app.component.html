@@ -63,7 +63,7 @@
 
     <!-- Version Info -->
     <div class="p-4 mt-auto text-center border-t border-base-200">
-      <p class="text-xs opacity-50">Versión {{ version }}</p>
+      <p class="text-xs opacity-50">{{ 'APP.navigation.version' | transloco }} {{ version }}</p>
     </div>
 
   </div>
@@ -73,7 +73,7 @@
 <ion-menu [swipeGesture]="false" side="end" menuId="notifications-menu" contentId="main-content">
   <ion-header>
     <ion-toolbar color="secondary">
-      <ion-title>Notifications</ion-title>
+      <ion-title>{{ 'APP.navigation.notifications' | transloco }}</ion-title>
       <ion-buttons slot="end">
         <ion-button (click)="closeNotificationsMenu()">
           <!-- <ion-icon name="close"></ion-icon> -->
@@ -104,8 +104,8 @@
     @if (notifications.length === 0) {
     <div class="empty-state">
       <!-- <ion-icon name="notifications-off-outline" class="empty-icon"></ion-icon> -->
-      <h3>No notifications</h3>
-      <p>We'll notify you when you have new activities</p>
+      <h3>{{ 'APP.navigation.noNotifications' | transloco }}</h3>
+      <p>{{ 'APP.navigation.notifyWhenNew' | transloco }}</p>
     </div>
     }
 

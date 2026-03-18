@@ -39,7 +39,7 @@
                     </div>
                   </div>
                   <div class="control">
-                    <ion-range formControlName="time" aria-label="Range time" [min]="0" [max]="1500" [step]="30"></ion-range>
+                    <ion-range formControlName="time" [attr.aria-label]="'NEW_BLOCK.ariaLabels.rangeTime' | transloco" [min]="0" [max]="1500" [step]="30"></ion-range>
                   </div>
                 </div>
                 <div class="count">
@@ -54,7 +54,7 @@
                     </div>
                   </div>
                   <div class="control">
-                    <ion-range formControlName="puzzlesCount" [step]="3" aria-label="Range count" [pin]="true" [ticks]="true" [snaps]="true" [min]="0" [max]="100"></ion-range>
+                    <ion-range formControlName="puzzlesCount" [step]="3" [attr.aria-label]="'NEW_BLOCK.ariaLabels.rangeCount' | transloco" [pin]="true" [ticks]="true" [snaps]="true" [min]="0" [max]="100"></ion-range>
                   </div>
                 </div>
               </div>
@@ -75,7 +75,7 @@
                     <div class="note">{{ puzzleTimeField?.value | secondsToMinutesSeconds }} <small><i>({{ 'NEW_BLOCK.fields.minSec' | transloco }})</i></small></div>
                   </div>
                   <div class="control">
-                    <ion-range formControlName="puzzleTime" aria-label="Range time puzzles" [min]="10" [step]="10" [max]="600"></ion-range>
+                    <ion-range formControlName="puzzleTime" [attr.aria-label]="'NEW_BLOCK.ariaLabels.rangeTimePuzzles' | transloco" [min]="10" [step]="10" [max]="600"></ion-range>
                   </div>
                 </div>
               </div>
@@ -94,7 +94,7 @@
                     <div class="note">{{ goshPuzzleTimeField?.value | secondsToMinutesSeconds }} <small><i>({{ 'NEW_BLOCK.fields.minSec' | transloco }})</i></small></div>
                   </div>
                   <div class="control">
-                    <ion-range formControlName="goshPuzzleTime" aria-label="Range time visible" [min]="5" [max]="540"></ion-range>
+                    <ion-range formControlName="goshPuzzleTime" [attr.aria-label]="'NEW_BLOCK.ariaLabels.rangeTimeVisible' | transloco" [min]="5" [max]="540"></ion-range>
                   </div>
                 </div>
               </div>
@@ -130,11 +130,11 @@
             <ion-radio-group formControlName="theme">
               <ion-item>
                 <ion-icon slot="start" name="shuffle"></ion-icon>
-                <ion-radio value="all" aria-label="all">{{ 'NEW_BLOCK.theme.random' | transloco }}<br><small>{{ 'NEW_BLOCK.theme.randomDescription' | transloco }}</small></ion-radio>
+                <ion-radio value="all" [attr.aria-label]="'NEW_BLOCK.ariaLabels.all' | transloco">{{ 'NEW_BLOCK.theme.random' | transloco }}<br><small>{{ 'NEW_BLOCK.theme.randomDescription' | transloco }}</small></ion-radio>
               </ion-item>
               <ion-item>
                 <ion-icon slot="start" name="trending-down"></ion-icon>
-                <ion-radio value="weakness" aria-label="weakness">{{ 'NEW_BLOCK.theme.weakness' | transloco }}<br><small>{{ 'NEW_BLOCK.theme.weaknessDescription' | transloco }}</small></ion-radio>
+                <ion-radio value="weakness" [attr.aria-label]="'NEW_BLOCK.ariaLabels.weakness' | transloco">{{ 'NEW_BLOCK.theme.weakness' | transloco }}<br><small>{{ 'NEW_BLOCK.theme.weaknessDescription' | transloco }}</small></ion-radio>
               </ion-item>
               @for (puzzlesGroupThemes of puzzlesGroupsThemes; track puzzlesGroupThemes.groupName) {
                 <ion-list>
@@ -168,7 +168,7 @@
               @if (eloLevelField?.value === 0) {
                 {{ 'NEW_BLOCK.difficulty.balanced' | transloco }}
               } @else {
-                Elo <span *ngIf="eloLevelField?.value > 0">+</span>{{ eloLevelField?.value }}
+                {{ 'PLANS_HISTORY.elo' | transloco }} <span *ngIf="eloLevelField?.value > 0">+</span>{{ eloLevelField?.value }}
               }
             </ion-note>
           </ion-item>
@@ -177,7 +177,7 @@
               <div class="range-container">
                 <div class="time">
                   <div class="header">
-                    <div class="label">Elo:</div>
+                    <div class="label">{{ 'PLANS_HISTORY.elo' | transloco }}:</div>
                     <div class="note">
                       @if (eloLevelField?.value === 0) {
                         {{ 'NEW_BLOCK.difficulty.normal' | transloco }}
@@ -191,7 +191,7 @@
                     </div>
                   </div>
                   <div class="control">
-                    <ion-range formControlName="eloLevel" aria-label="Range elo" [step]="100" [pinFormatter]="formatPin" [pin]="true" [ticks]="true" [snaps]="true" [min]="-600" [max]="600"></ion-range>
+                    <ion-range formControlName="eloLevel" [attr.aria-label]="'NEW_BLOCK.ariaLabels.rangeElo' | transloco" [step]="100" [pinFormatter]="formatPin" [pin]="true" [ticks]="true" [snaps]="true" [min]="-600" [max]="600"></ion-range>
                   </div>
                 </div>
               </div>

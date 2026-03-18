@@ -10,7 +10,7 @@
     <!-- Estado de carga durante inicialización -->
     <div class="flex items-center gap-2">
       <span class="loading loading-spinner loading-sm"></span>
-      <span class="text-sm text-gray-500">Cargando...</span>
+      <span class="text-sm text-gray-500">{{ 'APP.components.loading' | transloco }}</span>
     </div>
     } @else if (!isAuthenticated) {
     <div class="flex gap-2">
@@ -50,7 +50,7 @@
 
 
   <div class="navbar-end flex items-center gap-2">
-    <button class="btn btn-ghost btn-circle btn-sm" (click)="navigateToDonation()" title="Donar" aria-label="Donar"
+    <button class="btn btn-ghost btn-circle btn-sm" (click)="navigateToDonation()" [title]="'APP.components.donate' | transloco" [attr.aria-label]="'APP.components.donate' | transloco"
       type="button">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"
         style="color: hsl(var(--er));">
@@ -59,7 +59,7 @@
       </svg>
     </button>
 
-    <button class="btn btn-ghost btn-circle btn-sm" (click)="openNotificationsMenu()" type="button">
+    <!-- <button class="btn btn-ghost btn-circle btn-sm" (click)="openNotificationsMenu()" type="button">
       <div class="indicator">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -67,7 +67,7 @@
         </svg>
         <span class="badge badge-xs badge-primary indicator-item"></span>
       </div>
-    </button>
+    </button> -->
 
   </div>
 </div>
