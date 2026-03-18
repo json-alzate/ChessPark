@@ -460,7 +460,12 @@
     }
   },
   "DONATION": {
-    "perMonth": "/ mes"
+    "perMonth": "/ mes",
+    "homeCard": {
+      "title": "Apoya a ChessColate",
+      "description": "Con tu donación continuaremos desarrollando funcionalidades como el <strong>Método del Pájaro Carpintero personalizado</strong> y <strong>retos abiertos</strong>.",
+      "button": "Realizar una donación"
+    }
   },
   "KNIGHT_TOUR": {
     "title": "Recorrido del Caballo",

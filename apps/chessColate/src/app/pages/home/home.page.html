@@ -176,5 +176,44 @@
       </div>
       }
     </div>
+
+    <!-- Sección de Donación (Estilo Woodpecker / Overlay) -->
+    <div class="px-2 mt-4 mb-8">
+      <div class="relative overflow-hidden rounded-2xl">
+        <!-- Tarjeta de fondo estilo "Método del Pájaro Carpintero" (Borrosa/Opaca) -->
+        <div class="opacity-40 pointer-events-none blur-[1px]">
+          <div class="card bg-base-100 shadow-sm border border-base-200">
+            <figure class="p-6 bg-base-200/30">
+              <img src="assets/images/plan-icons/custom.png" alt="Woodpecker Method" class="h-28 md:h-36 object-contain" />
+            </figure>
+            <div class="card-body p-4 flex flex-row items-center justify-between w-full">
+              <div class="text-left">
+                <h4 class="font-bold text-base md:text-lg">Método del Pájaro Carpintero</h4>
+                <div class="text-sm text-base-content/60">Próximamente...</div>
+              </div>
+              <div class="badge badge-primary badge-outline text-xs md:text-sm">Pro</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Overlay con el mensaje de Donación -->
+        <div class="absolute inset-0 flex items-center justify-center bg-base-100/60 backdrop-blur-sm z-10 pointer-events-auto">
+          <div class="card bg-base-200 shadow-xl max-w-sm mx-4 border border-base-300">
+            <div class="card-body text-center p-5 md:p-6 space-y-3">
+              <h3 class="text-lg md:text-xl font-bold flex items-center justify-center gap-1">
+                <ion-icon name="heart" class="text-error"></ion-icon>
+                {{ 'DONATION.homeCard.title' | transloco }}
+              </h3>
+              <p class="text-xs md:text-sm text-base-content/80 leading-snug" [innerHTML]="'DONATION.homeCard.description' | transloco"></p>
+              <a href="https://ko-fi.com/chesscolate" target="_blank" class="btn btn-primary w-full mt-2 shadow-sm">
+                <ion-icon name="cafe-outline" class="text-lg"></ion-icon>
+                {{ 'DONATION.homeCard.button' | transloco }}
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </ion-content>

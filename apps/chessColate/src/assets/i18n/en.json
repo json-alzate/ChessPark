@@ -458,7 +458,12 @@
     }
   },
   "DONATION": {
-    "perMonth": "/ month"
+    "perMonth": "/ month",
+    "homeCard": {
+      "title": "Support ChessColate",
+      "description": "With your donation we will continue developing features like a <strong>personalized Woodpecker method</strong> and <strong>open challenges</strong>.",
+      "button": "Make a donation"
+    }
   },
   "KNIGHT_TOUR": {
     "title": "Knight Tour",
