@@ -439,7 +439,8 @@
       "version": "Version",
       "notifications": "Notifications",
       "noNotifications": "No notifications",
-      "notifyWhenNew": "We'll notify you when you have new activities"
+      "notifyWhenNew": "We'll notify you when you have new activities",
+      "markAllAsRead": "Mark all as read"
     }
   },
   "CHESS960": {

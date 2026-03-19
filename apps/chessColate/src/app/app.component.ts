@@ -12,7 +12,11 @@ import {
   shuffleOutline,
   timeOutline,
   heartOutline,
-  logOutOutline
+  logOutOutline,
+  closeOutline,
+  checkmarkDoneOutline,
+  notificationsOffOutline,
+  checkmarkOutline
 } from 'ionicons/icons';
 import {
   IonMenu,
@@ -174,7 +178,11 @@ export class AppComponent implements OnInit, OnDestroy {
       'shuffle-outline': shuffleOutline,
       'time-outline': timeOutline,
       'heart-outline': heartOutline,
-      'log-out-outline': logOutOutline
+      'log-out-outline': logOutOutline,
+      'close-outline': closeOutline,
+      'checkmark-done-outline': checkmarkDoneOutline,
+      'notifications-off-outline': notificationsOffOutline,
+      'checkmark-outline': checkmarkOutline
     });
     this.initApp();
   }
@@ -405,7 +413,6 @@ export class AppComponent implements OnInit, OnDestroy {
    * Cierra el menú de notificaciones
    */
   closeNotificationsMenu() {
-    // Esta función se puede usar para cerrar el menú programáticamente si es necesario
-    console.log('Cerrando menú de notificaciones');
+    this.menuController.close('notifications-menu');
   }
 }
