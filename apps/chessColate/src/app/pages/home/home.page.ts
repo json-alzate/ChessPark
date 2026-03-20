@@ -6,15 +6,16 @@ import {
   IonIcon,
   LoadingController,
   ModalController,
+  IonModal,
   ViewWillEnter,
   ViewWillLeave,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { arrowForward, statsChartOutline, eye } from 'ionicons/icons';
+import { arrowForward, statsChartOutline, eye, close } from 'ionicons/icons';
 
 import { TranslocoPipe } from '@jsverse/transloco';
 
-import { Block, PlanTypes, Puzzle } from '@cpark/models';
+import { Block, Plan, PlanTypes, Puzzle } from '@cpark/models';
 
 // Services
 import { BlockService } from '@services/block.service';
@@ -29,12 +30,14 @@ import { AppService } from '@services/app.service';
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 import { TrainingMenuComponent } from './components/training-menu.component';
 import { BoardPuzzleComponent, BoardPuzzleSolutionComponent } from '@chesspark/board';
+import { PlanChartComponent } from '../puzzles/components/plan-chart/plan-chart.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
   imports: [
     IonContent,
+    IonModal,
     IonIcon,
     CommonModule,
     RouterLink,
@@ -42,6 +45,7 @@ import { BoardPuzzleComponent, BoardPuzzleSolutionComponent } from '@chesspark/b
     NavbarComponent,
     TrainingMenuComponent,
     BoardPuzzleComponent,
+    PlanChartComponent,
   ],
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
@@ -56,6 +60,9 @@ export class HomePage implements OnInit, ViewWillEnter, ViewWillLeave {
     if (!this.infinitePuzzle) return 'white';
     return this.infinitePuzzle.fen.split(' ')[1] === 'w' ? 'black' : 'white';
   }
+
+  isStatsModalOpen = false;
+  infinityPlanProps = { planType: 'infinity' as PlanTypes } as Plan;
 
   get infinityElo(): number | string {
     const profile = this.profileService.getProfile;
@@ -76,7 +83,7 @@ export class HomePage implements OnInit, ViewWillEnter, ViewWillLeave {
   private modalController = inject(ModalController);
 
   constructor(private blockService: BlockService) {
-    addIcons({ arrowForward, statsChartOutline, eye });
+    addIcons({ arrowForward, statsChartOutline, eye, close });
   }
 
   async showSolution() {

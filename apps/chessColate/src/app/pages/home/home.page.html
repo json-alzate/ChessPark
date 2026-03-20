@@ -132,8 +132,7 @@
               <div class="badge font-bold text-xs md:text-sm shadow-sm text-primary">
                 ELO {{ infinityElo }}
               </div>
-              <button class="btn btn-circle btn-ghost btn-xs md:btn-sm text-primary"
-                [routerLink]="['/puzzles/plans-history']">
+              <button class="btn btn-circle btn-ghost btn-xs md:btn-sm text-primary" (click)="isStatsModalOpen = true">
                 <ion-icon name="stats-chart-outline" class="text-lg"></ion-icon>
               </button>
             </div>
@@ -218,6 +217,34 @@
         </div>
       </div>
     </div>
+
+    <!-- Modal Statistics Continuous Training -->
+    <ion-modal #statsModal [isOpen]="isStatsModalOpen" (didDismiss)="isStatsModalOpen = false"
+      [initialBreakpoint]="0.65" [breakpoints]="[0, 0.85]" handleBehavior="cycle">
+      <ng-template>
+        <ion-content>
+          <div data-theme="halloween" class="min-h-full bg-base-100 text-base-content flex flex-col">
+            <div class="p-4 flex-1">
+            <!-- Modal Header -->
+            <div class="flex items-start justify-between mb-4 mt-2">
+              <div class="flex flex-col gap-1 pr-2">
+                <h2 class="text-2xl font-bold leading-tight text-base-content">{{ 'PLAN_PLAYED.statistics' | transloco }}</h2>
+                <span class="text-sm font-medium text-base-content/60">{{ 'PUZZLES.general.continuousTraining' | transloco }}</span>
+                <div class="text-lg mt-1">
+                  <span class="font-bold text-base-content">{{ 'PLAN_PLAYED.totalElo' | transloco }}: </span>
+                  <span class="font-bold text-primary">{{ infinityElo }}</span>
+                </div>
+              </div>
+              <button class="btn btn-sm btn-circle btn-ghost bg-base-200 flex-shrink-0 mt-1" (click)="isStatsModalOpen = false">
+                <ion-icon name="close"></ion-icon>
+              </button>
+            </div>
+            <app-plan-chart [plan]="infinityPlanProps" [showEloPlanHeader]="false"></app-plan-chart>
+            </div>
+          </div>
+        </ion-content>
+      </ng-template>
+    </ion-modal>
 
   </div>
 </ion-content>

@@ -241,6 +241,8 @@
     }
   },
   "PLAN_PLAYED": {
+    "totalElo": "Total ELO",
+    "record": "Record",
     "puzzlesPlayed": "Puzzles played",
     "statistics": "Statistics of the routine",
     "playPlan": "Go to home",

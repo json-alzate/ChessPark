@@ -241,6 +241,8 @@
     }
   },
   "PLAN_PLAYED": {
+    "totalElo": "ELO Total",
+    "record": "Récord",
     "puzzlesPlayed": "Ejercicios jugados",
     "statistics": "Estadísticas de la rutina",
     "playPlan": "Ir al inicio",
