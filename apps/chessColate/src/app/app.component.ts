@@ -46,6 +46,7 @@ import { ProfileService } from '@services/profile.service';
 import { FirestoreService } from '@services/firestore.service';
 import { RevenueCatService, LogLevel } from '@chesspark/revenuecat';
 import { Capacitor } from '@capacitor/core';
+import { SplashScreen } from '@capacitor/splash-screen';
 
 // Models
 import { Profile } from '@cpark/models';
@@ -214,6 +215,11 @@ export class AppComponent implements OnInit, OnDestroy {
   async initApp() {
     // Inicializar Firebase
     await this.initFirebase();
+
+    // Hide splash screen after initialization
+    if (Capacitor.isNativePlatform()) {
+      await SplashScreen.hide();
+    }
   }
 
   async initFirebase() {
