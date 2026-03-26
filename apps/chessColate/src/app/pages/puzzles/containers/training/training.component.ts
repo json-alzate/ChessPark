@@ -29,6 +29,7 @@ import { ProfileService } from '@services/profile.service';
 import { PlanFacadeService } from '@cpark/state';
 import { PlansElosService } from '@services/plans-elos.service';
 import { PlanStorageService } from '@services/plan-storage.service';
+import { PlanService } from '@services/plan.service';
 import { UidGeneratorService } from '@chesspark/common-utils';
 import { addIcons } from 'ionicons';
 import {
@@ -36,9 +37,11 @@ import {
   chevronDownOutline,
   checkmarkCircleOutline,
   removeCircleOutline,
-  ellipseOutline,
   timeOutline,
   closeOutline,
+  trophy,
+  closeCircle,
+  ellipseOutline
 } from 'ionicons/icons';
 
 // models
@@ -80,12 +83,20 @@ export class TrainingComponent implements OnInit, OnDestroy {
   private translocoService = inject(TranslocoService);
   private uidGenerator = inject(UidGeneratorService);
   private soundsService = inject(SoundsService);
+  private planService = inject(PlanService);
+  private loadingController = inject(LoadingController);
 
   // Subject para gestionar suscripciones
   private destroy$ = new Subject<void>();
   private isInitialized = false;
   private isProcessingBlock = false;
   private isLoadingPlan = false;
+
+  // Properties for Reto 333
+  reto333StartTime: number | null = null;
+  reto333EloLocal = 400;
+  showReto333DaisyModal = false;
+  reto333AlertData: any = null;
 
   showBlockTimer = false;
 
@@ -132,6 +143,8 @@ export class TrainingComponent implements OnInit, OnDestroy {
       ellipseOutline,
       timeOutline,
       closeOutline,
+      trophy,
+      closeCircle
     });
   }
 
@@ -268,6 +281,9 @@ export class TrainingComponent implements OnInit, OnDestroy {
       this.showBlockTimer = false;
       this.stopBlockTimer();
     } else {
+      if (this.plan.planType === 'reto333' && !this.reto333StartTime) {
+        this.reto333StartTime = Date.now();
+      }
       this.showBlockPresentation();
     }
   }
@@ -393,6 +409,9 @@ export class TrainingComponent implements OnInit, OnDestroy {
     const puzzlesLeftToPlay =
       (currentBlock.puzzles?.length ?? 0) - this.countPuzzlesPlayedBlock;
     if (puzzlesLeftToPlay < 10) {
+      if (this.plan.planType === 'reto333') {
+        currentBlock.elo = this.reto333EloLocal;
+      }
       this.blockService
         .getPuzzlesForBlock(currentBlock)
         .then((puzzlesToAdd: Puzzle[]) => {
@@ -528,7 +547,7 @@ export class TrainingComponent implements OnInit, OnDestroy {
         puzzleCompleted.themes,
         puzzleCompleted.openingFamily
       );
-    } else if (this.plan.planType !== 'custom') {
+    } else if (!['custom', 'reto333'].includes(this.plan.planType)) {
       // Para planes por defecto, actualizar los elos del perfil
       this.profileService.calculateEloPuzzlePlan(
         puzzleCompleted.rating,
@@ -537,6 +556,11 @@ export class TrainingComponent implements OnInit, OnDestroy {
         puzzleCompleted.themes,
         puzzleCompleted.openingFamily
       );
+    }
+
+    if (this.plan.planType === 'reto333' && puzzleStatus === 'good') {
+      this.reto333EloLocal += 10;
+      this.plan.blocks[this.currentIndexBlock].elo = this.reto333EloLocal;
     }
 
     switch (puzzleStatus) {
@@ -557,9 +581,118 @@ export class TrainingComponent implements OnInit, OnDestroy {
       puzzleStatus !== 'good' &&
       this.plan.blocks[this.currentIndexBlock].showPuzzleSolution
     ) {
-      this.showSolution();
+      if (this.plan.planType === 'reto333') {
+        this.showSolutionAndAlertReto333();
+      } else {
+        this.showSolution();
+      }
     } else {
-      this.selectPuzzleToPlay();
+      if (puzzleStatus !== 'good' && this.plan.planType === 'reto333') {
+        this.showReto333Alert();
+      } else {
+        this.selectPuzzleToPlay();
+      }
+    }
+  }
+
+  async showSolutionAndAlertReto333() {
+    this.forceStopTimerInPuzzleBoard = true;
+    if (this.plan.blocks[this.currentIndexBlock].time !== -1) {
+      this.pauseBlockTimer();
+    }
+
+    const themesTranslated = this.puzzleToPlay.themes.map((theme) =>
+      this.appService.getNameThemePuzzleByValue(theme)
+    );
+
+    const modal = await this.modalController.create({
+      component: BoardPuzzleSolutionComponent,
+      componentProps: {
+        puzzle: this.puzzleToPlay,
+        themesTranslated,
+      },
+    });
+
+    await modal.present();
+
+    modal.onDidDismiss().then(() => {
+      this.forceStopTimerInPuzzleBoard = false;
+      this.showReto333Alert();
+    });
+  }
+
+  async showReto333Alert() {
+    this.plan = { ...this.plan, isFinished: true };
+    this.stopPlanTimer();
+    this.stopBlockTimer();
+    this.forceStopTimerInPuzzleBoard = true;
+
+    if (this.profileService.getProfile?.uid) {
+      this.plan = { ...this.plan, uidUser: this.profileService.getProfile.uid };
+    }
+    
+    // Save state
+    this.planFacade.updatePlan(this.plan);
+    this.planStorageService.savePlan(this.plan);
+
+    const currentBlock = this.plan.blocks?.[0];
+    const puzzlesPlayed = currentBlock?.puzzlesPlayed || [];
+    const solvedCount = puzzlesPlayed.filter(p => p.resolved).length;
+    
+    // Calcula el tiempo total invertido real desde el inicio
+    const timePlayedSec = this.reto333StartTime ? Math.floor((Date.now() - this.reto333StartTime) / 1000) : 0;
+    
+    const minutes = Math.floor(timePlayedSec / 60);
+    const seconds = Math.floor(timePlayedSec % 60);
+    const timeString = `${minutes}m ${seconds}s`;
+    
+    const completed = solvedCount >= 333;
+    
+    // Save state custom locally
+    const statsData = {
+      maxElo: this.reto333EloLocal,
+      lastTime: timePlayedSec,
+      completed,
+      lastScore: solvedCount,
+      timeString
+    };
+    localStorage.setItem('chesscolate_reto333_stats', JSON.stringify(statsData));
+
+    this.reto333AlertData = {
+      solvedCount,
+      timeString,
+      elo: this.reto333EloLocal,
+      completed
+    };
+    this.showReto333DaisyModal = true;
+  }
+
+  closeReto333Modal() {
+    this.showReto333DaisyModal = false;
+    this.cleanupResources();
+    this.router.navigate(['/home']);
+  }
+
+  async restartReto333() {
+    this.showReto333DaisyModal = false;
+    this.cleanupResources();
+    
+    const loader = await this.loadingController.create({
+      message: 'Iniciando Reto 333...',
+    });
+    await loader.present();
+
+    try {
+      const blocks: Block[] = await this.blockService.generateBlocksForPlan('reto333');
+      const puzzles = await this.blockService.getPuzzlesForBlock(blocks[0]);
+      blocks[0].puzzles = puzzles;
+
+      await this.planService.newPlan(blocks, 'reto333');
+      await loader.dismiss();
+    } catch (error) {
+      await loader.dismiss();
+      console.error('Error al reiniciar el reto 333:', error);
+      this.router.navigate(['/home']);
     }
   }
 
@@ -680,6 +813,12 @@ export class TrainingComponent implements OnInit, OnDestroy {
     this.timeLeftBlock = 0;
     this.countPuzzlesPlayedBlock = 0;
     this.totalPuzzlesInBlock = 0;
+
+    // Reto 333 cleanup
+    this.reto333StartTime = null;
+    this.reto333EloLocal = 400;
+    this.showReto333DaisyModal = false;
+    this.reto333AlertData = null;
 
     // Resetear flag de inicialización para permitir reinicialización
     this.isInitialized = false;

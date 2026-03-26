@@ -10,7 +10,8 @@ export type PlanTypes =
   | 'plan30'
   | 'backToCalm'
   | 'custom'
-  | 'infinity';
+  | 'infinity'
+  | 'reto333';
 
 export interface Plan {
   uid: string;

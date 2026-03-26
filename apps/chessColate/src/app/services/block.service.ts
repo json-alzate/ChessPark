@@ -27,7 +27,7 @@ export class BlockService {
     private appService: AppService,
     private puzzlesProvider: PuzzlesProvider
   ) // private plansElosService: PlansElosService
-  {}
+  { }
 
   async getPuzzlesForBlock(blockSettings: Block): Promise<Puzzle[]> {
     const themeMapped =
@@ -461,43 +461,43 @@ export class BlockService {
             // 5. Desafío (3 min) - Emoción final (50% ciegas, 50% rápido)
             Math.random() < 0.5
               ? {
-                  time: 180,
-                  puzzlesCount: 0,
-                  theme: themeChallenge20,
-                  description: this.translocoService.translate(
-                    'PUZZLES.modes.sameOpeningRandomThemeBlind'
-                  ),
-                  elo: eloChallenge20 || defaultElo,
-                  color: 'random',
-                  puzzleTimes: {
-                    warningOn: 10,
-                    dangerOn: 5,
-                    total: 15,
-                  },
-                  goshPuzzle: true,
-                  goshPuzzleTime: 10,
-                  puzzlesPlayed: [],
-                  nextPuzzleImmediately: true,
-                  showPuzzleSolution: true,
-                }
-              : {
-                  time: 180,
-                  puzzlesCount: 0,
-                  theme: themeChallenge20,
-                  description: this.translocoService.translate(
-                    'PUZZLES.modes.sameRandomTheme'
-                  ),
-                  elo: eloChallenge20 || defaultElo,
-                  color: 'random',
-                  puzzleTimes: {
-                    warningOn: 12,
-                    dangerOn: 6,
-                    total: 20,
-                  },
-                  puzzlesPlayed: [],
-                  nextPuzzleImmediately: true,
-                  showPuzzleSolution: true,
+                time: 180,
+                puzzlesCount: 0,
+                theme: themeChallenge20,
+                description: this.translocoService.translate(
+                  'PUZZLES.modes.sameOpeningRandomThemeBlind'
+                ),
+                elo: eloChallenge20 || defaultElo,
+                color: 'random',
+                puzzleTimes: {
+                  warningOn: 10,
+                  dangerOn: 5,
+                  total: 15,
                 },
+                goshPuzzle: true,
+                goshPuzzleTime: 10,
+                puzzlesPlayed: [],
+                nextPuzzleImmediately: true,
+                showPuzzleSolution: true,
+              }
+              : {
+                time: 180,
+                puzzlesCount: 0,
+                theme: themeChallenge20,
+                description: this.translocoService.translate(
+                  'PUZZLES.modes.sameRandomTheme'
+                ),
+                elo: eloChallenge20 || defaultElo,
+                color: 'random',
+                puzzleTimes: {
+                  warningOn: 12,
+                  dangerOn: 6,
+                  total: 20,
+                },
+                puzzlesPlayed: [],
+                nextPuzzleImmediately: true,
+                showPuzzleSolution: true,
+              },
             // 6. Enfriamiento (3 min) - Cierre relajado
             {
               time: 180,
@@ -736,6 +736,22 @@ export class BlockService {
             },
           ];
           resolve(blockInfinity);
+          break;
+        case 'reto333':
+          const block333: Block[] = [
+            {
+              time: -1,
+              puzzlesCount: 333,
+              theme: 'mateIn1',
+              description: 'Mate en 1',
+              elo: 400,
+              color: 'random',
+              puzzlesPlayed: [],
+              nextPuzzleImmediately: true,
+              showPuzzleSolution: true,
+            },
+          ];
+          resolve(block333);
           break;
       }
     });

@@ -11,7 +11,7 @@ import {
   ViewWillLeave,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { arrowForward, statsChartOutline, eye, close } from 'ionicons/icons';
+import { arrowForward, statsChartOutline, eye, close, flash } from 'ionicons/icons';
 
 import { TranslocoPipe } from '@jsverse/transloco';
 
@@ -83,7 +83,7 @@ export class HomePage implements OnInit, ViewWillEnter, ViewWillLeave {
   private modalController = inject(ModalController);
 
   constructor(private blockService: BlockService) {
-    addIcons({ arrowForward, statsChartOutline, eye, close });
+    addIcons({ arrowForward, statsChartOutline, eye, close, flash });
   }
 
   async showSolution() {
@@ -107,9 +107,21 @@ export class HomePage implements OnInit, ViewWillEnter, ViewWillLeave {
     // Inicialización movida a ionViewWillEnter para evitar fallos de caché al regresar
   }
 
+  reto333Stats: any = null;
+
   async ionViewWillEnter() {
     if (!this.infinitePuzzle) {
       await this.loadInfinitePuzzle();
+    }
+    
+    // Cargar estadísticas del Reto 333
+    const statsStr = localStorage.getItem('chesscolate_reto333_stats');
+    if (statsStr) {
+      try {
+        this.reto333Stats = JSON.parse(statsStr);
+      } catch (e) {
+        console.error('Error parseando las stats del reto 333:', e);
+      }
     }
   }
 
@@ -161,6 +173,31 @@ export class HomePage implements OnInit, ViewWillEnter, ViewWillLeave {
     } catch (error) {
       await loader.dismiss();
       console.error('Error al iniciar el plan infinito:', error);
+    }
+  }
+
+  async startReto333Plan() {
+    const loader = await this.loadingController.create({
+      message: 'Iniciando Reto 333...',
+    });
+    await loader.present();
+
+    try {
+      const blocks: Block[] = await this.blockService.generateBlocksForPlan(
+        'reto333'
+      );
+
+      // Cargar puzzles iniciales
+      const puzzles = await this.blockService.getPuzzlesForBlock(blocks[0]);
+      blocks[0].puzzles = puzzles;
+
+      await this.planService.newPlan(blocks, 'reto333');
+
+      await loader.dismiss();
+      this.router.navigate(['/puzzles/training']);
+    } catch (error) {
+      await loader.dismiss();
+      console.error('Error al iniciar el reto 333:', error);
     }
   }
 }
