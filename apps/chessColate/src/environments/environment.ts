@@ -29,8 +29,9 @@ export const environment = {
   apiPuzzlesUrl: 'http://[::1]:3000/puzzles/',
   // apiPuzzlesUrl: 'https://puzzles.chesscolate.com/puzzles/',
   version: '2.0.0',
-  // RevenueCat API Key - Obtener desde RevenueCat Dashboard
-  revenueCatApiKey: (keys as any).revenueCat?.apiKey || ''
+  // RevenueCat API Keys - Obtener desde RevenueCat Dashboard
+  revenueCatApiKeyAndroid: (keys as any).revenueCat?.androidApiKey || '',
+  revenueCatApiKeyIos: (keys as any).revenueCat?.iosApiKey || ''
 };
 
 /*

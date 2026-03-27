@@ -265,8 +265,15 @@ export class AppComponent implements OnInit, OnDestroy {
    */
   async initRevenueCat() {
     try {
-      // Obtener API Key de RevenueCat desde environment
-      const revenueCatApiKey = (environment as any).revenueCatApiKey || '';
+      // Obtener API Key de RevenueCat dependiendo de la plataforma
+      let revenueCatApiKey = '';
+      
+      if (Capacitor.getPlatform() === 'ios') {
+        revenueCatApiKey = (environment as any).revenueCatApiKeyIos || '';
+      } else {
+        // Por defecto y para Android usamos la de Android
+        revenueCatApiKey = (environment as any).revenueCatApiKeyAndroid || '';
+      }
 
       if (!revenueCatApiKey) {
         console.warn('RevenueCat API Key no configurada en environment');

@@ -35,14 +35,9 @@ async function loadRevenueCatModule() {
   }
 
   try {
-    // Usar new Function con construcción de string para evitar que Vite analice el import estáticamente
-    // Vite no puede analizar imports dentro de new Function(), evitando errores de resolución
-    // Construir el nombre del módulo de forma que Vite no lo reconozca estáticamente
-    const parts = ['@revenue', 'cat', '/', 'purchases', '-', 'capacitor'];
-    const moduleName = parts.join('');
-    // Usar Function constructor para hacer el import completamente dinámico
-    const importFunc = new Function('m', 'return import(m)');
-    PurchasesModule = await importFunc(moduleName);
+    // Usamos el import normal dinámico para que el empaquetador de Angular (Webpack/esbuild)
+    // reconozca la dependencia y la incluya en el build final.
+    PurchasesModule = (await import('@revenuecat/purchases-capacitor')) as any;
     return PurchasesModule;
   } catch (error) {
     console.error('Error loading RevenueCat module. Please run: npm install @revenuecat/purchases-capacitor', error);
