@@ -12,6 +12,9 @@ import {
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { arrowForward, statsChartOutline, eye, close, flash } from 'ionicons/icons';
+import { Subscription } from 'rxjs';
+import { Store, select } from '@ngrx/store';
+import { AuthState, getIsInitialized } from '@cpark/state';
 
 import { TranslocoPipe } from '@jsverse/transloco';
 
@@ -81,6 +84,10 @@ export class HomePage implements OnInit, ViewWillEnter, ViewWillLeave {
   private profileService = inject(ProfileService);
   private appService = inject(AppService);
   private modalController = inject(ModalController);
+  private store = inject(Store<AuthState>);
+
+  isInitialized = false;
+  private initSubscription?: Subscription;
 
   constructor(private blockService: BlockService) {
     addIcons({ arrowForward, statsChartOutline, eye, close, flash });
@@ -104,28 +111,39 @@ export class HomePage implements OnInit, ViewWillEnter, ViewWillLeave {
   }
 
   async ngOnInit() {
-    // Inicialización movida a ionViewWillEnter para evitar fallos de caché al regresar
+    this.initSubscription = this.store.pipe(select(getIsInitialized)).subscribe(initialized => {
+      this.isInitialized = initialized;
+    });
   }
 
   reto333Stats: any = null;
+  isLoadingReto333 = true;
 
-  async ionViewWillEnter() {
+  ionViewWillEnter() {
     if (!this.infinitePuzzle) {
-      await this.loadInfinitePuzzle();
+      this.loadInfinitePuzzle();
     }
     
+    this.isLoadingReto333 = true;
+    
     // Cargar estadísticas del Reto 333
-    const statsStr = localStorage.getItem('chesscolate_reto333_stats');
-    if (statsStr) {
-      try {
-        this.reto333Stats = JSON.parse(statsStr);
-      } catch (e) {
-        console.error('Error parseando las stats del reto 333:', e);
+    setTimeout(() => {
+      const statsStr = localStorage.getItem('chesscolate_reto333_stats');
+      if (statsStr) {
+        try {
+          this.reto333Stats = JSON.parse(statsStr);
+        } catch (e) {
+          console.error('Error parseando las stats del reto 333:', e);
+        }
       }
-    }
+      this.isLoadingReto333 = false;
+    }, 500);
   }
 
   ionViewWillLeave() {
+    if (this.initSubscription) {
+      this.initSubscription.unsubscribe();
+    }
     // Limpiar para asegurar destrucción del component BoardPuzzle
     this.infinitePuzzle = null;
     this.isInfinitePuzzleSolved = false;

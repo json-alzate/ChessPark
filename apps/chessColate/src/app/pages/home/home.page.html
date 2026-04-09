@@ -2,15 +2,9 @@
   <div class="main-container" data-theme="halloween">
     <app-navbar></app-navbar>
 
-    @if (isLoadingPuzzle) {
-    <!-- Skeletons para toda la parte superior del Home -->
-    <div class="px-2">
-      <div class="skeleton h-6 w-56 mb-1 rounded-sm"></div>
-    </div>
-
+    @if (!isInitialized) {
     <!-- Skeletons para el slider de Rutinas de entrenamiento -->
-    <div class="ml-2 flex gap-1 overflow-hidden">
-      <!-- Mínimo 3 tarjetas de skeleton para simular el slider -->
+    <div class="ml-2 mt-4 flex gap-1 overflow-hidden">
       <div class="card bg-base-100 flex-shrink-0 w-[130px] shadow-sm">
         <figure class="p-2 h-[120px]">
           <div class="skeleton w-full h-full rounded-md"></div>
@@ -48,13 +42,13 @@
       </div>
     </div>
     } @else {
-    <div class="p-2">
+    <div class="p-2 pt-4">
       <h4 class="text-lg mb-1 font-bold">{{ 'PUZZLES.menu.title' | transloco }}</h4>
     </div>
 
     <app-training-menu></app-training-menu>
 
-    <div class="p-2">
+    <div class="px-2">
       <div class="flex flex-row gap-1 mt-2 mb-2">
         <a class="btn btn-sm btn-soft btn-info" [routerLink]="['/puzzles/custom-plans']">{{ 'CUSTOM_PLANS.listTitle' |
           transloco }}</a>
@@ -179,6 +173,28 @@
 
     <!-- Reto 333 -->
     <div class="px-2 mt-4 relative group">
+      @if (isLoadingReto333) {
+      <div class="absolute -inset-0.5 bg-base-300 rounded-2xl blur opacity-25"></div>
+      <div class="card bg-base-100/90 shadow-xl overflow-hidden border border-base-content/10 relative">
+        <div class="flex flex-row items-stretch w-full min-h-[140px]">
+          <div class="w-[35%] bg-base-200 flex flex-col items-center justify-center p-4">
+            <div class="skeleton h-10 w-16 mb-2 rounded-md"></div>
+            <div class="skeleton h-3 w-12 rounded-sm text-center"></div>
+          </div>
+          <div class="w-[65%] p-4 flex flex-col justify-between gap-2">
+            <div class="flex items-center justify-between mb-1">
+              <div class="skeleton h-5 w-16 rounded-full"></div>
+              <div class="skeleton h-5 w-20 rounded-full"></div>
+            </div>
+            <div class="skeleton h-4 w-3/4 rounded-sm"></div>
+            <div class="skeleton h-3 w-full rounded-sm"></div>
+            <div class="mt-2 flex items-center justify-end">
+              <div class="skeleton h-4 w-28 rounded-md"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      } @else {
       <!-- Glow effect al hover -->
       <div class="absolute -inset-0.5 bg-gradient-to-r from-warning to-error rounded-2xl blur opacity-25 group-hover:opacity-60 transition duration-500"></div>
       
@@ -248,6 +264,7 @@
           </div>
         </div>
       </div>
+      }
     </div>
 
     <!-- Sección de Donación (Estilo Woodpecker / Overlay) -->
