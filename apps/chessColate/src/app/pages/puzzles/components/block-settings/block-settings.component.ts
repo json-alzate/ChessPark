@@ -1,8 +1,8 @@
-import { Component, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
-import { ModalController, IonContent, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon, IonItem, IonLabel, IonList, IonListHeader, IonAccordionGroup, IonAccordion, IonRange, IonRadioGroup, IonRadio, IonThumbnail, IonCheckbox, IonToggle, IonRow, IonCol, IonNote } from '@ionic/angular/standalone';
+import { ModalController, IonContent, IonIcon } from '@ionic/angular/standalone';
 
 import { TranslocoPipe } from '@jsverse/transloco';
 
@@ -14,7 +14,7 @@ import { TranslocoService } from '@jsverse/transloco';
 import { AppService } from '@services/app.service';
 
 import { addIcons } from 'ionicons';
-import { close, shuffle, trendingDown, sunnyOutline, moonOutline, infiniteOutline } from 'ionicons/icons';
+import { close, shuffle, trendingDown, infiniteOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-block-settings',
@@ -25,26 +25,7 @@ import { close, shuffle, trendingDown, sunnyOutline, moonOutline, infiniteOutlin
     TranslocoPipe,
     SecondsToMinutesSecondsPipe,
     IonContent,
-    IonToolbar,
-    IonTitle,
-    IonButtons,
-    IonButton,
     IonIcon,
-    IonItem,
-    IonLabel,
-    IonList,
-    IonListHeader,
-    IonAccordionGroup,
-    IonAccordion,
-    IonRange,
-    IonRadioGroup,
-    IonRadio,
-    IonThumbnail,
-    IonCheckbox,
-    IonToggle,
-    IonRow,
-    IonCol,
-    IonNote,
   ],
   templateUrl: './block-settings.component.html',
   styleUrl: './block-settings.component.scss',
@@ -55,8 +36,6 @@ export class BlockSettingsComponent implements OnInit {
   private modalController = inject(ModalController);
   private translocoService = inject(TranslocoService);
 
-  @ViewChild(IonAccordionGroup) accordionGroup?: IonAccordionGroup;
-
   color: 'white' | 'black' | 'random' = 'random';
   puzzlesGroupsThemes: PuzzleThemesGroup[] = [];
   form!: FormGroup;
@@ -66,7 +45,7 @@ export class BlockSettingsComponent implements OnInit {
   }
 
   constructor() {
-    addIcons({ close, shuffle, trendingDown, sunnyOutline, moonOutline, infiniteOutline });
+    addIcons({ close, shuffle, trendingDown, infiniteOutline });
   }
 
   ngOnInit(): void {
@@ -74,11 +53,6 @@ export class BlockSettingsComponent implements OnInit {
     this.buildForm();
     this.form.get('goshPuzzle')?.valueChanges.subscribe(() => {
       this.toggleFieldBasedOnBoolean('goshPuzzle', 'goshPuzzleTime');
-    });
-    this.themeField?.valueChanges.subscribe(() => {
-      if (this.accordionGroup) {
-        this.accordionGroup.value = undefined;
-      }
     });
   }
 
@@ -120,10 +94,6 @@ export class BlockSettingsComponent implements OnInit {
       goshPuzzle: [false],
       goshPuzzleTime: [{ value: 30, disabled: true }],
     });
-  }
-
-  formatPin(value: number): string {
-    return value > 0 ? `+${value}` : `${value}`;
   }
 
   private toggleFieldBasedOnBoolean(booleanControlName: string, targetControlName: string): void {
