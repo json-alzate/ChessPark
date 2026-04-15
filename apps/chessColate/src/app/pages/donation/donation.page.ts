@@ -13,13 +13,13 @@ import {
 } from '@ionic/angular/standalone';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
-import { heartOutline, heart, arrowBackOutline, arrowForwardOutline, informationCircleOutline } from 'ionicons/icons';
+import { heartOutline, heart, arrowBackOutline, arrowForwardOutline, informationCircleOutline, trophyOutline, cafeOutline, starOutline, banOutline, extensionPuzzleOutline, codeSlashOutline, serverOutline } from 'ionicons/icons';
 import { RevenueCatService } from '@chesspark/revenuecat';
 import { Package, PurchasesError, PURCHASES_ERROR_CODE } from '@chesspark/revenuecat';
 import { Capacitor } from '@capacitor/core';
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 
-addIcons({ heartOutline, heart, arrowBackOutline, arrowForwardOutline, informationCircleOutline });
+addIcons({ heartOutline, heart, arrowBackOutline, arrowForwardOutline, informationCircleOutline, trophyOutline, cafeOutline, starOutline, banOutline, extensionPuzzleOutline, codeSlashOutline, serverOutline });
 
 export interface DonationOption {
   id: string;
@@ -57,21 +57,21 @@ export class DonationPage implements OnInit {
       id: 'donation_small',
       amount: 2,
       label: '$2',
-      description: 'Donación pequeña - Renovación mensual',
+      description: 'Un café al mes. Mantiene los servidores activos y los puzzles corriendo.',
       packageIdentifier: 'donation_small',
     },
     {
       id: 'donation_medium',
       amount: 5,
       label: '$5',
-      description: 'Donación mediana - Renovación mensual',
+      description: 'Financia nuevas funciones y mejoras continuas para toda la comunidad.',
       packageIdentifier: 'donation_medium',
     },
     {
       id: 'donation_large',
       amount: 8,
       label: '$8',
-      description: 'Donación grande - Renovación mensual',
+      description: 'El mayor impacto. Acelera el desarrollo y te convierte en patrocinador del proyecto.',
       packageIdentifier: 'donation_large',
     },
   ];
