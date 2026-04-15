@@ -218,11 +218,6 @@ export class KnightTourPage implements OnInit, OnDestroy {
       return;
     }
 
-    // Si el juego no ha iniciado, iniciarlo en el primer movimiento
-    if (!this.isPlaying) {
-      this.startGame();
-    }
-
     // Verificar si es un movimiento válido del caballo
     if (this.isValidKnightMove(this.currentPosition, square)) {
       // Verificar que no esté ya visitada
@@ -231,6 +226,11 @@ export class KnightTourPage implements OnInit, OnDestroy {
         this.clearValidMoveMarkers();
         this.selectedSquare = null;
         return;
+      }
+
+      // Si el juego no ha iniciado, iniciarlo en el primer movimiento válido
+      if (!this.isPlaying) {
+        this.startGame();
       }
 
       // Limpiar marcadores de movimientos válidos
