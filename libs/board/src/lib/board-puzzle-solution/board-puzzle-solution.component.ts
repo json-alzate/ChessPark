@@ -72,6 +72,7 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit, OnDe
   stockfishEnabled = false;
   stockfishInitialized = false;
   bestMove: string | null = null;
+  private isAnalyzingPosition = false;
 
   currentMoveNumber = 0;
   arrayFenSolution: string[] = [];
@@ -181,9 +182,16 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit, OnDe
       return;
     }
 
+    // Evitar análisis concurrentes: si ya hay uno en curso, cancelarlo primero
+    if (this.isAnalyzingPosition) {
+      try {
+        this.stockfishService.stopAnalysis();
+      } catch (e) { /* ignorar */ }
+      return;
+    }
+
     if (!this.stockfishService.isReady || !this.stockfishInitialized) {
       console.warn('[Stockfish] Analysis skipped - service not ready. isReady:', this.stockfishService.isReady, 'initialized:', this.stockfishInitialized);
-      // Si no está listo, desactivar el toggle
       this.stockfishEnabled = false;
       return;
     }
@@ -195,6 +203,7 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit, OnDe
       console.warn('[Stockfish] Error stopping previous analysis:', error);
     }
 
+    this.isAnalyzingPosition = true;
     try {
       const fen = this.chessInstance.fen();
       console.log('[Stockfish] Starting analysis for FEN:', fen);
@@ -241,9 +250,10 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit, OnDe
           });
           this.stockfishInitialized = true;
           console.log('[Stockfish] Reinitialized successfully');
-          
-          // Intentar el análisis de nuevo
+
+          // Intentar el análisis de nuevo (resetear el guard antes de la llamada recursiva)
           if (this.stockfishEnabled) {
+            this.isAnalyzingPosition = false;
             await this.analyzeCurrentPosition();
           }
         } catch (reinitError) {
@@ -265,6 +275,8 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit, OnDe
           console.error('[Stockfish] Error terminating after critical error:', e);
         }
       }
+    } finally {
+      this.isAnalyzingPosition = false;
     }
   }
 

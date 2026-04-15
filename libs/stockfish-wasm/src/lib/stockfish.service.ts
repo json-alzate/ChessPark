@@ -1,6 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { StockfishWorkerService } from './stockfish-worker.service';
 import { StockfishConfig, StockfishStatus } from './types/stockfish.types';
 import { UCICommand } from './types/uci.types';
@@ -37,7 +36,7 @@ export class StockfishService implements OnDestroy {
 
     private config: StockfishConfig = {};
     private statusSubject = new BehaviorSubject<StockfishStatus>(StockfishStatus.Uninitialized);
-    private destroy$ = new Subject<void>();
+    private workerErrorSub: Subscription | null = null;
 
     /**
      * Observable del estado actual del motor
@@ -55,18 +54,7 @@ export class StockfishService implements OnDestroy {
      * Indica si el motor está listo para usar
      */
     get isReady(): boolean {
-        // Verificar tanto el estado del servicio como del worker
-        const serviceReady = this.status === StockfishStatus.Ready;
-        const workerReady = this.workerService.isReady();
-        
-        // Si el servicio dice que está listo pero el worker no, sincronizar el estado
-        if (serviceReady && !workerReady) {
-            console.warn('[Stockfish Service] State mismatch: service ready but worker not ready. Resetting state.');
-            this.statusSubject.next(StockfishStatus.Error);
-            return false;
-        }
-        
-        return serviceReady && workerReady;
+        return this.status === StockfishStatus.Ready && this.workerService.isReady();
     }
 
     /**
@@ -76,16 +64,7 @@ export class StockfishService implements OnDestroy {
         return this.status === StockfishStatus.Analyzing;
     }
 
-    constructor(private workerService: StockfishWorkerService) {
-        // Suscribirse a errores del worker
-        this.workerService
-            .getErrors()
-            .pipe(takeUntil(this.destroy$))
-            .subscribe((error) => {
-                this.statusSubject.next(StockfishStatus.Error);
-                console.error('Stockfish error:', error);
-            });
-    }
+    constructor(private workerService: StockfishWorkerService) {}
 
     /**
      * Inicializa el motor Stockfish
@@ -121,6 +100,13 @@ export class StockfishService implements OnDestroy {
             this.statusSubject.next(StockfishStatus.Initializing);
             this.config = { ...this.defaultConfig, ...config };
 
+            // Renovar suscripción a errores del worker para esta sesión
+            this.workerErrorSub?.unsubscribe();
+            this.workerErrorSub = this.workerService.getErrors().subscribe((error) => {
+                this.statusSubject.next(StockfishStatus.Error);
+                console.error('Stockfish error:', error);
+            });
+
             // Inicializar worker
             console.log('[Stockfish Service] Initializing worker with path:', this.config.workerPath);
             await this.workerService.initialize(this.config.workerPath);
@@ -134,7 +120,8 @@ export class StockfishService implements OnDestroy {
         } catch (error) {
             console.error('[Stockfish Service] Initialization failed:', error);
             this.statusSubject.next(StockfishStatus.Error);
-            // Terminar el worker en caso de error para evitar estados inconsistentes
+            this.workerErrorSub?.unsubscribe();
+            this.workerErrorSub = null;
             this.workerService.terminate();
             throw error;
         }
@@ -272,9 +259,9 @@ export class StockfishService implements OnDestroy {
      */
     terminate(): void {
         this.stopAnalysis();
+        this.workerErrorSub?.unsubscribe();
+        this.workerErrorSub = null;
         this.workerService.terminate();
         this.statusSubject.next(StockfishStatus.Uninitialized);
-        this.destroy$.next();
-        this.destroy$.complete();
     }
 }
