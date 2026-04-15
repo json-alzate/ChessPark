@@ -12,17 +12,21 @@ import {
   IonIcon,
   IonSelect,
   IonSelectOption,
-  IonToggle,
+  IonModal,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonButton,
   AlertController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { homeOutline, refreshOutline, playOutline } from 'ionicons/icons';
+import { homeOutline, refreshOutline, playOutline, settingsOutline, closeOutline, trophy } from 'ionicons/icons';
 import { TranslocoPipe } from '@jsverse/transloco';
 
 import { BoardComponent } from '@chesspark/board';
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 
-addIcons({ homeOutline, refreshOutline, playOutline });
+addIcons({ homeOutline, refreshOutline, playOutline, settingsOutline, closeOutline, trophy });
 
 type StartPosition = 'random' | 'a1' | 'h1' | 'a8' | 'h8';
 
@@ -43,7 +47,11 @@ type StartPosition = 'random' | 'a1' | 'h1' | 'a8' | 'h8';
     IonIcon,
     IonSelect,
     IonSelectOption,
-    IonToggle,
+    IonModal,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonButton,
     TranslocoPipe,
   ],
 })
@@ -714,7 +722,7 @@ export class KnightTourPage implements OnInit, OnDestroy {
    * Maneja el cambio de mostrar/ocultar casillas visitadas
    */
   onShowVisitedChange(event: any) {
-    this.showVisited = event.detail.checked;
+    this.showVisited = (event.target as HTMLInputElement)?.checked ?? event.detail?.checked;
     if (this.isPlaying && this.visitedSquares.length > 0) {
       if (this.showVisited) {
         this.updateVisitedMarkers();

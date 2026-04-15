@@ -17,10 +17,17 @@
             </ul>
           </div>
         </div>
-        <h2 class="text-2xl font-bold">{{ 'KNIGHT_TOUR.title' | transloco }}</h2>
-        <p class="text-sm text-base-content/70 mt-1">
-          {{ 'KNIGHT_TOUR.subtitle' | transloco }}
-        </p>
+        <div class="flex items-start justify-between">
+          <div>
+            <h2 class="text-2xl font-bold">{{ 'KNIGHT_TOUR.title' | transloco }}</h2>
+            <p class="text-sm text-base-content/70 mt-1">
+              {{ 'KNIGHT_TOUR.subtitle' | transloco }}
+            </p>
+          </div>
+          <button class="btn btn-circle btn-ghost btn-sm mt-1" id="kt-settings-trigger">
+            <ion-icon name="settings-outline" class="text-xl"></ion-icon>
+          </button>
+        </div>
       </div>
 
       <ion-grid class="ion-margin-top">
@@ -42,26 +49,24 @@
 
             <!-- Información del juego -->
             <div class="card bg-base-100 shadow-sm mb-4">
-              <div class="card-body">
+              <div class="card-body p-3">
                 <div class="flex items-center justify-between mb-2">
                   <div>
-                    <p class="text-sm text-base-content/70">{{ 'KNIGHT_TOUR.visitedSquares' | transloco }}</p>
+                    <p class="text-xs text-base-content/50 uppercase tracking-wider font-semibold">{{ 'KNIGHT_TOUR.visitedSquares' | transloco }}</p>
                     <h3 class="text-2xl font-bold">
-                      {{ visitedSquares.length }} / 64
+                      {{ visitedSquares.length }}<span class="text-base text-base-content/40 font-normal"> / 64</span>
                     </h3>
                   </div>
                   <div class="text-right">
-                    <p class="text-sm text-base-content/70">{{ 'KNIGHT_TOUR.time' | transloco }}</p>
-                    <h3 class="text-2xl font-bold">
+                    <p class="text-xs text-base-content/50 uppercase tracking-wider font-semibold">{{ 'KNIGHT_TOUR.time' | transloco }}</p>
+                    <h3 class="text-2xl font-bold font-mono">
                       {{ formatTime(elapsedTime) }}
                     </h3>
                   </div>
                 </div>
-
-                <!-- Barra de progreso -->
-                <div class="w-full bg-base-200 rounded-full h-2">
+                <div class="w-full bg-base-200 rounded-full h-1.5">
                   <div
-                    class="bg-primary h-2 rounded-full transition-all duration-300"
+                    class="bg-warning h-1.5 rounded-full transition-all duration-300"
                     [style.width.%]="(visitedSquares.length / 64) * 100"
                   ></div>
                 </div>
@@ -70,8 +75,8 @@
 
             <!-- Botones de acción -->
             @if (isPlaying || isCompleted || isGameOver) {
-            <div class="flex gap-2">
-              <button class="btn btn-error btn-lg flex-1" (click)="resetGame()">
+            <div class="flex gap-2 mb-4">
+              <button class="btn btn-error btn-sm flex-1" (click)="resetGame()">
                 <ion-icon name="refresh-outline"></ion-icon>
                 {{ 'KNIGHT_TOUR.restart' | transloco }}
               </button>
@@ -79,84 +84,122 @@
             }
           </ion-col>
 
-          <!-- Panel de configuración e información -->
+          <!-- Panel de información -->
           <ion-col size="12" size-sm="12" size-md="12" size-lg="4" size-xl="4">
-            <!-- Configuración -->
-            <div class="card bg-base-100 shadow-sm mb-4">
-              <div class="card-body">
-                <h3 class="text-lg font-semibold mb-4">{{ 'KNIGHT_TOUR.settings' | transloco }}</h3>
-
-                <!-- Selector de posición inicial -->
-                <div class="form-control mb-4">
-                  <label class="label">
-                    <span class="label-text">{{ 'KNIGHT_TOUR.startPosition' | transloco }}</span>
-                  </label>
-                  <ion-select
-                    [value]="startPosition"
-                    [disabled]="isPlaying"
-                    (ionChange)="onStartPositionChange($event)"
-                    interface="popover"
-                    class="select select-bordered w-full"
-                  >
-                    <ion-select-option value="random">{{ 'KNIGHT_TOUR.random' | transloco }}</ion-select-option>
-                    <ion-select-option value="a1">{{ 'KNIGHT_TOUR.a1' | transloco }}</ion-select-option>
-                    <ion-select-option value="h1">{{ 'KNIGHT_TOUR.h1' | transloco }}</ion-select-option>
-                    <ion-select-option value="a8">{{ 'KNIGHT_TOUR.a8' | transloco }}</ion-select-option>
-                    <ion-select-option value="h8">{{ 'KNIGHT_TOUR.h8' | transloco }}</ion-select-option>
-                  </ion-select>
-                </div>
-
-                <!-- Toggle para mostrar casillas visitadas -->
-                <div class="form-control">
-                  <label class="label cursor-pointer">
-                    <span class="label-text">{{ 'KNIGHT_TOUR.showVisitedSquares' | transloco }}</span>
-                    <ion-toggle
-                      [checked]="showVisited"
-                      (ionChange)="onShowVisitedChange($event)"
-                    ></ion-toggle>
-                  </label>
-                </div>
-              </div>
-            </div>
-
             <!-- Mensaje informativo antes de iniciar -->
             @if (!isPlaying && !isCompleted && !isGameOver) {
-            <div class="card bg-info text-info-content shadow-sm mb-4">
-              <div class="card-body text-center">
-                <h3 class="text-lg font-bold mb-2">{{ 'KNIGHT_TOUR.readyToStart' | transloco }}</h3>
-                <p class="text-sm">{{ 'KNIGHT_TOUR.gameStartsWhenMove' | transloco }}</p>
+            <div class="card bg-base-100 shadow-sm mb-4 border-l-4 border-warning">
+              <div class="card-body p-4 text-center">
+                <h3 class="text-base font-bold">{{ 'KNIGHT_TOUR.readyToStart' | transloco }}</h3>
+                <p class="text-xs text-base-content/60 mt-1">{{ 'KNIGHT_TOUR.gameStartsWhenMove' | transloco }}</p>
               </div>
             </div>
             }
 
-            <!-- Estado del juego -->
+            <!-- Estado completado -->
             @if (isCompleted) {
-            <div class="card bg-success text-success-content shadow-sm mb-4">
-              <div class="card-body text-center">
-                <h3 class="text-xl font-bold mb-2">{{ 'KNIGHT_TOUR.congratulations' | transloco }}</h3>
-                <p class="mb-2">{{ 'KNIGHT_TOUR.completedTour' | transloco }}</p>
-                <p class="text-sm">{{ 'KNIGHT_TOUR.time' | transloco }}: {{ formatTime(elapsedTime) }}</p>
-                <p class="text-sm">{{ 'KNIGHT_TOUR.visitedSquares' | transloco }}: {{ visitedSquares.length }} / 64</p>
+            <div class="card bg-base-100 shadow-sm mb-4 border-l-4 border-success">
+              <div class="card-body p-4 text-center">
+                <ion-icon name="trophy" class="text-3xl text-success mb-1"></ion-icon>
+                <h3 class="text-base font-bold text-success">{{ 'KNIGHT_TOUR.congratulations' | transloco }}</h3>
+                <p class="text-xs text-base-content/60 mt-1">{{ 'KNIGHT_TOUR.completedTour' | transloco }}</p>
+                <div class="flex justify-center gap-4 mt-3">
+                  <div class="text-center">
+                    <p class="text-xs text-base-content/50 uppercase tracking-wider">{{ 'KNIGHT_TOUR.time' | transloco }}</p>
+                    <p class="font-bold font-mono">{{ formatTime(elapsedTime) }}</p>
+                  </div>
+                  <div class="text-center">
+                    <p class="text-xs text-base-content/50 uppercase tracking-wider">{{ 'KNIGHT_TOUR.visitedSquares' | transloco }}</p>
+                    <p class="font-bold">{{ visitedSquares.length }} / 64</p>
+                  </div>
+                </div>
               </div>
             </div>
             }
 
-
-            <!-- Instrucciones -->
+            <!-- Instrucciones (solo antes de iniciar) -->
+            @if (!isPlaying) {
             <div class="card bg-base-100 shadow-sm">
-              <div class="card-body">
-                <h3 class="text-lg font-semibold mb-2">{{ 'KNIGHT_TOUR.instructions' | transloco }}</h3>
-                <ul class="text-sm text-base-content/70 space-y-1">
-                  <li>• {{ 'KNIGHT_TOUR.rule1' | transloco }}</li>
-                  <li>• {{ 'KNIGHT_TOUR.rule2' | transloco }}</li>
-                  <li>• {{ 'KNIGHT_TOUR.rule3' | transloco }}</li>
-                  <li>• {{ 'KNIGHT_TOUR.rule4' | transloco }}</li>
+              <div class="card-body p-4">
+                <h3 class="text-sm font-semibold text-base-content/70 uppercase tracking-wider mb-2">{{ 'KNIGHT_TOUR.instructions' | transloco }}</h3>
+                <ul class="text-sm text-base-content/60 space-y-2">
+                  <li class="flex items-start gap-2"><span class="text-warning mt-0.5">•</span>{{ 'KNIGHT_TOUR.rule1' | transloco }}</li>
+                  <li class="flex items-start gap-2"><span class="text-warning mt-0.5">•</span>{{ 'KNIGHT_TOUR.rule2' | transloco }}</li>
+                  <li class="flex items-start gap-2"><span class="text-warning mt-0.5">•</span>{{ 'KNIGHT_TOUR.rule3' | transloco }}</li>
+                  <li class="flex items-start gap-2"><span class="text-warning mt-0.5">•</span>{{ 'KNIGHT_TOUR.rule4' | transloco }}</li>
                 </ul>
               </div>
             </div>
+            }
           </ion-col>
         </ion-row>
       </ion-grid>
     </div>
   </div>
+
+  <!-- Modal de configuración -->
+  <ion-modal
+    #settingsModal
+    trigger="kt-settings-trigger"
+    [presentingElement]="null"
+    [breakpoints]="[0, 0.5, 0.75]"
+    [initialBreakpoint]="0.5"
+    [backdropDismiss]="true"
+  >
+    <ng-template>
+      <ion-content>
+        <div data-theme="halloween" class="h-full">
+          <ion-header class="ion-no-border">
+            <ion-toolbar>
+              <ion-title class="text-center">
+                <ion-icon name="settings-outline" class="mr-2"></ion-icon>
+                {{ 'KNIGHT_TOUR.settings' | transloco }}
+              </ion-title>
+              <ion-button fill="clear" slot="end" (click)="settingsModal.dismiss()">
+                <ion-icon name="close-outline"></ion-icon>
+              </ion-button>
+            </ion-toolbar>
+          </ion-header>
+
+          <div class="space-y-4 p-2">
+            <ul class="list bg-base-100 rounded-box shadow-md">
+              <li class="list-row">
+                <div></div>
+                <div>
+                  <div>{{ 'KNIGHT_TOUR.startPosition' | transloco }}</div>
+                  <div class="text-xs font-semibold opacity-60">{{ 'KNIGHT_TOUR.startPositionDesc' | transloco }}</div>
+                </div>
+                <ion-select
+                  [value]="startPosition"
+                  [disabled]="isPlaying"
+                  (ionChange)="onStartPositionChange($event)"
+                  interface="popover"
+                >
+                  <ion-select-option value="random">{{ 'KNIGHT_TOUR.random' | transloco }}</ion-select-option>
+                  <ion-select-option value="a1">a1</ion-select-option>
+                  <ion-select-option value="h1">h1</ion-select-option>
+                  <ion-select-option value="a8">a8</ion-select-option>
+                  <ion-select-option value="h8">h8</ion-select-option>
+                </ion-select>
+              </li>
+
+              <li class="list-row">
+                <div></div>
+                <div>
+                  <div>{{ 'KNIGHT_TOUR.showVisitedSquares' | transloco }}</div>
+                  <div class="text-xs font-semibold opacity-60">{{ 'KNIGHT_TOUR.showVisitedSquaresDesc' | transloco }}</div>
+                </div>
+                <input
+                  type="checkbox"
+                  [checked]="showVisited"
+                  class="toggle toggle-primary"
+                  (change)="onShowVisitedChange($event)"
+                />
+              </li>
+            </ul>
+          </div>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 </ion-content>
