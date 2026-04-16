@@ -2,7 +2,11 @@ import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 
-import { ModalController, IonContent, IonIcon } from '@ionic/angular/standalone';
+import {
+  ModalController,
+  IonContent,
+  IonIcon,
+} from '@ionic/angular/standalone';
 
 import { TranslocoPipe } from '@jsverse/transloco';
 
@@ -27,14 +31,30 @@ import { TrainingMenuComponent } from '@pages/home/components/training-menu.comp
 import { ConfettiService } from '@chesspark/common-utils';
 
 import { addIcons } from 'ionicons';
-import { heartOutline, heart } from 'ionicons/icons';
+import {
+  heartOutline,
+  heart,
+  homeOutline,
+  timeOutline,
+  trophyOutline,
+  lockClosed,
+} from 'ionicons/icons';
 import { Subject, Subscription } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-plan-played',
   standalone: true,
-  imports: [CommonModule, TranslocoPipe, FenBoardComponent, PlanChartComponent, IonContent, IonIcon, NavbarComponent, TrainingMenuComponent],
+  imports: [
+    CommonModule,
+    TranslocoPipe,
+    FenBoardComponent,
+    PlanChartComponent,
+    IonContent,
+    IonIcon,
+    NavbarComponent,
+    TrainingMenuComponent,
+  ],
   templateUrl: './plan-played.component.html',
   styleUrl: './plan-played.component.scss',
 })
@@ -62,28 +82,39 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
   isLiked: boolean = false;
   isLoadingLike: boolean = false;
   isLoadingToPlay: boolean = false;
+  isNewRecord: boolean = false;
+  isConfettiLaunching: boolean = false;
 
   isAuthenticated: boolean = false;
   isLoadingPlan: boolean = false;
+  isFromHistory: boolean = false;
   private hasHadPlan: boolean = false; // Flag para saber si alguna vez tuvimos un plan
   private destroy$ = new Subject<void>();
 
   constructor() {
-    addIcons({ heartOutline, heart });
+    addIcons({
+      heartOutline,
+      heart,
+      homeOutline,
+      timeOutline,
+      trophyOutline,
+      lockClosed,
+    });
   }
 
   ngOnInit() {
     // Suscribirse al estado de autenticación
     this.profileService.profile$
       .pipe(takeUntil(this.destroy$))
-      .subscribe(profile => {
+      .subscribe((profile) => {
         this.isAuthenticated = !!profile;
       });
 
     // Suscribirse al estado de carga del plan
-    this.planFacade.getLoadingPlan$()
+    this.planFacade
+      .getLoadingPlan$()
       .pipe(takeUntil(this.destroy$))
-      .subscribe(loading => {
+      .subscribe((loading) => {
         this.isLoadingPlan = loading;
         // Si se está cargando un nuevo plan, limpiar el plan actual para mostrar skeletons
         if (loading) {
@@ -96,10 +127,15 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
     // Verificar si hay un uid en los query params (desde historial)
     this.route.queryParams
       .pipe(takeUntil(this.destroy$))
-      .subscribe(params => {
+      .subscribe((params) => {
+        if (params['uid']) {
+          this.isFromHistory = true;
+        }
         if (params['uid'] && !this.plan) {
           // Intentar cargar el plan desde el historial
-          const planFromHistory = this.planStorageService.getPlanById(params['uid']);
+          const planFromHistory = this.planStorageService.getPlanById(
+            params['uid']
+          );
           if (planFromHistory) {
             this.planFacade.updatePlan(planFromHistory);
           }
@@ -107,7 +143,8 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
       });
 
     // Suscribirse al plan
-    this.planFacade.getPlan$()
+    this.planFacade
+      .getPlan$()
       .pipe(takeUntil(this.destroy$))
       .subscribe(async (plan: Plan | null) => {
         // Si hay un plan, solo procesarlo si está terminado (isFinished === true)
@@ -121,8 +158,10 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
 
             this.plan.blocks.forEach((block, blockIndex) => {
               // Inicialmente carga 4 tableros por bloque
-              this.userPuzzlesToShowInBoards[blockIndex] = block.puzzlesPlayed.slice(0, this.puzzlesPerPage);
-              this.showMoreButtons[blockIndex] = block.puzzlesPlayed.length > this.puzzlesPerPage;
+              this.userPuzzlesToShowInBoards[blockIndex] =
+                block.puzzlesPlayed.slice(0, this.puzzlesPerPage);
+              this.showMoreButtons[blockIndex] =
+                block.puzzlesPlayed.length > this.puzzlesPerPage;
             });
 
             // Si el plan es público, verificar si el usuario le ha dado me gusta
@@ -135,14 +174,17 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
           // Intentar cargar desde query params si existe
           const planUid = this.route.snapshot.queryParams['uid'];
           if (planUid) {
-            const planFromHistory = this.planStorageService.getPlanById(planUid);
+            const planFromHistory =
+              this.planStorageService.getPlanById(planUid);
             if (planFromHistory) {
               this.plan = planFromHistory;
               this.hasHadPlan = true;
               this.getTotalElo();
               this.plan.blocks.forEach((block, blockIndex) => {
-                this.userPuzzlesToShowInBoards[blockIndex] = block.puzzlesPlayed.slice(0, this.puzzlesPerPage);
-                this.showMoreButtons[blockIndex] = block.puzzlesPlayed.length > this.puzzlesPerPage;
+                this.userPuzzlesToShowInBoards[blockIndex] =
+                  block.puzzlesPlayed.slice(0, this.puzzlesPerPage);
+                this.showMoreButtons[blockIndex] =
+                  block.puzzlesPlayed.length > this.puzzlesPerPage;
               });
               return;
             }
@@ -189,7 +231,11 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
     const newLikedState = !this.isLiked;
 
     try {
-      this.publicPlansFacade.togglePlanLike(profile.uid, this.plan.uid, newLikedState);
+      this.publicPlansFacade.togglePlanLike(
+        profile.uid,
+        this.plan.uid,
+        newLikedState
+      );
       this.isLiked = newLikedState;
     } catch (error) {
       console.error('Error toggling like', error);
@@ -204,23 +250,33 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
     }
 
     if (this.plan.planType === 'custom' && this.plan.uidCustomPlan) {
-      const planElos = await this.plansElosService.getOnePlanElo(this.plan.uidCustomPlan);
+      const planElos = await this.plansElosService.getOnePlanElo(
+        this.plan.uidCustomPlan
+      );
       this.eloTotal = planElos?.total || 0;
-      
+
       // Verificar si se superó el máximo histórico inicial (antes de empezar este juego)
       // Comparar con initialMaxElo guardado al empezar, o con maxTotal si no existe
       const initialMax = this.plan.initialMaxElo ?? planElos?.maxTotal ?? 1500;
       if (this.eloTotal > initialMax) {
-        this.launchConfetti();
+        this.isNewRecord = true;
+        if (!this.isFromHistory) {
+          this.launchConfetti();
+        }
       }
     } else {
-      this.eloTotal = this.profileService.getEloTotalByPlanType(this.plan.planType);
-      
+      this.eloTotal = this.profileService.getEloTotalByPlanType(
+        this.plan.planType
+      );
+
       // Verificar si se superó el máximo histórico inicial (antes de empezar este juego)
       // Comparar con initialMaxElo guardado al empezar
       const initialMax = this.plan.initialMaxElo;
       if (initialMax !== undefined && this.eloTotal > initialMax) {
-        this.launchConfetti();
+        this.isNewRecord = true;
+        if (!this.isFromHistory) {
+          this.launchConfetti();
+        }
       }
     }
   }
@@ -228,13 +284,20 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
   /**
    * Lanza confetti para celebrar un nuevo récord de ELO total
    */
-  private launchConfetti() {
+  launchConfetti() {
+    if (this.isConfettiLaunching) return;
+    this.isConfettiLaunching = true;
+
     // Usar colores dorados para récord de ELO total
     const confettiColors = ['#FFD700', '#FFA500', '#FF8C00', '#FF6347'];
     const duration = 5000;
     const intensity: 'high' = 'high';
 
     this.confettiService.launch(confettiColors, duration, intensity);
+
+    setTimeout(() => {
+      this.isConfettiLaunching = false;
+    }, duration + 500);
   }
 
   loadMorePuzzles(blockIndex: number) {
@@ -245,20 +308,26 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
     const block = this.plan.blocks[blockIndex];
     const currentCount = this.userPuzzlesToShowInBoards[blockIndex].length;
     // Añadir más tableros
-    const nextPuzzles = block.puzzlesPlayed.slice(currentCount, currentCount + this.puzzlesPerPage);
+    const nextPuzzles = block.puzzlesPlayed.slice(
+      currentCount,
+      currentCount + this.puzzlesPerPage
+    );
     this.userPuzzlesToShowInBoards[blockIndex] = [
       ...this.userPuzzlesToShowInBoards[blockIndex],
-      ...nextPuzzles
+      ...nextPuzzles,
     ];
 
     // Ocultar el botón si ya se han cargado todos los tableros
-    if (this.userPuzzlesToShowInBoards[blockIndex].length >= block.puzzlesPlayed.length) {
+    if (
+      this.userPuzzlesToShowInBoards[blockIndex].length >=
+      block.puzzlesPlayed.length
+    ) {
       this.showMoreButtons[blockIndex] = false;
     }
   }
 
   async onPuzzleShowSolution(puzzle: Puzzle) {
-    const themesTranslated = puzzle.themes.map(theme =>
+    const themesTranslated = puzzle.themes.map((theme) =>
       this.appService.getNameThemePuzzleByValue(theme)
     );
 
@@ -266,8 +335,8 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
       component: BoardPuzzleSolutionComponent,
       componentProps: {
         puzzle,
-        themesTranslated
-      }
+        themesTranslated,
+      },
     });
     await modal.present();
   }
@@ -283,12 +352,14 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
   }
 
   openLoginModal() {
-    this.modalController.create({
-      component: LoginComponent,
-      componentProps: {
-        segmentEmailPassword: 'login'
-      }
-    }).then(modal => modal.present());
+    this.modalController
+      .create({
+        component: LoginComponent,
+        componentProps: {
+          segmentEmailPassword: 'login',
+        },
+      })
+      .then((modal) => modal.present());
   }
 
   get exampleEloTotal(): number {
@@ -302,14 +373,14 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
 
     return {
       ...this.plan,
-      blocks: this.plan.blocks.map(block => ({
+      blocks: this.plan.blocks.map((block) => ({
         ...block,
-        puzzlesPlayed: block.puzzlesPlayed.map(puzzle => ({
+        puzzlesPlayed: block.puzzlesPlayed.map((puzzle) => ({
           ...puzzle,
           resolved: Math.random() > 0.3, // 70% resueltos
           failByTime: Math.random() > 0.8, // 20% por tiempo
-        }))
-      }))
+        })),
+      })),
     };
   }
 
@@ -325,11 +396,15 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
     try {
       if (this.plan.planType === 'custom') {
         // Para planes custom, usar makeCustomPlanForPlay
-        const planReadyToPlay = await this.planService.makeCustomPlanForPlay(this.plan);
+        const planReadyToPlay = await this.planService.makeCustomPlanForPlay(
+          this.plan
+        );
         this.planFacade.setPlan(planReadyToPlay);
       } else {
         // Para planes por defecto, generar nuevos bloques
-        const blocks: Block[] = await this.blockService.generateBlocksForPlan(this.plan.planType);
+        const blocks: Block[] = await this.blockService.generateBlocksForPlan(
+          this.plan.planType
+        );
 
         // Cargar puzzles de todos los bloques en paralelo
         const total = blocks.length;
@@ -360,5 +435,12 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
       this.isLoadingToPlay = false;
     }
   }
-}
 
+  goToHome(): void {
+    this.router.navigate(['/home']);
+  }
+
+  goToHistory(): void {
+    this.router.navigate(['/puzzles/plans-history']);
+  }
+}

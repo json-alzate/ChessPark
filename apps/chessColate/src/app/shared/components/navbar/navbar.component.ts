@@ -11,11 +11,12 @@ import { AuthService } from '@services/auth.service';
 import { Profile } from '@cpark/models';
 import { Store, select } from '@ngrx/store';
 import { AuthState, getIsInitialized } from '@cpark/state';
+import { TranslocoPipe } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslocoPipe],
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss'],
 })

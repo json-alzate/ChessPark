@@ -11,12 +11,8 @@ import {
   IonToolbar,
   IonFooter,
   IonIcon,
-  IonList,
-  IonItem,
-  IonLabel,
   IonReorderGroup,
   IonReorder,
-  IonNote,
   ItemReorderCustomEvent,
   ModalController,
 } from '@ionic/angular/standalone';
@@ -38,7 +34,7 @@ import { BlockSettingsComponent } from '@pages/puzzles/components/block-settings
 import { LoginComponent } from '@shared/components/login/login.component';
 
 import { addIcons } from 'ionicons';
-import { add, shuffle, trendingDown, infiniteOutline, trashOutline } from 'ionicons/icons';
+import { add, shuffle, trendingDown, infiniteOutline, trashOutline, lockClosedOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-custom-plan-form',
@@ -52,12 +48,8 @@ import { add, shuffle, trendingDown, infiniteOutline, trashOutline } from 'ionic
     IonToolbar,
     IonFooter,
     IonIcon,
-    IonList,
-    IonItem,
-    IonLabel,
     IonReorderGroup,
     IonReorder,
-    IonNote,
     NavbarComponent,
   ],
   templateUrl: './custom-plan-form.component.html',
@@ -95,7 +87,7 @@ export class CustomPlanFormComponent implements OnInit, OnDestroy {
   profile$ = this.store.select(getProfile);
 
   constructor() {
-    addIcons({ add, shuffle, trendingDown, infiniteOutline, trashOutline });
+    addIcons({ add, shuffle, trendingDown, infiniteOutline, trashOutline, lockClosedOutline });
   }
 
   getPlanEloForPlan(planUid: string | null) {

@@ -2,52 +2,52 @@
   <div class="main-container" data-theme="halloween">
     <app-navbar></app-navbar>
 
-    <div class="container mx-auto px-4 py-6">
+    <div class="container mx-auto px-4 py-6 pb-32">
+
       @if (loading) {
         <div class="flex justify-center py-8">
           <span class="loading loading-spinner loading-lg text-primary"></span>
         </div>
+
       } @else if (!isEditMode && (authLoading$ | async)) {
-        <div class="space-y-6">
-          <div class="skeleton h-8 w-3/4"></div>
-          <div class="skeleton h-4 w-full max-w-md"></div>
-          <div class="skeleton h-12 w-full max-w-md"></div>
-          <div class="skeleton h-4 w-1/2"></div>
+        <div class="space-y-4">
+          <div class="skeleton h-8 w-3/4 rounded-lg"></div>
+          <div class="skeleton h-10 w-full rounded-lg"></div>
+          <div class="skeleton h-10 w-full rounded-lg"></div>
           @for (i of [1,2,3]; track i) {
             <div class="skeleton h-16 w-full rounded-lg"></div>
           }
         </div>
+
       } @else if (!isEditMode && !(profile$ | async)) {
-        <div class="card bg-base-100 shadow-sm">
+        <div class="card bg-base-100 shadow-sm border border-base-content/10">
           <div class="card-body items-center text-center py-8">
-            <p class="text-base-content/80 mb-4">{{ 'CUSTOM_TRAINING.authRequired' | transloco }}</p>
+            <p class="text-base-content/70 mb-4">{{ 'CUSTOM_TRAINING.authRequired' | transloco }}</p>
             <div class="flex gap-2">
-              <button type="button" class="btn btn-ghost" (click)="cancel()">
+              <button type="button" class="btn btn-ghost btn-sm" (click)="cancel()">
                 {{ 'CUSTOM_TRAINING.actions.cancel' | transloco }}
               </button>
-              <button type="button" class="btn btn-primary" (click)="openLoginModal()">
+              <button type="button" class="btn btn-primary btn-sm" (click)="openLoginModal()">
                 {{ 'CUSTOM_TRAINING.actions.login' | transloco }}
               </button>
             </div>
           </div>
         </div>
+
       } @else {
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-2xl font-bold">{{ 'CUSTOM_TRAINING.form.title' | transloco }}</h2>
-          <button type="button" class="btn btn-ghost btn-sm" (click)="cancel()">
+
+        <!-- Header -->
+        <div class="flex items-start justify-between mb-6">
+          <h2 class="text-2xl font-bold leading-tight">
+            {{ 'CUSTOM_TRAINING.form.title' | transloco }}
+          </h2>
+          <button type="button" class="btn btn-ghost btn-sm mt-1 shrink-0" (click)="cancel()">
             {{ 'CUSTOM_TRAINING.actions.cancel' | transloco }}
           </button>
         </div>
 
-        <ul class="list-disc list-inside text-base-content/70 mb-4">
-          <li>{{ 'CUSTOM_TRAINING.form.description1' | transloco }}</li>
-          <li>{{ 'CUSTOM_TRAINING.form.description2' | transloco }}</li>
-        </ul>
-
-        <div class="form-control w-full max-w-md mb-4">
-          <label class="label" for="plan-name">
-            <span class="label-text">{{ 'CUSTOM_TRAINING.fields.nameLabel' | transloco }}</span>
-          </label>
+        <!-- Nombre del plan -->
+        <div class="form-control w-full mb-3">
           <input
             id="plan-name"
             type="text"
@@ -57,7 +57,7 @@
             [placeholder]="'CUSTOM_TRAINING.fields.nameLabel' | transloco"
           />
           @if (nameControl.touched && nameControl.errors) {
-            <label class="label">
+            <div class="label">
               <span class="label-text-alt text-error">
                 @if (nameControl.hasError('required')) {
                   {{ 'CUSTOM_TRAINING.errors.nameRequired' | transloco }}
@@ -66,107 +66,133 @@
                   {{ 'CUSTOM_TRAINING.errors.nameMaxLength' | transloco }}
                 }
               </span>
-            </label>
+            </div>
           }
         </div>
 
-        <div class="form-control w-full max-w-md mb-4">
-          <label class="label cursor-pointer justify-start gap-2">
-            <input type="checkbox" class="toggle toggle-primary" [formControl]="isPublicControl" />
-            <span class="label-text">{{ 'CUSTOM_PLANS.isPublic' | transloco }}</span>
-          </label>
-        </div>
+        <!-- Toggle público -->
+        <label class="flex items-center gap-2 mb-6 cursor-pointer w-fit">
+          <input type="checkbox" class="toggle toggle-sm" [formControl]="isPublicControl" />
+          <span class="text-sm text-base-content/70">{{ 'CUSTOM_PLANS.isPublic' | transloco }}</span>
+        </label>
 
-        <h3 class="text-xl font-semibold mb-2">{{ 'COMMON.chess.blocks' | transloco }}</h3>
+        <!-- Bloques -->
         <ng-container *ngIf="planElosForBlocks$ | async as planElos; else blocksSkeleton">
+
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-base-content/50">
+              {{ 'COMMON.chess.blocks' | transloco }}
+            </h3>
+            <span class="text-xs text-base-content/40">{{ blocks.length }} / 5</span>
+          </div>
+
           @if (!canModifyBlocks(planElos)) {
-            <p class="text-sm text-base-content/70 mb-3 px-1">
+            <p class="text-xs text-base-content/50 mb-3 flex items-center gap-1.5">
+              <ion-icon name="lock-closed-outline" class="text-base"></ion-icon>
               {{ 'CUSTOM_TRAINING.blocksLockedReason' | transloco }}
             </p>
           }
-          <ion-list class="space-y-2 mb-4">
-            <ion-reorder-group [disabled]="!canModifyBlocks(planElos)" (ionItemReorder)="doReorder($event)">
-              @for (block of blocks; track $index) {
-                <ion-item class="rounded-lg border border-base-300" [class.opacity-60]="!canModifyBlocks(planElos)" [class.pointer-events-none]="!canModifyBlocks(planElos)">
-                  @if (block.theme !== 'all' && block.theme !== 'weakness') {
-                    <img
-                      slot="start"
-                      class="w-8 h-8 rounded-full object-contain"
-                      [src]="'assets/images/puzzle-themes/' + block.theme + '.svg'"
-                      alt=""
-                    />
-                  }
-                  @if (block.theme === 'all') {
-                    <ion-icon slot="start" name="shuffle"></ion-icon>
-                  }
-                  @if (block.theme === 'weakness') {
-                    <ion-icon slot="start" name="trending-down"></ion-icon>
-                  }
-                  <ion-label>
-                    <h2 class="font-medium">{{ getThemeName(block.theme) }}</h2>
-                    <p class="text-sm">
+
+          <ion-reorder-group
+            [disabled]="!canModifyBlocks(planElos)"
+            (ionItemReorder)="doReorder($event)"
+            class="space-y-2 block mb-3"
+          >
+            @for (block of blocks; track $index) {
+              <div
+                class="card bg-base-100 shadow-sm border border-base-content/10"
+                [class.opacity-50]="!canModifyBlocks(planElos)"
+              >
+                <div class="flex items-center gap-3 px-3 py-3">
+
+                  <!-- Icono / imagen del tema -->
+                  <div class="shrink-0">
+                    @if (block.theme !== 'all' && block.theme !== 'weakness') {
+                      <img
+                        class="w-8 h-8 rounded-full object-contain"
+                        [src]="'assets/images/puzzle-themes/' + block.theme + '.svg'"
+                        alt=""
+                      />
+                    }
+                    @if (block.theme === 'all') {
+                      <div class="w-8 h-8 rounded-full bg-base-200 flex items-center justify-center">
+                        <ion-icon name="shuffle" class="text-base"></ion-icon>
+                      </div>
+                    }
+                    @if (block.theme === 'weakness') {
+                      <div class="w-8 h-8 rounded-full bg-base-200 flex items-center justify-center">
+                        <ion-icon name="trending-down" class="text-base"></ion-icon>
+                      </div>
+                    }
+                  </div>
+
+                  <!-- Info -->
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-semibold truncate">{{ getThemeName(block.theme) }}</p>
+                    <p class="text-xs text-base-content/50 mt-0.5">
                       @if (block.time > 0 || block.puzzlesCount) {
                         @if (block.time > 0) {
-                          <span>{{ block.time | secondsToMinutesSeconds }} <small class="opacity-70">(min:seg)</small></span>
+                          <span>{{ block.time | secondsToMinutesSeconds }}</span>
                         }
-                        @if (block.time > 0 && block.puzzlesCount) { ó }
+                        @if (block.time > 0 && block.puzzlesCount) {
+                          <span> {{ 'NEW_BLOCK.form.or' | transloco }} </span>
+                        }
                         @if (block.puzzlesCount) {
-                          {{ block.puzzlesCount }} {{ 'NEW_BLOCK.fields.puzzles' | transloco }}
+                          <span>{{ block.puzzlesCount }} {{ 'NEW_BLOCK.fields.puzzles' | transloco }}</span>
                         }
                       } @else {
                         <ion-icon name="infinite-outline"></ion-icon>
                       }
-                    </p>
-                    <ion-note>
+                      <span class="mx-1">·</span>
                       @switch (block.color) {
-                        @case ('white') {
-                          {{ 'CUSTOM_TRAINING.colors.withWhite' | transloco }}
-                        }
-                        @case ('black') {
-                          {{ 'CUSTOM_TRAINING.colors.withBlack' | transloco }}
-                        }
-                        @default {
-                          {{ 'CUSTOM_TRAINING.colors.anyColor' | transloco }}
-                        }
+                        @case ('white') { {{ 'CUSTOM_TRAINING.colors.withWhite' | transloco }} }
+                        @case ('black') { {{ 'CUSTOM_TRAINING.colors.withBlack' | transloco }} }
+                        @default { {{ 'CUSTOM_TRAINING.colors.anyColor' | transloco }} }
                       }
-                    </ion-note>
-                  </ion-label>
+                    </p>
+                  </div>
+
+                  <!-- Acciones -->
                   @if (canModifyBlocks(planElos)) {
                     <button
                       type="button"
-                      slot="end"
-                      class="btn btn-ghost btn-square btn-sm text-error"
+                      class="btn btn-ghost btn-square btn-xs text-error shrink-0"
                       (click)="removeBlock($index)"
                       [attr.aria-label]="'CUSTOM_TRAINING.actions.removeBlock' | transloco"
                     >
-                      <ion-icon name="trash-outline"></ion-icon>
+                      <ion-icon name="trash-outline" class="text-base"></ion-icon>
                     </button>
                   }
-                  <ion-reorder slot="end"></ion-reorder>
-                </ion-item>
-              }
-            </ion-reorder-group>
-          </ion-list>
 
+                  <ion-reorder class="shrink-0 ml-1"></ion-reorder>
+                </div>
+              </div>
+            }
+          </ion-reorder-group>
+
+          <!-- Botón añadir bloque -->
           <button
             type="button"
-            class="btn btn-ghost btn-block mb-6"
+            class="btn btn-outline btn-block btn-sm border-dashed"
             [disabled]="blocks.length >= 5 || !canModifyBlocks(planElos)"
             (click)="openBlockSettingsModal()"
           >
-          <ion-icon name="add"></ion-icon>
-          {{ 'CUSTOM_TRAINING.actions.addBlock' | transloco }}
-        </button>
+            <ion-icon name="add"></ion-icon>
+            {{ 'CUSTOM_TRAINING.actions.addBlock' | transloco }}
+          </button>
+
         </ng-container>
+
         <ng-template #blocksSkeleton>
-          <div class="space-y-2 mb-6">
+          <div class="space-y-2 mb-4">
             @for (i of [1,2,3]; track i) {
               <div class="skeleton h-16 w-full rounded-lg"></div>
             }
           </div>
         </ng-template>
 
-        <div class="flex flex-col gap-2 max-w-md hidden md:flex">
+        <!-- Botones desktop -->
+        <div class="hidden md:flex flex-col gap-2 max-w-md mt-6">
           @if (isEditMode) {
             <button
               type="button"
@@ -174,6 +200,7 @@
               [disabled]="blocks.length === 0 || nameControl.invalid || saving"
               (click)="saveAndPlay()"
             >
+              @if (saving) { <span class="loading loading-spinner loading-xs"></span> }
               {{ 'CUSTOM_TRAINING.actions.editAndPlay' | transloco }}
             </button>
             <button
@@ -191,18 +218,21 @@
               [disabled]="blocks.length === 0 || nameControl.invalid || saving"
               (click)="saveAndPlay()"
             >
+              @if (saving) { <span class="loading loading-spinner loading-xs"></span> }
               {{ 'CUSTOM_TRAINING.actions.saveAndPlay' | transloco }}
             </button>
           }
         </div>
+
       }
     </div>
   </div>
 </ion-content>
 
+<!-- Footer móvil -->
 <ion-footer class="ion-no-border md:hidden">
   <ion-toolbar>
-    <div class="container mx-auto px-4 py-2">
+    <div class="container mx-auto px-4 py-2" data-theme="halloween">
       @if (isEditMode) {
         <div class="flex flex-col gap-2">
           <button
@@ -211,6 +241,7 @@
             [disabled]="blocks.length === 0 || nameControl.invalid || saving"
             (click)="saveAndPlay()"
           >
+            @if (saving) { <span class="loading loading-spinner loading-xs"></span> }
             {{ 'CUSTOM_TRAINING.actions.editAndPlay' | transloco }}
           </button>
           <button
@@ -229,6 +260,7 @@
           [disabled]="blocks.length === 0 || nameControl.invalid || saving"
           (click)="saveAndPlay()"
         >
+          @if (saving) { <span class="loading loading-spinner loading-xs"></span> }
           {{ 'CUSTOM_TRAINING.actions.saveAndPlay' | transloco }}
         </button>
       }

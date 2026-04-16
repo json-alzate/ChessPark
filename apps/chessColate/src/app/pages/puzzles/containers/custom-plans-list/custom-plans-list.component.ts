@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 import { map, filter, pairwise, takeUntil, startWith, take } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
-import { IonContent, IonFab, IonFabButton, IonIcon, LoadingController, ModalController } from '@ionic/angular/standalone';
+import { IonContent, IonIcon, LoadingController, ModalController } from '@ionic/angular/standalone';
 
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
@@ -31,8 +31,6 @@ import { add, playOutline, createOutline, shuffle, trendingDown, infiniteOutline
     CommonModule,
     TranslocoPipe,
     IonContent,
-    IonFab,
-    IonFabButton,
     IonIcon,
     NavbarComponent,
     SecondsToMinutesSecondsPipe,

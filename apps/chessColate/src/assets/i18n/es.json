@@ -7,7 +7,8 @@
       "add": "Añadir",
       "save": "Guardar",
       "login": "Ingresar",
-      "register": "Registro"
+      "register": "Registro",
+      "continue": "Continuar"
     },
     "time": {
       "unlimited": "Ilimitado",
@@ -108,7 +109,10 @@
       "theme": "Tema",
       "opening": "Apertura",
       "panel": "Panel",
-      "continueTraining": "Continuar Entrenamiento"
+      "continueTraining": "Continuar Entrenamiento",
+      "continuousTraining": "Entrenamiento continuo",
+      "resolveUnlimited": "Resuelve problemas ilimitados",
+      "trainNow": "Entrenar ahora"
     },
     "colors": {
       "white": "Blancas",
@@ -225,9 +229,20 @@
     },
     "actions": {
       "add": "Añadir"
+    },
+    "ariaLabels": {
+      "rangeTime": "Rango de tiempo",
+      "rangeCount": "Rango de cantidad",
+      "rangeTimePuzzles": "Rango de tiempo por ejercicio",
+      "rangeTimeVisible": "Rango de tiempo visible",
+      "all": "Todos",
+      "weakness": "Debilidad",
+      "rangeElo": "Rango Elo"
     }
   },
   "PLAN_PLAYED": {
+    "totalElo": "ELO Total",
+    "record": "Récord",
     "puzzlesPlayed": "Ejercicios jugados",
     "statistics": "Estadísticas de la rutina",
     "playPlan": "Ir al inicio",
@@ -324,7 +339,8 @@
       "points": "puntos",
       "beatRecord": "¡Supera tu récord!",
       "firstTime": "Primera vez",
-      "setRecord": "¡Establece tu récord!"
+      "setRecord": "¡Establece tu récord!",
+      "infinite": "Modo Infinito"
     },
     "stats": {
       "correct": "Aciertos",
@@ -339,6 +355,7 @@
       "title": "Resultado del Juego",
       "newRecord": "¡NUEVO RÉCORD!",
       "finalScore": "Puntaje Final",
+      "newRecordShort": "¡Nuevo RÉCORD con",
       "congratulations": "¡Felicidades!",
       "doubleRecord": "Has logrado un DOBLE RÉCORD jugando con",
       "overallRecord": "¡Nuevo RÉCORD GENERAL jugando con",
@@ -389,7 +406,9 @@
       "goodMove": "El mejor movimiento!",
       "continue": "Continua...",
       "wrongMove": "Ups!, ese no es el mejor movimiento",
-      "tryAgain": "Prueba algo distinto..."
+      "tryAgain": "Prueba algo distinto...",
+      "wrong": "¡Incorrecto!",
+      "excellent": "¡Excelente!"
     },
     "actions": {
       "clue": "Pedir una pista",
@@ -408,6 +427,71 @@
     },
     "menu": {
       "logout": "Cerrar Sesión"
+    },
+    "components": {
+      "loading": "Cargando...",
+      "donate": "Donar",
+      "googleLogo": "Logo de Google",
+      "chessColateLogo": "Logo de ChessColate",
+      "whiteKing": "Rey Blanco",
+      "blackKing": "Rey Negro",
+      "timeout": "Tiempo agotado",
+      "correct": "Correcto",
+      "incorrect": "Incorrecto"
+    },
+    "navigation": {
+      "version": "Versión",
+      "notifications": "Notificaciones",
+      "noNotifications": "No tienes notificaciones",
+      "notifyWhenNew": "Te notificaremos cuando tengas nuevas actividades",
+      "markAllAsRead": "Marcar todas como leídas"
     }
+  },
+  "CHESS960": {
+    "title": "Ajedrez 960",
+    "description": "Una variante creada por Bobby Fischer donde las piezas de la primera fila se colocan casi al azar, dándole al juego nuevas dimensiones desde el primer movimiento.",
+    "rules": {
+      "title": "Reglas Básicas",
+      "p1": "- Los reyes se colocan entre las dos torres.",
+      "p2": "- La disposición es simétrica para ambos colores.",
+      "p3": "- El enroque sigue las reglas de que el Rey y la Torre terminan en sus casillas de destino normales: g1/c1 y f1/d1."
+    },
+    "controls": {
+      "positionLabel": "Posición ID (0-959)",
+      "randomButton": "Aleatorio",
+      "standardInfo": "La posición 518 es el ajedrez estándar."
+    }
+  },
+  "DONATION": {
+    "perMonth": "/ mes",
+    "homeCard": {
+      "title": "Apoya a ChessColate",
+      "description": "Con tu donación continuaremos desarrollando funcionalidades como el <strong>Método del Pájaro Carpintero personalizado</strong> y <strong>retos abiertos</strong>.",
+      "button": "Realizar una donación"
+    }
+  },
+  "KNIGHT_TOUR": {
+    "title": "Recorrido del Caballo",
+    "subtitle": "Mueve el caballo por todo el tablero sin repetir casillas",
+    "restart": "Reiniciar",
+    "visitedSquares": "Casillas visitadas",
+    "time": "Tiempo",
+    "settings": "Configuración",
+    "startPosition": "Posición inicial",
+    "random": "Aleatoria",
+    "a1": "a1 (esquina inferior izquierda)",
+    "h1": "h1 (esquina inferior derecha)",
+    "a8": "a8 (esquina superior izquierda)",
+    "h8": "h8 (esquina superior derecha)",
+    "showVisitedSquares": "Mostrar casillas visitadas",
+    "readyToStart": "¡Listo para comenzar!",
+    "gameStartsWhenMove": "El juego comenzará cuando muevas el caballo por primera vez",
+    "congratulations": "¡Felicidades!",
+    "completedTour": "Has completado el recorrido del caballo",
+    "instructions": "Instrucciones",
+    "rule1": "Haz clic en una casilla para mover el caballo",
+    "rule2": "El caballo se mueve en forma de L",
+    "rule3": "No puedes repetir casillas",
+    "rule4": "Completa las 64 casillas para ganar"
   }
 }

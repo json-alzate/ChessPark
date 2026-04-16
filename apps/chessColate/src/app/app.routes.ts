@@ -25,42 +25,74 @@ export const routes: Routes = [
   // },
   {
     path: 'puzzles/training',
-    loadComponent: () => import('./pages/puzzles/containers/training/training.component').then(m => m.TrainingComponent),
+    loadComponent: () =>
+      import('./pages/puzzles/containers/training/training.component').then(
+        (m) => m.TrainingComponent
+      ),
   },
   {
     path: 'puzzles/plan-played',
-    loadComponent: () => import('./pages/puzzles/containers/plan-played/plan-played.component').then(m => m.PlanPlayedComponent),
+    loadComponent: () =>
+      import(
+        './pages/puzzles/containers/plan-played/plan-played.component'
+      ).then((m) => m.PlanPlayedComponent),
   },
   {
     path: 'puzzles/plans-history',
-    loadComponent: () => import('./pages/puzzles/containers/plans-history/plans-history.component').then(m => m.PlansHistoryComponent),
+    loadComponent: () =>
+      import(
+        './pages/puzzles/containers/plans-history/plans-history.component'
+      ).then((m) => m.PlansHistoryComponent),
   },
   {
     path: 'puzzles/custom-plans',
-    loadComponent: () => import('./pages/puzzles/containers/custom-plans-list/custom-plans-list.component').then(m => m.CustomPlansListComponent),
+    loadComponent: () =>
+      import(
+        './pages/puzzles/containers/custom-plans-list/custom-plans-list.component'
+      ).then((m) => m.CustomPlansListComponent),
     canActivate: [CustomPlansGuard],
   },
   {
     path: 'puzzles/custom-plans/create',
-    loadComponent: () => import('./pages/puzzles/containers/custom-plan-form/custom-plan-form.component').then(m => m.CustomPlanFormComponent),
+    loadComponent: () =>
+      import(
+        './pages/puzzles/containers/custom-plan-form/custom-plan-form.component'
+      ).then((m) => m.CustomPlanFormComponent),
     canActivate: [AuthGuard],
   },
   {
     path: 'puzzles/custom-plans/edit/:uid',
-    loadComponent: () => import('./pages/puzzles/containers/custom-plan-form/custom-plan-form.component').then(m => m.CustomPlanFormComponent),
+    loadComponent: () =>
+      import(
+        './pages/puzzles/containers/custom-plan-form/custom-plan-form.component'
+      ).then((m) => m.CustomPlanFormComponent),
     canActivate: [AuthGuard],
   },
   {
     path: 'puzzles/public-plans',
-    loadComponent: () => import('./pages/puzzles/containers/public-plans/public-plans.component').then(m => m.PublicPlansComponent),
+    loadComponent: () =>
+      import(
+        './pages/puzzles/containers/public-plans/public-plans.component'
+      ).then((m) => m.PublicPlansComponent),
     canActivate: [PublicPlansGuard],
   },
   {
     path: 'coordinates',
-    loadComponent: () => import('./pages/coordinates/coordinates.page').then(m => m.CoordinatesPage),
+    loadComponent: () =>
+      import('./pages/coordinates/coordinates.page').then(
+        (m) => m.CoordinatesPage
+      ),
   },
   {
     path: 'knight-tour',
-    loadComponent: () => import('./pages/knight-tour/knight-tour.page').then(m => m.KnightTourPage),
+    loadComponent: () =>
+      import('./pages/knight-tour/knight-tour.page').then(
+        (m) => m.KnightTourPage
+      ),
+  },
+  {
+    path: 'chess960',
+    loadComponent: () =>
+      import('./pages/chess960/chess960.page').then((m) => m.Chess960Page),
   },
 ];

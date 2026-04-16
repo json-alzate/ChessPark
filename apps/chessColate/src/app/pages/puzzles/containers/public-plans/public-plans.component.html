@@ -19,12 +19,19 @@
                 <h2 class="text-2xl font-bold">{{ 'PUBLIC_PLANS.title' | transloco }}</h2>
             </div>
 
-            <!-- Tabs principales -->
-            <div class="tabs tabs-boxed mb-6">
-                <button class="tab" [class.tab-active]="activeTab === 'public'" (click)="activeTab = 'public'">
+            <!-- Tabs principales: segmented control -->
+            <div class="flex gap-1 bg-base-200 p-1 rounded-xl mb-6">
+                <button
+                    class="flex-1 btn btn-sm transition-all"
+                    [class.btn-primary]="activeTab === 'public'"
+                    [class.btn-ghost]="activeTab !== 'public'"
+                    (click)="activeTab = 'public'">
                     {{ 'PUBLIC_PLANS.tabs.public' | transloco }}
                 </button>
-                <button class="tab" [class.tab-active]="activeTab === 'interactions'"
+                <button
+                    class="flex-1 btn btn-sm transition-all"
+                    [class.btn-primary]="activeTab === 'interactions'"
+                    [class.btn-ghost]="activeTab !== 'interactions'"
                     (click)="activeTab = 'interactions'">
                     {{ 'PUBLIC_PLANS.tabs.myInteractions' | transloco }}
                 </button>
@@ -32,16 +39,32 @@
 
             <!-- Tab: Planes Públicos -->
             @if (activeTab === 'public') {
-            <!-- Filtros -->
-            <div class="tabs tabs-boxed mb-4">
-                <button class="tab" [class.tab-active]="(filter$ | async) === 'recent'" (click)="setFilter('recent')">
+            <!-- Filtros: underline style -->
+            <div class="flex gap-4 border-b border-base-content/10 mb-4">
+                <button
+                    class="pb-2 text-sm font-medium border-b-2 transition-colors -mb-px"
+                    [class.border-warning]="(filter$ | async) === 'recent'"
+                    [class.text-base-content]="(filter$ | async) === 'recent'"
+                    [class.border-transparent]="(filter$ | async) !== 'recent'"
+                    [class.text-base-content/50]="(filter$ | async) !== 'recent'"
+                    (click)="setFilter('recent')">
                     {{ 'PUBLIC_PLANS.filters.recent' | transloco }}
                 </button>
-                <button class="tab" [class.tab-active]="(filter$ | async) === 'mostPlayed'"
+                <button
+                    class="pb-2 text-sm font-medium border-b-2 transition-colors -mb-px"
+                    [class.border-warning]="(filter$ | async) === 'mostPlayed'"
+                    [class.text-base-content]="(filter$ | async) === 'mostPlayed'"
+                    [class.border-transparent]="(filter$ | async) !== 'mostPlayed'"
+                    [class.text-base-content/50]="(filter$ | async) !== 'mostPlayed'"
                     (click)="setFilter('mostPlayed')">
                     {{ 'PUBLIC_PLANS.filters.mostPlayed' | transloco }}
                 </button>
-                <button class="tab" [class.tab-active]="(filter$ | async) === 'mostLiked'"
+                <button
+                    class="pb-2 text-sm font-medium border-b-2 transition-colors -mb-px"
+                    [class.border-warning]="(filter$ | async) === 'mostLiked'"
+                    [class.text-base-content]="(filter$ | async) === 'mostLiked'"
+                    [class.border-transparent]="(filter$ | async) !== 'mostLiked'"
+                    [class.text-base-content/50]="(filter$ | async) !== 'mostLiked'"
                     (click)="setFilter('mostLiked')">
                     {{ 'PUBLIC_PLANS.filters.mostLiked' | transloco }}
                 </button>
@@ -114,17 +137,32 @@
 
             <!-- Tab: Mis Interacciones -->
             @if (activeTab === 'interactions') {
-            <!-- Sub-tabs -->
-            <div class="tabs tabs-boxed mb-4">
-                <button class="tab" [class.tab-active]="activeInteractionTab === 'liked'"
+            <!-- Sub-tabs: underline style -->
+            <div class="flex gap-4 border-b border-base-content/10 mb-4">
+                <button
+                    class="pb-2 text-sm font-medium border-b-2 transition-colors -mb-px"
+                    [class.border-warning]="activeInteractionTab === 'liked'"
+                    [class.text-base-content]="activeInteractionTab === 'liked'"
+                    [class.border-transparent]="activeInteractionTab !== 'liked'"
+                    [class.text-base-content/50]="activeInteractionTab !== 'liked'"
                     (click)="activeInteractionTab = 'liked'">
                     {{ 'PUBLIC_PLANS.interactions.liked' | transloco }}
                 </button>
-                <button class="tab" [class.tab-active]="activeInteractionTab === 'played'"
+                <button
+                    class="pb-2 text-sm font-medium border-b-2 transition-colors -mb-px"
+                    [class.border-warning]="activeInteractionTab === 'played'"
+                    [class.text-base-content]="activeInteractionTab === 'played'"
+                    [class.border-transparent]="activeInteractionTab !== 'played'"
+                    [class.text-base-content/50]="activeInteractionTab !== 'played'"
                     (click)="activeInteractionTab = 'played'">
                     {{ 'PUBLIC_PLANS.interactions.played' | transloco }}
                 </button>
-                <button class="tab" [class.tab-active]="activeInteractionTab === 'saved'"
+                <button
+                    class="pb-2 text-sm font-medium border-b-2 transition-colors -mb-px"
+                    [class.border-warning]="activeInteractionTab === 'saved'"
+                    [class.text-base-content]="activeInteractionTab === 'saved'"
+                    [class.border-transparent]="activeInteractionTab !== 'saved'"
+                    [class.text-base-content/50]="activeInteractionTab !== 'saved'"
                     (click)="activeInteractionTab = 'saved'">
                     {{ 'PUBLIC_PLANS.interactions.saved' | transloco }}
                 </button>

@@ -1,4 +1,10 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit, OnDestroy } from '@angular/core';
+import {
+  Component,
+  CUSTOM_ELEMENTS_SCHEMA,
+  inject,
+  OnInit,
+  OnDestroy,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
@@ -8,7 +14,13 @@ import { takeUntil } from 'rxjs/operators';
 // Transloco
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
-import { IonRippleEffect, LoadingController, ModalController, IonIcon, AlertController } from '@ionic/angular/standalone';
+import {
+  IonRippleEffect,
+  LoadingController,
+  ModalController,
+  IonIcon,
+  AlertController,
+} from '@ionic/angular/standalone';
 
 // services
 import { AppService } from '@services/app.service';
@@ -17,6 +29,7 @@ import { ProfileService } from '@services/profile.service';
 import { PlanFacadeService } from '@cpark/state';
 import { PlansElosService } from '@services/plans-elos.service';
 import { PlanStorageService } from '@services/plan-storage.service';
+import { PlanService } from '@services/plan.service';
 import { UidGeneratorService } from '@chesspark/common-utils';
 import { addIcons } from 'ionicons';
 import {
@@ -24,24 +37,37 @@ import {
   chevronDownOutline,
   checkmarkCircleOutline,
   removeCircleOutline,
-  ellipseOutline,
   timeOutline,
-  closeOutline
+  closeOutline,
+  trophy,
+  closeCircle,
+  ellipseOutline
 } from 'ionicons/icons';
 
 // models
 import { Block, Plan, PlanTypes, Puzzle, UserPuzzle } from '@cpark/models';
 
-
-import { BoardPuzzleComponent, BoardPuzzleSolutionComponent } from '@chesspark/board';
+import {
+  BoardPuzzleComponent,
+  BoardPuzzleSolutionComponent,
+} from '@chesspark/board';
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 
 import { BlockPresentationComponent } from '../../components/block-presentation/block-presentation.component';
-import { SoundsService, SecondsToMinutesSecondsPipe } from '@chesspark/common-utils';
+import {
+  SoundsService,
+  SecondsToMinutesSecondsPipe,
+} from '@chesspark/common-utils';
 
 @Component({
   selector: 'app-training',
-  imports: [CommonModule, BoardPuzzleComponent, SecondsToMinutesSecondsPipe, TranslocoPipe, IonIcon],
+  imports: [
+    CommonModule,
+    BoardPuzzleComponent,
+    SecondsToMinutesSecondsPipe,
+    TranslocoPipe,
+    IonIcon,
+  ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './training.component.html',
   styleUrl: './training.component.scss',
@@ -57,12 +83,20 @@ export class TrainingComponent implements OnInit, OnDestroy {
   private translocoService = inject(TranslocoService);
   private uidGenerator = inject(UidGeneratorService);
   private soundsService = inject(SoundsService);
+  private planService = inject(PlanService);
+  private loadingController = inject(LoadingController);
 
   // Subject para gestionar suscripciones
   private destroy$ = new Subject<void>();
   private isInitialized = false;
   private isProcessingBlock = false;
   private isLoadingPlan = false;
+
+  // Properties for Reto 333
+  reto333StartTime: number | null = null;
+  reto333EloLocal = 400;
+  showReto333DaisyModal = false;
+  reto333AlertData: any = null;
 
   showBlockTimer = false;
 
@@ -77,7 +111,6 @@ export class TrainingComponent implements OnInit, OnDestroy {
   countPuzzlesPlayedBlock = 0;
   totalPuzzlesInBlock = 0;
   forceStopTimerInPuzzleBoard = false;
-
 
   isGoshHelperShow = false;
   isDropdownOpen = false;
@@ -109,7 +142,9 @@ export class TrainingComponent implements OnInit, OnDestroy {
       removeCircleOutline,
       ellipseOutline,
       timeOutline,
-      closeOutline
+      closeOutline,
+      trophy,
+      closeCircle
     });
   }
 
@@ -122,13 +157,15 @@ export class TrainingComponent implements OnInit, OnDestroy {
     this.isInitialized = true;
 
     // Suscribirse al estado de carga del plan
-    this.planFacade.getLoadingPlan$()
+    this.planFacade
+      .getLoadingPlan$()
       .pipe(takeUntil(this.destroy$))
-      .subscribe(loading => {
+      .subscribe((loading) => {
         this.isLoadingPlan = loading;
       });
 
-    this.planFacade.getPlan$()
+    this.planFacade
+      .getPlan$()
       .pipe(takeUntil(this.destroy$))
       .subscribe((plan: Plan | null) => {
         if (!plan) {
@@ -150,7 +187,11 @@ export class TrainingComponent implements OnInit, OnDestroy {
         console.log('Plan ', this.plan);
 
         // Guardar el máximo inicial si no está guardado (solo la primera vez que se carga el plan)
-        if (!this.plan.isFinished && !this.plan.initialMaxElo && !this.isProcessingBlock) {
+        if (
+          !this.plan.isFinished &&
+          !this.plan.initialMaxElo &&
+          !this.isProcessingBlock
+        ) {
           this.saveInitialMaxElo();
         }
 
@@ -177,8 +218,14 @@ export class TrainingComponent implements OnInit, OnDestroy {
   private async saveInitialMaxElo() {
     if (!this.plan) return;
 
-    if (this.plan.planType === 'custom' && this.plan.uidCustomPlan && this.profileService.getProfile?.uid) {
-      const planElos = await this.plansElosService.getOnePlanElo(this.plan.uidCustomPlan);
+    if (
+      this.plan.planType === 'custom' &&
+      this.plan.uidCustomPlan &&
+      this.profileService.getProfile?.uid
+    ) {
+      const planElos = await this.plansElosService.getOnePlanElo(
+        this.plan.uidCustomPlan
+      );
       const initialMax = planElos?.maxTotal ?? planElos?.total ?? 1500;
       this.plan = { ...this.plan, initialMaxElo: initialMax };
       this.planFacade.updatePlan(this.plan);
@@ -186,13 +233,18 @@ export class TrainingComponent implements OnInit, OnDestroy {
       const profile = this.profileService.getProfile;
       const elos = profile?.elos;
       if (elos) {
-        const maxTotalKey = `${this.plan.planType}MaxTotal` as keyof typeof elos;
+        const maxTotalKey =
+          `${this.plan.planType}MaxTotal` as keyof typeof elos;
         const maxTotal = elos[maxTotalKey];
-        const initialMax = (typeof maxTotal === 'number' ? maxTotal : undefined) ?? this.profileService.getEloTotalByPlanType(this.plan.planType);
+        const initialMax =
+          (typeof maxTotal === 'number' ? maxTotal : undefined) ??
+          this.profileService.getEloTotalByPlanType(this.plan.planType);
         this.plan = { ...this.plan, initialMaxElo: initialMax };
         this.planFacade.updatePlan(this.plan);
       } else {
-        const initialMax = this.profileService.getEloTotalByPlanType(this.plan.planType);
+        const initialMax = this.profileService.getEloTotalByPlanType(
+          this.plan.planType
+        );
         this.plan = { ...this.plan, initialMaxElo: initialMax };
         this.planFacade.updatePlan(this.plan);
       }
@@ -215,22 +267,35 @@ export class TrainingComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.totalPuzzlesInBlock = this.plan.blocks[this.currentIndexBlock].puzzlesCount;
+    this.totalPuzzlesInBlock =
+      this.plan.blocks[this.currentIndexBlock].puzzlesCount;
 
     this.countPuzzlesPlayedBlock = 0;
     this.showBlockTimer = false;
     this.pausePlanTimer();
-    this.showBlockPresentation();
+
+    if (this.plan.planType === 'infinity') {
+      this.isProcessingBlock = false;
+      this.forceStopTimerInPuzzleBoard = false;
+      this.selectPuzzleToPlay();
+      this.showBlockTimer = false;
+      this.stopBlockTimer();
+    } else {
+      if (this.plan.planType === 'reto333' && !this.reto333StartTime) {
+        this.reto333StartTime = Date.now();
+      }
+      this.showBlockPresentation();
+    }
   }
 
   async showBlockPresentation() {
-
     this.forceStopTimerInPuzzleBoard = true;
     if (this.plan.blocks[this.currentIndexBlock].time !== -1) {
       this.pauseBlockTimer();
     }
 
-    this.totalPuzzlesInBlock = this.plan.blocks[this.currentIndexBlock].puzzlesCount;
+    this.totalPuzzlesInBlock =
+      this.plan.blocks[this.currentIndexBlock].puzzlesCount;
 
     const currentBlock = this.plan.blocks[this.currentIndexBlock];
     const themeName = currentBlock.theme;
@@ -239,16 +304,26 @@ export class TrainingComponent implements OnInit, OnDestroy {
     const blockTitle = currentBlock.title;
     const blockColor = currentBlock.color;
 
-    const themeOrOpeningName = themeName ?
-      this.appService.getNameThemePuzzleByValue(themeName) :
-      this.appService.getNameOpeningByValue(openingFamily || '');
+    const themeOrOpeningName = themeName
+      ? this.appService.getNameThemePuzzleByValue(themeName)
+      : this.appService.getNameOpeningByValue(openingFamily || '');
 
-    const whiteColorText = this.translocoService.translate('PUZZLES.colors.white');
-    const blackColorText = this.translocoService.translate('PUZZLES.colors.black');
-    const colorText = blockColor === 'white' ? whiteColorText :
-      blockColor === 'black' ? blackColorText : null;
+    const whiteColorText = this.translocoService.translate(
+      'PUZZLES.colors.white'
+    );
+    const blackColorText = this.translocoService.translate(
+      'PUZZLES.colors.black'
+    );
+    const colorText =
+      blockColor === 'white'
+        ? whiteColorText
+        : blockColor === 'black'
+        ? blackColorText
+        : null;
 
-    const isDescriptionJustColor = blockDescription === whiteColorText || blockDescription === blackColorText;
+    const isDescriptionJustColor =
+      blockDescription === whiteColorText ||
+      blockDescription === blackColorText;
 
     let title: string;
     if (blockTitle) {
@@ -269,9 +344,12 @@ export class TrainingComponent implements OnInit, OnDestroy {
       }
     }
 
-    const description = (blockDescription && !isDescriptionJustColor) ? blockDescription :
-      (themeName ? this.appService.getDescriptionThemePuzzleByValue(themeName) :
-        this.appService.getDescriptionOpeningByValue(openingFamily || ''));
+    const description =
+      blockDescription && !isDescriptionJustColor
+        ? blockDescription
+        : themeName
+        ? this.appService.getDescriptionThemePuzzleByValue(themeName)
+        : this.appService.getDescriptionOpeningByValue(openingFamily || '');
 
     const modal = await this.modalController.create({
       component: BlockPresentationComponent,
@@ -279,7 +357,7 @@ export class TrainingComponent implements OnInit, OnDestroy {
         title,
         description,
         image,
-      }
+      },
     });
 
     await modal.present();
@@ -296,14 +374,15 @@ export class TrainingComponent implements OnInit, OnDestroy {
         this.stopBlockTimer();
       }
     });
-
-
   }
 
-
   selectPuzzleToPlay() {
-
-    console.log('block index ', this.currentIndexBlock, ' count puzzles played', this.countPuzzlesPlayedBlock);
+    console.log(
+      'block index ',
+      this.currentIndexBlock,
+      ' count puzzles played',
+      this.countPuzzlesPlayedBlock
+    );
     // se valida si se ha llegado al final del plan
     if (this.currentIndexBlock === this.plan.blocks.length) {
       this.endPlan();
@@ -311,8 +390,11 @@ export class TrainingComponent implements OnInit, OnDestroy {
     }
 
     // se valida si el bloque es por cantidad de puzzles y si ya se jugaron todos
-    if (this.plan.blocks[this.currentIndexBlock]?.puzzlesCount !== 0 &&
-      this.countPuzzlesPlayedBlock === this.plan.blocks[this.currentIndexBlock]?.puzzlesCount) {
+    if (
+      this.plan.blocks[this.currentIndexBlock]?.puzzlesCount !== 0 &&
+      this.countPuzzlesPlayedBlock ===
+        this.plan.blocks[this.currentIndexBlock]?.puzzlesCount
+    ) {
       this.playNextBlock();
       return;
     }
@@ -324,11 +406,17 @@ export class TrainingComponent implements OnInit, OnDestroy {
     }
 
     // calcular si queda menos de 10 puzzles por jugar, para cargar mas puzzles
-    const puzzlesLeftToPlay = (currentBlock.puzzles?.length ?? 0) - this.countPuzzlesPlayedBlock;
+    const puzzlesLeftToPlay =
+      (currentBlock.puzzles?.length ?? 0) - this.countPuzzlesPlayedBlock;
     if (puzzlesLeftToPlay < 10) {
-      this.blockService.getPuzzlesForBlock(currentBlock).then((puzzlesToAdd: Puzzle[]) => {
-        this.plan.blocks[this.currentIndexBlock].puzzles = [...puzzlesToAdd];
-      });
+      if (this.plan.planType === 'reto333') {
+        currentBlock.elo = this.reto333EloLocal;
+      }
+      this.blockService
+        .getPuzzlesForBlock(currentBlock)
+        .then((puzzlesToAdd: Puzzle[]) => {
+          this.plan.blocks[this.currentIndexBlock].puzzles = [...puzzlesToAdd];
+        });
     }
 
     const puzzleSource = currentBlock.puzzles?.[this.countPuzzlesPlayedBlock];
@@ -349,19 +437,18 @@ export class TrainingComponent implements OnInit, OnDestroy {
       puzzle.times = currentBlock.puzzleTimes;
     }
 
-
     this.puzzleToPlay = puzzle;
     // Siempre verificar si el puzzle es a la ciegas para mostrar el mensaje
-    this.isGoshHelperShow = !!(puzzle.goshPuzzleTime && puzzle.goshPuzzleTime > 0);
+    this.isGoshHelperShow = !!(
+      puzzle.goshPuzzleTime && puzzle.goshPuzzleTime > 0
+    );
   }
 
   initTimeToEndBlock(timeBlock: number) {
     this.timeLeftBlock = timeBlock;
     this.timerUnsubscribeBlock$ = new Subject<void>();
     const countDown = interval(1000);
-    countDown.pipe(
-      takeUntil(this.timerUnsubscribeBlock$)
-    ).subscribe(() => {
+    countDown.pipe(takeUntil(this.timerUnsubscribeBlock$)).subscribe(() => {
       if (this.timeLeftBlock > 0) {
         this.timeLeftBlock--;
       } else {
@@ -371,8 +458,6 @@ export class TrainingComponent implements OnInit, OnDestroy {
       }
     });
   }
-
-
 
   pauseBlockTimer() {
     this.timerUnsubscribeBlock$.next();
@@ -391,7 +476,6 @@ export class TrainingComponent implements OnInit, OnDestroy {
     this.timerUnsubscribe$.next();
   }
 
-
   stopPlanTimer() {
     this.stopBlockTimer();
     // this.showEndPlan = true;
@@ -399,7 +483,10 @@ export class TrainingComponent implements OnInit, OnDestroy {
     this.timerUnsubscribe$.complete();
   }
 
-  onPuzzleCompleted(puzzleCompleted: Puzzle, puzzleStatus: 'good' | 'bad' | 'timeOut') {
+  onPuzzleCompleted(
+    puzzleCompleted: Puzzle,
+    puzzleStatus: 'good' | 'bad' | 'timeOut'
+  ) {
     const currentBlock = this.plan.blocks?.[this.currentIndexBlock];
     if (!currentBlock) {
       return;
@@ -423,14 +510,14 @@ export class TrainingComponent implements OnInit, OnDestroy {
       fenPuzzle: puzzleCompleted.fen,
       fenStartUserPuzzle: puzzleCompleted.fenStartUserPuzzle,
       firstMoveSquaresHighlight: puzzleCompleted.firstMoveSquaresHighlight,
-      rawPuzzle: puzzleCompleted
+      rawPuzzle: puzzleCompleted,
     };
 
     // Crear una copia del bloque actual
     const existingPuzzlesPlayed = currentBlock.puzzlesPlayed ?? [];
     const updatedBlock = {
       ...currentBlock,
-      puzzlesPlayed: [...existingPuzzlesPlayed, userPuzzle]
+      puzzlesPlayed: [...existingPuzzlesPlayed, userPuzzle],
     };
 
     // Crear una nueva copia de todos los bloques
@@ -441,15 +528,16 @@ export class TrainingComponent implements OnInit, OnDestroy {
     // Ahora actualizar el plan con los nuevos bloques
     this.plan = {
       ...this.plan,
-      blocks: newBlocks
+      blocks: newBlocks,
     };
-
 
     console.log('Plan actualizado ', this.plan);
 
-
-
-    if (this.plan.planType === 'custom' && this.plan?.uidCustomPlan && this.profileService.getProfile?.uid) {
+    if (
+      this.plan.planType === 'custom' &&
+      this.plan?.uidCustomPlan &&
+      this.profileService.getProfile?.uid
+    ) {
       // Para planes custom: lógica en PlansElosService, que usa la fachada solo para dispatch
       this.plansElosService.calculatePlanElos(
         puzzleCompleted.rating,
@@ -457,20 +545,23 @@ export class TrainingComponent implements OnInit, OnDestroy {
         this.plan.uidCustomPlan,
         this.profileService.getProfile.uid,
         puzzleCompleted.themes,
-        puzzleCompleted.openingFamily,
+        puzzleCompleted.openingFamily
       );
-    } else if (this.plan.planType !== 'custom') {
+    } else if (!['custom', 'reto333'].includes(this.plan.planType)) {
       // Para planes por defecto, actualizar los elos del perfil
       this.profileService.calculateEloPuzzlePlan(
         puzzleCompleted.rating,
         puzzleStatus === 'good' ? 1 : 0,
         this.plan.planType,
         puzzleCompleted.themes,
-        puzzleCompleted.openingFamily,
+        puzzleCompleted.openingFamily
       );
     }
 
-
+    if (this.plan.planType === 'reto333' && puzzleStatus === 'good') {
+      this.reto333EloLocal += 10;
+      this.plan.blocks[this.currentIndexBlock].elo = this.reto333EloLocal;
+    }
 
     switch (puzzleStatus) {
       case 'good':
@@ -486,23 +577,31 @@ export class TrainingComponent implements OnInit, OnDestroy {
         break;
     }
 
-    if (puzzleStatus !== 'good' && this.plan.blocks[this.currentIndexBlock].showPuzzleSolution) {
-      this.showSolution();
+    if (
+      puzzleStatus !== 'good' &&
+      this.plan.blocks[this.currentIndexBlock].showPuzzleSolution
+    ) {
+      if (this.plan.planType === 'reto333') {
+        this.showSolutionAndAlertReto333();
+      } else {
+        this.showSolution();
+      }
     } else {
-      this.selectPuzzleToPlay();
+      if (puzzleStatus !== 'good' && this.plan.planType === 'reto333') {
+        this.showReto333Alert();
+      } else {
+        this.selectPuzzleToPlay();
+      }
     }
-
   }
 
-  async showSolution() {
-
+  async showSolutionAndAlertReto333() {
     this.forceStopTimerInPuzzleBoard = true;
     if (this.plan.blocks[this.currentIndexBlock].time !== -1) {
       this.pauseBlockTimer();
     }
 
-    // Calcular temas traducidos
-    const themesTranslated = this.puzzleToPlay.themes.map(theme =>
+    const themesTranslated = this.puzzleToPlay.themes.map((theme) =>
       this.appService.getNameThemePuzzleByValue(theme)
     );
 
@@ -510,8 +609,110 @@ export class TrainingComponent implements OnInit, OnDestroy {
       component: BoardPuzzleSolutionComponent,
       componentProps: {
         puzzle: this.puzzleToPlay,
-        themesTranslated
-      }
+        themesTranslated,
+      },
+    });
+
+    await modal.present();
+
+    modal.onDidDismiss().then(() => {
+      this.forceStopTimerInPuzzleBoard = false;
+      this.showReto333Alert();
+    });
+  }
+
+  async showReto333Alert() {
+    this.plan = { ...this.plan, isFinished: true };
+    this.stopPlanTimer();
+    this.stopBlockTimer();
+    this.forceStopTimerInPuzzleBoard = true;
+
+    if (this.profileService.getProfile?.uid) {
+      this.plan = { ...this.plan, uidUser: this.profileService.getProfile.uid };
+    }
+    
+    // Save state
+    this.planFacade.updatePlan(this.plan);
+    this.planStorageService.savePlan(this.plan);
+
+    const currentBlock = this.plan.blocks?.[0];
+    const puzzlesPlayed = currentBlock?.puzzlesPlayed || [];
+    const solvedCount = puzzlesPlayed.filter(p => p.resolved).length;
+    
+    // Calcula el tiempo total invertido real desde el inicio
+    const timePlayedSec = this.reto333StartTime ? Math.floor((Date.now() - this.reto333StartTime) / 1000) : 0;
+    
+    const minutes = Math.floor(timePlayedSec / 60);
+    const seconds = Math.floor(timePlayedSec % 60);
+    const timeString = `${minutes}m ${seconds}s`;
+    
+    const completed = solvedCount >= 333;
+    
+    // Save state custom locally
+    const statsData = {
+      maxElo: this.reto333EloLocal,
+      lastTime: timePlayedSec,
+      completed,
+      lastScore: solvedCount,
+      timeString
+    };
+    localStorage.setItem('chesscolate_reto333_stats', JSON.stringify(statsData));
+
+    this.reto333AlertData = {
+      solvedCount,
+      timeString,
+      elo: this.reto333EloLocal,
+      completed
+    };
+    this.showReto333DaisyModal = true;
+  }
+
+  closeReto333Modal() {
+    this.showReto333DaisyModal = false;
+    this.cleanupResources();
+    this.router.navigate(['/home']);
+  }
+
+  async restartReto333() {
+    this.showReto333DaisyModal = false;
+    this.cleanupResources();
+    
+    const loader = await this.loadingController.create({
+      message: 'Iniciando Reto 333...',
+    });
+    await loader.present();
+
+    try {
+      const blocks: Block[] = await this.blockService.generateBlocksForPlan('reto333');
+      const puzzles = await this.blockService.getPuzzlesForBlock(blocks[0]);
+      blocks[0].puzzles = puzzles;
+
+      await this.planService.newPlan(blocks, 'reto333');
+      await loader.dismiss();
+    } catch (error) {
+      await loader.dismiss();
+      console.error('Error al reiniciar el reto 333:', error);
+      this.router.navigate(['/home']);
+    }
+  }
+
+  async showSolution() {
+    this.forceStopTimerInPuzzleBoard = true;
+    if (this.plan.blocks[this.currentIndexBlock].time !== -1) {
+      this.pauseBlockTimer();
+    }
+
+    // Calcular temas traducidos
+    const themesTranslated = this.puzzleToPlay.themes.map((theme) =>
+      this.appService.getNameThemePuzzleByValue(theme)
+    );
+
+    const modal = await this.modalController.create({
+      component: BoardPuzzleSolutionComponent,
+      componentProps: {
+        puzzle: this.puzzleToPlay,
+        themesTranslated,
+      },
     });
 
     await modal.present();
@@ -524,23 +725,32 @@ export class TrainingComponent implements OnInit, OnDestroy {
         this.resumeBlockTimer();
       }
     });
-
   }
-
 
   endPlan() {
     // this.showEndPlan = true;
     this.plan = { ...this.plan, isFinished: true };
     this.stopPlanTimer();
     this.forceStopTimerInPuzzleBoard = true;
-    if (this.plan.planType !== 'custom' && this.profileService.getProfile?.elos) {
-      const eloKey = `${this.plan.planType}Total` as keyof NonNullable<typeof this.profileService.getProfile.elos>;
+    if (
+      this.plan.planType !== 'custom' &&
+      this.profileService.getProfile?.elos
+    ) {
+      const eloKey = `${this.plan.planType}Total` as keyof NonNullable<
+        typeof this.profileService.getProfile.elos
+      >;
       const eloValue = this.profileService.getProfile.elos[eloKey];
-      this.plan = { ...this.plan, eloTotal: typeof eloValue === 'number' ? eloValue : undefined };
+      this.plan = {
+        ...this.plan,
+        eloTotal: typeof eloValue === 'number' ? eloValue : undefined,
+      };
     }
 
     if (this.profileService.getProfile?.uid) {
-      this.plan = { ...this.plan, uidUser: this.profileService.getProfile?.uid };
+      this.plan = {
+        ...this.plan,
+        uidUser: this.profileService.getProfile?.uid,
+      };
       // console.log('Plan finalizado ', JSON.stringify(this.plan));
       // this.planService.requestSavePlanAction(this.plan);
     }
@@ -560,7 +770,10 @@ export class TrainingComponent implements OnInit, OnDestroy {
       this.profileService.getProfile?.uid
     ) {
       this.plansElosService
-        .incrementPlayCount(this.plan.uidCustomPlan, this.profileService.getProfile.uid)
+        .incrementPlayCount(
+          this.plan.uidCustomPlan,
+          this.profileService.getProfile.uid
+        )
         .catch((err) => console.error('Error incrementing play count', err));
     }
 
@@ -601,6 +814,12 @@ export class TrainingComponent implements OnInit, OnDestroy {
     this.countPuzzlesPlayedBlock = 0;
     this.totalPuzzlesInBlock = 0;
 
+    // Reto 333 cleanup
+    this.reto333StartTime = null;
+    this.reto333EloLocal = 400;
+    this.showReto333DaisyModal = false;
+    this.reto333AlertData = null;
+
     // Resetear flag de inicialización para permitir reinicialización
     this.isInitialized = false;
 
@@ -610,23 +829,31 @@ export class TrainingComponent implements OnInit, OnDestroy {
 
   async onExitTraining() {
     const alert = await this.alertController.create({
-      header: this.translocoService.translate('PUZZLES.exitTraining.title') || 'Salir del entrenamiento',
-      message: this.translocoService.translate('PUZZLES.exitTraining.message') || '¿Estás seguro de que deseas salir del entrenamiento?',
+      header:
+        this.translocoService.translate('PUZZLES.exitTraining.title') ||
+        'Salir del entrenamiento',
+      message:
+        this.translocoService.translate('PUZZLES.exitTraining.message') ||
+        '¿Estás seguro de que deseas salir del entrenamiento?',
       buttons: [
         {
-          text: this.translocoService.translate('PUZZLES.exitTraining.cancel') || 'Cancelar',
-          role: 'cancel'
+          text:
+            this.translocoService.translate('PUZZLES.exitTraining.cancel') ||
+            'Cancelar',
+          role: 'cancel',
         },
         {
-          text: this.translocoService.translate('PUZZLES.exitTraining.confirm') || 'Salir',
+          text:
+            this.translocoService.translate('PUZZLES.exitTraining.confirm') ||
+            'Salir',
           role: 'confirm',
           handler: () => {
             // Cuando se cancela, sí se debe limpiar el plan
             this.cleanupResources();
             this.router.navigate(['/home']);
-          }
-        }
-      ]
+          },
+        },
+      ],
     });
 
     await alert.present();
@@ -637,10 +864,6 @@ export class TrainingComponent implements OnInit, OnDestroy {
       this.isDropdownOpen = false;
     }, 200);
   }
-
-
-
-
 
   ionViewWillLeave() {
     // Asegurar limpieza completa al salir del componente
@@ -662,5 +885,4 @@ export class TrainingComponent implements OnInit, OnDestroy {
     this.isGoshHelperShow = false;
     this.isDropdownOpen = false;
   }
-
 }

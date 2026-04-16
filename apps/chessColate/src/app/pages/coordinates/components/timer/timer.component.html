@@ -1,22 +1,29 @@
-<div class="flex items-center mt-2">
-  <progress
-    class="progress w-full"
-    [ngClass]="{
-          'progress-success': timeColor === 'success',
-          'progress-warning': timeColor === 'warning',
-          'progress-error': timeColor === 'danger'
-        }"
-    [attr.value]="!isInfiniteMode ? displayProgress : null"
-    max="100"
-  ></progress>
-  <p
-    class="text-sm ml-2 whitespace-nowrap"
-    [ngClass]="{
-          'text-success': timeColor === 'success',
-          'text-warning': timeColor === 'warning',
-          'text-error': timeColor === 'danger'
-        }"
-  >
-    {{ displayTime }}
-  </p>
+<div class="flex items-center mt-2 w-full">
+  @if (!isInfiniteMode) {
+    <progress
+      class="progress w-full h-3 shadow-sm transition-all duration-300"
+      [ngClass]="{
+            'progress-success': timeColor === 'success',
+            'progress-warning': timeColor === 'warning',
+            'progress-error': timeColor === 'danger'
+          }"
+      [attr.value]="displayProgress"
+      max="100"
+    ></progress>
+    <div
+      class="text-lg font-bold ml-4 tabular-nums min-w-[2.5rem] text-center"
+      [ngClass]="{
+            'text-success': timeColor === 'success',
+            'text-warning': timeColor === 'warning',
+            'text-error': timeColor === 'danger'
+          }"
+    >
+      {{ displayTime }}
+    </div>
+  } @else {
+    <div class="badge badge-lg bg-base-100 border-2 border-primary/30 gap-2 h-10 px-6 mx-auto shadow-sm">
+      <ion-icon name="infinite-outline" class="text-2xl text-primary"></ion-icon>
+      <span class="font-black uppercase tracking-widest text-[10px] text-base-content/80">{{ 'COORDINATES.game.infinite' | transloco }}</span>
+    </div>
+  }
 </div>

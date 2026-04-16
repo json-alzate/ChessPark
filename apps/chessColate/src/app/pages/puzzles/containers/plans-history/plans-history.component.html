@@ -88,7 +88,7 @@
                       @if (plan.eloTotal) {
                       <div class="flex items-center gap-1">
                         <ion-icon name="stats-chart-outline" class="h-4 w-4"></ion-icon>
-                        <span>ELO: {{ plan.eloTotal }}</span>
+                        <span>{{ 'PLANS_HISTORY.elo' | transloco }}: {{ plan.eloTotal }}</span>
                       </div>
                       }
                       @if (getTotalPuzzlesPlayed(plan) > 0) {

@@ -42,6 +42,7 @@ export class PlanChartComponent implements OnInit, AfterViewInit {
   openingsElos: number[] = [];
 
   segment: 'themesUp' | 'themesDown' | 'themesItems' | 'openingsUp' | 'openingsDown' | 'openingsItems' = 'themesUp';
+  isLoading = true;
 
   options = {
     responsive: true,
@@ -77,7 +78,7 @@ export class PlanChartComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     setTimeout(() => {
       this.getElos();
-    }, 3000);
+    }, 1000);
   }
 
   async getElos() {
@@ -127,6 +128,7 @@ export class PlanChartComponent implements OnInit, AfterViewInit {
       this.buildThemesDownChart();
       this.buildOpeningsUpChart();
       this.buildOpeningsDownChart();
+      this.isLoading = false;
     }, 100);
   }
 

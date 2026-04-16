@@ -2,191 +2,193 @@
   <div class="main-container" data-theme="halloween">
     <app-navbar></app-navbar>
 
-    <div class="container mx-auto px-4 py-6">
-      <div class="mb-4">
-        <div class="flex items-center justify-between mb-2">
-          <div class="breadcrumbs">
-            <ul>
-              <li>
-                <a (click)="goToHome()" class="cursor-pointer text-sm">
-                  <ion-icon name="home-outline" class="h-4 w-4"></ion-icon>
-                  <span>{{ 'MENU.navigation.home' | transloco }}</span>
-                </a>
-              </li>
-            </ul>
-          </div>
+    <div class="container mx-auto px-4 py-6 pb-28">
+
+      <!-- Header -->
+      <div class="mb-6">
+        <div class="breadcrumbs text-sm mb-1">
+          <ul>
+            <li>
+              <a (click)="goToHome()" class="cursor-pointer gap-1">
+                <ion-icon name="home-outline" class="h-4 w-4"></ion-icon>
+                <span>{{ 'MENU.navigation.home' | transloco }}</span>
+              </a>
+            </li>
+          </ul>
         </div>
         <h2 class="text-2xl font-bold">{{ 'CUSTOM_PLANS.listTitle' | transloco }}</h2>
       </div>
 
+      <!-- Auth cargando -->
       @if (authLoading$ | async) {
-      <div class="flex justify-center py-8">
-        <span class="loading loading-spinner loading-lg text-primary"></span>
-      </div>
-      } @else if (!(profile$ | async)) {
-      <div class="card bg-base-100 shadow-sm">
-        <div class="card-body items-center text-center py-8">
-          <p class="text-base-content/80 mb-4">{{ 'CUSTOM_PLANS.authRequired' | transloco }}</p>
-          <button type="button" class="btn btn-primary" (click)="openLoginModal()">
-            {{ 'CUSTOM_TRAINING.actions.login' | transloco }}
-          </button>
+        <div class="flex justify-center py-12">
+          <span class="loading loading-spinner loading-lg text-primary"></span>
         </div>
-      </div>
-      } @else if (customPlansLoading$ | async) {
-      <div class="space-y-4">
-        @for (i of [1,2,3,4]; track i) {
-        <div class="card bg-base-100 shadow-sm">
-          <div class="card-body p-4">
-            <!-- Header con título y botones -->
-            <div class="flex items-start justify-between gap-4 mb-3">
-              <div class="flex-1 min-w-0">
-                <div class="skeleton h-6 w-3/4 mb-1"></div>
-                <div class="flex items-center gap-2 flex-wrap mb-1">
-                  <div class="skeleton h-4 w-24"></div>
-                  <div class="skeleton h-5 w-16 rounded"></div>
-                </div>
-                <div class="skeleton h-3 w-48 mt-1"></div>
-              </div>
-              <!-- Botones de acción skeleton -->
-              <div class="flex gap-2 flex-shrink-0">
-                <div class="skeleton h-9 w-20"></div>
-                <div class="skeleton h-9 w-20"></div>
-              </div>
-            </div>
-            <!-- Accordion skeleton -->
-            <div class="collapse collapse-arrow bg-base-200">
-              <div class="collapse-title text-sm font-medium">
-                <div class="skeleton h-4 w-40"></div>
-              </div>
-            </div>
+
+      <!-- Sin sesión -->
+      } @else if (!(profile$ | async)) {
+        <div class="card bg-base-100 shadow-sm border border-base-content/10">
+          <div class="card-body items-center text-center py-10">
+            <p class="text-base-content/70 mb-4">{{ 'CUSTOM_PLANS.authRequired' | transloco }}</p>
+            <button type="button" class="btn btn-primary" (click)="openLoginModal()">
+              {{ 'CUSTOM_TRAINING.actions.login' | transloco }}
+            </button>
           </div>
         </div>
-        }
-      </div>
-      } @else if (plans$ | async; as plans) {
-      @if (plans.length === 0) {
-      <div class="card bg-base-100 shadow-sm">
-        <div class="card-body items-center text-center py-8">
-          <p class="text-base-content/70">{{ 'CUSTOM_PLANS.empty' | transloco }}</p>
-          <button type="button" class="btn btn-primary mt-4" (click)="goToCreate()">
-            {{ 'CUSTOM_PLANS.createFirst' | transloco }}
-          </button>
-        </div>
-      </div>
-      } @else {
-      <div class="space-y-4">
-        @for (plan of plans; track plan.uid) {
-        <div class="card bg-base-100 shadow-sm">
-          <div class="card-body p-4">
-            <!-- Header con título y botones -->
-            <div class="flex items-start justify-between gap-4 mb-3">
-              <div class="flex-1 min-w-0">
-                <h3 class="text-lg font-semibold mb-1 truncate">{{ plan.title || ('CUSTOM_PLANS.untitled' | transloco)
-                  }}</h3>
-                <div class="flex items-center gap-2 flex-wrap text-sm text-base-content/70">
-                  <span>{{ plan.blocks.length }} {{ 'COMMON.chess.blocks' | transloco }}</span>
-                  @if (plan.isPublic) {
-                  <span class="badge badge-sm badge-info">{{ 'CUSTOM_PLANS.public' | transloco }}</span>
-                  }
+
+      <!-- Cargando planes -->
+      } @else if (customPlansLoading$ | async) {
+        <div class="space-y-3">
+          @for (i of [1,2,3,4]; track i) {
+            <div class="card bg-base-100 shadow-sm border border-base-content/10">
+              <div class="card-body p-4">
+                <div class="flex items-start justify-between gap-4 mb-3">
+                  <div class="flex-1 min-w-0 space-y-2">
+                    <div class="skeleton h-5 w-2/3 rounded"></div>
+                    <div class="skeleton h-3 w-40 rounded"></div>
+                  </div>
+                  <div class="flex gap-2 shrink-0">
+                    <div class="skeleton h-8 w-16 rounded"></div>
+                    <div class="skeleton h-8 w-16 rounded"></div>
+                  </div>
                 </div>
-                <p class="text-xs text-base-content/60 mt-1 min-h-[1.25rem]">
-                  @let planElos = getPlanEloForPlan(plan.uid) | async;
-                  @if (planElos === undefined) {
-                  <span class="skeleton h-3 w-32 inline-block"></span>
-                  } @else {
-                  {{ 'CUSTOM_PLANS.elo' | transloco }}: {{ planElos?.total ?? '-' }}
-                  · {{ 'CUSTOM_PLANS.timesPlayed' | transloco }}: {{ planElos?.timesPlayed ?? 0 }}
-                  }
-                </p>
-              </div>
-              <!-- Botones de acción -->
-              <div class="flex gap-2 flex-shrink-0">
-                <button type="button" class="btn btn-sm btn-ghost" (click)="goToEdit(plan)">
-                  <ion-icon name="create-outline"></ion-icon>
-                  {{ 'CUSTOM_PLANS.edit' | transloco }}
-                </button>
-                <button type="button" class="btn btn-sm btn-primary" (click)="play(plan)">
-                  <ion-icon name="play-outline"></ion-icon>
-                  {{ 'CUSTOM_PLANS.play' | transloco }}
-                </button>
+                <div class="skeleton h-9 w-full rounded-lg"></div>
               </div>
             </div>
+          }
+        </div>
 
-            <!-- Accordion para bloques -->
-            <div class="collapse collapse-arrow bg-base-200">
-              <input type="checkbox" />
-              <div class="collapse-title text-sm font-medium">
-                {{ 'PUBLIC_PLANS.viewBlocks' | transloco }} ({{ plan.blocks.length }})
-              </div>
-              <div class="collapse-content">
-                <div class="space-y-2">
-                  @for (block of plan.blocks; track $index) {
-                  <div class="card bg-base-100 shadow-xs p-2">
-                    <div class="text-sm">
-                      <div class="font-medium">{{ block.title || ('PUBLIC_PLANS.block' | transloco) + ' ' + ($index + 1)
-                        }}</div>
-                      @if (block.description) {
-                      <div class="text-xs text-base-content/70 mt-1">{{ block.description }}</div>
-                      }
-                      <div class="flex items-center gap-2 text-xs text-base-content/60 mt-1">
-                        <!-- Icono del tema -->
-                        @if (getThemeIcon(block.theme); as themeIcon) {
-                        @if (themeIcon.type === 'icon') {
-                        <ion-icon [name]="themeIcon.value" class="h-4 w-4"></ion-icon>
-                        } @else {
-                        <img [src]="themeIcon.value" alt="" class="h-4 w-4" />
+      <!-- Lista de planes -->
+      } @else if (plans$ | async; as plans) {
+
+        @if (plans.length === 0) {
+          <div class="card bg-base-100 shadow-sm border border-base-content/10">
+            <div class="card-body items-center text-center py-10">
+              <p class="text-base-content/60 mb-4">{{ 'CUSTOM_PLANS.empty' | transloco }}</p>
+              <button type="button" class="btn btn-primary" (click)="goToCreate()">
+                {{ 'CUSTOM_PLANS.createFirst' | transloco }}
+              </button>
+            </div>
+          </div>
+
+        } @else {
+          <div class="space-y-3">
+            @for (plan of plans; track plan.uid) {
+              <div class="card bg-base-100 shadow-sm border border-base-content/10">
+                <div class="card-body p-4">
+
+                  <!-- Título y acciones -->
+                  <div class="flex items-start justify-between gap-3 mb-2">
+                    <div class="flex-1 min-w-0">
+                      <h3 class="font-semibold truncate">
+                        {{ plan.title || ('CUSTOM_PLANS.untitled' | transloco) }}
+                      </h3>
+                      <div class="flex items-center gap-2 flex-wrap mt-1">
+                        <span class="text-xs text-base-content/50">
+                          {{ plan.blocks.length }} {{ 'COMMON.chess.blocks' | transloco }}
+                        </span>
+                        @if (plan.isPublic) {
+                          <span class="badge badge-xs badge-ghost">{{ 'CUSTOM_PLANS.public' | transloco }}</span>
                         }
-                        }
-                        <!-- Tema traducido -->
-                        <span>{{ getThemeName(block.theme) }}</span>
-                        <span>·</span>
-                        <!-- Configuración del bloque (tiempo/puzzles) -->
-                        @if (getBlockConfig(block); as config) {
-                        @if (config.type === 'time') {
-                        <span>{{ config.time | secondsToMinutesSeconds }}</span>
-                        } @else if (config.type === 'puzzles') {
-                        <span>{{ config.puzzles }} {{ 'NEW_BLOCK.fields.puzzles' | transloco }}</span>
-                        } @else if (config.type === 'both') {
-                        <span>{{ config.time | secondsToMinutesSeconds }} {{ 'NEW_BLOCK.or' | transloco }} {{
-                          config.puzzles }} {{ 'NEW_BLOCK.fields.puzzles' | transloco }}</span>
-                        } @else {
-                        <ion-icon name="infinite-outline" class="h-4 w-4"></ion-icon>
-                        }
+                        <!-- ELO y veces jugado -->
+                        @let planElos = getPlanEloForPlan(plan.uid) | async;
+                        @if (planElos === undefined) {
+                          <span class="skeleton h-3 w-28 inline-block rounded"></span>
+                        } @else if (planElos) {
+                          <span class="text-xs text-base-content/40">
+                            ELO {{ planElos.total || '-' }} · {{ planElos.timesPlayed || 0 }}x
+                          </span>
                         }
                       </div>
                     </div>
+
+                    <div class="flex gap-1.5 shrink-0">
+                      <button type="button" class="btn btn-ghost btn-xs" (click)="goToEdit(plan)">
+                        <ion-icon name="create-outline"></ion-icon>
+                        {{ 'CUSTOM_PLANS.edit' | transloco }}
+                      </button>
+                      <button type="button" class="btn btn-primary btn-xs" (click)="play(plan)">
+                        <ion-icon name="play-outline"></ion-icon>
+                        {{ 'CUSTOM_PLANS.play' | transloco }}
+                      </button>
+                    </div>
                   </div>
-                  }
+
+                  <!-- Accordion bloques -->
+                  <details class="collapse collapse-arrow bg-base-200/50 rounded-lg border border-base-content/5">
+                    <summary class="collapse-title text-xs font-medium py-2 min-h-0">
+                      {{ 'PUBLIC_PLANS.viewBlocks' | transloco }} ({{ plan.blocks.length }})
+                    </summary>
+                    <div class="collapse-content px-2 pb-2">
+                      <div class="space-y-1 pt-1">
+                        @for (block of plan.blocks; track $index) {
+                          <div class="flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-base-200/50">
+                            <!-- Icono del tema -->
+                            <div class="shrink-0">
+                              @if (getThemeIcon(block.theme); as themeIcon) {
+                                @if (themeIcon.type === 'icon') {
+                                  <div class="w-6 h-6 rounded-full bg-base-200 flex items-center justify-center">
+                                    <ion-icon [name]="themeIcon.value" class="text-xs"></ion-icon>
+                                  </div>
+                                } @else {
+                                  <img [src]="themeIcon.value" alt="" class="w-6 h-6 rounded-full object-contain" />
+                                }
+                              }
+                            </div>
+                            <!-- Info -->
+                            <span class="text-xs font-medium flex-1 truncate">{{ getThemeName(block.theme) }}</span>
+                            <span class="text-xs text-base-content/40 shrink-0">
+                              @if (getBlockConfig(block); as config) {
+                                @if (config.type === 'time') { {{ config.time | secondsToMinutesSeconds }} }
+                                @else if (config.type === 'puzzles') { {{ config.puzzles }} puz }
+                                @else if (config.type === 'both') { {{ config.time | secondsToMinutesSeconds }} · {{ config.puzzles }} puz }
+                                @else { <ion-icon name="infinite-outline"></ion-icon> }
+                              }
+                            </span>
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  </details>
+
                 </div>
               </div>
-            </div>
+            }
           </div>
-        </div>
         }
-      </div>
-      }
+
       } @else {
-      <div class="flex justify-center py-8">
-        <span class="loading loading-spinner loading-lg text-primary"></span>
-      </div>
+        <div class="flex justify-center py-12">
+          <span class="loading loading-spinner loading-lg text-primary"></span>
+        </div>
       }
+
     </div>
 
+    <!-- Botón crear — desktop -->
     @if (profile$ | async) {
-    <div class="hidden md:block container mx-auto px-4 pb-6">
-      <button type="button" class="btn btn-primary w-full md:w-auto" (click)="goToCreate()">
-        <ion-icon name="add"></ion-icon>
-        {{ 'CUSTOM_PLANS.create' | transloco }}
-      </button>
-    </div>
+      <div class="hidden md:block container mx-auto px-4 pb-6">
+        <button type="button" class="btn btn-primary" (click)="goToCreate()">
+          <ion-icon name="add"></ion-icon>
+          {{ 'CUSTOM_PLANS.create' | transloco }}
+        </button>
+      </div>
     }
+
   </div>
 
+  <!-- Botón crear — móvil (reemplaza ion-fab) -->
   @if (profile$ | async) {
-  <ion-fab slot="fixed" vertical="bottom" horizontal="end" class="md:hidden">
-    <ion-fab-button (click)="goToCreate()" aria-label="{{ 'CUSTOM_PLANS.create' | transloco }}">
-      <ion-icon name="add"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
+    <div class="fixed bottom-6 right-5 md:hidden z-50" data-theme="halloween">
+      <button
+        type="button"
+        class="btn btn-primary btn-circle btn-lg shadow-xl"
+        (click)="goToCreate()"
+        [attr.aria-label]="'CUSTOM_PLANS.create' | transloco"
+      >
+        <ion-icon name="add" class="text-2xl"></ion-icon>
+      </button>
+    </div>
   }
+
 </ion-content>

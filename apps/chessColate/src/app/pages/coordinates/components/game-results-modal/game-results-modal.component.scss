@@ -1,17 +1,40 @@
 // Estilos específicos para el modal de resultados
-.avatar img {
-  object-fit: contain;
-}
-
-.stats {
-  .stat-value {
-    font-weight: bold;
+.results-modal {
+  --height: 85%;
+  --border-radius: 2rem 2rem 0 0;
+  --backdrop-opacity: 0.6;
+  
+  &::part(content) {
+    box-shadow: 0 -10px 25px -5px rgba(0, 0, 0, 0.3);
   }
-}
 
-.alert {
-  .alert-icon {
-    display: flex;
+  @media (min-width: 768px) {
+    --width: 450px;
+    --height: 700px;
+    --border-radius: 2rem;
     align-items: center;
   }
+}
+
+ion-content {
+  --background: hsl(var(--b2));
+}
+
+ion-toolbar {
+  --background: hsl(var(--b2));
+  --color: hsl(var(--bc));
+}
+
+.divider {
+  border-top-width: 1px;
+}
+
+// Stats animations
+@keyframes countIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.card, .p-4 {
+  animation: countIn 0.4s ease-out forwards;
 }

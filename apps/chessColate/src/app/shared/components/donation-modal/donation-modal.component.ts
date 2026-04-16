@@ -61,8 +61,8 @@ export class DonationModalComponent implements OnInit {
   donationOptions: DonationOption[] = [
     {
       id: 'donation_small',
-      amount: 3,
-      label: '$3',
+      amount: 2,
+      label: '$2',
       description: 'Donación pequeña - Renovación mensual',
       packageIdentifier: 'donation_small',
     },
@@ -75,8 +75,8 @@ export class DonationModalComponent implements OnInit {
     },
     {
       id: 'donation_large',
-      amount: 10,
-      label: '$10',
+      amount: 8,
+      label: '$8',
       description: 'Donación grande - Renovación mensual',
       packageIdentifier: 'donation_large',
     },
@@ -115,7 +115,7 @@ export class DonationModalComponent implements OnInit {
           if (packageFromRC) {
             return {
               ...option,
-              label: packageFromRC.product.priceString,
+              label: `${packageFromRC.product.priceString} ${packageFromRC.product.currencyCode}`,
               amount: packageFromRC.product.price,
             };
           }

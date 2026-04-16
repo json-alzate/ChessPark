@@ -13,13 +13,13 @@ import {
 } from '@ionic/angular/standalone';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
-import { heartOutline, heart, arrowBackOutline, arrowForwardOutline } from 'ionicons/icons';
+import { heartOutline, heart, arrowBackOutline, arrowForwardOutline, informationCircleOutline, trophyOutline, cafeOutline, starOutline, banOutline, extensionPuzzleOutline, codeSlashOutline, serverOutline } from 'ionicons/icons';
 import { RevenueCatService } from '@chesspark/revenuecat';
 import { Package, PurchasesError, PURCHASES_ERROR_CODE } from '@chesspark/revenuecat';
 import { Capacitor } from '@capacitor/core';
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 
-addIcons({ heartOutline, heart, arrowBackOutline, arrowForwardOutline });
+addIcons({ heartOutline, heart, arrowBackOutline, arrowForwardOutline, informationCircleOutline, trophyOutline, cafeOutline, starOutline, banOutline, extensionPuzzleOutline, codeSlashOutline, serverOutline });
 
 export interface DonationOption {
   id: string;
@@ -55,23 +55,23 @@ export class DonationPage implements OnInit {
   donationOptions: DonationOption[] = [
     {
       id: 'donation_small',
-      amount: 3,
-      label: '$3',
-      description: 'Donación pequeña - Renovación mensual',
+      amount: 2,
+      label: '$2',
+      description: 'Un café al mes. Mantiene los servidores activos y los puzzles corriendo.',
       packageIdentifier: 'donation_small',
     },
     {
       id: 'donation_medium',
       amount: 5,
       label: '$5',
-      description: 'Donación mediana - Renovación mensual',
+      description: 'Financia nuevas funciones y mejoras continuas para toda la comunidad.',
       packageIdentifier: 'donation_medium',
     },
     {
       id: 'donation_large',
-      amount: 10,
-      label: '$10',
-      description: 'Donación grande - Renovación mensual',
+      amount: 8,
+      label: '$8',
+      description: 'El mayor impacto. Acelera el desarrollo y te convierte en patrocinador del proyecto.',
       packageIdentifier: 'donation_large',
     },
   ];
@@ -109,7 +109,7 @@ export class DonationPage implements OnInit {
           if (packageFromRC) {
             return {
               ...option,
-              label: packageFromRC.product.priceString,
+              label: `${packageFromRC.product.priceString} ${packageFromRC.product.currencyCode}`,
               amount: packageFromRC.product.price,
             };
           }
