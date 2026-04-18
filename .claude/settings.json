@@ -11,7 +11,10 @@
       "Bash(nx build *)",
       "Bash(node scripts/fix-ng-packagr-esm.js)",
       "Bash(node -e \"const {packageDirectorySync} = require\\('pkg-dir'\\); console.log\\('ok'\\)\")",
-      "Bash(node -e \"const cp = require\\('common-path-prefix'\\); console.log\\('ok'\\)\")"
+      "Bash(node -e \"const cp = require\\('common-path-prefix'\\); console.log\\('ok'\\)\")",
+      "Bash(grep -E \"\\\\.\\(ts|tsx\\)$\")",
+      "Bash(grep \"\\\\.ts$\")",
+      "Bash(npx nx *)"
     ]
   }
 }

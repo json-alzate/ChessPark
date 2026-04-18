@@ -36,8 +36,12 @@ export class BlockService {
         (t) => t.value === blockSettings.theme
       );
 
+    const elo = blockSettings.useDynamicElo
+      ? (this.profileService.eloPuzzles || blockSettings.elo)
+      : blockSettings.elo;
+
     const options: PuzzleQueryOptions = {
-      elo: blockSettings.elo,
+      elo,
       theme: themeMapped ? blockSettings.theme : undefined,
       openingFamily: blockSettings.openingFamily,
     };
@@ -728,7 +732,8 @@ export class BlockService {
               time: -1,
               puzzlesCount: 0,
               theme: this.getRandomTheme(),
-              elo: defaultElo,
+              elo: profile?.eloPuzzles || defaultElo,
+              useDynamicElo: true,
               color: Math.random() > 0.5 ? 'white' : 'black',
               puzzlesPlayed: [],
               nextPuzzleImmediately: true,

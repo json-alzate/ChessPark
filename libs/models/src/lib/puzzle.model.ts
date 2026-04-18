@@ -28,3 +28,16 @@ export interface PuzzleQueryOptions {
     openingFamily?: string;
     color?: 'w' | 'b';
 };
+
+export interface InfinityPoolPuzzle extends Puzzle {
+    poolTheme: string;
+    eloOffset: number;  // 0, -200, o +300
+    solved: boolean;
+}
+
+export interface InfinityPuzzlePool {
+    puzzles: InfinityPoolPuzzle[];
+    eloUsed: number;
+    isAnonymousElo: boolean;
+    loadedAt: number;
+}

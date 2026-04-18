@@ -28,6 +28,7 @@ import { PuzzlesProvider } from '@chesspark/puzzles-provider';
 import { ProfileService } from '@services/profile.service';
 
 import { AppService } from '@services/app.service';
+import { InfinityPuzzlePoolService } from '@services/infinity-puzzle-pool.service';
 
 // Components
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
@@ -85,6 +86,7 @@ export class HomePage implements OnInit, ViewWillEnter, ViewWillLeave {
   private appService = inject(AppService);
   private modalController = inject(ModalController);
   private store = inject(Store<AuthState>);
+  private infinityPoolService = inject(InfinityPuzzlePoolService);
 
   isInitialized = false;
   private initSubscription?: Subscription;
@@ -111,6 +113,7 @@ export class HomePage implements OnInit, ViewWillEnter, ViewWillLeave {
   }
 
   async ngOnInit() {
+    this.infinityPoolService.initialize();
     this.initSubscription = this.store.pipe(select(getIsInitialized)).subscribe(initialized => {
       this.isInitialized = initialized;
     });
@@ -121,7 +124,7 @@ export class HomePage implements OnInit, ViewWillEnter, ViewWillLeave {
 
   ionViewWillEnter() {
     if (!this.infinitePuzzle) {
-      this.loadInfinitePuzzle();
+      this.loadPuzzleFromPool();
     }
     
     this.isLoadingReto333 = true;
@@ -150,11 +153,20 @@ export class HomePage implements OnInit, ViewWillEnter, ViewWillLeave {
     this.infinitePuzzleProblemState = 'none';
   }
 
-  async loadInfinitePuzzle() {
+  async loadPuzzleFromPool() {
     this.isLoadingPuzzle = true;
     this.isInfinitePuzzleSolved = false;
+
+    const poolPuzzle = this.infinityPoolService.getRandomUnsolvedPuzzle();
+    if (poolPuzzle) {
+      this.infinitePuzzle = poolPuzzle;
+      this.isLoadingPuzzle = false;
+      return;
+    }
+
+    // Fallback: llamada directa si el pool aún no está listo
     const puzzles = await this.puzzlesProvider.getPuzzles({
-      elo: 1500,
+      elo: this.profileService.eloPuzzles,
     });
     if (puzzles && puzzles.length > 0) {
       this.infinitePuzzle = puzzles[0];
@@ -167,25 +179,37 @@ export class HomePage implements OnInit, ViewWillEnter, ViewWillLeave {
     if (state) {
       this.infinitePuzzleProblemState = state;
     }
+    if (this.infinitePuzzle) {
+      this.infinityPoolService.markPuzzleAsSolved(this.infinitePuzzle.uid);
+    }
   }
 
   async startInfinityPlan() {
+    const preloadedPuzzles = this.infinityPoolService.consumePoolForPlan();
+
+    if (preloadedPuzzles.length > 0) {
+      try {
+        const blocks: Block[] = await this.blockService.generateBlocksForPlan('infinity');
+        blocks[0].puzzles = preloadedPuzzles;
+        await this.planService.newPlan(blocks, 'infinity');
+        this.router.navigate(['/puzzles/training']);
+      } catch (error) {
+        console.error('Error al iniciar el plan infinito:', error);
+      }
+      return;
+    }
+
+    // Fallback con loader si no hay pool disponible
     const loader = await this.loadingController.create({
       message: 'Iniciando entrenamiento...',
     });
     await loader.present();
 
     try {
-      const blocks: Block[] = await this.blockService.generateBlocksForPlan(
-        'infinity'
-      );
-
-      // Cargar puzzles iniciales
+      const blocks: Block[] = await this.blockService.generateBlocksForPlan('infinity');
       const puzzles = await this.blockService.getPuzzlesForBlock(blocks[0]);
       blocks[0].puzzles = puzzles;
-
       await this.planService.newPlan(blocks, 'infinity');
-
       await loader.dismiss();
       this.router.navigate(['/puzzles/training']);
     } catch (error) {

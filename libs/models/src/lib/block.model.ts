@@ -21,4 +21,5 @@ export interface Block {
     nextPuzzleImmediately?: boolean;
     goshPuzzle?: boolean;
     goshPuzzleTime?: number;
+    useDynamicElo?: boolean;
 };
