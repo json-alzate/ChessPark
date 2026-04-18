@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Training data (can be large)
+data/raw/
+data/processed/
+data/encoded/
+data/saved_models/
+
+# Bot bundles go to git only when ready to ship
+# data/bots/ is intentionally NOT ignored

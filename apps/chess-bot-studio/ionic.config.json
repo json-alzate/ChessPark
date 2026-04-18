@@ -1,0 +1,7 @@
+{
+  "name": "chess-bot-studio",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

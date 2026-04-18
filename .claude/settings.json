@@ -14,7 +14,9 @@
       "Bash(node -e \"const cp = require\\('common-path-prefix'\\); console.log\\('ok'\\)\")",
       "Bash(grep -E \"\\\\.\\(ts|tsx\\)$\")",
       "Bash(grep \"\\\\.ts$\")",
-      "Bash(npx nx *)"
+      "Bash(npx nx *)",
+      "Bash(git -C /home/alexander/Documentos/Proyectos/ChessPark log --oneline --all)",
+      "Bash(chmod +x /home/alexander/Documentos/Proyectos/ChessPark/chess-bot-trainer/scripts/train_bot.sh)"
     ]
   }
 }

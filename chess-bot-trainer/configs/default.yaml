@@ -1,0 +1,20 @@
+training:
+  epochs: 30
+  batch_size: 512
+  learning_rate: 0.001
+  val_split: 0.1
+
+model:
+  filters: 64
+  residual_blocks: 6
+
+export:
+  quantize: true
+  shard_size_mb: 5
+
+download:
+  max_games: 5000
+  rated_only: true
+
+filter:
+  min_moves: 10
