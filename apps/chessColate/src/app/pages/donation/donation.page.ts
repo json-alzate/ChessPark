@@ -27,6 +27,7 @@ export interface DonationOption {
   label: string;
   description: string;
   packageIdentifier: string;
+  tierKey: 'pawn' | 'rook' | 'queen';
 }
 
 @Component({
@@ -57,22 +58,25 @@ export class DonationPage implements OnInit {
       id: 'donation_small',
       amount: 2,
       label: '$2',
-      description: 'Un café al mes. Mantiene los servidores activos y los puzzles corriendo.',
+      description: '',
       packageIdentifier: 'donation_small',
+      tierKey: 'pawn',
     },
     {
       id: 'donation_medium',
       amount: 5,
       label: '$5',
-      description: 'Financia nuevas funciones y mejoras continuas para toda la comunidad.',
+      description: '',
       packageIdentifier: 'donation_medium',
+      tierKey: 'rook',
     },
     {
       id: 'donation_large',
       amount: 8,
       label: '$8',
-      description: 'El mayor impacto. Acelera el desarrollo y te convierte en patrocinador del proyecto.',
+      description: '',
       packageIdentifier: 'donation_large',
+      tierKey: 'queen',
     },
   ];
 

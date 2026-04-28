@@ -464,11 +464,54 @@
   },
   "DONATION": {
     "perMonth": "/ mes",
+    "page": {
+      "title": "Apoya a",
+      "subtitle": "ChessColate es un proyecto independiente hecho con pasión. Tu apoyo nos permite mantenerlo <strong>sin anuncios</strong> y seguir desarrollando <strong>nuevas funciones</strong>.",
+      "mostPopular": "⭐ Más popular",
+      "supportWith": "Apoyar con",
+      "whatsIncluded": "Tu apoyo hace posible",
+      "features": {
+        "noAds": "Sin anuncios",
+        "newPuzzles": "Nuevos puzzles",
+        "newFeatures": "Nuevas funciones",
+        "activeServers": "Servidores activos"
+      },
+      "security": "Suscripciones recurrentes procesadas por RevenueCat, App Store y Google Play.",
+      "cancel": "Cancela cuando quieras desde la configuración de tu dispositivo.",
+      "restorePurchases": "Restaurar compras"
+    },
+    "tiers": {
+      "pawn": {
+        "name": "Peón",
+        "description": "Un café al mes. Mantiene los servidores activos y los puzzles corriendo."
+      },
+      "rook": {
+        "name": "Torre",
+        "description": "Financia nuevas funciones y mejoras continuas para toda la comunidad."
+      },
+      "queen": {
+        "name": "Reina",
+        "description": "El mayor impacto. Acelera el desarrollo y te conviertes en patrocinador del proyecto."
+      }
+    },
     "homeCard": {
       "title": "Apoya a ChessColate",
       "description": "Con tu donación continuaremos desarrollando funcionalidades como el <strong>Método del Pájaro Carpintero personalizado</strong> y <strong>retos abiertos</strong>.",
-      "button": "Realizar una donación"
+      "button": "Realizar una donación",
+      "woodpeckerTitle": "Método del Pájaro Carpintero",
+      "comingSoon": "Próximamente..."
     }
+  },
+  "RETO_333": {
+    "survival": "Survival",
+    "mateIn1": "Mate en 1",
+    "streak": "Racha",
+    "time": "Tiempo",
+    "crowned": "¡Reto Coronado!",
+    "title": "El Desafío Definitivo",
+    "description": "Resuelve 333 problemas seguidos sin cometer un solo error.",
+    "tryAgain": "Intentar de Nuevo",
+    "acceptChallenge": "Aceptar Reto"
   },
   "KNIGHT_TOUR": {
     "title": "Recorrido del Caballo",

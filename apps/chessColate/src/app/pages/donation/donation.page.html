@@ -15,11 +15,10 @@
         </div>
 
         <h1 class="text-3xl font-extrabold mb-3">
-          Apoya a <span class="text-primary">ChessColate</span>
+          {{ 'DONATION.page.title' | transloco }} <span class="text-primary">ChessColate</span>
         </h1>
-        <p class="text-base opacity-80 leading-relaxed max-w-sm mx-auto mb-5">
-          ChessColate es un proyecto independiente hecho con pasión. Tu apoyo nos permite mantenerlo
-          <strong>sin anuncios</strong> y seguir desarrollando <strong>nuevas funciones</strong>.
+        <p class="text-base opacity-80 leading-relaxed max-w-sm mx-auto mb-5"
+          [innerHTML]="'DONATION.page.subtitle' | transloco">
         </p>
 
       </div>
@@ -41,7 +40,7 @@
                   class="relative card bg-base-100 border-2 border-primary shadow-xl cursor-pointer active:scale-[0.98] transition-all"
                   (click)="processDonation(option)">
                   <div class="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <span class="badge badge-primary badge-sm font-bold px-3 shadow-lg">⭐ Más popular</span>
+                    <span class="badge badge-primary badge-sm font-bold px-3 shadow-lg">{{ 'DONATION.page.mostPopular' | transloco }}</span>
                   </div>
                   <div class="card-body p-5 pt-6">
                     <div class="flex items-center gap-4">
@@ -50,16 +49,16 @@
                       </div>
                       <div class="flex-1 min-w-0">
                         <div class="flex items-baseline gap-2 mb-0.5">
-                          <span class="text-xs font-semibold text-primary uppercase tracking-wider">Campeón</span>
+                          <span class="text-xs font-semibold text-primary uppercase tracking-wider">{{ ('DONATION.tiers.' + option.tierKey + '.name') | transloco }}</span>
                         </div>
                         <h2 class="text-2xl font-black text-primary">{{ option.label }}
-                          <span class="text-xs font-normal text-base-content/50 ml-1">/ mes</span>
+                          <span class="text-xs font-normal text-base-content/50 ml-1">{{ 'DONATION.perMonth' | transloco }}</span>
                         </h2>
-                        <p class="text-xs text-base-content/60 mt-1 leading-snug">{{ option.description }}</p>
+                        <p class="text-xs text-base-content/60 mt-1 leading-snug">{{ ('DONATION.tiers.' + option.tierKey + '.description') | transloco }}</p>
                       </div>
                     </div>
                     <button class="btn btn-primary btn-sm w-full mt-3 font-bold">
-                      Apoyar con {{ option.label }} / mes
+                      {{ 'DONATION.page.supportWith' | transloco }} {{ option.label }} {{ 'DONATION.perMonth' | transloco }}
                     </button>
                   </div>
                 </div>
@@ -82,13 +81,13 @@
                     <div class="flex-1 min-w-0">
                       <div class="flex items-baseline gap-2 mb-0.5">
                         <span class="text-xs font-semibold text-base-content/40 uppercase tracking-wider">
-                          @if (i === 0) { Cafecito } @else { Gran Maestro }
+                          {{ ('DONATION.tiers.' + option.tierKey + '.name') | transloco }}
                         </span>
                       </div>
                       <h2 class="text-xl font-bold">{{ option.label }}
-                        <span class="text-xs font-normal text-base-content/50 ml-1">/ mes</span>
+                        <span class="text-xs font-normal text-base-content/50 ml-1">{{ 'DONATION.perMonth' | transloco }}</span>
                       </h2>
-                      <p class="text-xs text-base-content/50 mt-0.5 leading-snug">{{ option.description }}</p>
+                      <p class="text-xs text-base-content/50 mt-0.5 leading-snug">{{ ('DONATION.tiers.' + option.tierKey + '.description') | transloco }}</p>
                     </div>
                     <div class="shrink-0">
                       <div class="btn btn-ghost btn-circle btn-sm">
@@ -108,24 +107,24 @@
       <div class="card bg-base-200/40 border border-base-content/10 mb-6">
         <div class="card-body p-4">
           <h3 class="text-xs font-bold uppercase tracking-wider text-base-content/40 mb-3">
-            Tu apoyo hace posible
+            {{ 'DONATION.page.whatsIncluded' | transloco }}
           </h3>
           <div class="grid grid-cols-2 gap-y-3 gap-x-2">
             <div class="flex items-center gap-2 text-sm">
               <ion-icon name="ban-outline" class="text-primary shrink-0 text-base"></ion-icon>
-              <span>Sin anuncios</span>
+              <span>{{ 'DONATION.page.features.noAds' | transloco }}</span>
             </div>
             <div class="flex items-center gap-2 text-sm">
               <ion-icon name="extension-puzzle-outline" class="text-primary shrink-0 text-base"></ion-icon>
-              <span>Nuevos puzzles</span>
+              <span>{{ 'DONATION.page.features.newPuzzles' | transloco }}</span>
             </div>
             <div class="flex items-center gap-2 text-sm">
               <ion-icon name="code-slash-outline" class="text-primary shrink-0 text-base"></ion-icon>
-              <span>Nuevas funciones</span>
+              <span>{{ 'DONATION.page.features.newFeatures' | transloco }}</span>
             </div>
             <div class="flex items-center gap-2 text-sm">
               <ion-icon name="server-outline" class="text-primary shrink-0 text-base"></ion-icon>
-              <span>Servidores activos</span>
+              <span>{{ 'DONATION.page.features.activeServers' | transloco }}</span>
             </div>
           </div>
         </div>
@@ -133,14 +132,14 @@
 
       <!-- Info seguridad (compacta) -->
       <div class="text-xs text-base-content/40 text-center space-y-1 mb-6 px-2">
-        <p>Suscripciones recurrentes procesadas por RevenueCat, App Store y Google Play.</p>
-        <p>Cancela cuando quieras desde la configuración de tu dispositivo.</p>
+        <p>{{ 'DONATION.page.security' | transloco }}</p>
+        <p>{{ 'DONATION.page.cancel' | transloco }}</p>
       </div>
 
       <!-- Footer -->
       <div class="flex justify-center pt-4 border-t border-base-content/10">
         <button class="btn btn-link btn-sm text-base-content/40 no-underline" (click)="restorePurchases()">
-          Restaurar compras
+          {{ 'DONATION.page.restorePurchases' | transloco }}
         </button>
       </div>
 

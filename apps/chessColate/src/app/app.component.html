@@ -30,7 +30,7 @@
       <div class="flex justify-center w-full py-2">
         <ion-menu-toggle>
           <button class="btn btn-wide btn-primary" type="button" (click)="openLoginModal()">
-            Ingresar / Registrarse
+            {{ 'AUTH.login.menuBar' | transloco }}
           </button>
         </ion-menu-toggle>
       </div>
@@ -44,7 +44,7 @@
         <li [class.disabled]="!option.enabled">
           <a (click)="option.enabled ? navigateTo(option.route) : null" class="flex gap-4 py-3">
             <ion-icon [name]="option.icon" class="text-xl"></ion-icon>
-            <span class="text-base">{{ option.title }}</span>
+            <span class="text-base">{{ option.title | transloco }}</span>
           </a>
         </li>
         }

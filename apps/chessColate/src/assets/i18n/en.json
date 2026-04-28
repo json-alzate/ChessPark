@@ -462,11 +462,54 @@
   },
   "DONATION": {
     "perMonth": "/ month",
+    "page": {
+      "title": "Support",
+      "subtitle": "ChessColate is an independent project made with passion. Your support lets us keep it <strong>ad-free</strong> and keep developing <strong>new features</strong>.",
+      "mostPopular": "⭐ Most popular",
+      "supportWith": "Support with",
+      "whatsIncluded": "Your support makes possible",
+      "features": {
+        "noAds": "No ads",
+        "newPuzzles": "New puzzles",
+        "newFeatures": "New features",
+        "activeServers": "Active servers"
+      },
+      "security": "Recurring subscriptions processed by RevenueCat, App Store, and Google Play.",
+      "cancel": "Cancel anytime from your device settings.",
+      "restorePurchases": "Restore purchases"
+    },
+    "tiers": {
+      "pawn": {
+        "name": "Pawn",
+        "description": "A coffee a month. Keeps servers running and puzzles flowing."
+      },
+      "rook": {
+        "name": "Rook",
+        "description": "Funds new features and continuous improvements for the whole community."
+      },
+      "queen": {
+        "name": "Queen",
+        "description": "Maximum impact. Accelerates development and makes you a project sponsor."
+      }
+    },
     "homeCard": {
       "title": "Support ChessColate",
       "description": "With your donation we will continue developing features like a <strong>personalized Woodpecker method</strong> and <strong>open challenges</strong>.",
-      "button": "Make a donation"
+      "button": "Make a donation",
+      "woodpeckerTitle": "Woodpecker Method",
+      "comingSoon": "Coming soon..."
     }
+  },
+  "RETO_333": {
+    "survival": "Survival",
+    "mateIn1": "Mate in 1",
+    "streak": "Streak",
+    "time": "Time",
+    "crowned": "Challenge Crowned!",
+    "title": "The Ultimate Challenge",
+    "description": "Solve 333 puzzles in a row without making a single mistake.",
+    "tryAgain": "Try Again",
+    "acceptChallenge": "Accept Challenge"
   },
   "KNIGHT_TOUR": {
     "title": "Knight Tour",

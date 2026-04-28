@@ -119,37 +119,37 @@ export class AppComponent implements OnInit, OnDestroy {
   // Opciones del menú
   menuOptions: MenuOption[] = [
     {
-      title: 'Inicio',
+      title: 'MENU.navigation.home',
       icon: 'home-outline',
       route: '/home',
       enabled: true,
     },
     {
-      title: 'Coordenadas',
+      title: 'MENU.navigation.coordinates',
       icon: 'grid-outline',
       route: '/coordinates',
       enabled: true,
     },
     {
-      title: 'Recorrido del Caballo',
+      title: 'KNIGHT_TOUR.title',
       icon: 'extension-puzzle-outline',
       route: '/knight-tour',
       enabled: true,
     },
     {
-      title: 'Ajedrez 960',
+      title: 'CHESS960.title',
       icon: 'shuffle-outline',
       route: '/chess960',
       enabled: true,
     },
     {
-      title: 'Historial de Planes',
+      title: 'PLANS_HISTORY.title',
       icon: 'time-outline',
       route: '/puzzles/plans-history',
       enabled: true,
     },
     {
-      title: 'Donar',
+      title: 'APP.components.donate',
       icon: 'heart-outline',
       route: '/donation',
       enabled: true,

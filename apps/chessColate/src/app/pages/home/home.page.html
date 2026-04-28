@@ -201,14 +201,14 @@
           <div class="w-[35%] bg-base-200 flex flex-col items-center justify-center p-4 relative overflow-hidden">
             <div class="absolute left-0 top-0 bottom-0 w-1 bg-warning rounded-r-sm"></div>
             <h2 class="text-4xl md:text-5xl font-black text-warning tracking-tighter z-10 italic">333</h2>
-            <span class="text-[9px] md:text-xs text-base-content/40 font-bold uppercase tracking-widest mt-1 z-10 text-center">Survival</span>
+            <span class="text-[9px] md:text-xs text-base-content/40 font-bold uppercase tracking-widest mt-1 z-10 text-center">{{ 'RETO_333.survival' | transloco }}</span>
           </div>
 
           <!-- Contenido Principal Derecho -->
           <div class="w-[65%] p-4 flex flex-col justify-between">
             <div>
               <div class="flex items-center justify-between mb-2">
-                <div class="badge badge-sm badge-warning badge-outline font-semibold">Mate en 1</div>
+                <div class="badge badge-sm badge-warning badge-outline font-semibold">{{ 'RETO_333.mateIn1' | transloco }}</div>
                 @if (reto333Stats) {
                   <div class="badge badge-sm text-warning font-bold px-2">
                     <ion-icon name="cellular-outline" class="mr-1"></ion-icon> ELO {{ reto333Stats.maxElo }}
@@ -220,13 +220,13 @@
                 <!-- Stats modernas en Grid -->
                 <div class="grid grid-cols-2 gap-2 mt-3 mb-1">
                   <div class="flex flex-col bg-base-200/50 p-2 rounded-xl border border-base-content/5">
-                    <span class="text-[9px] uppercase tracking-wider text-base-content/50 font-semibold mb-0.5">Racha</span>
+                    <span class="text-[9px] uppercase tracking-wider text-base-content/50 font-semibold mb-0.5">{{ 'RETO_333.streak' | transloco }}</span>
                     <span class="font-bold text-sm md:text-base leading-none text-base-content">
                       {{ reto333Stats.lastScore }}<span class="text-[10px] text-base-content/40 ml-0.5">/333</span>
                     </span>
                   </div>
                   <div class="flex flex-col bg-base-200/50 p-2 rounded-xl border border-base-content/5">
-                    <span class="text-[9px] uppercase tracking-wider text-base-content/50 font-semibold mb-0.5">Tiempo</span>
+                    <span class="text-[9px] uppercase tracking-wider text-base-content/50 font-semibold mb-0.5">{{ 'RETO_333.time' | transloco }}</span>
                     <span class="font-bold text-sm md:text-base leading-none text-info">
                       {{ reto333Stats.timeString }}
                     </span>
@@ -236,23 +236,23 @@
                 @if (reto333Stats.completed) {
                   <div class="px-2 py-1 mt-1 bg-success/10 border border-success/20 rounded-lg flex items-center justify-center gap-1.5 text-success">
                     <ion-icon name="trophy"></ion-icon>
-                    <span class="text-[10px] md:text-xs font-bold uppercase tracking-widest">¡Reto Coronado!</span>
+                    <span class="text-[10px] md:text-xs font-bold uppercase tracking-widest">{{ 'RETO_333.crowned' | transloco }}</span>
                   </div>
                 }
               } @else {
                 <div class="my-1">
                   <h3 class="text-sm md:text-base font-bold leading-tight text-base-content">
-                    El Desafío Definitivo
+                    {{ 'RETO_333.title' | transloco }}
                   </h3>
                   <p class="text-[11px] md:text-sm text-base-content/60 leading-snug mt-1.5">
-                    Resuelve 333 problemas seguidos sin cometer un solo error.
+                    {{ 'RETO_333.description' | transloco }}
                   </p>
                 </div>
               }
             </div>
 
             <button class="btn btn-warning btn-xs w-full mt-3 font-bold shadow-md">
-              {{ reto333Stats ? 'Intentar de Nuevo' : 'Aceptar Reto' }}
+              {{ (reto333Stats ? 'RETO_333.tryAgain' : 'RETO_333.acceptChallenge') | transloco }}
             </button>
           </div>
         </div>
@@ -272,8 +272,8 @@
             </figure>
             <div class="card-body p-4 flex flex-row items-center justify-between w-full">
               <div class="text-left">
-                <h4 class="font-bold text-base md:text-lg">Método del Pájaro Carpintero</h4>
-                <div class="text-sm text-base-content/60">Próximamente...</div>
+                <h4 class="font-bold text-base md:text-lg">{{ 'DONATION.homeCard.woodpeckerTitle' | transloco }}</h4>
+                <div class="text-sm text-base-content/60">{{ 'DONATION.homeCard.comingSoon' | transloco }}</div>
               </div>
               <div class="badge badge-primary badge-outline text-xs md:text-sm">Pro</div>
             </div>
