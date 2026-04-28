@@ -209,11 +209,6 @@
             <div>
               <div class="flex items-center justify-between mb-2">
                 <div class="badge badge-sm badge-warning badge-outline font-semibold">{{ 'RETO_333.mateIn1' | transloco }}</div>
-                @if (reto333Stats) {
-                  <div class="badge badge-sm text-warning font-bold px-2">
-                    <ion-icon name="cellular-outline" class="mr-1"></ion-icon> ELO {{ reto333Stats.maxElo }}
-                  </div>
-                }
               </div>
 
               @if (reto333Stats) {
@@ -292,7 +287,6 @@
               <p class="text-xs md:text-sm text-base-content/80 leading-snug"
                 [innerHTML]="'DONATION.homeCard.description' | transloco"></p>
               <a [routerLink]="['/donation']" class="btn btn-primary w-full mt-2 shadow-sm">
-                <ion-icon name="cafe-outline" class="text-lg"></ion-icon>
                 {{ 'DONATION.homeCard.button' | transloco }}
               </a>
             </div>

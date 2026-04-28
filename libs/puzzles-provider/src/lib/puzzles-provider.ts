@@ -195,8 +195,7 @@ export class PuzzlesProvider {
       const response = await fetch(url);
 
       if (!response.ok) {
-        if (response.status === 404) {
-          // Archivo no encontrado es esperado para algunos rangos de ELO
+        if (response.status === 404 || response.status === 403) {
           return [];
         }
         throw new Error(`HTTP error! status: ${response.status}`);

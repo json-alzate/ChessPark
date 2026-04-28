@@ -415,7 +415,12 @@ export class TrainingComponent implements OnInit, OnDestroy {
       this.blockService
         .getPuzzlesForBlock(currentBlock)
         .then((puzzlesToAdd: Puzzle[]) => {
-          this.plan.blocks[this.currentIndexBlock].puzzles = [...puzzlesToAdd];
+          if (puzzlesToAdd.length > 0) {
+            this.plan.blocks[this.currentIndexBlock].puzzles = [...puzzlesToAdd];
+          }
+        })
+        .catch((error) => {
+          console.error('Error cargando más puzzles:', error);
         });
     }
 
