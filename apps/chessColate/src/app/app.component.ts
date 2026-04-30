@@ -16,7 +16,9 @@ import {
   closeOutline,
   checkmarkDoneOutline,
   notificationsOffOutline,
-  checkmarkOutline
+  checkmarkOutline,
+  createOutline,
+  globeOutline,
 } from 'ionicons/icons';
 import {
   IonMenu,
@@ -149,6 +151,18 @@ export class AppComponent implements OnInit, OnDestroy {
       enabled: true,
     },
     {
+      title: 'CUSTOM_PLANS.listTitle',
+      icon: 'create-outline',
+      route: '/puzzles/custom-plans',
+      enabled: true,
+    },
+    {
+      title: 'PUBLIC_PLANS.title',
+      icon: 'globe-outline',
+      route: '/puzzles/public-plans',
+      enabled: true,
+    },
+    {
       title: 'APP.components.donate',
       icon: 'heart-outline',
       route: '/donation',
@@ -183,7 +197,9 @@ export class AppComponent implements OnInit, OnDestroy {
       'close-outline': closeOutline,
       'checkmark-done-outline': checkmarkDoneOutline,
       'notifications-off-outline': notificationsOffOutline,
-      'checkmark-outline': checkmarkOutline
+      'checkmark-outline': checkmarkOutline,
+      'create-outline': createOutline,
+      'globe-outline': globeOutline,
     });
     this.initApp();
   }

@@ -265,7 +265,7 @@
     "list": "List"
   },
   "PLANS_HISTORY": {
-    "title": "Plans history",
+    "title": "Routines history",
     "more": "All history",
     "empty": "No saved plans",
     "emptyDescription": "Plans you complete will be automatically saved here",
