@@ -172,3 +172,15 @@
 .main-container {
   @apply min-h-screen flex flex-col bg-base-200;
 }
+
+/* Modal de configuración de coordenadas: ajustes para desktop */
+@media (min-width: 1024px) {
+  ion-modal.settings-modal::part(handle) {
+    display: none;
+  }
+
+  ion-modal.settings-modal::part(content) {
+    border-radius: 16px;
+    animation: none;
+  }
+}

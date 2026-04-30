@@ -3,9 +3,10 @@
 
     <app-navbar></app-navbar>
 
-    <div class="container mx-auto px-2 pb-6">
-      <!-- Header con navegación y título -->
-      <div class="mb-6">
+    <div class="container mx-auto px-2 pb-6 lg:px-6">
+
+      <!-- Header con navegación y título — mismo ancho centrado que el cuerpo -->
+      <div class="mb-4 lg:max-w-[872px] lg:mx-auto">
         <div class="flex items-center justify-between mb-2">
           <div class="breadcrumbs">
             <ul>
@@ -29,66 +30,72 @@
         </div>
       </div>
 
-      <ion-grid class="ion-margin-top">
-        <ion-row>
-          <ion-col size="12" size-sm="12" size-md="12" size-lg="6" size-xl="6" offset-lg="2" offset-xl="2">
+      <!-- Body: 1 columna en mobile, 2 columnas en desktop -->
+      <div class="lg:flex lg:justify-center lg:gap-8 lg:items-start">
+
+        <!-- COLUMNA IZQUIERDA: Tablero + Timer -->
+        <div class="lg:w-[480px] lg:flex-shrink-0">
+          <!-- Wrapper relative para el overlay del puzzle actual -->
+          <div class="relative">
             <lib-board (squareSelected)="onSquareSelected($event)"></lib-board>
             @if (currentPuzzle) {
             <h1 class="current-puzzle">{{ currentPuzzle }}</h1>
             }
+          </div>
 
-            <!-- Componente Timer -->
-            <app-timer [time]="time" [progressValue]="progressValue" [timeColor]="timeColor"
-              [infiniteMode]="gameSettings.infiniteMode"></app-timer>
-          </ion-col>
+          <!-- Timer -->
+          <app-timer [time]="time" [progressValue]="progressValue" [timeColor]="timeColor"
+            [infiniteMode]="gameSettings.infiniteMode"></app-timer>
+        </div>
 
-          <ion-col size="12" size-sm="12" size-md="12" size-lg="4" size-xl="4">
-            <!-- Componente Controles de Orientación -->
-            <app-board-orientation-controls [boardOrientation]="boardOrientation" [isPlaying]="isPlaying"
-              (orientationChange)="changeBoardOrientation($event)"></app-board-orientation-controls>
+        <!-- COLUMNA DERECHA: Controles -->
+        <div class="flex flex-col gap-2 mt-2 lg:mt-0 lg:w-[360px] lg:flex-shrink-0">
 
-            @if (isPlaying) {
-            <!-- Componente Avatar del Rey -->
-            <app-king-avatar [currentColorInBoard]="currentColorInBoard" [showLabel]="true" [showRecord]="true"
-              size="md"
-              [bestScore]="getBestScoreByColor(currentColorInBoard === 'white' ? 'w' : 'b')"></app-king-avatar>
-            }
+          <!-- Controles de orientación (solo si !isPlaying) -->
+          <app-board-orientation-controls [boardOrientation]="boardOrientation" [isPlaying]="isPlaying"
+            (orientationChange)="changeBoardOrientation($event)"></app-board-orientation-controls>
 
-            <div class="flex flex-col justify-center gap-2 mt-2">
-              @if (!isPlaying) {
-              <button class="btn btn-lg btn-primary w-full" (click)="play()">
-                {{ 'COORDINATES.actions.play' | transloco }}
-              </button>
+          @if (isPlaying) {
+          <!-- Avatar del Rey -->
+          <app-king-avatar [currentColorInBoard]="currentColorInBoard" [showLabel]="true" [showRecord]="true"
+            size="md"
+            [bestScore]="getBestScoreByColor(currentColorInBoard === 'white' ? 'w' : 'b')"></app-king-avatar>
+          }
 
-              <!-- Componente Scoreboard -->
-              <app-scoreboard [bestScores]="bestScores" [userStats]="userStats"></app-scoreboard>
-              }
+          @if (!isPlaying) {
+          <button class="btn btn-lg btn-primary w-full" (click)="play()">
+            {{ 'COORDINATES.actions.play' | transloco }}
+          </button>
 
-              <!-- Componente Estadísticas del Juego -->
-              <app-game-stats [currentGameStats]="currentGameStats" [isPlaying]="isPlaying"></app-game-stats>
+          <!-- Scoreboard -->
+          <app-scoreboard [bestScores]="bestScores" [userStats]="userStats"></app-scoreboard>
+          }
 
-              @if (isPlaying && gameSettings.infiniteMode) {
-              <div class="flex justify-center" (click)="stopGame()">
-                <button class="btn btn-error w-50">
-                  {{ 'COORDINATES.actions.stopGame' | transloco }}
-                </button>
-              </div>
-              }
-            </div>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
+          <!-- Estadísticas del juego actual -->
+          <app-game-stats [currentGameStats]="currentGameStats" [isPlaying]="isPlaying"></app-game-stats>
+
+          @if (isPlaying && gameSettings.infiniteMode) {
+          <div class="flex justify-center" (click)="stopGame()">
+            <button class="btn btn-error w-50">
+              {{ 'COORDINATES.actions.stopGame' | transloco }}
+            </button>
+          </div>
+          }
+        </div>
+
+      </div>
     </div>
   </div>
 
-  <!-- Componente Modal de Resultados -->
+  <!-- Modal de Resultados -->
   <app-game-results-modal #resultsModal [isNewRecord]="isNewRecord" [recordType]="recordType" [score]="score"
     [squaresGood]="squaresGood" [squaresBad]="squaresBad" [currentColorInBoard]="currentColorInBoard"
     [currentGameStats]="currentGameStats"
     [bestScoreByColor]="getBestScoreByColor(currentColorInBoard === 'white' ? 'w' : 'b')"
     (closeModal)="closeResultsModal()"></app-game-results-modal>
 
-  <!-- Componente Menú Lateral de Configuración -->
+  <!-- Menú Lateral de Configuración -->
   <app-settings-side-menu [settings]="gameSettings" [isPlaying]="isPlaying" [appVersion]="'v1.0.2'"
     (settingsChange)="onSettingsChange($event)"></app-settings-side-menu>
+
 </ion-content>
