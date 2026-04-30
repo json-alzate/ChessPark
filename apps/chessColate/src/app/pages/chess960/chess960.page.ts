@@ -6,9 +6,6 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 import {
   IonContent,
-  IonGrid,
-  IonRow,
-  IonCol,
   IonIcon,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -37,9 +34,6 @@ interface Chess960Position {
     IonContent,
     Chess960Board,
     NavbarComponent,
-    IonGrid,
-    IonRow,
-    IonCol,
     IonIcon,
     TranslocoPipe,
   ],

@@ -2,14 +2,15 @@
   <div class="main-container" data-theme="halloween">
     <app-navbar></app-navbar>
 
-    <div class="container mx-auto px-2 pb-6">
-      <!-- Header con navegación y título -->
-      <div class="mb-4">
+    <div class="container mx-auto px-2 pb-6 lg:px-6">
+
+      <!-- Header -->
+      <div class="mb-4 lg:max-w-[872px] lg:mx-auto">
         <div class="flex items-center justify-between mb-2">
           <div class="breadcrumbs">
             <ul>
               <li>
-                <a (click)="goToHome()" class="cursor-pointer text-sm">
+                <a (click)="goToHome()" class="cursor-pointer text-sm gap-2">
                   <ion-icon name="home-outline" class="h-4 w-4"></ion-icon>
                   <span>{{ 'MENU.navigation.home' | transloco }}</span>
                 </a>
@@ -23,73 +24,74 @@
         </p>
       </div>
 
-      <ion-grid class="ion-margin-top">
-        <ion-row>
-          <!-- Tablero y controles principales -->
-          <ion-col size="12" size-sm="12" size-md="12" size-lg="6" size-xl="6">
-            <!-- Tablero -->
-            <div class="mb-4">
-              @if (!isLoading) {
-              <lib-chess960-board
-                [boardConfig]="{ position: currentFen }"
-              ></lib-chess960-board>
-              } @else {
-              <div class="flex justify-center items-center h-64">
-                <span class="loading loading-spinner loading-lg"></span>
-              </div>
-              }
-            </div>
+      <!-- Body: 1 columna en mobile, 2 columnas en desktop -->
+      <div class="lg:flex lg:justify-center lg:gap-8 lg:items-start">
 
-            <!-- Controles -->
-            <div class="card bg-base-100 shadow-sm mb-4">
-              <div class="card-body">
-                <div class="flex items-end gap-4">
-                  <div class="form-control flex-1">
-                    <label class="label">
-                      <span class="label-text font-bold"
-                        >{{ 'CHESS960.controls.positionLabel' | transloco
-                        }}</span
-                      >
-                    </label>
-                    <input
-                      type="number"
-                      [(ngModel)]="currentPositionId"
-                      (ngModelChange)="onIdChange()"
-                      min="0"
-                      max="959"
-                      class="input input-bordered w-full"
-                    />
-                  </div>
-                  <button class="btn btn-primary" (click)="randomizePosition()">
-                    <ion-icon name="shuffle-outline"></ion-icon>
-                    {{ 'CHESS960.controls.randomButton' | transloco }}
-                  </button>
-                </div>
-                <div class="text-xs text-base-content/60 mt-2">
-                  {{ 'CHESS960.controls.standardInfo' | transloco }}
-                </div>
-              </div>
-            </div>
-          </ion-col>
+        <!-- COLUMNA IZQUIERDA: Tablero + controles -->
+        <div class="lg:w-[480px] lg:flex-shrink-0">
 
-          <!-- Panel de configuración e información -->
-          <ion-col size="12" size-sm="12" size-md="12" size-lg="6" size-xl="6">
-            <!-- Instrucciones -->
-            <div class="card bg-base-100 shadow-sm">
-              <div class="card-body">
-                <h3 class="text-lg font-semibold mb-2">
-                  {{ 'CHESS960.rules.title' | transloco }}
-                </h3>
-                <ul class="text-sm text-base-content/70 space-y-2">
-                  <li>{{ 'CHESS960.rules.p1' | transloco }}</li>
-                  <li>{{ 'CHESS960.rules.p2' | transloco }}</li>
-                  <li>{{ 'CHESS960.rules.p3' | transloco }}</li>
-                </ul>
+          <!-- Tablero -->
+          <div class="mb-4">
+            @if (!isLoading) {
+            <lib-chess960-board
+              [boardConfig]="{ position: currentFen }"
+            ></lib-chess960-board>
+            } @else {
+            <div class="flex justify-center items-center h-64">
+              <span class="loading loading-spinner loading-lg"></span>
+            </div>
+            }
+          </div>
+
+        </div>
+
+        <!-- COLUMNA DERECHA: Controles + Instrucciones -->
+        <div class="lg:w-[360px] lg:flex-shrink-0">
+
+          <!-- Controles -->
+          <div class="card bg-base-100 shadow-sm mb-4">
+            <div class="card-body">
+              <div class="flex items-end gap-4">
+                <div class="form-control flex-1">
+                  <label class="label">
+                    <span class="label-text font-bold">{{ 'CHESS960.controls.positionLabel' | transloco }}</span>
+                  </label>
+                  <input
+                    type="number"
+                    [(ngModel)]="currentPositionId"
+                    (ngModelChange)="onIdChange()"
+                    min="0"
+                    max="959"
+                    class="input input-bordered w-full"
+                  />
+                </div>
+                <button class="btn btn-primary" (click)="randomizePosition()">
+                  <ion-icon name="shuffle-outline"></ion-icon>
+                  {{ 'CHESS960.controls.randomButton' | transloco }}
+                </button>
+              </div>
+              <div class="text-xs text-base-content/60 mt-2">
+                {{ 'CHESS960.controls.standardInfo' | transloco }}
               </div>
             </div>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
+          </div>
+
+          <!-- Instrucciones -->
+          <div class="card bg-base-100 shadow-sm">
+            <div class="card-body">
+              <h3 class="text-lg font-semibold mb-2">
+                {{ 'CHESS960.rules.title' | transloco }}
+              </h3>
+              <ul class="text-sm text-base-content/70 space-y-2">
+                <li>{{ 'CHESS960.rules.p1' | transloco }}</li>
+                <li>{{ 'CHESS960.rules.p2' | transloco }}</li>
+                <li>{{ 'CHESS960.rules.p3' | transloco }}</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
   </div>
 </ion-content>
