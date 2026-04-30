@@ -49,6 +49,13 @@
 
 
 
+  <div class="navbar-center hidden lg:flex">
+    <a (click)="router.navigate(['/home'])" class="flex items-center gap-2 cursor-pointer">
+      <img src="assets/images/home_icon.png" alt="ChessColate" class="h-7 object-contain" />
+      <span class="text-lg font-extrabold tracking-tight">ChessColate</span>
+    </a>
+  </div>
+
   <div class="navbar-end flex items-center gap-2">
     <button class="btn btn-ghost btn-circle btn-sm" (click)="navigateToDonation()"
       [title]="'APP.components.donate' | transloco" [attr.aria-label]="'APP.components.donate' | transloco"
