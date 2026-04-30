@@ -2,7 +2,8 @@
   <div class="main-container" data-theme="halloween">
     <app-navbar></app-navbar>
 
-    <div class="container mx-auto px-4 py-6 pb-32">
+    <div class="container mx-auto px-2 pb-32 lg:px-6">
+      <div class="lg:max-w-3xl lg:mx-auto">
 
       @if (loading) {
         <div class="flex justify-center py-8">
@@ -192,11 +193,11 @@
         </ng-template>
 
         <!-- Botones desktop -->
-        <div class="hidden md:flex flex-col gap-2 max-w-md mt-6">
+        <div class="hidden md:flex flex-col gap-2 mt-6">
           @if (isEditMode) {
             <button
               type="button"
-              class="btn btn-primary"
+              class="btn btn-primary w-full"
               [disabled]="blocks.length === 0 || nameControl.invalid || saving"
               (click)="saveAndPlay()"
             >
@@ -205,7 +206,7 @@
             </button>
             <button
               type="button"
-              class="btn btn-outline"
+              class="btn btn-outline w-full"
               [disabled]="blocks.length === 0 || nameControl.invalid || saving"
               (click)="save()"
             >
@@ -214,7 +215,7 @@
           } @else {
             <button
               type="button"
-              class="btn btn-primary"
+              class="btn btn-primary w-full"
               [disabled]="blocks.length === 0 || nameControl.invalid || saving"
               (click)="saveAndPlay()"
             >
@@ -225,6 +226,7 @@
         </div>
 
       }
+      </div>
     </div>
   </div>
 </ion-content>
