@@ -62,8 +62,13 @@
     </div>
 
     <!-- Version Info -->
-    <div class="p-4 mt-auto text-center border-t border-base-200">
+    <div class="p-4 mt-auto text-center border-t border-base-200 space-y-1">
       <p class="text-xs opacity-50">{{ 'APP.navigation.version' | transloco }} {{ version }}</p>
+      <ion-menu-toggle>
+        <a (click)="navigateTo('/privacy')" class="text-xs opacity-40 hover:opacity-70 cursor-pointer transition-opacity">
+          {{ 'APP.navigation.privacyPolicy' | transloco }}
+        </a>
+      </ion-menu-toggle>
     </div>
 
   </div>

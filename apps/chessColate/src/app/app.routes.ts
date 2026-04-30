@@ -95,4 +95,9 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/chess960/chess960.page').then((m) => m.Chess960Page),
   },
+  {
+    path: 'privacy',
+    loadComponent: () =>
+      import('./pages/privacy/privacy.page').then((m) => m.PrivacyPage),
+  },
 ];

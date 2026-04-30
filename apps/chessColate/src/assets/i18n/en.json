@@ -442,7 +442,8 @@
       "notifications": "Notifications",
       "noNotifications": "No notifications",
       "notifyWhenNew": "We'll notify you when you have new activities",
-      "markAllAsRead": "Mark all as read"
+      "markAllAsRead": "Mark all as read",
+      "privacyPolicy": "Privacy Policy"
     }
   },
   "CHESS960": {
