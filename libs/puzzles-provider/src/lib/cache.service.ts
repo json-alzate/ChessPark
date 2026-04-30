@@ -13,7 +13,7 @@ export class PuzzlesCacheService {
   private cacheExpirationMs: number;
   private enableCache: boolean;
 
-  constructor(enableCache = true, cacheExpirationMs = 7 * 24 * 60 * 60 * 1000) {
+  constructor(enableCache = true, cacheExpirationMs = 365 * 24 * 60 * 60 * 1000) {
     this.enableCache = enableCache;
     this.cacheExpirationMs = cacheExpirationMs;
     console.log('[PuzzlesCacheService] Constructor - enableCache:', enableCache, 'expiration:', cacheExpirationMs);
