@@ -56,6 +56,10 @@ import { add, shuffle, trendingDown, infiniteOutline, trashOutline, lockClosedOu
   styleUrl: './custom-plan-form.component.scss',
 })
 export class CustomPlanFormComponent implements OnInit, OnDestroy {
+  get isDesktop(): boolean {
+    return window.innerWidth >= 1024;
+  }
+
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private customPlansService = inject(CustomPlansService);
@@ -175,8 +179,10 @@ export class CustomPlanFormComponent implements OnInit, OnDestroy {
     if (this.blocks.length >= 5) return;
     const modal = await this.modalController.create({
       component: BlockSettingsComponent,
-      initialBreakpoint: 0.8,
-      breakpoints: [0, 0.25, 0.5, 0.75],
+      ...(this.isDesktop
+        ? { cssClass: 'block-settings-modal-desktop', presentingElement: undefined }
+        : { initialBreakpoint: 0.75, breakpoints: [0, 0.5, 0.75, 0.9] }
+      ),
     });
     await modal.present();
     const { data } = await modal.onDidDismiss();

@@ -185,6 +185,24 @@
   }
 }
 
+/* Modal de añadir bloque: diálogo centrado en desktop con altura fija y scroll interno */
+@media (min-width: 1024px) {
+  ion-modal.block-settings-modal-desktop {
+    --width: 540px;
+    --height: 85vh;
+    --border-radius: 16px;
+  }
+
+  ion-modal.block-settings-modal-desktop::part(handle) {
+    display: none;
+  }
+
+  ion-modal.block-settings-modal-desktop::part(content) {
+    border-radius: 16px;
+    animation: none;
+  }
+}
+
 /* Modal de configuración de knight-tour: ajustes para desktop */
 @media (min-width: 1024px) {
   ion-modal.kt-settings-modal {

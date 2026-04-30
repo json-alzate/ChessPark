@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ElementRef, ViewChild, inject } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -30,7 +30,8 @@ import { close, shuffle, trendingDown, infiniteOutline } from 'ionicons/icons';
   templateUrl: './block-settings.component.html',
   styleUrl: './block-settings.component.scss',
 })
-export class BlockSettingsComponent implements OnInit {
+export class BlockSettingsComponent implements OnInit, AfterViewInit {
+  @ViewChild('themeDetails') themeDetailsEl!: ElementRef<HTMLDetailsElement>;
   private formBuilder = inject(FormBuilder);
   private appService = inject(AppService);
   private modalController = inject(ModalController);
@@ -53,6 +54,14 @@ export class BlockSettingsComponent implements OnInit {
     this.buildForm();
     this.form.get('goshPuzzle')?.valueChanges.subscribe(() => {
       this.toggleFieldBasedOnBoolean('goshPuzzle', 'goshPuzzleTime');
+    });
+  }
+
+  ngAfterViewInit(): void {
+    this.form.get('theme')?.valueChanges.subscribe(() => {
+      if (this.themeDetailsEl?.nativeElement) {
+        this.themeDetailsEl.nativeElement.open = false;
+      }
     });
   }
 
