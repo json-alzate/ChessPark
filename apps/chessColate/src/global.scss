@@ -184,3 +184,21 @@
     animation: none;
   }
 }
+
+/* Modal de configuración de knight-tour: ajustes para desktop */
+@media (min-width: 1024px) {
+  ion-modal.kt-settings-modal {
+    --width: 460px;
+    --height: 320px;
+    --border-radius: 16px;
+  }
+
+  ion-modal.kt-settings-modal::part(handle) {
+    display: none;
+  }
+
+  ion-modal.kt-settings-modal::part(content) {
+    border-radius: 16px;
+    animation: none;
+  }
+}
