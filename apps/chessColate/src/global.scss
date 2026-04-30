@@ -185,6 +185,24 @@
   }
 }
 
+/* Modal de solución de puzzle: dos columnas en desktop */
+@media (min-width: 1024px) {
+  ion-modal.puzzle-solution-modal {
+    --width: 860px;
+    --height: 85vh;
+    --border-radius: 16px;
+  }
+
+  ion-modal.puzzle-solution-modal::part(handle) {
+    display: none;
+  }
+
+  ion-modal.puzzle-solution-modal::part(content) {
+    border-radius: 16px;
+    animation: none;
+  }
+}
+
 /* Modal de añadir bloque: diálogo centrado en desktop con altura fija y scroll interno */
 @media (min-width: 1024px) {
   ion-modal.block-settings-modal-desktop {

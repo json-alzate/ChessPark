@@ -333,6 +333,7 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
 
     const modal = await this.modalController.create({
       component: BoardPuzzleSolutionComponent,
+      cssClass: 'puzzle-solution-modal',
       componentProps: {
         puzzle,
         themesTranslated,

@@ -612,6 +612,7 @@ export class TrainingComponent implements OnInit, OnDestroy {
 
     const modal = await this.modalController.create({
       component: BoardPuzzleSolutionComponent,
+      cssClass: 'puzzle-solution-modal',
       componentProps: {
         puzzle: this.puzzleToPlay,
         themesTranslated,
@@ -714,6 +715,7 @@ export class TrainingComponent implements OnInit, OnDestroy {
 
     const modal = await this.modalController.create({
       component: BoardPuzzleSolutionComponent,
+      cssClass: 'puzzle-solution-modal',
       componentProps: {
         puzzle: this.puzzleToPlay,
         themesTranslated,

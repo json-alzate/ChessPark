@@ -102,6 +102,7 @@ export class HomePage implements OnInit, ViewWillEnter, ViewWillLeave {
 
     const modal = await this.modalController.create({
       component: BoardPuzzleSolutionComponent,
+      cssClass: 'puzzle-solution-modal',
       componentProps: {
         puzzle: this.infinitePuzzle,
         themesTranslated,

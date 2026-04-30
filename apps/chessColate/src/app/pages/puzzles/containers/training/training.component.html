@@ -124,16 +124,11 @@
       </div>
     </div>
 
-    <ion-row>
-      <ion-col
-        class="ion-margin-top"
-        size-xs="12"
-        size-sm="12"
-        size-md="12"
-        size-lg="6"
-        size-xl="6"
-        style="padding: 1.5px"
-      >
+    <!-- Body: 1 columna mobile, 2 columnas desktop -->
+    <div class="lg:flex lg:justify-center lg:gap-8 lg:items-start lg:px-6 lg:pt-4">
+
+      <!-- COLUMNA IZQUIERDA: Tablero -->
+      <div class="lg:w-[480px] lg:flex-shrink-0">
         <lib-board-puzzle
           [setPuzzle]="puzzleToPlay"
           [setForceStopTimer]="forceStopTimerInPuzzleBoard"
@@ -141,18 +136,10 @@
           (puzzleFailed)="onPuzzleCompleted($any($event), 'bad')"
           (puzzleEndByTime)="onPuzzleCompleted($any($event), 'timeOut')"
         ></lib-board-puzzle>
-      </ion-col>
+      </div>
 
-      <ion-col
-        size-xs="12"
-        size-sm="12"
-        size-md="12"
-        size-lg="6"
-        size-xl="6"
-        offset-lg="3"
-        offset-xl="3"
-        class="flex flex-col gap-2 p-4"
-      >
+      <!-- COLUMNA DERECHA: Info del jugador -->
+      <div class="flex flex-col gap-2 p-4 lg:p-0 lg:pt-2 lg:w-[360px] lg:flex-shrink-0">
         <div class="flex items-center gap-3">
           <img
             [src]="'assets/images/king-' + playerColor + '.svg'"
@@ -191,8 +178,9 @@
           </div>
         </ion-note>
         }
-      </ion-col>
-    </ion-row>
+      </div>
+
+    </div>
 
     <!-- Modal Reto 333 -->
     @if (showReto333DaisyModal) {
