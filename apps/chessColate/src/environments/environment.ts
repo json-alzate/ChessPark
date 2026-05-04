@@ -31,7 +31,8 @@ export const environment = {
   version: '2.0.0',
   // RevenueCat API Keys - Obtener desde RevenueCat Dashboard
   revenueCatApiKeyAndroid: (keys as any).revenueCat?.androidApiKey || '',
-  revenueCatApiKeyIos: (keys as any).revenueCat?.iosApiKey || ''
+  revenueCatApiKeyIos: (keys as any).revenueCat?.iosApiKey || '',
+  revenueCatApiKeyWeb: (keys as any).revenueCat?.webApiKey || ''
 };
 
 /*

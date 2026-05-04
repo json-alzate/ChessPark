@@ -86,9 +86,7 @@ export class DonationPage implements OnInit {
 
   ngOnInit() {
     this.isNativePlatform = Capacitor.isNativePlatform();
-    if (this.isNativePlatform) {
-      this.loadDonationOptions();
-    }
+    this.loadDonationOptions();
   }
 
   /**
@@ -132,11 +130,6 @@ export class DonationPage implements OnInit {
    * Procesa una donación seleccionada
    */
   async processDonation(option: DonationOption) {
-    if (!this.isNativePlatform) {
-      this.showToast('Las donaciones solo están disponibles en dispositivos móviles', 'warning');
-      return;
-    }
-
     // Buscar el package correspondiente
     const packageToPurchase = this.availablePackages.find(
       (pkg) => pkg.identifier === option.packageIdentifier
@@ -195,11 +188,6 @@ export class DonationPage implements OnInit {
    * Restaura compras previas
    */
   async restorePurchases() {
-    if (!this.isNativePlatform) {
-      this.showToast('Las donaciones solo están disponibles en dispositivos móviles', 'warning');
-      return;
-    }
-
     const loading = await this.loadingController.create({
       message: 'Restaurando compras...',
       spinner: 'crescent',

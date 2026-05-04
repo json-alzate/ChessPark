@@ -54,6 +54,7 @@
     "@ngrx/store-devtools": "^20.0.0",
     "@nx/devkit": "21.2.1",
     "@revenuecat/purchases-capacitor": "^10.0.0",
+    "@revenuecat/purchases-js": "^1.38.0",
     "canvas-confetti": "^1.9.3",
     "chart.js": "^4.5.0",
     "chess.js": "^1.4.0",

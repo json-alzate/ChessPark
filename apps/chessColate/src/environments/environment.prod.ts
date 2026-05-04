@@ -7,5 +7,6 @@ export const environment = {
   apiPuzzlesUrl: 'https://puzzles.chesscolate.com/puzzles/',
   version: '2.0.0',
   revenueCatApiKeyAndroid: (keys as any).revenueCat?.androidApiKey || '',
-  revenueCatApiKeyIos: (keys as any).revenueCat?.iosApiKey || ''
+  revenueCatApiKeyIos: (keys as any).revenueCat?.iosApiKey || '',
+  revenueCatApiKeyWeb: (keys as any).revenueCat?.webApiKey || ''
 };
