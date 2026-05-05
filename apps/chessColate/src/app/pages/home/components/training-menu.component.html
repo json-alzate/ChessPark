@@ -33,7 +33,7 @@
         class="card bg-base-100 shadow-sm cursor-pointer hover:shadow-md hover:-translate-y-0.5 transition-all active:scale-[0.98]"
         (click)="createPlan(plan)">
         <figure class="p-4">
-            <img src="assets/images/plan-icons/plan{{plan}}.png" alt="plan{{plan}}" class="h-24 w-auto object-contain" />
+            <img src="assets/images/plan-icons/plan{{plan}}.png" alt="plan{{plan}}" class="h-24 lg:h-36 w-auto object-contain" />
         </figure>
         <div class="card-body p-3 pt-0 flex flex-row justify-between items-center w-full">
             <div class="text-sm font-medium" [class.opacity-50]="isEloProvisional(plan)">

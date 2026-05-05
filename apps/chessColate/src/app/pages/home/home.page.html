@@ -340,9 +340,9 @@
           </div>
 
           <!-- Sección de Donación -->
-          <div class="px-2 mt-4 mb-8 lg:mt-0 lg:mb-4">
+          <!-- Mobile: tarjeta completa -->
+          <div class="px-2 mt-4 mb-8 lg:hidden">
             <div class="relative overflow-hidden rounded-2xl">
-              <!-- Tarjeta de fondo estilo "Método del Pájaro Carpintero" (Borrosa/Opaca) -->
               <div class="opacity-40 pointer-events-none blur-[1px]">
                 <div class="card bg-base-100 shadow-sm border border-base-200">
                   <figure class="p-6 bg-base-200/30">
@@ -358,8 +358,6 @@
                   </div>
                 </div>
               </div>
-
-              <!-- Overlay con el mensaje de Donación -->
               <div
                 class="absolute inset-0 flex items-center justify-center bg-base-100/60 backdrop-blur-sm z-10 pointer-events-auto">
                 <div class="card bg-base-200 shadow-xl max-w-sm mx-4 border border-base-300">
@@ -377,6 +375,17 @@
                 </div>
               </div>
             </div>
+          </div>
+          <!-- Desktop: strip compacto -->
+          <div class="hidden lg:flex items-center gap-3 mt-2 px-3 py-3 bg-base-100 rounded-xl shadow-sm border border-base-200">
+            <ion-icon name="heart" class="text-error text-xl flex-shrink-0"></ion-icon>
+            <div class="flex-1 min-w-0">
+              <p class="font-bold text-sm leading-tight">{{ 'DONATION.homeCard.title' | transloco }}</p>
+              <p class="text-xs text-base-content/60 line-clamp-1" [innerHTML]="'DONATION.homeCard.description' | transloco"></p>
+            </div>
+            <a [routerLink]="['/donation']" class="btn btn-primary btn-sm flex-shrink-0 shadow-sm">
+              {{ 'DONATION.homeCard.button' | transloco }}
+            </a>
           </div>
 
         </div>
