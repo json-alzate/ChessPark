@@ -1,3 +1,4 @@
+import { DEFAULT_CONFIG } from './constants';
 import { CacheEntry, InfinityPoolEntry, Puzzle } from './types';
 
 /**
@@ -10,6 +11,7 @@ export class PuzzlesCacheService {
   private readonly STORE_NAME = 'puzzlesCache';
   private readonly INDEX_STORE_NAME = 'puzzlesIndex';
   private readonly POOL_STORE_NAME = 'infinityPool';
+  private readonly staleThresholdMs = DEFAULT_CONFIG.CACHE_STALE_THRESHOLD_MS;
   private db: IDBDatabase | null = null;
   private cacheExpirationMs: number;
   private enableCache: boolean;
@@ -95,6 +97,7 @@ export class PuzzlesCacheService {
             this.deleteCachedPuzzles(url).catch(console.error);
             resolve(false);
           } else {
+            this.updateLastAccessed(url).catch(console.error);
             resolve(true);
           }
         };
@@ -137,6 +140,7 @@ export class PuzzlesCacheService {
             this.deleteCachedPuzzles(url).catch(console.error);
             resolve(null);
           } else {
+            this.updateLastAccessed(url).catch(console.error);
             resolve(entry.puzzles);
           }
         };
@@ -159,10 +163,12 @@ export class PuzzlesCacheService {
     if (!this.enableCache || !this.db) return;
 
     try {
+      const now = Date.now();
       const entry: CacheEntry = {
         url,
         puzzles,
-        timestamp: Date.now(),
+        timestamp: now,
+        lastAccessedAt: now,
       };
 
       const transaction = this.db.transaction([this.STORE_NAME, this.INDEX_STORE_NAME], 'readwrite');
@@ -252,6 +258,74 @@ export class PuzzlesCacheService {
       });
     } catch (error) {
       console.error('Error en getCacheSize:', error);
+      return 0;
+    }
+  }
+
+  /**
+   * Actualiza lastAccessedAt de una entrada sin bloquear la lectura
+   */
+  private async updateLastAccessed(url: string): Promise<void> {
+    if (!this.db) return;
+    try {
+      const transaction = this.db.transaction([this.STORE_NAME], 'readwrite');
+      const store = transaction.objectStore(this.STORE_NAME);
+      const request = store.get(url);
+      request.onsuccess = () => {
+        const entry: CacheEntry | undefined = request.result;
+        if (entry) {
+          entry.lastAccessedAt = Date.now();
+          store.put(entry);
+        }
+      };
+    } catch (error) {
+      console.error('[PuzzlesCacheService] Error en updateLastAccessed:', error);
+    }
+  }
+
+  /**
+   * Elimina entradas no accedidas en más de staleThresholdMs (90 días).
+   * Llama esto al inicializar para limpiar archivos de ELOs abandonados.
+   * Retorna la cantidad de entradas eliminadas.
+   */
+  async evictStaleEntries(): Promise<number> {
+    if (!this.enableCache || !this.db) return 0;
+
+    const now = Date.now();
+    let evicted = 0;
+
+    try {
+      const transaction = this.db.transaction([this.STORE_NAME, this.INDEX_STORE_NAME], 'readwrite');
+      const store = transaction.objectStore(this.STORE_NAME);
+      const indexStore = transaction.objectStore(this.INDEX_STORE_NAME);
+
+      return new Promise((resolve) => {
+        const cursorReq = store.openCursor();
+        cursorReq.onsuccess = (event) => {
+          const cursor = (event.target as IDBRequest<IDBCursorWithValue>).result;
+          if (!cursor) {
+            if (evicted > 0) {
+              console.log(`[PuzzlesCacheService] evictStaleEntries: ${evicted} entradas eliminadas`);
+            }
+            resolve(evicted);
+            return;
+          }
+
+          const entry: CacheEntry = cursor.value;
+          const lastAccessed = entry.lastAccessedAt ?? entry.timestamp;
+
+          if (now - lastAccessed > this.staleThresholdMs) {
+            cursor.delete();
+            indexStore.delete(entry.url);
+            evicted++;
+          }
+
+          cursor.continue();
+        };
+        cursorReq.onerror = () => resolve(evicted);
+      });
+    } catch (error) {
+      console.error('[PuzzlesCacheService] Error en evictStaleEntries:', error);
       return 0;
     }
   }

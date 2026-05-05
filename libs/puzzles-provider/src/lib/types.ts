@@ -82,6 +82,7 @@ export interface CacheEntry {
   url: string;
   puzzles: Puzzle[];
   timestamp: number;
+  lastAccessedAt?: number;
 }
 
 /**

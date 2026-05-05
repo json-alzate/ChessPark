@@ -40,6 +40,7 @@ export class PuzzlesProvider {
    */
   async init(): Promise<void> {
     await this.cacheService.init();
+    this.cacheService.evictStaleEntries().catch(console.warn);
   }
 
   /**
