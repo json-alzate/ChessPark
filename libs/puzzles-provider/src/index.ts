@@ -12,6 +12,7 @@ export type {
   PuzzlesIndex,
   PuzzlesProviderConfig,
   CacheEntry,
+  InfinityPoolEntry,
 } from './lib/types';
 
 // Exportar constantes

@@ -25,6 +25,7 @@ import {
 // services
 import { AppService } from '@services/app.service';
 import { BlockService } from '@services/block.service';
+import { InfinityPuzzlePoolService } from '@services/infinity-puzzle-pool.service';
 import { ProfileService } from '@services/profile.service';
 import { PlanFacadeService } from '@cpark/state';
 import { PlansElosService } from '@services/plans-elos.service';
@@ -85,6 +86,7 @@ export class TrainingComponent implements OnInit, OnDestroy {
   private soundsService = inject(SoundsService);
   private planService = inject(PlanService);
   private loadingController = inject(LoadingController);
+  private infinityPoolService = inject(InfinityPuzzlePoolService);
 
   // Subject para gestionar suscripciones
   private destroy$ = new Subject<void>();
@@ -376,13 +378,7 @@ export class TrainingComponent implements OnInit, OnDestroy {
     });
   }
 
-  selectPuzzleToPlay() {
-    console.log(
-      'block index ',
-      this.currentIndexBlock,
-      ' count puzzles played',
-      this.countPuzzlesPlayedBlock
-    );
+  async selectPuzzleToPlay() {
     // se valida si se ha llegado al final del plan
     if (this.currentIndexBlock === this.plan.blocks.length) {
       this.endPlan();
@@ -405,10 +401,10 @@ export class TrainingComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // calcular si queda menos de 10 puzzles por jugar, para cargar mas puzzles
+    // Para planes que no son infinity: precargar más puzzles cuando quedan menos de 10
     const puzzlesLeftToPlay =
       (currentBlock.puzzles?.length ?? 0) - this.countPuzzlesPlayedBlock;
-    if (puzzlesLeftToPlay < 10) {
+    if (puzzlesLeftToPlay < 10 && this.plan.planType !== 'infinity') {
       if (this.plan.planType === 'reto333') {
         currentBlock.elo = this.reto333EloLocal;
       }
@@ -416,7 +412,7 @@ export class TrainingComponent implements OnInit, OnDestroy {
         .getPuzzlesForBlock(currentBlock)
         .then((puzzlesToAdd: Puzzle[]) => {
           if (puzzlesToAdd.length > 0) {
-            this.plan.blocks[this.currentIndexBlock].puzzles = [...puzzlesToAdd];
+            currentBlock.puzzles = [...puzzlesToAdd];
           }
         })
         .catch((error) => {
@@ -424,7 +420,23 @@ export class TrainingComponent implements OnInit, OnDestroy {
         });
     }
 
-    const puzzleSource = currentBlock.puzzles?.[this.countPuzzlesPlayedBlock];
+    // Para infinity: el siguiente puzzle se obtiene del pool en el momento que se necesita
+    currentBlock.puzzles ??= [];
+    let puzzleSource = currentBlock.puzzles[this.countPuzzlesPlayedBlock];
+    if (!puzzleSource && this.plan.planType === 'infinity') {
+      const nextPuzzle = await this.infinityPoolService.popOnePuzzle();
+      if (nextPuzzle) {
+        currentBlock.puzzles.push(nextPuzzle);
+        puzzleSource = nextPuzzle;
+      } else {
+        const fallback = await this.blockService.getPuzzlesForBlock(currentBlock);
+        if (fallback.length > 0) {
+          currentBlock.puzzles.push(...fallback);
+          puzzleSource = currentBlock.puzzles[this.countPuzzlesPlayedBlock];
+        }
+      }
+    }
+
     if (!puzzleSource) {
       console.warn('No hay puzzle disponible para el índice actual', {
         currentIndexBlock: this.currentIndexBlock,
@@ -443,10 +455,21 @@ export class TrainingComponent implements OnInit, OnDestroy {
     }
 
     this.puzzleToPlay = puzzle;
-    // Siempre verificar si el puzzle es a la ciegas para mostrar el mensaje
     this.isGoshHelperShow = !!(
       puzzle.goshPuzzleTime && puzzle.goshPuzzleTime > 0
     );
+
+    // Pre-fetch del siguiente puzzle del pool en background (para que esté listo sin espera)
+    if (this.plan.planType === 'infinity') {
+      const nextIdx = this.countPuzzlesPlayedBlock + 1;
+      if (!currentBlock.puzzles[nextIdx]) {
+        this.infinityPoolService.popOnePuzzle().then(next => {
+          if (next) {
+            currentBlock.puzzles!.push(next);
+          }
+        });
+      }
+    }
   }
 
   initTimeToEndBlock(timeBlock: number) {

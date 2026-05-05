@@ -108,6 +108,14 @@ export interface User {
         backToCalmMax?: {
             [key: string]: number;
         };
+        infinityTotal?: number;
+        infinity?: {
+            [key: string]: number;
+        };
+        infinityMaxTotal?: number;
+        infinityMax?: {
+            [key: string]: number;
+        };
     };
     createAt: number;
 }

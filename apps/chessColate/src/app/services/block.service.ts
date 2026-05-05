@@ -728,7 +728,7 @@ export class BlockService {
               time: -1,
               puzzlesCount: 0,
               theme: this.getRandomTheme(),
-              elo: defaultElo,
+              elo: this.profileService.getEloTotalByPlanType('infinity'),
               color: Math.random() > 0.5 ? 'white' : 'black',
               puzzlesPlayed: [],
               nextPuzzleImmediately: true,

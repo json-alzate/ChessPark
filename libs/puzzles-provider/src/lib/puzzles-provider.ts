@@ -81,7 +81,6 @@ export class PuzzlesProvider {
 
     if (!theme && !openingFamily) {
       theme = this.getRandomTheme();
-      console.log(`No se especificó tema ni apertura, usando tema aleatorio: ${theme}`);
     }
 
     // Generar secuencia de ELOs para buscar
@@ -168,13 +167,11 @@ export class PuzzlesProvider {
     if (this.config.enableCache) {
       const cached = await this.cacheService.getCachedPuzzles(url);
       if (cached && cached.length > 0) {
-        console.log(`[PuzzlesProvider] Usando puzzles cacheados para ELO ${elo}, count: ${cached.length}`);
         return cached;
       }
     }
 
     // Si no está en caché, descargar desde CDN (con control de concurrencia)
-    console.log(`[PuzzlesProvider] Descargando puzzles desde CDN para ELO ${elo}: ${url}`);
     const puzzles = await this.fetchFromCDN(url);
 
     // Cachear para uso futuro (no bloquear)
@@ -245,6 +242,13 @@ export class PuzzlesProvider {
   private getRandomTheme(): string {
     const randomIndex = Math.floor(Math.random() * AVAILABLE_THEMES.length);
     return AVAILABLE_THEMES[randomIndex];
+  }
+
+  /**
+   * Expone la instancia ya inicializada de PuzzlesCacheService
+   */
+  getCacheService(): PuzzlesCacheService {
+    return this.cacheService;
   }
 
   /**
