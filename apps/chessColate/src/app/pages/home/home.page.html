@@ -6,7 +6,7 @@
     <div class="lg:max-w-7xl lg:mx-auto">
 
       <!-- Grid: 1 columna en mobile, 2 columnas en desktop -->
-      <div class="lg:grid lg:grid-cols-[3fr_2fr] lg:gap-6 lg:px-6 lg:mt-2 lg:items-start">
+      <div class="lg:grid lg:grid-cols-[3fr_2fr] lg:gap-3 lg:px-6 lg:mt-2 lg:items-start">
 
         <!-- ===== COLUMNA IZQUIERDA (desktop) / SECCIÓN SUPERIOR (mobile) ===== -->
         <div>
@@ -56,7 +56,7 @@
 
           <app-training-menu></app-training-menu>
 
-          <div class="px-2">
+          <div>
             <div class="flex flex-row gap-1 mt-2 mb-2">
               <a class="btn btn-sm btn-soft btn-info" [routerLink]="['/puzzles/custom-plans']">{{ 'CUSTOM_PLANS.listTitle' |
                 transloco }}</a>
@@ -148,10 +148,10 @@
         <div class="lg:flex lg:flex-col lg:gap-2">
 
           <!-- Sección Entrenamiento Continuo -->
-          <div class="px-2">
+          <div>
             @if (isLoadingPuzzle) {
-            <div class="card bg-base-100 shadow-sm max-w-4xl mx-auto overflow-hidden lg:min-h-[320px]">
-              <div class="card-body flex flex-row gap-3 md:gap-6 p-3 md:p-6 w-full max-w-full items-center">
+            <div class="card bg-base-100 shadow-sm overflow-hidden">
+              <div class="card-body flex flex-row gap-3 p-3 w-full max-w-full items-start">
 
                 <!-- Lado izquierdo: Tablero -->
                 <div class="w-[55%] md:w-[60%] lg:w-[65%] relative flex-shrink-0">
@@ -185,8 +185,8 @@
               </div>
             </div>
             } @else if (infinitePuzzle) {
-            <div class="card bg-base-100 shadow-sm max-w-4xl mx-auto overflow-hidden lg:min-h-[320px]">
-              <div class="card-body flex flex-row gap-3 md:gap-6 p-3 md:p-6 w-full max-w-full items-center">
+            <div class="card bg-base-100 shadow-sm overflow-hidden">
+              <div class="card-body flex flex-row gap-3 p-3 w-full max-w-full items-start">
                 <!-- Lado izquierdo: Tablero -->
                 <div class="w-[55%] md:w-[60%] lg:w-[65%] relative flex-shrink-0">
                   <div class="flex items-center gap-2 pb-2">
