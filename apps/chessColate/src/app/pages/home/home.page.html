@@ -60,10 +60,10 @@
         <div class="lg:col-start-1 lg:row-start-2">
           @if (isInitialized) {
           <div>
-            <div class="flex flex-row gap-1 mt-2 mb-2">
-              <a class="btn btn-sm btn-soft btn-info" [routerLink]="['/puzzles/custom-plans']">{{ 'CUSTOM_PLANS.listTitle' |
+            <div class="flex flex-row gap-1 mt-2 mb-2 lg:grid lg:grid-cols-3 lg:gap-3">
+              <a class="btn btn-sm btn-soft btn-info lg:col-span-1" [routerLink]="['/puzzles/custom-plans']">{{ 'CUSTOM_PLANS.listTitle' |
                 transloco }}</a>
-              <a class="btn btn-sm btn-soft btn-info flex-1 min-w-0" [routerLink]="['/puzzles/public-plans']">{{
+              <a class="btn btn-sm btn-soft btn-info flex-1 min-w-0 lg:flex-none lg:col-span-2" [routerLink]="['/puzzles/public-plans']">{{
                 'PUBLIC_PLANS.title' | transloco }}</a>
             </div>
           </div>
@@ -236,7 +236,7 @@
         <div class="lg:col-start-2 lg:row-start-1 lg:flex lg:flex-col">
           @if (isLoadingPuzzle) {
           <div class="card bg-base-100 shadow-sm overflow-hidden lg:flex-1">
-            <div class="card-body flex flex-row gap-3 p-3 w-full max-w-full items-start">
+            <div class="card-body flex flex-row gap-3 p-3 w-full max-w-full items-stretch">
 
               <!-- Lado izquierdo: Tablero -->
               <div class="w-[55%] md:w-[60%] lg:w-[65%] relative flex-shrink-0">
@@ -251,19 +251,18 @@
               </div>
 
               <!-- Lado derecho: Textos y botones -->
-              <div class="w-[45%] md:w-[40%] lg:w-[35%] flex flex-col justify-center text-left pl-1">
-                <div class="flex items-center justify-between mb-1 md:mb-2 w-full gap-1">
-                  <div class="skeleton h-4 md:h-6 w-16 md:w-20 rounded-md"></div>
-                  <div class="skeleton w-6 h-6 md:w-8 md:h-8 rounded-full"></div>
-                </div>
-
-                <div class="skeleton h-4 md:h-8 w-11/12 mb-1 md:mb-3 rounded-md mt-1 md:mt-2"></div>
-
-                <div class="skeleton h-3 md:h-5 w-full mb-1 rounded-md"></div>
-                <div class="skeleton h-3 md:h-5 w-4/5 mb-3 md:mb-8 rounded-md"></div>
-
-                <div class="flex flex-col w-full gap-2 md:gap-3">
-                  <div class="skeleton h-8 md:h-12 w-full rounded-md shadow-sm"></div>
+              <div class="w-[45%] md:w-[40%] lg:w-[35%] flex flex-col self-stretch text-left">
+                <div class="my-auto">
+                  <div class="flex items-center justify-between mb-1 md:mb-2 w-full gap-1">
+                    <div class="skeleton h-4 md:h-6 w-16 md:w-20 rounded-md"></div>
+                    <div class="skeleton w-6 h-6 md:w-8 md:h-8 rounded-full"></div>
+                  </div>
+                  <div class="skeleton h-4 md:h-8 w-11/12 mb-1 md:mb-3 rounded-md mt-1 md:mt-2"></div>
+                  <div class="skeleton h-3 md:h-5 w-full mb-1 rounded-md"></div>
+                  <div class="skeleton h-3 md:h-5 w-4/5 mb-3 md:mb-8 rounded-md"></div>
+                  <div class="flex flex-col w-full gap-2 md:gap-3">
+                    <div class="skeleton h-8 md:h-12 w-full rounded-md shadow-sm"></div>
+                  </div>
                 </div>
               </div>
 
@@ -271,7 +270,7 @@
           </div>
           } @else if (infinitePuzzle) {
           <div class="card bg-base-100 shadow-sm overflow-hidden lg:flex-1">
-            <div class="card-body flex flex-row gap-3 p-3 w-full max-w-full items-start">
+            <div class="card-body flex flex-row gap-3 p-3 w-full max-w-full">
               <!-- Lado izquierdo: Tablero -->
               <div class="w-[55%] md:w-[60%] lg:w-[65%] relative flex-shrink-0">
                 <div class="flex items-center gap-2 pb-2">
@@ -295,47 +294,46 @@
               </div>
 
               <!-- Lado derecho: Textos y botones -->
-              <div class="w-[45%] md:w-[40%] lg:w-[35%] flex flex-col justify-center text-left pl-1">
-                <div class="flex items-center justify-between mb-1 md:mb-2 w-full">
-                  <div class="badge font-bold text-xs md:text-sm shadow-sm text-primary">
-                    ELO {{ infinityElo }}
+              <div class="w-[45%] md:w-[40%] lg:w-[35%] flex flex-col self-stretch text-left">
+                <div class="my-auto">
+                  <div class="flex items-center gap-2">
+                    <span class="font-bold text-xs md:text-sm text-primary">ELO {{ infinityElo }}</span>
+                    <button class="btn btn-circle btn-ghost btn-xs md:btn-sm text-primary" (click)="isStatsModalOpen = true">
+                      <ion-icon name="stats-chart-outline" class="text-lg"></ion-icon>
+                    </button>
                   </div>
-                  <button class="btn btn-circle btn-ghost btn-xs md:btn-sm text-primary" (click)="isStatsModalOpen = true">
-                    <ion-icon name="stats-chart-outline" class="text-lg"></ion-icon>
-                  </button>
-                </div>
-                <h3 class="text-sm md:text-2xl font-bold mb-1 md:mb-3 leading-tight">
-                  {{ 'PUZZLES.general.continuousTraining' | transloco }}
-                </h3>
-                <p
-                  class="text-[10px] md:text-base text-base-content/80 mb-2 md:mb-6 font-medium leading-tight line-clamp-4 md:line-clamp-none">
-                  {{ 'PUZZLES.general.resolveUnlimited' | transloco }}
-                </p>
-
-                <div class="flex flex-col w-full gap-2 md:gap-3">
-                  @if (isInfinitePuzzleSolved) {
-                  @if (infinitePuzzleProblemState === 'bad' ||
-                  infinitePuzzleProblemState === 'timeOut') {
-                  <div class="text-error font-bold text-center text-xs md:text-sm animate-pulse">{{
-                    'PUZZLE_SOLUTION.feedback.wrong' | transloco }}</div>
-                  <button class="btn btn-xs md:btn-md btn-outline btn-error w-full font-bold" (click)="showSolution()">
-                    <span>{{ 'PUZZLE_SOLUTION.actions.solution' | transloco }}</span>
-                    <ion-icon name="eye" class="hidden md:inline"></ion-icon>
-                  </button>
-                  } @else if (infinitePuzzleProblemState === 'good') {
-                  <div class="text-success font-bold text-center text-xs md:text-sm animate-bounce">{{
-                    'PUZZLE_SOLUTION.feedback.excellent' | transloco }}</div>
-                  }
-                  <button class="btn btn-xs md:btn-md btn-primary w-full shadow-md font-bold" (click)="startInfinityPlan()">
-                    <span>{{ 'COMMON.actions.continue' | transloco }}</span>
-                    <ion-icon name="arrow-forward" class="hidden md:inline"></ion-icon>
-                  </button>
-                  } @else {
-                  <button class="btn btn-xs md:btn-md btn-primary w-full shadow-md font-bold" (click)="startInfinityPlan()">
-                    <span>{{ 'PUZZLES.general.trainNow' | transloco }}</span>
-                    <ion-icon name="arrow-forward" class="hidden md:inline"></ion-icon>
-                  </button>
-                  }
+                  <h3 class="text-sm md:text-2xl font-bold mb-1 leading-tight">
+                    {{ 'PUZZLES.general.continuousTraining' | transloco }}
+                  </h3>
+                  <p
+                    class="text-[10px] md:text-base text-base-content/80 mb-2 md:mb-3 font-medium leading-tight line-clamp-4 md:line-clamp-none">
+                    {{ 'PUZZLES.general.resolveUnlimited' | transloco }}
+                  </p>
+                  <div class="flex flex-col w-full gap-2">
+                    @if (isInfinitePuzzleSolved) {
+                    @if (infinitePuzzleProblemState === 'bad' ||
+                    infinitePuzzleProblemState === 'timeOut') {
+                    <div class="text-error font-bold text-center text-xs md:text-sm animate-pulse">{{
+                      'PUZZLE_SOLUTION.feedback.wrong' | transloco }}</div>
+                    <button class="btn btn-xs md:btn-md btn-outline btn-error w-full font-bold" (click)="showSolution()">
+                      <span>{{ 'PUZZLE_SOLUTION.actions.solution' | transloco }}</span>
+                      <ion-icon name="eye" class="hidden md:inline"></ion-icon>
+                    </button>
+                    } @else if (infinitePuzzleProblemState === 'good') {
+                    <div class="text-success font-bold text-center text-xs md:text-sm animate-bounce">{{
+                      'PUZZLE_SOLUTION.feedback.excellent' | transloco }}</div>
+                    }
+                    <button class="btn btn-xs md:btn-md btn-primary w-full shadow-md font-bold" (click)="startInfinityPlan()">
+                      <span>{{ 'COMMON.actions.continue' | transloco }}</span>
+                      <ion-icon name="arrow-forward" class="hidden md:inline"></ion-icon>
+                    </button>
+                    } @else {
+                    <button class="btn btn-xs md:btn-md btn-primary w-full shadow-md font-bold" (click)="startInfinityPlan()">
+                      <span>{{ 'PUZZLES.general.trainNow' | transloco }}</span>
+                      <ion-icon name="arrow-forward" class="hidden md:inline"></ion-icon>
+                    </button>
+                    }
+                  </div>
                 </div>
               </div>
             </div>
@@ -344,7 +342,7 @@
         </div>
 
         <!-- ===== CELDA 4: Donación (desktop: row2 col2) ===== -->
-        <div class="lg:col-start-2 lg:row-start-2">
+        <div class="lg:col-start-2 lg:row-start-2 lg:relative">
           <!-- Mobile: tarjeta completa -->
           <div class="px-2 mt-4 mb-8 lg:hidden">
             <div class="relative overflow-hidden rounded-2xl">
@@ -381,14 +379,14 @@
               </div>
             </div>
           </div>
-          <!-- Desktop: strip compacto -->
-          <div class="hidden lg:flex items-center gap-3 px-3 py-3 bg-base-100 rounded-xl shadow-sm border border-base-200">
-            <ion-icon name="heart" class="text-error text-xl flex-shrink-0"></ion-icon>
-            <div class="flex-1 min-w-0">
-              <p class="font-bold text-sm leading-tight">{{ 'DONATION.homeCard.title' | transloco }}</p>
-              <p class="text-xs text-base-content/60 line-clamp-1" [innerHTML]="'DONATION.homeCard.description' | transloco"></p>
+          <!-- Desktop: tarjeta vertical que llena la celda (absolute para llenar exactamente la celda del grid) -->
+          <div class="hidden lg:absolute lg:inset-0 lg:top-2 lg:flex lg:flex-col items-center justify-center gap-4 px-5 py-5 bg-base-100 rounded-xl shadow-sm border border-base-200 text-center">
+            <ion-icon name="heart" class="text-error text-3xl"></ion-icon>
+            <div>
+              <p class="font-bold text-base leading-tight mb-2">{{ 'DONATION.homeCard.title' | transloco }}</p>
+              <p class="text-sm text-base-content/70 leading-snug" [innerHTML]="'DONATION.homeCard.description' | transloco"></p>
             </div>
-            <a [routerLink]="['/donation']" class="btn btn-primary btn-sm flex-shrink-0 shadow-sm">
+            <a [routerLink]="['/donation']" class="btn btn-primary shadow-sm w-full">
               {{ 'DONATION.homeCard.button' | transloco }}
             </a>
           </div>
