@@ -12,7 +12,7 @@
         El grid equaliza la altura de cada fila, alineando menú y tarjeta perfectamente.
         En mobile: 1 columna, orden HTML (menú → botones+reto → puzzle → donación).
       -->
-      <div class="lg:grid lg:grid-cols-[3fr_2fr] lg:gap-x-3 lg:gap-y-2 lg:px-6 lg:mt-2">
+      <div class="lg:grid lg:grid-cols-[5fr_4fr] lg:gap-x-3 lg:gap-y-2 lg:px-6 lg:mt-2">
 
         <!-- ===== CELDA 1: Menú de entrenamiento (desktop: row1 col1) ===== -->
         <div class="lg:col-start-1 lg:row-start-1">
@@ -232,10 +232,10 @@
         <div class="lg:col-start-2 lg:row-start-1 lg:flex lg:flex-col">
           @if (isLoadingPuzzle) {
           <div class="card bg-base-100 shadow-sm overflow-hidden lg:flex-1">
-            <div class="card-body flex flex-row gap-3 p-3 w-full max-w-full items-stretch">
+            <div class="card-body grid grid-cols-[55%_1fr] md:grid-cols-[3fr_2fr] gap-3 p-3 w-full max-w-full">
 
               <!-- Lado izquierdo: Tablero -->
-              <div class="w-[55%] md:w-[60%] lg:w-[65%] relative flex-shrink-0">
+              <div class="relative min-w-0">
                 <div class="flex items-center gap-2 pb-2">
                   <div class="skeleton w-6 h-6 md:w-8 md:h-8 rounded-full shrink-0"></div>
                   <div class="flex flex-col gap-1 w-full">
@@ -247,7 +247,7 @@
               </div>
 
               <!-- Lado derecho: Textos y botones -->
-              <div class="w-[45%] md:w-[40%] lg:w-[35%] flex flex-col self-stretch text-left">
+              <div class="flex flex-col text-left min-w-0">
                 <div class="my-auto">
                   <div class="flex items-center justify-between mb-1 md:mb-2 w-full gap-1">
                     <div class="skeleton h-4 md:h-6 w-16 md:w-20 rounded-md"></div>
@@ -266,16 +266,16 @@
           </div>
           } @else if (infinitePuzzle) {
           <div class="card bg-base-100 shadow-sm overflow-hidden lg:flex-1">
-            <div class="card-body flex flex-row gap-3 p-3 w-full max-w-full">
+            <div class="card-body grid grid-cols-[55%_1fr] md:grid-cols-[3fr_2fr] gap-3 p-3 w-full max-w-full">
               <!-- Lado izquierdo: Tablero -->
-              <div class="w-[55%] md:w-[60%] lg:w-[65%] relative flex-shrink-0">
+              <div class="relative min-w-0">
                 <div class="flex items-center gap-2 pb-2">
                   <img [src]="'assets/images/king-' + playerColor + '.svg'" [alt]="playerColor"
                     class="h-6 w-6 md:h-8 md:w-8" />
-                  <div class="flex flex-col">
+                  <div class="flex flex-col min-w-0">
                     <span class="font-semibold text-xs md:text-base leading-tight">{{ 'PUZZLES.help.yourTurn' | transloco
                       }}</span>
-                    <span class="text-[10px] md:text-sm text-base-content/80 leading-tight">
+                    <span class="text-[10px] md:text-sm text-base-content/80 leading-tight truncate">
                       @if (playerColor === 'white') { {{
                       'PUZZLES.help.findBestMoveWhite' | transloco }} } @else { {{
                       'PUZZLES.help.findBestMoveBlack' | transloco }} }
@@ -290,7 +290,7 @@
               </div>
 
               <!-- Lado derecho: Textos y botones -->
-              <div class="w-[45%] md:w-[40%] lg:w-[35%] flex flex-col self-stretch text-left">
+              <div class="flex flex-col text-left min-w-0">
                 <div class="my-auto">
                   <div class="flex items-center gap-2">
                     <span class="font-bold text-xs md:text-sm text-primary">ELO {{ infinityElo }}</span>
@@ -376,13 +376,13 @@
             </div>
           </div>
           <!-- Desktop: tarjeta vertical que llena la celda (absolute para llenar exactamente la celda del grid) -->
-          <div class="hidden lg:absolute lg:inset-0 lg:top-2 lg:flex lg:flex-col items-center justify-center gap-4 px-5 py-5 bg-base-100 rounded-xl shadow-sm border border-base-200 text-center">
-            <ion-icon name="heart" class="text-error text-3xl"></ion-icon>
+          <div class="hidden lg:absolute lg:inset-0 lg:top-2 lg:flex lg:flex-col items-center justify-center gap-3 px-5 py-4 bg-base-100 rounded-xl shadow-sm border border-base-200 text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor" class="w-8 h-8 shrink-0 text-error"><path d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/></svg>
             <div>
-              <p class="font-bold text-base leading-tight mb-2">{{ 'DONATION.homeCard.title' | transloco }}</p>
-              <p class="text-sm text-base-content/70 leading-snug" [innerHTML]="'DONATION.homeCard.description' | transloco"></p>
+              <p class="font-bold text-base leading-tight mb-1">{{ 'DONATION.homeCard.title' | transloco }}</p>
+              <p class="text-sm text-base-content/70 leading-snug line-clamp-2" [innerHTML]="'DONATION.homeCard.description' | transloco"></p>
             </div>
-            <a [routerLink]="['/donation']" class="btn btn-primary shadow-sm w-full">
+            <a [routerLink]="['/donation']" class="btn btn-sm btn-primary shadow-sm w-full">
               {{ 'DONATION.homeCard.button' | transloco }}
             </a>
           </div>
