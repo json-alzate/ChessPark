@@ -479,7 +479,9 @@
       },
       "security": "Suscripciones recurrentes procesadas por RevenueCat, App Store y Google Play.",
       "cancel": "Cancela cuando quieras desde la configuración de tu dispositivo.",
-      "restorePurchases": "Restaurar compras"
+      "restorePurchases": "Restaurar compras",
+      "loginRequired": "Inicia sesión para donar",
+      "loginRequiredDesc": "Necesitas una cuenta para procesar tu donación y poder recuperarla en el futuro."
     },
     "tiers": {
       "pawn": {

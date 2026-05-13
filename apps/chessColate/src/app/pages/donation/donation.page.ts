@@ -1,25 +1,25 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import {
   IonContent,
-  IonButton,
   IonIcon,
-  IonItem,
-  IonLabel,
-  IonList,
   LoadingController,
+  ModalController,
   ToastController,
 } from '@ionic/angular/standalone';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
-import { heartOutline, heart, arrowBackOutline, arrowForwardOutline, informationCircleOutline, trophyOutline, cafeOutline, starOutline, banOutline, extensionPuzzleOutline, codeSlashOutline, serverOutline } from 'ionicons/icons';
+import { heartOutline, heart, arrowBackOutline, arrowForwardOutline, informationCircleOutline, trophyOutline, cafeOutline, starOutline, banOutline, extensionPuzzleOutline, codeSlashOutline, serverOutline, logInOutline } from 'ionicons/icons';
 import { RevenueCatService } from '@chesspark/revenuecat';
 import { Package, PurchasesError, PURCHASES_ERROR_CODE } from '@chesspark/revenuecat';
 import { Capacitor } from '@capacitor/core';
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
+import { ProfileService } from '@services/profile.service';
+import { LoginComponent } from '@shared/components/login/login.component';
+import { Subscription } from 'rxjs';
 
-addIcons({ heartOutline, heart, arrowBackOutline, arrowForwardOutline, informationCircleOutline, trophyOutline, cafeOutline, starOutline, banOutline, extensionPuzzleOutline, codeSlashOutline, serverOutline });
+addIcons({ heartOutline, heart, arrowBackOutline, arrowForwardOutline, informationCircleOutline, trophyOutline, cafeOutline, starOutline, banOutline, extensionPuzzleOutline, codeSlashOutline, serverOutline, logInOutline });
 
 export interface DonationOption {
   id: string;
@@ -39,19 +39,20 @@ export interface DonationOption {
     CommonModule,
     TranslocoPipe,
     IonContent,
-    IonButton,
     IonIcon,
-    IonItem,
-    IonLabel,
-    IonList,
     NavbarComponent,
   ],
 })
-export class DonationPage implements OnInit {
+export class DonationPage implements OnInit, OnDestroy {
   private revenueCat = inject(RevenueCatService);
   private loadingController = inject(LoadingController);
   private toastController = inject(ToastController);
+  private modalController = inject(ModalController);
+  private profileService = inject(ProfileService);
   private router = inject(Router);
+
+  isAuthenticated = false;
+  private profileSub?: Subscription;
 
   donationOptions: DonationOption[] = [
     {
@@ -86,7 +87,24 @@ export class DonationPage implements OnInit {
 
   ngOnInit() {
     this.isNativePlatform = Capacitor.isNativePlatform();
-    this.loadDonationOptions();
+    this.profileSub = this.profileService.profile$.subscribe((profile) => {
+      this.isAuthenticated = !!profile;
+      if (this.isAuthenticated) {
+        this.loadDonationOptions();
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    this.profileSub?.unsubscribe();
+  }
+
+  async openLogin() {
+    const modal = await this.modalController.create({
+      component: LoginComponent,
+      componentProps: { segmentEmailPassword: 'login' },
+    });
+    await modal.present();
   }
 
   /**

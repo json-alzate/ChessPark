@@ -477,7 +477,9 @@
       },
       "security": "Recurring subscriptions processed by RevenueCat, App Store, and Google Play.",
       "cancel": "Cancel anytime from your device settings.",
-      "restorePurchases": "Restore purchases"
+      "restorePurchases": "Restore purchases",
+      "loginRequired": "Sign in to donate",
+      "loginRequiredDesc": "You need an account to process your donation and recover it in the future."
     },
     "tiers": {
       "pawn": {
