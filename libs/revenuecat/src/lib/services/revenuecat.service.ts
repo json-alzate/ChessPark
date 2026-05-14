@@ -6,7 +6,6 @@ import { IRevenueCatService, LogLevel } from '../interfaces/revenuecat.interface
 import { CustomerInfo, Offerings, Offering, Package, PurchaseResult } from '../models';
 import { PurchasesError, PURCHASES_ERROR_CODE, mapRevenueCatError } from '../utils/error-handler.util';
 
-// Tipos para RevenueCat (se usarán solo cuando el módulo esté disponible)
 type PurchasesType = any;
 type PurchasesOfferingType = any;
 type PurchasesPackageType = any;
@@ -14,7 +13,6 @@ type RCCustomerInfoType = any;
 type RCPurchasesErrorType = any;
 type LOG_LEVELType = any;
 
-// Variable para almacenar el módulo cargado dinámicamente
 let PurchasesModule: {
   Purchases: PurchasesType;
   PurchasesOffering: PurchasesOfferingType;
@@ -24,7 +22,8 @@ let PurchasesModule: {
   LOG_LEVEL: LOG_LEVELType;
 } | null = null;
 
-// Función para cargar el módulo dinámicamente
+let WebPurchasesModule: { Purchases: any } | null = null;
+
 async function loadRevenueCatModule() {
   if (PurchasesModule) {
     return PurchasesModule;
@@ -35,8 +34,6 @@ async function loadRevenueCatModule() {
   }
 
   try {
-    // Usamos el import normal dinámico para que el empaquetador de Angular (Webpack/esbuild)
-    // reconozca la dependencia y la incluya en el build final.
     PurchasesModule = (await import('@revenuecat/purchases-capacitor')) as any;
     return PurchasesModule;
   } catch (error) {
@@ -45,11 +42,24 @@ async function loadRevenueCatModule() {
   }
 }
 
-/**
- * Servicio principal para integración con RevenueCat
- * Proporciona una abstracción unificada para gestionar suscripciones
- * y compras únicas (donaciones) en Android e iOS
- */
+async function loadRevenueCatWebModule() {
+  if (WebPurchasesModule) {
+    return WebPurchasesModule;
+  }
+
+  if (Capacitor.isNativePlatform()) {
+    return null;
+  }
+
+  try {
+    WebPurchasesModule = (await import('@revenuecat/purchases-js')) as any;
+    return WebPurchasesModule;
+  } catch (error) {
+    console.error('Error loading RevenueCat Web module. Please run: npm install @revenuecat/purchases-js', error);
+    return null;
+  }
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -60,36 +70,31 @@ export class RevenueCatService implements IRevenueCatService {
   private currentAppUserID: string | null = null;
   private publicAPIKey: string | null = null;
 
-  // Base URL para la API REST de RevenueCat
+  // Web SDK instance
+  private webPurchasesInstance: any | null = null;
+  // Maps package identifier → raw web SDK Package, needed to call purchasePackage()
+  private webPackagesCache = new Map<string, any>();
+
   private readonly REVENUECAT_API_BASE = 'https://api.revenuecat.com/v1';
 
-  /**
-   * Observable que emite cuando cambia la información del cliente
-   */
   public readonly customerInfoUpdates$: Observable<CustomerInfo> = this.customerInfoSubject.asObservable();
 
-  /**
-   * Verifica si la plataforma es nativa (Android o iOS)
-   */
   private get isNativePlatform(): boolean {
     return Capacitor.isNativePlatform();
   }
 
-  /**
-   * Inicializa el SDK de RevenueCat
-   * @param apiKey API Key pública de RevenueCat
-   * @param appUserID ID único del usuario (opcional)
-   */
   async initialize(apiKey: string, appUserID?: string): Promise<void> {
-    // Almacenar API key y user ID para uso en web (REST API)
     this.publicAPIKey = apiKey;
     if (appUserID) {
       this.currentAppUserID = appUserID;
     }
 
     if (!this.isNativePlatform) {
-      // En web, no inicializamos el SDK, pero guardamos las credenciales para REST API
-      console.log('RevenueCat funcionará en modo web usando API REST');
+      // On web, initialize the SDK only if we already have a userId.
+      // If not, configure() will initialize it once the user authenticates.
+      if (appUserID) {
+        await this.initializeWebSDK(apiKey, appUserID);
+      }
       return;
     }
 
@@ -111,18 +116,27 @@ export class RevenueCatService implements IRevenueCatService {
     }
   }
 
-  /**
-   * Configura el usuario actual
-   * @param userId ID único del usuario para sincronización multiplataforma
-   */
   async configure(userId?: string): Promise<void> {
-    // Almacenar user ID para uso en web (REST API)
     if (userId) {
       this.currentAppUserID = userId;
     }
 
     if (!this.isNativePlatform) {
-      // En web, solo guardamos el user ID para usar en REST API
+      if (!userId || !this.publicAPIKey) {
+        return;
+      }
+
+      if (!this.webPurchasesInstance) {
+        await this.initializeWebSDK(this.publicAPIKey, userId);
+      } else {
+        try {
+          await this.webPurchasesInstance.changeUser(userId);
+          const info = await this.webPurchasesInstance.getCustomerInfo();
+          this.customerInfoSubject.next(this.mapCustomerInfoFromWebSDK(info));
+        } catch (error: unknown) {
+          console.error('Error changing web SDK user:', error);
+        }
+      }
       return;
     }
 
@@ -144,11 +158,27 @@ export class RevenueCatService implements IRevenueCatService {
     }
   }
 
-  /**
-   * Obtiene las ofertas disponibles
-   * @returns Promise con las ofertas disponibles
-   */
   async getOfferings(): Promise<Offerings> {
+    if (!this.isNativePlatform) {
+      if (!this.webPurchasesInstance) {
+        throw new PurchasesError(
+          PURCHASES_ERROR_CODE.CONFIGURATION_ERROR,
+          'RevenueCat Web no inicializado. El usuario debe estar autenticado.'
+        );
+      }
+
+      try {
+        const offerings = await this.webPurchasesInstance.getOfferings();
+        return this.mapOfferingsFromWeb(offerings);
+      } catch (error: unknown) {
+        if (error instanceof PurchasesError) throw error;
+        throw new PurchasesError(
+          PURCHASES_ERROR_CODE.NETWORK_ERROR,
+          `Error al obtener ofertas: ${(error as any)?.message || 'Error desconocido'}`
+        );
+      }
+    }
+
     this.ensureInitialized();
 
     const module = await loadRevenueCatModule();
@@ -167,12 +197,48 @@ export class RevenueCatService implements IRevenueCatService {
     }
   }
 
-  /**
-   * Realiza una compra de un package
-   * @param packageToPurchase Package a comprar
-   * @returns Promise con el resultado de la compra
-   */
   async purchasePackage(packageToPurchase: Package): Promise<PurchaseResult> {
+    if (!this.isNativePlatform) {
+      if (!this.webPurchasesInstance) {
+        throw new PurchasesError(
+          PURCHASES_ERROR_CODE.CONFIGURATION_ERROR,
+          'RevenueCat Web no inicializado. El usuario debe estar autenticado.'
+        );
+      }
+
+      const webPkg = this.webPackagesCache.get(packageToPurchase.identifier);
+      if (!webPkg) {
+        throw new PurchasesError(
+          PURCHASES_ERROR_CODE.PRODUCT_NOT_AVAILABLE_FOR_PURCHASE,
+          `Package "${packageToPurchase.identifier}" no disponible en web. Carga las ofertas primero.`
+        );
+      }
+
+      try {
+        const result = await this.webPurchasesInstance.purchasePackage(webPkg);
+        const customerInfo = this.mapCustomerInfoFromWebSDK(result.customerInfo);
+        this.customerInfoSubject.next(customerInfo);
+        return { customerInfo, userCancelled: false };
+      } catch (error: unknown) {
+        const err = error as any;
+        const message: string = err?.message || err?.errorCode || '';
+        if (
+          message.toLowerCase().includes('cancel') ||
+          err?.errorCode === 'USER_CANCELLED' ||
+          err?.code === 'USER_CANCELLED'
+        ) {
+          throw new PurchasesError(
+            PURCHASES_ERROR_CODE.PURCHASE_CANCELLED,
+            'El usuario canceló la compra'
+          );
+        }
+        throw new PurchasesError(
+          PURCHASES_ERROR_CODE.UNKNOWN_ERROR,
+          `Error en compra web: ${message || 'Error desconocido'}`
+        );
+      }
+    }
+
     this.ensureInitialized();
 
     const module = await loadRevenueCatModule();
@@ -184,12 +250,10 @@ export class RevenueCatService implements IRevenueCatService {
     }
 
     try {
-      // Convertir nuestro Package a PurchasesPackage
       const rcPackage = await this.getRCPackage(packageToPurchase, module);
       const purchaseResult = await module.Purchases.purchasePackage({ aPackage: rcPackage });
 
       const customerInfo = this.mapCustomerInfo(purchaseResult.customerInfo);
-      // Emitir actualización del estado del cliente
       this.customerInfoSubject.next(customerInfo);
 
       return {
@@ -208,11 +272,29 @@ export class RevenueCatService implements IRevenueCatService {
     }
   }
 
-  /**
-   * Restaura las compras previas del usuario
-   * @returns Promise con la información actualizada del cliente
-   */
   async restorePurchases(): Promise<CustomerInfo> {
+    if (!this.isNativePlatform) {
+      if (!this.webPurchasesInstance) {
+        throw new PurchasesError(
+          PURCHASES_ERROR_CODE.CONFIGURATION_ERROR,
+          'RevenueCat Web no inicializado. El usuario debe estar autenticado.'
+        );
+      }
+
+      try {
+        await this.webPurchasesInstance.syncPurchases();
+        const info = await this.webPurchasesInstance.getCustomerInfo();
+        const mapped = this.mapCustomerInfoFromWebSDK(info);
+        this.customerInfoSubject.next(mapped);
+        return mapped;
+      } catch (error: unknown) {
+        throw new PurchasesError(
+          PURCHASES_ERROR_CODE.NETWORK_ERROR,
+          `Error al restaurar compras: ${(error as any)?.message || 'Error desconocido'}`
+        );
+      }
+    }
+
     this.ensureInitialized();
 
     const module = await loadRevenueCatModule();
@@ -233,17 +315,23 @@ export class RevenueCatService implements IRevenueCatService {
     }
   }
 
-  /**
-   * Obtiene la información completa del cliente
-   * @returns Promise con la información del cliente
-   */
   async getCustomerInfo(): Promise<CustomerInfo> {
-    // En web, usar API REST
     if (!this.isNativePlatform) {
+      if (this.webPurchasesInstance) {
+        try {
+          const info = await this.webPurchasesInstance.getCustomerInfo();
+          return this.mapCustomerInfoFromWebSDK(info);
+        } catch (error: unknown) {
+          throw new PurchasesError(
+            PURCHASES_ERROR_CODE.NETWORK_ERROR,
+            `Error al obtener info del cliente: ${(error as any)?.message || 'Error desconocido'}`
+          );
+        }
+      }
+      // Fallback to REST API when web SDK is not yet initialized
       return await this.getCustomerInfoWeb();
     }
 
-    // En móvil, usar SDK
     this.ensureInitialized();
 
     const module = await loadRevenueCatModule();
@@ -262,27 +350,21 @@ export class RevenueCatService implements IRevenueCatService {
     }
   }
 
-  /**
-   * Verifica si el usuario tiene un entitlement activo
-   * @param entitlementId ID del entitlement a verificar
-   * @returns Promise con true si está activo, false en caso contrario
-   */
   async isSubscribed(entitlementId: string): Promise<boolean> {
     return this.checkSubscriptionStatus(entitlementId);
   }
 
-  /**
-   * Verifica el estado de un entitlement específico
-   * @param entitlementId ID del entitlement
-   * @returns Promise con true si está activo
-   */
   async checkSubscriptionStatus(entitlementId: string): Promise<boolean> {
-    // En web, usar API REST
     if (!this.isNativePlatform) {
-      return await this.checkSubscriptionStatusWeb(entitlementId);
+      try {
+        const customerInfo = await this.getCustomerInfo();
+        return customerInfo.entitlements.active[entitlementId]?.isActive === true;
+      } catch (error: unknown) {
+        console.error('Error checking subscription status:', error);
+        return false;
+      }
     }
 
-    // En móvil, usar SDK
     this.ensureInitialized();
 
     const module = await loadRevenueCatModule();
@@ -299,9 +381,6 @@ export class RevenueCatService implements IRevenueCatService {
     }
   }
 
-  /**
-   * Sincroniza las compras con el servidor de RevenueCat
-   */
   async syncPurchases(): Promise<void> {
     this.ensureInitialized();
 
@@ -311,17 +390,12 @@ export class RevenueCatService implements IRevenueCatService {
     }
 
     try {
-      // RevenueCat sincroniza automáticamente, pero podemos forzar una actualización
       await module.Purchases.getCustomerInfo();
     } catch (error: unknown) {
       throw mapRevenueCatError(error as any);
     }
   }
 
-  /**
-   * Configura el nivel de logging
-   * @param level Nivel de logging deseado
-   */
   setLogLevel(level: LogLevel): void {
     if (!this.isNativePlatform) {
       return;
@@ -335,35 +409,151 @@ export class RevenueCatService implements IRevenueCatService {
     });
   }
 
-  /**
-   * Obtiene el appUserID actual
-   */
-  private async getCurrentAppUserID(): Promise<string> {
-    if (!this.currentAppUserID) {
-      throw new PurchasesError(
-        PURCHASES_ERROR_CODE.CONFIGURATION_ERROR,
-        'appUserID no configurado. Llama a initialize() o configure() primero.'
-      );
+  // ─── Web SDK helpers ────────────────────────────────────────────────────────
+
+  private async initializeWebSDK(apiKey: string, userId: string): Promise<void> {
+    try {
+      const webModule = await loadRevenueCatWebModule();
+      if (!webModule) {
+        return;
+      }
+
+      this.webPurchasesInstance = webModule.Purchases.configure(apiKey, userId);
+      this.initialized = true;
+      console.log('RevenueCat Web SDK inicializado correctamente');
+    } catch (error: unknown) {
+      console.error('Error inicializando RevenueCat Web SDK:', error);
     }
-    return this.currentAppUserID;
   }
 
-  /**
-   * Obtiene la Public API Key
-   */
-  private getPublicAPIKey(): string {
-    if (!this.publicAPIKey) {
-      throw new PurchasesError(
-        PURCHASES_ERROR_CODE.CONFIGURATION_ERROR,
-        'API Key no configurada. Llama a initialize() primero.'
-      );
+  private mapOfferingsFromWeb(webOfferings: any): Offerings {
+    const mapped: Offerings = { all: {} };
+
+    const allOfferings = webOfferings.all || {};
+    Object.keys(allOfferings).forEach((key) => {
+      mapped.all[key] = this.mapOfferingFromWeb(allOfferings[key]);
+    });
+
+    if (webOfferings.current) {
+      mapped.current = this.mapOfferingFromWeb(webOfferings.current);
     }
-    return this.publicAPIKey;
+
+    return mapped;
   }
 
-  /**
-   * Obtiene información del cliente usando API REST (para web)
-   */
+  private mapOfferingFromWeb(webOffering: any): Offering {
+    const packages = (webOffering.availablePackages || []).map((pkg: any) => {
+      this.webPackagesCache.set(pkg.identifier, pkg);
+      return this.mapPackageFromWeb(pkg);
+    });
+
+    return {
+      identifier: webOffering.identifier,
+      serverDescription: webOffering.serverDescription || '',
+      metadata: webOffering.metadata || {},
+      availablePackages: packages,
+    };
+  }
+
+  private mapPackageFromWeb(webPkg: any): Package {
+    // purchases-js uses rcBillingProduct for RevenueCat Web Billing products
+    const product = webPkg.rcBillingProduct || webPkg.webBillingProduct || webPkg.storeProduct || {};
+    const price = product.currentPrice || {};
+
+    return {
+      identifier: webPkg.identifier,
+      packageType: webPkg.packageType || 'CUSTOM',
+      product: {
+        identifier: product.identifier || webPkg.identifier,
+        description: product.description || '',
+        title: product.title || product.identifier || '',
+        priceString: price.formattedPrice || `${price.currency || ''} ${price.amount || 0}`,
+        price: price.amount || 0,
+        currencyCode: price.currency || 'USD',
+        productType: 'consumable',
+        subscriptionPeriod: product.normalPeriodDuration || null,
+        introPrice: undefined,
+      },
+      offeringIdentifier: webPkg.offeringIdentifier || '',
+    };
+  }
+
+  private mapCustomerInfoFromWebSDK(webInfo: any): CustomerInfo {
+    const entitlements = webInfo.entitlements || {};
+    const activeEntitlements: any = {};
+    const allEntitlements: any = {};
+
+    const active = entitlements.active || {};
+    Object.keys(active).forEach((key) => {
+      const mapped = this.mapEntitlementFromWeb(active[key], key);
+      activeEntitlements[key] = mapped;
+      allEntitlements[key] = mapped;
+    });
+
+    const all = entitlements.all || {};
+    Object.keys(all).forEach((key) => {
+      if (!allEntitlements[key]) {
+        allEntitlements[key] = this.mapEntitlementFromWeb(all[key], key);
+      }
+    });
+
+    const activeSubscriptions = webInfo.activeSubscriptions instanceof Set
+      ? Array.from(webInfo.activeSubscriptions as Set<string>)
+      : (webInfo.activeSubscriptions || []);
+
+    return {
+      originalAppUserId: webInfo.originalAppUserId || '',
+      firstSeen: this.dateToString(webInfo.firstSeenDate || webInfo.firstSeen) || '',
+      originalPurchaseDate: this.dateToString(webInfo.originalPurchaseDate) || '',
+      requestDate: this.dateToString(webInfo.requestDate) || new Date().toISOString(),
+      entitlements: {
+        active: activeEntitlements,
+        all: allEntitlements,
+      },
+      nonSubscriptions: webInfo.nonSubscriptionTransactions || webInfo.nonSubscriptions || {},
+      allPurchaseDates: this.mapDatesRecord(webInfo.allPurchaseDates) as { [key: string]: string },
+      allExpirationDates: this.mapDatesRecord(webInfo.allExpirationDates),
+      allPurchasedProductIdentifiers: webInfo.allPurchasedProductIdentifiers || [],
+      activeSubscriptions: activeSubscriptions as string[],
+      allExpirationDatesByProduct: this.mapDatesRecord(webInfo.allExpirationDatesByProduct || {}),
+    };
+  }
+
+  private mapEntitlementFromWeb(e: any, key: string): any {
+    return {
+      identifier: e.identifier || key,
+      isActive: e.isActive === true,
+      willRenew: e.willRenew || false,
+      periodType: e.periodType || 'NORMAL',
+      latestPurchaseDate: this.dateToString(e.latestPurchaseDate),
+      originalPurchaseDate: this.dateToString(e.originalPurchaseDate),
+      expirationDate: this.dateToString(e.expirationDate),
+      store: typeof e.store === 'string' ? e.store : (e.store?.name || ''),
+      productIdentifier: e.productIdentifier || '',
+      isSandbox: e.isSandbox || false,
+      unsubscribeDetectedAt: this.dateToString(e.unsubscribeDetectedAt),
+      billingIssueDetectedAt: this.dateToString(e.billingIssueDetectedAt),
+    };
+  }
+
+  private dateToString(value: unknown): string | null {
+    if (!value) return null;
+    if (value instanceof Date) return value.toISOString();
+    if (typeof value === 'string') return value;
+    return null;
+  }
+
+  private mapDatesRecord(record: any): Record<string, string | null> {
+    if (!record) return {};
+    const result: Record<string, string | null> = {};
+    Object.keys(record).forEach((key) => {
+      result[key] = this.dateToString(record[key]);
+    });
+    return result;
+  }
+
+  // ─── REST API fallback (web, pre-auth) ──────────────────────────────────────
+
   private async getCustomerInfoWeb(): Promise<CustomerInfo> {
     try {
       const appUserID = await this.getCurrentAppUserID();
@@ -384,7 +574,6 @@ export class RevenueCatService implements IRevenueCatService {
       if (error instanceof PurchasesError) {
         throw error;
       }
-      // Manejar errores HTTP
       const httpError = error as any;
       if (httpError.status === 404) {
         throw new PurchasesError(
@@ -399,30 +588,11 @@ export class RevenueCatService implements IRevenueCatService {
     }
   }
 
-  /**
-   * Verifica estado de suscripción usando API REST (para web)
-   */
-  private async checkSubscriptionStatusWeb(entitlementId: string): Promise<boolean> {
-    try {
-      const customerInfo = await this.getCustomerInfoWeb();
-      const entitlement = customerInfo.entitlements.active[entitlementId];
-      return entitlement?.isActive === true;
-    } catch (error: unknown) {
-      console.error('Error checking subscription status:', error);
-      return false;
-    }
-  }
-
-  /**
-   * Mapea la respuesta de la API REST a nuestro modelo CustomerInfo
-   */
   private mapCustomerInfoFromAPI(apiSubscriber: any): CustomerInfo {
-    // La API REST de RevenueCat retorna datos en formato diferente
     const entitlements = apiSubscriber.entitlements || {};
     const activeEntitlements: any = {};
     const allEntitlements: any = {};
 
-    // Mapear entitlements
     Object.keys(entitlements).forEach((key) => {
       const entitlement = entitlements[key];
       const mappedEntitlement = {
@@ -464,12 +634,30 @@ export class RevenueCatService implements IRevenueCatService {
     };
   }
 
-  /**
-   * Verifica que el servicio esté inicializado (solo para móvil)
-   */
+  // ─── Native helpers ──────────────────────────────────────────────────────────
+
+  private async getCurrentAppUserID(): Promise<string> {
+    if (!this.currentAppUserID) {
+      throw new PurchasesError(
+        PURCHASES_ERROR_CODE.CONFIGURATION_ERROR,
+        'appUserID no configurado. Llama a initialize() o configure() primero.'
+      );
+    }
+    return this.currentAppUserID;
+  }
+
+  private getPublicAPIKey(): string {
+    if (!this.publicAPIKey) {
+      throw new PurchasesError(
+        PURCHASES_ERROR_CODE.CONFIGURATION_ERROR,
+        'API Key no configurada. Llama a initialize() primero.'
+      );
+    }
+    return this.publicAPIKey;
+  }
+
   private ensureInitialized(): void {
     if (!this.isNativePlatform) {
-      // En web no necesitamos inicialización del SDK
       return;
     }
 
@@ -481,9 +669,6 @@ export class RevenueCatService implements IRevenueCatService {
     }
   }
 
-  /**
-   * Mapea CustomerInfo de RevenueCat a nuestro modelo
-   */
   private mapCustomerInfo(rcCustomerInfo: RCCustomerInfoType): CustomerInfo {
     return {
       originalAppUserId: rcCustomerInfo.originalAppUserId,
@@ -503,20 +688,15 @@ export class RevenueCatService implements IRevenueCatService {
     };
   }
 
-  /**
-   * Mapea Offerings de RevenueCat a nuestro modelo
-   */
   private mapOfferings(rcOfferings: { current?: PurchasesOfferingType; all: { [key: string]: PurchasesOfferingType } }, module: any): Offerings {
     const mapped: Offerings = {
       all: {},
     };
 
-    // Mapear todos los offerings
     Object.keys(rcOfferings.all || {}).forEach((key) => {
       mapped.all[key] = this.mapOffering(rcOfferings.all[key], module);
     });
 
-    // Mapear offering actual
     if (rcOfferings.current) {
       mapped.current = this.mapOffering(rcOfferings.current, module);
     }
@@ -524,9 +704,6 @@ export class RevenueCatService implements IRevenueCatService {
     return mapped;
   }
 
-  /**
-   * Mapea un Offering de RevenueCat a nuestro modelo
-   */
   private mapOffering(rcOffering: PurchasesOfferingType, module: any): Offering {
     const packages = (rcOffering.availablePackages || []).map((pkg: PurchasesPackageType) => this.mapPackage(pkg));
 
@@ -537,7 +714,6 @@ export class RevenueCatService implements IRevenueCatService {
       availablePackages: packages,
     };
 
-    // Mapear packages específicos si existen
     if (rcOffering.lifetime) offering.lifetime = this.mapPackage(rcOffering.lifetime);
     if (rcOffering.annual) offering.annual = this.mapPackage(rcOffering.annual);
     if (rcOffering.sixMonth) offering.sixMonth = this.mapPackage(rcOffering.sixMonth);
@@ -549,9 +725,6 @@ export class RevenueCatService implements IRevenueCatService {
     return offering;
   }
 
-  /**
-   * Mapea un Package de RevenueCat a nuestro modelo
-   */
   private mapPackage(rcPackage: PurchasesPackageType): Package {
     return {
       identifier: rcPackage.identifier,
@@ -576,9 +749,6 @@ export class RevenueCatService implements IRevenueCatService {
     };
   }
 
-  /**
-   * Obtiene el PurchasesPackage correspondiente a nuestro Package
-   */
   private async getRCPackage(packageToPurchase: Package, module: any): Promise<PurchasesPackageType> {
     const offerings = await module.Purchases.getOfferings();
     if (!offerings.current) {
@@ -602,9 +772,6 @@ export class RevenueCatService implements IRevenueCatService {
     return rcPackage;
   }
 
-  /**
-   * Mapea nuestro LogLevel al de RevenueCat
-   */
   private mapLogLevel(level: LogLevel, module: any): LOG_LEVELType {
     const mapping: { [key in LogLevel]: LOG_LEVELType } = {
       [LogLevel.VERBOSE]: module.LOG_LEVEL.VERBOSE,

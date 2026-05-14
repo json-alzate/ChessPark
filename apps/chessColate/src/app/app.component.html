@@ -41,12 +41,14 @@
     <div class="flex-1 overflow-y-auto p-2">
       <ul class="menu bg-base-100 w-full rounded-box gap-1">
         @for (option of menuOptions; track option.title) {
-        <li [class.disabled]="!option.enabled">
-          <a (click)="option.enabled ? navigateTo(option.route) : null" class="flex gap-4 py-3">
-            <ion-icon [name]="option.icon" class="text-xl"></ion-icon>
-            <span class="text-base">{{ option.title | transloco }}</span>
-          </a>
-        </li>
+          @if (!option.hideOnWeb || isNativePlatform) {
+            <li [class.disabled]="!option.enabled">
+              <a (click)="option.enabled ? navigateTo(option.route) : null" class="flex gap-4 py-3">
+                <ion-icon [name]="option.icon" class="text-xl"></ion-icon>
+                <span class="text-base">{{ option.title | transloco }}</span>
+              </a>
+            </li>
+          }
         }
 
         @if (isAuthenticated) {
@@ -62,8 +64,13 @@
     </div>
 
     <!-- Version Info -->
-    <div class="p-4 mt-auto text-center border-t border-base-200">
+    <div class="p-4 mt-auto text-center border-t border-base-200 space-y-1">
       <p class="text-xs opacity-50">{{ 'APP.navigation.version' | transloco }} {{ version }}</p>
+      <ion-menu-toggle>
+        <a (click)="navigateTo('/privacy')" class="text-xs opacity-40 hover:opacity-70 cursor-pointer transition-opacity">
+          {{ 'APP.navigation.privacyPolicy' | transloco }}
+        </a>
+      </ion-menu-toggle>
     </div>
 
   </div>

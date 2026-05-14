@@ -82,5 +82,16 @@ export interface CacheEntry {
   url: string;
   puzzles: Puzzle[];
   timestamp: number;
+  lastAccessedAt?: number;
+}
+
+/**
+ * Entrada del pool de puzzles de entrenamiento continuo (infinity)
+ */
+export interface InfinityPoolEntry {
+  id: 'infinityPool';
+  puzzles: Puzzle[];
+  elo: number;
+  createdAt: number;
 }
 

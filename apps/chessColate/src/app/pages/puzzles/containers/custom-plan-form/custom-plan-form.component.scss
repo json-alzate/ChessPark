@@ -1,1 +1,7 @@
 // Form layout and overrides if needed
+
+@media (min-width: 768px) {
+  ion-footer {
+    display: none;
+  }
+}

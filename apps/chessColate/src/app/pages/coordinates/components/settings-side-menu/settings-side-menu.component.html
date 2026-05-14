@@ -2,8 +2,8 @@
   #settingsModal
   trigger="settings-trigger"
   [presentingElement]="null"
-  [breakpoints]="[0, 0.6, 0.8]"
-  [initialBreakpoint]="0.6"
+  [breakpoints]="isDesktop ? undefined : [0, 0.6, 0.8]"
+  [initialBreakpoint]="isDesktop ? undefined : 0.6"
   [backdropDismiss]="true"
   class="settings-modal"
 >

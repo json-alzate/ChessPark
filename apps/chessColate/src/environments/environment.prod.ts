@@ -6,6 +6,7 @@ export const environment = {
   firebase: keys.firebase,
   apiPuzzlesUrl: 'https://puzzles.chesscolate.com/puzzles/',
   version: '2.0.0',
-  revenueCatApiKeyAndroid: (keys as any).revenueCat?.androidApiKey || '',
-  revenueCatApiKeyIos: (keys as any).revenueCat?.iosApiKey || ''
+  revenueCatApiKeyAndroid: keys.revenueCat.androidApiKey,
+  revenueCatApiKeyIos: keys.revenueCat.iosApiKey,
+  revenueCatApiKeyWeb: keys.revenueCat.webApiKey
 };

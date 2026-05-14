@@ -96,7 +96,7 @@
   },
   "PUZZLES": {
     "menu": {
-      "title": "Planes de entrenamiento",
+      "title": "Rutinas de entrenamiento",
       "warmup": "Calentamiento",
       "customTraining": "Rutina personalizada",
       "history": "Historial"
@@ -265,7 +265,7 @@
     "list": "Lista"
   },
   "PLANS_HISTORY": {
-    "title": "Historial de planes",
+    "title": "Historial de rutinas",
     "more": "Ver más",
     "empty": "No hay planes guardados",
     "emptyDescription": "Los planes que completes se guardarán aquí automáticamente",
@@ -444,7 +444,8 @@
       "notifications": "Notificaciones",
       "noNotifications": "No tienes notificaciones",
       "notifyWhenNew": "Te notificaremos cuando tengas nuevas actividades",
-      "markAllAsRead": "Marcar todas como leídas"
+      "markAllAsRead": "Marcar todas como leídas",
+      "privacyPolicy": "Política de privacidad"
     }
   },
   "CHESS960": {
@@ -478,7 +479,9 @@
       },
       "security": "Suscripciones recurrentes procesadas por RevenueCat, App Store y Google Play.",
       "cancel": "Cancela cuando quieras desde la configuración de tu dispositivo.",
-      "restorePurchases": "Restaurar compras"
+      "restorePurchases": "Restaurar compras",
+      "loginRequired": "Inicia sesión para donar",
+      "loginRequiredDesc": "Necesitas una cuenta para procesar tu donación y poder recuperarla en el futuro."
     },
     "tiers": {
       "pawn": {
@@ -502,6 +505,13 @@
       "comingSoon": "Próximamente..."
     }
   },
+  "DOWNLOAD": {
+    "homeCard": {
+      "title": "Próximamente en móvil",
+      "description": "ChessColate estará disponible en Google Play y App Store muy pronto.",
+      "comingSoon": "Próximamente"
+    }
+  },
   "RETO_333": {
     "survival": "Survival",
     "mateIn1": "Mate en 1",
@@ -515,12 +525,13 @@
   },
   "KNIGHT_TOUR": {
     "title": "Recorrido del Caballo",
-    "subtitle": "Mueve el caballo por todo el tablero sin repetir casillas",
     "restart": "Reiniciar",
     "visitedSquares": "Casillas visitadas",
     "time": "Tiempo",
     "settings": "Configuración",
     "startPosition": "Posición inicial",
+    "startPositionDesc": "Elige desde dónde comienza el caballo",
+    "showVisitedSquaresDesc": "Resalta las casillas ya visitadas",
     "random": "Aleatoria",
     "a1": "a1 (esquina inferior izquierda)",
     "h1": "h1 (esquina inferior derecha)",

@@ -44,6 +44,10 @@ export interface GameSettings {
 })
 export class SettingsSideMenuComponent {
   @ViewChild(IonModal) modal!: IonModal;
+
+  get isDesktop(): boolean {
+    return window.innerWidth >= 1024;
+  }
   
   @Input() settings: GameSettings = {
     showCoordinates: false,

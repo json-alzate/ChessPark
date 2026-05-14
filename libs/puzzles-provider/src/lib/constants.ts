@@ -143,7 +143,8 @@ export const DEFAULT_CONFIG = {
   CDN_BASE_URL: 'https://cdn.jsdelivr.net/gh',
   GITHUB_USER: 'json-alzate',
   ENABLE_CACHE: true,
-  CACHE_EXPIRATION_MS: 7 * 24 * 60 * 60 * 1000, // 7 días
+  CACHE_EXPIRATION_MS: 365 * 24 * 60 * 60 * 1000, // 1 año
+  CACHE_STALE_THRESHOLD_MS: 90 * 24 * 60 * 60 * 1000, // 90 días sin acceso
   DEFAULT_PUZZLE_COUNT: 50,
   MAX_PUZZLE_COUNT: 200,
   MAX_CONCURRENT_DOWNLOADS: 5,

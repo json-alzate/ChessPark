@@ -1,8 +1,9 @@
 // core and third party libraries
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Capacitor } from '@capacitor/core';
 import { Platform } from '@ionic/angular';
 import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
+import { TranslocoService } from '@jsverse/transloco';
 import { Store } from '@ngrx/store';
 
 // Firebase
@@ -40,6 +41,7 @@ import {
 export class AuthService implements IAuthService {
 
   private auth!: Auth;
+  private translocoService = inject(TranslocoService);
 
   constructor(
     private platform: Platform,
@@ -112,10 +114,9 @@ export class AuthService implements IAuthService {
   async createUserWithEmailAndPassword(email: string, password: string) {
     const auth = this.setAuth();
     return firebaseCreateUserWithEmailAndPassword(auth, email, password).catch((error: any) => {
-      // TODO: Traducir con TranslateService - llaves: 'RegisterError', 'EmailReadyInUse'
-      let message = 'Error de registro';
+      let message = this.translocoService.translate('AUTH.errors.registerError');
       if (error.code === 'auth/email-already-in-use') {
-        message = 'El correo ya está en uso';
+        message = this.translocoService.translate('AUTH.errors.emailInUse');
       }
       const action = setErrorRegister({ error: message });
       this.store.dispatch(action);

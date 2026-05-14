@@ -6,9 +6,6 @@ import { interval, Subject, takeUntil } from 'rxjs';
 
 import {
   IonContent,
-  IonGrid,
-  IonRow,
-  IonCol,
   IonIcon,
   IonSelect,
   IonSelectOption,
@@ -41,9 +38,6 @@ type StartPosition = 'random' | 'a1' | 'h1' | 'a8' | 'h8';
     IonContent,
     BoardComponent,
     NavbarComponent,
-    IonGrid,
-    IonRow,
-    IonCol,
     IonIcon,
     IonSelect,
     IonSelectOption,
@@ -57,6 +51,10 @@ type StartPosition = 'random' | 'a1' | 'h1' | 'a8' | 'h8';
 })
 export class KnightTourPage implements OnInit, OnDestroy {
   @ViewChild(BoardComponent) boardComponent!: BoardComponent;
+
+  get isDesktop(): boolean {
+    return window.innerWidth >= 1024;
+  }
 
   // Estado del juego
   isPlaying = false;

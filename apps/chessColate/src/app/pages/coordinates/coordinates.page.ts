@@ -4,9 +4,6 @@ import { Router } from '@angular/router';
 
 import {
   IonContent,
-  IonGrid,
-  IonRow,
-  IonCol,
   IonIcon,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -49,9 +46,6 @@ addIcons({ settingsOutline, homeOutline });
     CommonModule,
     IonContent,
     BoardComponent,
-    IonGrid,
-    IonRow,
-    IonCol,
     IonIcon,
     // Navbar
     NavbarComponent,

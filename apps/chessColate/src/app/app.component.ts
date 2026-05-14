@@ -16,22 +16,14 @@ import {
   closeOutline,
   checkmarkDoneOutline,
   notificationsOffOutline,
-  checkmarkOutline
+  checkmarkOutline,
+  createOutline,
+  globeOutline,
 } from 'ionicons/icons';
 import {
   IonMenu,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonContent,
-  IonList,
-  IonItem,
   IonIcon,
-  IonLabel,
   IonRouterOutlet,
-  IonButtons,
-  IonButton,
-  IonAvatar,
   IonMenuToggle,
   ModalController,
   MenuController,
@@ -63,6 +55,7 @@ interface MenuOption {
   icon: string;
   route: string;
   enabled: boolean;
+  hideOnWeb?: boolean;
 }
 
 interface Notification {
@@ -79,27 +72,19 @@ interface Notification {
   selector: 'app-root',
   standalone: true,
   imports: [
-    IonAvatar,
     IonMenu,
-    IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonContent,
-    IonList,
-    IonItem,
     IonIcon,
-    IonLabel,
     IonRouterOutlet,
-    IonButtons,
-    IonButton,
-    TranslocoPipe,
     IonMenuToggle,
+    TranslocoPipe,
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit, OnDestroy {
   title = 'chess-colate';
+
+  readonly isNativePlatform = Capacitor.isNativePlatform();
 
   router = inject(Router);
   authService = inject(AuthService);
@@ -149,10 +134,23 @@ export class AppComponent implements OnInit, OnDestroy {
       enabled: true,
     },
     {
+      title: 'CUSTOM_PLANS.listTitle',
+      icon: 'create-outline',
+      route: '/puzzles/custom-plans',
+      enabled: true,
+    },
+    {
+      title: 'PUBLIC_PLANS.title',
+      icon: 'globe-outline',
+      route: '/puzzles/public-plans',
+      enabled: true,
+    },
+    {
       title: 'APP.components.donate',
       icon: 'heart-outline',
       route: '/donation',
       enabled: true,
+      hideOnWeb: true,
     },
   ];
 
@@ -183,7 +181,9 @@ export class AppComponent implements OnInit, OnDestroy {
       'close-outline': closeOutline,
       'checkmark-done-outline': checkmarkDoneOutline,
       'notifications-off-outline': notificationsOffOutline,
-      'checkmark-outline': checkmarkOutline
+      'checkmark-outline': checkmarkOutline,
+      'create-outline': createOutline,
+      'globe-outline': globeOutline,
     });
     this.initApp();
   }
@@ -267,11 +267,12 @@ export class AppComponent implements OnInit, OnDestroy {
     try {
       // Obtener API Key de RevenueCat dependiendo de la plataforma
       let revenueCatApiKey = '';
-      
-      if (Capacitor.getPlatform() === 'ios') {
+
+      if (!Capacitor.isNativePlatform()) {
+        revenueCatApiKey = (environment as any).revenueCatApiKeyWeb || '';
+      } else if (Capacitor.getPlatform() === 'ios') {
         revenueCatApiKey = (environment as any).revenueCatApiKeyIos || '';
       } else {
-        // Por defecto y para Android usamos la de Android
         revenueCatApiKey = (environment as any).revenueCatApiKeyAndroid || '';
       }
 

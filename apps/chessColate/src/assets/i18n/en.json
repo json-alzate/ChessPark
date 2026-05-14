@@ -96,7 +96,7 @@
   },
   "PUZZLES": {
     "menu": {
-      "title": "Training Plans",
+      "title": "Training Routines",
       "warmup": "Warmup",
       "customTraining": "Custom Training",
       "history": "History"
@@ -265,7 +265,7 @@
     "list": "List"
   },
   "PLANS_HISTORY": {
-    "title": "Plans history",
+    "title": "Routines history",
     "more": "All history",
     "empty": "No saved plans",
     "emptyDescription": "Plans you complete will be automatically saved here",
@@ -442,7 +442,8 @@
       "notifications": "Notifications",
       "noNotifications": "No notifications",
       "notifyWhenNew": "We'll notify you when you have new activities",
-      "markAllAsRead": "Mark all as read"
+      "markAllAsRead": "Mark all as read",
+      "privacyPolicy": "Privacy Policy"
     }
   },
   "CHESS960": {
@@ -476,7 +477,9 @@
       },
       "security": "Recurring subscriptions processed by RevenueCat, App Store, and Google Play.",
       "cancel": "Cancel anytime from your device settings.",
-      "restorePurchases": "Restore purchases"
+      "restorePurchases": "Restore purchases",
+      "loginRequired": "Sign in to donate",
+      "loginRequiredDesc": "You need an account to process your donation and recover it in the future."
     },
     "tiers": {
       "pawn": {
@@ -500,6 +503,13 @@
       "comingSoon": "Coming soon..."
     }
   },
+  "DOWNLOAD": {
+    "homeCard": {
+      "title": "Coming soon on mobile",
+      "description": "ChessColate will be available on Google Play and App Store very soon.",
+      "comingSoon": "Coming soon"
+    }
+  },
   "RETO_333": {
     "survival": "Survival",
     "mateIn1": "Mate in 1",
@@ -513,12 +523,13 @@
   },
   "KNIGHT_TOUR": {
     "title": "Knight Tour",
-    "subtitle": "Move the knight across the board without repeating squares",
     "restart": "Restart",
     "visitedSquares": "Visited squares",
     "time": "Time",
     "settings": "Settings",
     "startPosition": "Starting position",
+    "startPositionDesc": "Choose where the knight starts",
+    "showVisitedSquaresDesc": "Highlight squares already visited",
     "random": "Random",
     "a1": "a1 (bottom left corner)",
     "h1": "h1 (bottom right corner)",

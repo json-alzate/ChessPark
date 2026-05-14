@@ -172,3 +172,69 @@
 .main-container {
   @apply min-h-screen flex flex-col bg-base-200;
 }
+
+/* Modal de configuración de coordenadas: ajustes para desktop */
+@media (min-width: 1024px) {
+  ion-modal.settings-modal::part(handle) {
+    display: none;
+  }
+
+  ion-modal.settings-modal::part(content) {
+    border-radius: 16px;
+    animation: none;
+  }
+}
+
+/* Modal de solución de puzzle: dos columnas en desktop */
+@media (min-width: 1024px) {
+  ion-modal.puzzle-solution-modal {
+    --width: 860px;
+    --height: 85vh;
+    --border-radius: 16px;
+  }
+
+  ion-modal.puzzle-solution-modal::part(handle) {
+    display: none;
+  }
+
+  ion-modal.puzzle-solution-modal::part(content) {
+    border-radius: 16px;
+    animation: none;
+  }
+}
+
+/* Modal de añadir bloque: diálogo centrado en desktop con altura fija y scroll interno */
+@media (min-width: 1024px) {
+  ion-modal.block-settings-modal-desktop {
+    --width: 540px;
+    --height: 85vh;
+    --border-radius: 16px;
+  }
+
+  ion-modal.block-settings-modal-desktop::part(handle) {
+    display: none;
+  }
+
+  ion-modal.block-settings-modal-desktop::part(content) {
+    border-radius: 16px;
+    animation: none;
+  }
+}
+
+/* Modal de configuración de knight-tour: ajustes para desktop */
+@media (min-width: 1024px) {
+  ion-modal.kt-settings-modal {
+    --width: 460px;
+    --height: 320px;
+    --border-radius: 16px;
+  }
+
+  ion-modal.kt-settings-modal::part(handle) {
+    display: none;
+  }
+
+  ion-modal.kt-settings-modal::part(content) {
+    border-radius: 16px;
+    animation: none;
+  }
+}

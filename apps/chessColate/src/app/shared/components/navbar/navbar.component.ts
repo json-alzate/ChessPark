@@ -7,6 +7,7 @@ import { Subscription } from 'rxjs';
 import { LoginComponent } from '../login/login.component';
 import { DonationModalComponent } from '../donation-modal/donation-modal.component';
 import { ProfileService } from '@services/profile.service';
+import { Capacitor } from '@capacitor/core';
 import { AuthService } from '@services/auth.service';
 import { Profile } from '@cpark/models';
 import { Store, select } from '@ngrx/store';
@@ -28,6 +29,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
   profileService = inject(ProfileService);
   authService = inject(AuthService);
   store = inject(Store<AuthState>);
+
+  readonly isNativePlatform = Capacitor.isNativePlatform();
 
   profile: Profile | null = null;
   isAuthenticated = false;
