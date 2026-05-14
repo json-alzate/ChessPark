@@ -11,7 +11,7 @@ import {
   ViewWillLeave,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { arrowForward, statsChartOutline, eye, close, flash, heart, trophy } from 'ionicons/icons';
+import { arrowForward, statsChartOutline, eye, close, flash, heart, trophy, logoGooglePlaystore, logoApple } from 'ionicons/icons';
 import { Subscription } from 'rxjs';
 import { Store, select } from '@ngrx/store';
 import { AuthState, getIsInitialized } from '@cpark/state';
@@ -35,6 +35,7 @@ import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 import { TrainingMenuComponent } from './components/training-menu.component';
 import { BoardPuzzleComponent, BoardPuzzleSolutionComponent } from '@chesspark/board';
 import { PlanChartComponent } from '../puzzles/components/plan-chart/plan-chart.component';
+import { Capacitor } from '@capacitor/core';
 
 @Component({
   selector: 'app-home',
@@ -55,6 +56,11 @@ import { PlanChartComponent } from '../puzzles/components/plan-chart/plan-chart.
   styleUrls: ['home.page.scss'],
 })
 export class HomePage implements OnInit, ViewWillEnter, ViewWillLeave {
+  readonly isNativePlatform = Capacitor.isNativePlatform();
+  // Actualizar cuando las apps estén publicadas
+  readonly playStoreUrl = '';
+  readonly appStoreUrl = '';
+
   infinitePuzzle: Puzzle | null = null;
   isInfinitePuzzleSolved = false;
   infinitePuzzleProblemState: 'none' | 'good' | 'bad' | 'timeOut' = 'none';
@@ -93,7 +99,7 @@ export class HomePage implements OnInit, ViewWillEnter, ViewWillLeave {
   private initSubscription?: Subscription;
 
   constructor(private blockService: BlockService) {
-    addIcons({ arrowForward, statsChartOutline, eye, close, flash, heart, trophy });
+    addIcons({ arrowForward, statsChartOutline, eye, close, flash, heart, trophy, logoGooglePlaystore, logoApple });
   }
 
   async showSolution() {

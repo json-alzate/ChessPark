@@ -22,18 +22,8 @@ import {
 } from 'ionicons/icons';
 import {
   IonMenu,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonContent,
-  IonList,
-  IonItem,
   IonIcon,
-  IonLabel,
   IonRouterOutlet,
-  IonButtons,
-  IonButton,
-  IonAvatar,
   IonMenuToggle,
   ModalController,
   MenuController,
@@ -65,6 +55,7 @@ interface MenuOption {
   icon: string;
   route: string;
   enabled: boolean;
+  hideOnWeb?: boolean;
 }
 
 interface Notification {
@@ -81,27 +72,19 @@ interface Notification {
   selector: 'app-root',
   standalone: true,
   imports: [
-    IonAvatar,
     IonMenu,
-    IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonContent,
-    IonList,
-    IonItem,
     IonIcon,
-    IonLabel,
     IonRouterOutlet,
-    IonButtons,
-    IonButton,
-    TranslocoPipe,
     IonMenuToggle,
+    TranslocoPipe,
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit, OnDestroy {
   title = 'chess-colate';
+
+  readonly isNativePlatform = Capacitor.isNativePlatform();
 
   router = inject(Router);
   authService = inject(AuthService);
@@ -167,6 +150,7 @@ export class AppComponent implements OnInit, OnDestroy {
       icon: 'heart-outline',
       route: '/donation',
       enabled: true,
+      hideOnWeb: true,
     },
   ];
 

@@ -41,12 +41,14 @@
     <div class="flex-1 overflow-y-auto p-2">
       <ul class="menu bg-base-100 w-full rounded-box gap-1">
         @for (option of menuOptions; track option.title) {
-        <li [class.disabled]="!option.enabled">
-          <a (click)="option.enabled ? navigateTo(option.route) : null" class="flex gap-4 py-3">
-            <ion-icon [name]="option.icon" class="text-xl"></ion-icon>
-            <span class="text-base">{{ option.title | transloco }}</span>
-          </a>
-        </li>
+          @if (!option.hideOnWeb || isNativePlatform) {
+            <li [class.disabled]="!option.enabled">
+              <a (click)="option.enabled ? navigateTo(option.route) : null" class="flex gap-4 py-3">
+                <ion-icon [name]="option.icon" class="text-xl"></ion-icon>
+                <span class="text-base">{{ option.title | transloco }}</span>
+              </a>
+            </li>
+          }
         }
 
         @if (isAuthenticated) {

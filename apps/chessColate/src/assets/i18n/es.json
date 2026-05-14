@@ -505,6 +505,13 @@
       "comingSoon": "Próximamente..."
     }
   },
+  "DOWNLOAD": {
+    "homeCard": {
+      "title": "Próximamente en móvil",
+      "description": "ChessColate estará disponible en Google Play y App Store muy pronto.",
+      "comingSoon": "Próximamente"
+    }
+  },
   "RETO_333": {
     "survival": "Survival",
     "mateIn1": "Mate en 1",
