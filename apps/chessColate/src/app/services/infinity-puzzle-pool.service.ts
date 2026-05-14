@@ -98,11 +98,32 @@ export class InfinityPuzzlePoolService {
     if (existing && this.isPoolValid(existing, elo)) return;
 
     const themes = this.pickRandomThemes(10);
-    const results = await Promise.all(
-      themes.map((t) => this.puzzlesProvider.getPuzzles({ elo, theme: t, count: this.PUZZLES_PER_THEME }).catch(() => [] as Puzzle[]))
+    let firstBatchSaved = false;
+    const allPuzzles: Puzzle[] = [];
+
+    await Promise.all(
+      themes.map(async (t) => {
+        const batch = await this.puzzlesProvider
+          .getPuzzles({ elo, theme: t, count: this.PUZZLES_PER_THEME })
+          .catch(() => [] as Puzzle[]);
+
+        allPuzzles.push(...batch);
+
+        // Guardar pool parcial en cuanto llega el primer batch con puzzles,
+        // para que peekOnePuzzle/popOnePuzzle puedan usarlo sin esperar los 10 temas.
+        if (!firstBatchSaved && batch.length > 0) {
+          firstBatchSaved = true;
+          await this.cacheService.saveInfinityPool({
+            id: 'infinityPool',
+            puzzles: [...allPuzzles],
+            elo,
+            createdAt: Date.now(),
+          });
+        }
+      })
     );
 
-    const puzzles = shuffleArray(results.flat()).slice(0, this.POOL_SIZE);
+    const puzzles = shuffleArray(allPuzzles).slice(0, this.POOL_SIZE);
     await this.cacheService.saveInfinityPool({ id: 'infinityPool', puzzles, elo, createdAt: Date.now() });
   }
 
