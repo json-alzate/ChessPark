@@ -271,6 +271,10 @@ export class CustomPlanFormComponent implements OnInit, OnDestroy {
     return this.appService.getNameThemePuzzleByValue(theme) || theme;
   }
 
+  getThemeImg(theme: string): string {
+    return this.appService.getThemePuzzleByValue(theme)?.img ?? theme + '.svg';
+  }
+
   async save(): Promise<void> {
     if (this.nameControl.invalid || !this.nameControl.value) {
       this.nameControl.markAsTouched();

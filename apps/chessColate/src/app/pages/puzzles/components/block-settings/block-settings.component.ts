@@ -61,14 +61,26 @@ export class BlockSettingsComponent implements OnInit, AfterViewInit {
     this.form.get('streamSolution')?.valueChanges.subscribe((val) => {
       if (val) this.form.get('showPuzzleSolution')?.setValue(false, { emitEvent: false });
     });
-    this.form.get('eloMin')?.valueChanges.subscribe((val) => {
-      if (val > this.form.get('eloMax')?.value) {
-        this.form.get('eloMax')?.setValue(val, { emitEvent: false });
+    this.form.get('eloMin')?.valueChanges.subscribe((val: number) => {
+      const eloMax = this.form.get('eloMax')?.value;
+      if (eloMax - val < 100) {
+        const newMax = Math.min(val + 100, 2800);
+        const newMin = newMax - 100;
+        this.form.get('eloMax')?.setValue(newMax, { emitEvent: false });
+        if (newMin !== val) {
+          this.form.get('eloMin')?.setValue(newMin, { emitEvent: false });
+        }
       }
     });
-    this.form.get('eloMax')?.valueChanges.subscribe((val) => {
-      if (val < this.form.get('eloMin')?.value) {
-        this.form.get('eloMin')?.setValue(val, { emitEvent: false });
+    this.form.get('eloMax')?.valueChanges.subscribe((val: number) => {
+      const eloMin = this.form.get('eloMin')?.value;
+      if (val - eloMin < 100) {
+        const newMin = Math.max(val - 100, 400);
+        const newMax = newMin + 100;
+        this.form.get('eloMin')?.setValue(newMin, { emitEvent: false });
+        if (newMax !== val) {
+          this.form.get('eloMax')?.setValue(newMax, { emitEvent: false });
+        }
       }
     });
   }
@@ -85,6 +97,10 @@ export class BlockSettingsComponent implements OnInit, AfterViewInit {
     if (value === 'all') return '';
     if (value === 'weakness') return '';
     return this.appService.getNameThemePuzzleByValue(value) || '';
+  }
+
+  getThemeImg(value: string): string {
+    return this.appService.getThemePuzzleByValue(value)?.img ?? value + '.svg';
   }
 
   get timeField() {

@@ -111,7 +111,7 @@
                     @if (block.theme !== 'all' && block.theme !== 'weakness') {
                       <img
                         class="w-8 h-8 rounded-full object-contain"
-                        [src]="'assets/images/puzzle-themes/' + block.theme + '.svg'"
+                        [src]="'assets/images/puzzle-themes/' + getThemeImg(block.theme)"
                         alt=""
                       />
                     }

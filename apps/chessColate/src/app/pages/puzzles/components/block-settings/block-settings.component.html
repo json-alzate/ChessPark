@@ -109,7 +109,7 @@
         <summary class="collapse-title">
           <div class="flex items-center gap-2 pr-6">
             @if (themeField?.value !== 'all' && themeField?.value !== 'weakness') {
-              <img [src]="'assets/images/puzzle-themes/' + themeField?.value + '.svg'" class="w-5 h-5 rounded-full object-contain" alt="" />
+              <img [src]="'assets/images/puzzle-themes/' + getThemeImg(themeField?.value ?? '')" class="w-5 h-5 rounded-full object-contain" alt="" />
             }
             @if (themeField?.value === 'all') { <ion-icon name="shuffle"></ion-icon> }
             @if (themeField?.value === 'weakness') { <ion-icon name="trending-down"></ion-icon> }
