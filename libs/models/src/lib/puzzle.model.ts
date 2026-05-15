@@ -24,6 +24,8 @@ export interface Puzzle {
 
 export interface PuzzleQueryOptions {
     elo: number;
+    eloMin?: number;
+    eloMax?: number;
     theme?: string;
     openingFamily?: string;
     color?: 'w' | 'b';

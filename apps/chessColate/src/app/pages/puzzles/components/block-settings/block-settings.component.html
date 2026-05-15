@@ -82,6 +82,11 @@
             </li>
             <li class="list-row">
               <div></div>
+              <div class="text-sm">{{ 'NEW_BLOCK.options.showElo' | transloco }}</div>
+              <input type="checkbox" formControlName="showPuzzleElo" class="toggle toggle-sm" />
+            </li>
+            <li class="list-row">
+              <div></div>
               <div class="text-sm">{{ 'NEW_BLOCK.options.blind' | transloco }}</div>
               <input type="checkbox" formControlName="goshPuzzle" class="toggle toggle-sm" />
             </li>
@@ -158,28 +163,34 @@
           <div class="flex items-center justify-between pr-6">
             <span class="font-semibold">{{ 'NEW_BLOCK.theme.difficulty' | transloco }}</span>
             <span class="text-sm text-base-content/50">
-              @if (eloLevelField?.value === 0) {
-                {{ 'NEW_BLOCK.difficulty.balanced' | transloco }}
-              } @else {
-                ELO @if (eloLevelField?.value > 0) {+}{{ eloLevelField?.value }}
-              }
+              ELO {{ eloMinField?.value }} – {{ eloMaxField?.value }}
             </span>
           </div>
         </summary>
-        <div class="collapse-content pt-2">
-          <div class="flex justify-between items-center mb-1">
-            <span class="text-sm font-medium">{{ 'PLANS_HISTORY.elo' | transloco }}</span>
-            <span class="text-sm text-base-content/50">
-              @if (eloLevelField?.value === 0) { {{ 'NEW_BLOCK.difficulty.normal' | transloco }} }
-              @if (eloLevelField?.value > 0) { {{ 'NEW_BLOCK.difficulty.increase' | transloco }} +{{ eloLevelField?.value }} }
-              @if (eloLevelField?.value < 0) { {{ 'NEW_BLOCK.difficulty.decrease' | transloco }} {{ eloLevelField?.value }} }
-            </span>
+        <div class="collapse-content space-y-4 pt-2">
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <span class="text-sm font-medium">{{ 'NEW_BLOCK.difficulty.eloMin' | transloco }}</span>
+              <span class="text-sm text-base-content/50">{{ eloMinField?.value }}</span>
+            </div>
+            <input type="range" formControlName="eloMin" min="400" max="2800" step="100" class="range range-sm w-full" />
+            <div class="flex justify-between text-xs text-base-content/30 px-1 mt-1">
+              <span>400</span>
+              <span>1600</span>
+              <span>2800</span>
+            </div>
           </div>
-          <input type="range" formControlName="eloLevel" min="-600" max="600" step="100" class="range range-sm w-full" />
-          <div class="flex justify-between text-xs text-base-content/30 px-1 mt-1">
-            <span>-600</span>
-            <span>0</span>
-            <span>+600</span>
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <span class="text-sm font-medium">{{ 'NEW_BLOCK.difficulty.eloMax' | transloco }}</span>
+              <span class="text-sm text-base-content/50">{{ eloMaxField?.value }}</span>
+            </div>
+            <input type="range" formControlName="eloMax" min="400" max="2800" step="100" class="range range-sm w-full" />
+            <div class="flex justify-between text-xs text-base-content/30 px-1 mt-1">
+              <span>400</span>
+              <span>1600</span>
+              <span>2800</span>
+            </div>
           </div>
         </div>
       </details>

@@ -31,6 +31,10 @@ export interface Puzzle {
 export interface PuzzleQueryOptions {
   /** Nivel de ELO del puzzle (por defecto: 1500) */
   elo: number;
+  /** Rango fijo de ELO mínimo (si se especifica junto con eloMax, ignora el elo relativo del usuario) */
+  eloMin?: number;
+  /** Rango fijo de ELO máximo */
+  eloMax?: number;
   /** Tema del puzzle (opcional, si no se especifica se elige uno aleatorio) */
   theme?: string;
   /** Familia de apertura (opcional) */

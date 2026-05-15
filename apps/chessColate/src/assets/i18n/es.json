@@ -211,6 +211,7 @@
     "options": {
       "showSolution": "Mostrar solución",
       "stream": "Stream",
+      "showElo": "Mostrar ELO del puzzle",
       "blind": "A ciegas",
       "timeVisible": "Tiempo visible"
     },
@@ -226,7 +227,9 @@
       "balanced": "Equilibrado",
       "normal": "Normal",
       "increase": "Aumenta",
-      "decrease": "Disminuye"
+      "decrease": "Disminuye",
+      "eloMin": "ELO mínimo",
+      "eloMax": "ELO máximo"
     },
     "actions": {
       "add": "Añadir"

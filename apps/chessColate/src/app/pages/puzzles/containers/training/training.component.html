@@ -115,6 +115,11 @@
           >
         </div>
         }
+        @if (puzzleToPlay && $any(plan)?.blocks?.[currentIndexBlock]?.showPuzzleElo) {
+        <div class="badge badge-outline font-mono">
+          {{ puzzleToPlay.rating }}
+        </div>
+        }
         <button
           class="btn btn-square btn-ghost btn-error"
           (click)="onExitTraining()"

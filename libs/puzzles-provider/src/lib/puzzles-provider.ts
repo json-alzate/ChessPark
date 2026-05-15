@@ -5,6 +5,7 @@ import {
   buildPuzzleUrl,
   filterByColor,
   generateEloSequence,
+  generateEloSequenceInRange,
   limitPuzzleCount,
   normalizeElo,
   shuffleArray,
@@ -72,7 +73,6 @@ export class PuzzlesProvider {
    * ```
    */
   async getPuzzles(options: PuzzleQueryOptions): Promise<Puzzle[]> {
-    const elo = normalizeElo(options.elo);
     const count = limitPuzzleCount(options.count);
     const color = options.color ?? 'N/A';
 
@@ -84,8 +84,14 @@ export class PuzzlesProvider {
       theme = this.getRandomTheme();
     }
 
-    // Generar secuencia de ELOs para buscar
-    const eloSequence = generateEloSequence(elo);
+    // Generar secuencia de ELOs: rango fijo si se especifica, o expansión desde un punto central
+    let eloSequence: number[];
+    if (options.eloMin !== undefined && options.eloMax !== undefined) {
+      eloSequence = generateEloSequenceInRange(options.eloMin, options.eloMax);
+    } else {
+      const elo = normalizeElo(options.elo);
+      eloSequence = generateEloSequence(elo);
+    }
 
     let allPuzzles: Puzzle[] = [];
 

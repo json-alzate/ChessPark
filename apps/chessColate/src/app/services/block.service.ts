@@ -38,6 +38,9 @@ export class BlockService {
 
     const options: PuzzleQueryOptions = {
       elo: blockSettings.elo,
+      ...(blockSettings.eloMin !== undefined && blockSettings.eloMax !== undefined
+        ? { eloMin: blockSettings.eloMin, eloMax: blockSettings.eloMax }
+        : {}),
       theme: themeMapped ? blockSettings.theme : undefined,
       openingFamily: blockSettings.openingFamily,
     };
