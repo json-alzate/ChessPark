@@ -93,6 +93,7 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
   @Output() puzzleCompleted = new EventEmitter<Puzzle>();
   @Output() puzzleFailed = new EventEmitter<Puzzle>();
   @Output() puzzleEndByTime = new EventEmitter<Puzzle>();
+  @Output() streamSolutionFinished = new EventEmitter<void>();
 
   puzzle!: Puzzle;
   isPlaying = false;
@@ -103,6 +104,8 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
   totalMoves = 0;
   allowMoveArrows = false;
   fenToCompareAndPlaySound!: string;
+
+  isStreaming = false;
 
   // timer
   showTimer = true;
@@ -140,6 +143,12 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
       playSkipForwardOutline,
     });
   }
+  @Input() set triggerStreamSolution(value: boolean) {
+    if (value && !this.isStreaming && this.arrayFenSolution.length > 0) {
+      this.startStreamSolution();
+    }
+  }
+
   @Input() set setPuzzle(data: Puzzle) {
     if (data) {
       this.puzzle = data;
@@ -729,6 +738,32 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
       );
       this.showLastMove(from, to);
     }
+  }
+
+  async startStreamSolution() {
+    this.isStreaming = true;
+    this.board.disableMoveInput();
+
+    // Reset board to the correct position at currentMoveNumber (handles both fail and timeOut)
+    await this.board.setPosition(this.arrayFenSolution[this.currentMoveNumber], false);
+    await new Promise<void>((resolve) => setTimeout(resolve, 600));
+
+    for (let i = this.currentMoveNumber + 1; i < this.arrayFenSolution.length; i++) {
+      const prevFen = this.arrayFenSolution[i - 1];
+      await this.board.setPosition(this.arrayFenSolution[i], true);
+      this.soundsService.determineChessMoveType(prevFen, this.arrayFenSolution[i]);
+
+      const moveStr = this.arrayMovesSolution[i];
+      if (moveStr) {
+        this.showLastMove(moveStr.slice(0, 2), moveStr.slice(2, 4));
+      }
+
+      await new Promise<void>((resolve) => setTimeout(resolve, 1000));
+    }
+
+    this.isStreaming = false;
+    await new Promise<void>((resolve) => setTimeout(resolve, 800));
+    this.streamSolutionFinished.emit();
   }
 
   // Board controls -----------------------------------

@@ -55,6 +55,12 @@ export class BlockSettingsComponent implements OnInit, AfterViewInit {
     this.form.get('goshPuzzle')?.valueChanges.subscribe(() => {
       this.toggleFieldBasedOnBoolean('goshPuzzle', 'goshPuzzleTime');
     });
+    this.form.get('showPuzzleSolution')?.valueChanges.subscribe((val) => {
+      if (val) this.form.get('streamSolution')?.setValue(false, { emitEvent: false });
+    });
+    this.form.get('streamSolution')?.valueChanges.subscribe((val) => {
+      if (val) this.form.get('showPuzzleSolution')?.setValue(false, { emitEvent: false });
+    });
   }
 
   ngAfterViewInit(): void {
@@ -100,6 +106,7 @@ export class BlockSettingsComponent implements OnInit, AfterViewInit {
       puzzleTime: [60, Validators.required],
       nextPuzzleImmediately: [true],
       showPuzzleSolution: [true],
+      streamSolution: [false],
       goshPuzzle: [false],
       goshPuzzleTime: [{ value: 30, disabled: true }],
     });

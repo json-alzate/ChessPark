@@ -210,6 +210,7 @@
     },
     "options": {
       "showSolution": "Mostrar solución",
+      "stream": "Stream",
       "blind": "A ciegas",
       "timeVisible": "Tiempo visible"
     },

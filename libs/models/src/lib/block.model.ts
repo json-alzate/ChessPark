@@ -18,6 +18,7 @@ export interface Block {
     puzzles?: Puzzle[];
     puzzlesPlayed: UserPuzzle[];
     showPuzzleSolution?: boolean;
+    streamSolution?: boolean;
     nextPuzzleImmediately?: boolean;
     goshPuzzle?: boolean;
     goshPuzzleTime?: number;
