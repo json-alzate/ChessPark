@@ -436,6 +436,10 @@ export class AppComponent implements OnInit, OnDestroy {
 
   async installPwa() {
     await this.menuController.close('side-menu');
-    await this.pwaService.promptInstall();
+    if (this.pwaService.isIos) {
+      this.pwaService.showIosBanner.set(true);
+    } else {
+      await this.pwaService.promptInstall();
+    }
   }
 }

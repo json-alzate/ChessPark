@@ -3,7 +3,7 @@
   <div class="h-full flex flex-col bg-base-100 text-base-content" data-theme="halloween">
 
     <!-- User Profile / Header -->
-    <div class="p-4 border-b border-base-200">
+    <div class="p-4 border-b border-base-200" style="padding-top: calc(1rem + env(safe-area-inset-top))">
       @if (isAuthenticated) {
       <div class="flex items-center gap-3">
         <div class="avatar">
@@ -61,7 +61,7 @@
         </li>
         }
 
-        @if (pwaService.isMobileBrowser && pwaService.canInstall()) {
+        @if (pwaService.isMobileBrowser && (pwaService.canInstall() || pwaService.isIos)) {
         <div class="divider my-1"></div>
         <li>
           <a (click)="installPwa()" class="text-primary hover:bg-primary/20 hover:text-primary flex gap-4 py-3">
@@ -148,6 +148,28 @@
 
   </div>
 </ion-menu>
+
+<!-- Banner instalación iOS -->
+@if (pwaService.showIosBanner()) {
+<div class="fixed bottom-0 left-0 right-0 z-50 p-4 bg-base-300 border-t border-base-200 shadow-xl" data-theme="halloween" style="padding-bottom: calc(1rem + env(safe-area-inset-bottom))">
+  <button class="absolute top-2 right-3 text-base-content opacity-50 hover:opacity-100 text-xl leading-none" (click)="pwaService.dismissIosBanner()">✕</button>
+  <div class="flex items-start gap-3 pr-4">
+    <img src="assets/icons/icon-72x72.png" class="w-12 h-12 rounded-xl flex-shrink-0" alt="ChessColate" />
+    <div>
+      <p class="font-bold text-sm text-base-content">{{ 'APP.pwa.iosTitle' | transloco }}</p>
+      <p class="text-xs text-base-content opacity-70 mt-0.5">
+        {{ 'APP.pwa.iosStep1' | transloco }}
+        <span class="inline-block mx-1">
+          <svg xmlns="http://www.w3.org/2000/svg" class="inline w-4 h-4 align-text-bottom" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2l-4 4h3v7h2V6h3l-4-4zm-6 14v2h12v-2H6z"/>
+          </svg>
+        </span>
+        {{ 'APP.pwa.iosStep2' | transloco }}
+      </p>
+    </div>
+  </div>
+</div>
+}
 
 <!-- Contenido principal -->
 <ion-router-outlet id="main-content"></ion-router-outlet>

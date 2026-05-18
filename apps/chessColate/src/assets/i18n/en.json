@@ -449,6 +449,11 @@
       "notifyWhenNew": "We'll notify you when you have new activities",
       "markAllAsRead": "Mark all as read",
       "privacyPolicy": "Privacy Policy"
+    },
+    "pwa": {
+      "iosTitle": "Install ChessColate",
+      "iosStep1": "Tap the share button",
+      "iosStep2": "then \"Add to Home Screen\""
     }
   },
   "CHESS960": {
