@@ -3,12 +3,11 @@
   "name": "ChessColate Extension",
   "version": "1.0.0",
   "description": "ChessColate helper for Lichess — piece highlighting and training plans.",
-  "permissions": ["storage", "identity", "activeTab"],
+  "permissions": ["storage", "windows", "identity", "tabs"],
   "host_permissions": [
     "https://lichess.org/*"
   ],
   "action": {
-    "default_popup": "popup.html",
     "default_icon": {
       "16": "icons/icon16.png",
       "48": "icons/icon48.png",
@@ -25,6 +24,12 @@
       "js": ["content.js"],
       "css": ["content.css"],
       "run_at": "document_end"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["panel.html", "panel.js", "panel.css", "icons/*"],
+      "matches": ["<all_urls>"]
     }
   ],
   "icons": {

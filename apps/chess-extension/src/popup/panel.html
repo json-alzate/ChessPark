@@ -4,9 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ChessColate</title>
-  <link rel="stylesheet" href="popup.css" />
+  <link rel="stylesheet" href="panel.css" />
 </head>
 <body>
+
   <!-- Header -->
   <header class="header">
     <div class="header-brand">
@@ -17,7 +18,7 @@
   </header>
 
   <!-- Auth section -->
-  <section id="section-auth" class="section">
+  <section class="section">
     <div id="auth-logged-out">
       <p class="text-muted">Sign in to sync your ELO and plans.</p>
       <button id="btn-signin" class="btn btn-primary btn-block">
@@ -48,33 +49,34 @@
 
   <div class="divider"></div>
 
-  <!-- Piece highlights section -->
-  <section class="section">
-    <h2 class="section-title">Piece Highlights <span class="lichess-tag">Lichess</span></h2>
-    <table class="highlights-table">
-      <thead>
-        <tr>
-          <th></th>
-          <th class="color-header white-header">White</th>
-          <th class="color-header black-header">Black</th>
-        </tr>
-      </thead>
-      <tbody id="highlights-body">
-        <!-- Rows inserted by popup.ts -->
-      </tbody>
-    </table>
-  </section>
+  <!-- Piece highlights — collapsible dropdown -->
+  <details class="highlight-details">
+    <summary class="highlight-summary">
+      <div class="summary-left">
+        <span class="summary-title">Piece Highlights</span>
+        <span class="lichess-tag">Lichess</span>
+        <span class="active-count" id="highlight-count" style="display:none"></span>
+      </div>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
+    </summary>
+
+    <div class="highlight-content" id="highlights-body">
+      <!-- Piece rows injected by panel.ts -->
+    </div>
+  </details>
 
   <div class="divider"></div>
 
-  <!-- Plans section -->
+  <!-- Training routines -->
   <section class="section">
-    <h2 class="section-title">Default Plans</h2>
+    <h2 class="section-title">Training Routines</h2>
     <div id="plans-container">
-      <p class="text-muted" id="plans-loading">Loading plans…</p>
+      <p class="text-muted">Loading…</p>
     </div>
   </section>
 
-  <script src="popup.js"></script>
+  <script src="panel.js"></script>
 </body>
 </html>

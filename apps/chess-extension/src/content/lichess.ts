@@ -1,11 +1,10 @@
 import { type HighlightSettings, PIECE_TYPES, PIECE_COLORS, defaultHighlights } from '../shared/types';
 
-const HL_CLASS = 'cce-highlight';
-const DIM_CLASS = 'cce-dim';
-
 let currentSettings: HighlightSettings = defaultHighlights();
 
-// ── Apply / clear highlights ───────────────────────────────────────────────
+// ── Apply highlights via inline styles ────────────────────────────────────
+// We use style.filter / style.scale / style.opacity directly instead of CSS
+// classes, so we don't fight Lichess's CSS specificity.
 function applyHighlights(settings: HighlightSettings) {
   currentSettings = settings;
 
@@ -13,44 +12,59 @@ function applyHighlights(settings: HighlightSettings) {
   if (!pieces.length) return;
 
   const anyActive = PIECE_TYPES.some(t =>
-    PIECE_COLORS.some(c => settings[`${t}-${c}`])
+    PIECE_COLORS.some(c => settings[`${t}-${c}`]),
   );
 
   for (const piece of pieces) {
-    piece.classList.remove(HL_CLASS, DIM_CLASS);
+    // Always reset our own overrides first
+    piece.style.removeProperty('filter');
+    piece.style.removeProperty('scale');
+    piece.style.removeProperty('opacity');
+    piece.style.removeProperty('z-index');
+    piece.style.removeProperty('position');
 
     if (!anyActive) continue;
 
-    const isHighlighted = PIECE_TYPES.some(t =>
+    const highlighted = PIECE_TYPES.some(t =>
       PIECE_COLORS.some(c =>
         settings[`${t}-${c}`] &&
         piece.classList.contains(t) &&
-        piece.classList.contains(c)
-      )
+        piece.classList.contains(c),
+      ),
     );
 
-    piece.classList.add(isHighlighted ? HL_CLASS : DIM_CLASS);
+    if (highlighted) {
+      piece.style.filter =
+        'drop-shadow(0 0 6px rgba(226,184,75,1)) ' +
+        'drop-shadow(0 0 14px rgba(226,184,75,0.6)) ' +
+        'brightness(1.3)';
+      piece.style.scale = '1.2';
+      piece.style.zIndex = '100';
+      piece.style.position = 'relative';
+    } else {
+      piece.style.opacity = '0.4';
+    }
   }
 }
 
-function clearHighlights() {
-  document.querySelectorAll<HTMLElement>(`.${HL_CLASS}, .${DIM_CLASS}`).forEach(el => {
-    el.classList.remove(HL_CLASS, DIM_CLASS);
-  });
-}
-
-// ── MutationObserver: re-apply when the board changes (SPA nav / new puzzle)
-let observer: MutationObserver | null = null;
+// ── MutationObserver: re-apply after Lichess updates the board ─────────────
+let boardObserver: MutationObserver | null = null;
 
 function watchBoard() {
-  if (observer) observer.disconnect();
+  boardObserver?.disconnect();
 
   const board = document.querySelector('cg-board') ?? document.body;
-  observer = new MutationObserver(() => applyHighlights(currentSettings));
-  observer.observe(board, { childList: true, subtree: true });
+  let debounce: ReturnType<typeof setTimeout> | null = null;
+
+  boardObserver = new MutationObserver(() => {
+    if (debounce) clearTimeout(debounce);
+    debounce = setTimeout(() => applyHighlights(currentSettings), 80);
+  });
+
+  boardObserver.observe(board, { childList: true, subtree: true, attributes: true, attributeFilter: ['style', 'class'] });
 }
 
-// ── Storage change listener ────────────────────────────────────────────────
+// ── Storage change — panel toggled a piece ─────────────────────────────────
 chrome.storage.sync.onChanged.addListener((changes) => {
   if ('highlights' in changes) {
     const next = changes['highlights'].newValue as HighlightSettings | undefined;
@@ -61,17 +75,17 @@ chrome.storage.sync.onChanged.addListener((changes) => {
 // ── Init ───────────────────────────────────────────────────────────────────
 async function init() {
   const result = await chrome.storage.sync.get('highlights');
-  const settings = (result['highlights'] as HighlightSettings) ?? defaultHighlights();
-  applyHighlights(settings);
+  applyHighlights((result['highlights'] as HighlightSettings) ?? defaultHighlights());
   watchBoard();
 
-  // Re-watch when navigating within Lichess (Turbolinks / SPA)
-  const navObserver = new MutationObserver(() => {
-    if (!document.querySelector('cg-board')) return;
-    watchBoard();
-    applyHighlights(currentSettings);
-  });
-  navObserver.observe(document.body, { childList: true, subtree: false });
+  // Watch for SPA navigation (Lichess loads puzzles without full reload)
+  new MutationObserver(() => {
+    const board = document.querySelector('cg-board');
+    if (board) {
+      watchBoard();
+      applyHighlights(currentSettings);
+    }
+  }).observe(document.body, { childList: true });
 }
 
 init();

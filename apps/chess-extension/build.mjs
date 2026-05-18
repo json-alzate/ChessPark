@@ -1,11 +1,13 @@
 import { build } from 'esbuild';
-import { copyFileSync, mkdirSync, cpSync } from 'fs';
+import { copyFileSync, mkdirSync, readdirSync, rmSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const outDir = resolve(__dirname, 'dist');
 
+// Clean previous build
+rmSync(outDir, { recursive: true, force: true });
 mkdirSync(outDir, { recursive: true });
 mkdirSync(resolve(outDir, 'icons'), { recursive: true });
 
@@ -17,11 +19,11 @@ const baseConfig = {
 };
 
 await Promise.all([
-  // Popup
+  // Panel (detached window)
   build({
     ...baseConfig,
-    entryPoints: [resolve(__dirname, 'src/popup/popup.ts')],
-    outfile: resolve(outDir, 'popup.js'),
+    entryPoints: [resolve(__dirname, 'src/popup/panel.ts')],
+    outfile: resolve(outDir, 'panel.js'),
     format: 'iife',
   }),
   // Content script
@@ -30,7 +32,6 @@ await Promise.all([
     entryPoints: [resolve(__dirname, 'src/content/lichess.ts')],
     outfile: resolve(outDir, 'content.js'),
     format: 'iife',
-    // chrome is a global in content scripts
   }),
   // Background service worker
   build({
@@ -42,14 +43,17 @@ await Promise.all([
 ]);
 
 // Static files
-copyFileSync(resolve(__dirname, 'src/popup/popup.html'), resolve(outDir, 'popup.html'));
-copyFileSync(resolve(__dirname, 'src/popup/popup.css'), resolve(outDir, 'popup.css'));
+copyFileSync(resolve(__dirname, 'src/popup/panel.html'), resolve(outDir, 'panel.html'));
+copyFileSync(resolve(__dirname, 'src/popup/panel.css'), resolve(outDir, 'panel.css'));
 copyFileSync(resolve(__dirname, 'src/content/content.css'), resolve(outDir, 'content.css'));
 copyFileSync(resolve(__dirname, 'manifest.json'), resolve(outDir, 'manifest.json'));
 
-// Icons
-for (const icon of ['icon16.png', 'icon48.png', 'icon128.png']) {
-  copyFileSync(resolve(__dirname, `icons/${icon}`), resolve(outDir, `icons/${icon}`));
+// Icons (extension icons + plan animal icons)
+for (const file of readdirSync(resolve(__dirname, 'icons'))) {
+  copyFileSync(
+    resolve(__dirname, 'icons', file),
+    resolve(outDir, 'icons', file),
+  );
 }
 
 console.log('✓ Extension built to dist/');

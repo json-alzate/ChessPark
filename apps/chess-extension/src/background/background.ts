@@ -1,10 +1,34 @@
-// Background service worker — minimal relay for auth state persistence
-// Firebase Auth uses IndexedDB (persists across popup opens) so we mainly
-// handle sign-out messages from the popup.
+let panelWindowId: number | null = null;
 
-chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-  if (message.type === 'PING') {
-    sendResponse({ alive: true });
+chrome.action.onClicked.addListener(async () => {
+  // If window is already open, focus it instead of opening a new one
+  if (panelWindowId !== null) {
+    try {
+      await chrome.windows.update(panelWindowId, { focused: true });
+      return;
+    } catch {
+      // Window was closed externally
+      panelWindowId = null;
+    }
   }
-  return false;
+
+  const win = await chrome.windows.create({
+    url: chrome.runtime.getURL('panel.html'),
+    type: 'popup',
+    width: 420,
+    height: 640,
+    focused: true,
+  });
+
+  panelWindowId = win.id ?? null;
+
+  if (panelWindowId !== null) {
+    const id = panelWindowId;
+    chrome.windows.onRemoved.addListener(function onRemoved(removedId) {
+      if (removedId === id) {
+        panelWindowId = null;
+        chrome.windows.onRemoved.removeListener(onRemoved);
+      }
+    });
+  }
 });
