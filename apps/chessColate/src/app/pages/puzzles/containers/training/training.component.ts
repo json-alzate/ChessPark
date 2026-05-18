@@ -113,6 +113,7 @@ export class TrainingComponent implements OnInit, OnDestroy {
   countPuzzlesPlayedBlock = 0;
   totalPuzzlesInBlock = 0;
   forceStopTimerInPuzzleBoard = false;
+  streamSolutionActive = false;
 
   isGoshHelperShow = false;
   isDropdownOpen = false;
@@ -605,20 +606,22 @@ export class TrainingComponent implements OnInit, OnDestroy {
         break;
     }
 
-    if (
-      puzzleStatus !== 'good' &&
-      this.plan.blocks[this.currentIndexBlock].showPuzzleSolution
-    ) {
-      if (this.plan.planType === 'reto333') {
-        this.showSolutionAndAlertReto333();
+    if (puzzleStatus !== 'good') {
+      const block = this.plan.blocks[this.currentIndexBlock];
+      if (block.showPuzzleSolution) {
+        if (this.plan.planType === 'reto333') {
+          this.showSolutionAndAlertReto333();
+        } else {
+          this.showSolution();
+        }
+      } else if (block.streamSolution) {
+        this.activateStreamSolution();
       } else {
-        this.showSolution();
-      }
-    } else {
-      if (puzzleStatus !== 'good' && this.plan.planType === 'reto333') {
-        this.showReto333Alert();
-      } else {
-        this.selectPuzzleToPlay();
+        if (this.plan.planType === 'reto333') {
+          this.showReto333Alert();
+        } else {
+          this.selectPuzzleToPlay();
+        }
       }
     }
   }
@@ -722,6 +725,23 @@ export class TrainingComponent implements OnInit, OnDestroy {
       await loader.dismiss();
       console.error('Error al reiniciar el reto 333:', error);
       this.router.navigate(['/home']);
+    }
+  }
+
+  activateStreamSolution() {
+    this.forceStopTimerInPuzzleBoard = true;
+    if (this.plan.blocks[this.currentIndexBlock].time !== -1) {
+      this.pauseBlockTimer();
+    }
+    this.streamSolutionActive = true;
+  }
+
+  onStreamSolutionFinished() {
+    this.streamSolutionActive = false;
+    this.forceStopTimerInPuzzleBoard = false;
+    this.selectPuzzleToPlay();
+    if (this.plan.blocks[this.currentIndexBlock]?.time !== -1) {
+      this.resumeBlockTimer();
     }
   }
 

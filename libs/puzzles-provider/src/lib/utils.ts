@@ -124,6 +124,22 @@ export function generateEloSequence(startElo: number): number[] {
 }
 
 /**
+ * Genera una secuencia de ELOs dentro de un rango fijo [eloMin, eloMax]
+ * Útil para bloques con rango de ELO definido independiente del ELO del usuario
+ */
+export function generateEloSequenceInRange(eloMin: number, eloMax: number): number[] {
+  const min = normalizeElo(Math.min(eloMin, eloMax));
+  const max = normalizeElo(Math.max(eloMin, eloMax));
+  const startNorm = Math.floor(min / ELO_CONSTANTS.ELO_STEP) * ELO_CONSTANTS.ELO_STEP;
+  const endNorm = Math.floor(max / ELO_CONSTANTS.ELO_STEP) * ELO_CONSTANTS.ELO_STEP;
+  const sequence: number[] = [];
+  for (let elo = startNorm; elo <= endNorm; elo += ELO_CONSTANTS.ELO_STEP) {
+    sequence.push(elo);
+  }
+  return sequence;
+}
+
+/**
  * Limita el número de puzzles según el máximo permitido
  */
 export function limitPuzzleCount(count?: number): number {

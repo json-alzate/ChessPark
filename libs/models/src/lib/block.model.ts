@@ -9,6 +9,8 @@ export interface Block {
     theme: string;
     openingFamily?: string;
     elo: number;
+    eloMin?: number;
+    eloMax?: number;
     color: 'white' | 'black' | 'random';
     puzzleTimes?: {
         warningOn: number; // in seconds, -1 for off
@@ -18,6 +20,8 @@ export interface Block {
     puzzles?: Puzzle[];
     puzzlesPlayed: UserPuzzle[];
     showPuzzleSolution?: boolean;
+    streamSolution?: boolean;
+    showPuzzleElo?: boolean;
     nextPuzzleImmediately?: boolean;
     goshPuzzle?: boolean;
     goshPuzzleTime?: number;

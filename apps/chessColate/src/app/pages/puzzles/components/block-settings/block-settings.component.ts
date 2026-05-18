@@ -55,6 +55,34 @@ export class BlockSettingsComponent implements OnInit, AfterViewInit {
     this.form.get('goshPuzzle')?.valueChanges.subscribe(() => {
       this.toggleFieldBasedOnBoolean('goshPuzzle', 'goshPuzzleTime');
     });
+    this.form.get('showPuzzleSolution')?.valueChanges.subscribe((val) => {
+      if (val) this.form.get('streamSolution')?.setValue(false, { emitEvent: false });
+    });
+    this.form.get('streamSolution')?.valueChanges.subscribe((val) => {
+      if (val) this.form.get('showPuzzleSolution')?.setValue(false, { emitEvent: false });
+    });
+    this.form.get('eloMin')?.valueChanges.subscribe((val: number) => {
+      const eloMax = this.form.get('eloMax')?.value;
+      if (eloMax - val < 100) {
+        const newMax = Math.min(val + 100, 2800);
+        const newMin = newMax - 100;
+        this.form.get('eloMax')?.setValue(newMax, { emitEvent: false });
+        if (newMin !== val) {
+          this.form.get('eloMin')?.setValue(newMin, { emitEvent: false });
+        }
+      }
+    });
+    this.form.get('eloMax')?.valueChanges.subscribe((val: number) => {
+      const eloMin = this.form.get('eloMin')?.value;
+      if (val - eloMin < 100) {
+        const newMin = Math.max(val - 100, 400);
+        const newMax = newMin + 100;
+        this.form.get('eloMin')?.setValue(newMin, { emitEvent: false });
+        if (newMax !== val) {
+          this.form.get('eloMax')?.setValue(newMax, { emitEvent: false });
+        }
+      }
+    });
   }
 
   ngAfterViewInit(): void {
@@ -71,6 +99,10 @@ export class BlockSettingsComponent implements OnInit, AfterViewInit {
     return this.appService.getNameThemePuzzleByValue(value) || '';
   }
 
+  getThemeImg(value: string): string {
+    return this.appService.getThemePuzzleByValue(value)?.img ?? value + '.svg';
+  }
+
   get timeField() {
     return this.form.get('time');
   }
@@ -80,8 +112,11 @@ export class BlockSettingsComponent implements OnInit, AfterViewInit {
   get themeField() {
     return this.form.get('theme');
   }
-  get eloLevelField() {
-    return this.form.get('eloLevel');
+  get eloMinField() {
+    return this.form.get('eloMin');
+  }
+  get eloMaxField() {
+    return this.form.get('eloMax');
   }
   get puzzleTimeField() {
     return this.form.get('puzzleTime');
@@ -94,12 +129,15 @@ export class BlockSettingsComponent implements OnInit, AfterViewInit {
     this.form = this.formBuilder.group({
       time: [300, Validators.required],
       puzzlesCount: [0],
-      eloLevel: [0],
+      eloMin: [1200, Validators.required],
+      eloMax: [1800, Validators.required],
       theme: ['all'],
       openingFamily: [''],
       puzzleTime: [60, Validators.required],
       nextPuzzleImmediately: [true],
       showPuzzleSolution: [true],
+      streamSolution: [false],
+      showPuzzleElo: [false],
       goshPuzzle: [false],
       goshPuzzleTime: [{ value: 30, disabled: true }],
     });
@@ -129,7 +167,9 @@ export class BlockSettingsComponent implements OnInit, AfterViewInit {
       color: this.color,
       time: val.time === 0 ? -1 : val.time,
       puzzlesCount: val.puzzlesCount ?? 0,
-      elo: 1500 + (val.eloLevel ?? 0),
+      elo: Math.round((val.eloMin + val.eloMax) / 2),
+      eloMin: val.eloMin,
+      eloMax: val.eloMax,
       puzzleTimes: {
         total: val.puzzleTime,
         warningOn: val.puzzleTime / 2,

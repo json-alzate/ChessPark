@@ -210,6 +210,8 @@
     },
     "options": {
       "showSolution": "Show solution",
+      "stream": "Stream",
+      "showElo": "Show puzzle ELO",
       "blind": "Blindfold",
       "timeVisible": "Time visible"
     },
@@ -225,7 +227,9 @@
       "balanced": "Balanced",
       "normal": "Normal",
       "increase": "Increase",
-      "decrease": "Decrease"
+      "decrease": "Decrease",
+      "eloMin": "Minimum ELO",
+      "eloMax": "Maximum ELO"
     },
     "actions": {
       "add": "Add"

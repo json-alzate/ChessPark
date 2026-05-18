@@ -115,6 +115,11 @@
           >
         </div>
         }
+        @if (puzzleToPlay && $any(plan)?.blocks?.[currentIndexBlock]?.showPuzzleElo) {
+        <div class="badge badge-outline font-mono">
+          {{ puzzleToPlay.rating }}
+        </div>
+        }
         <button
           class="btn btn-square btn-ghost btn-error"
           (click)="onExitTraining()"
@@ -132,9 +137,11 @@
         <lib-board-puzzle
           [setPuzzle]="puzzleToPlay"
           [setForceStopTimer]="forceStopTimerInPuzzleBoard"
+          [triggerStreamSolution]="streamSolutionActive"
           (puzzleCompleted)="onPuzzleCompleted($any($event), 'good')"
           (puzzleFailed)="onPuzzleCompleted($any($event), 'bad')"
           (puzzleEndByTime)="onPuzzleCompleted($any($event), 'timeOut')"
+          (streamSolutionFinished)="onStreamSolutionFinished()"
         ></lib-board-puzzle>
       </div>
 
