@@ -60,6 +60,16 @@
           </a>
         </li>
         }
+
+        @if (pwaService.isMobileBrowser && pwaService.canInstall()) {
+        <div class="divider my-1"></div>
+        <li>
+          <a (click)="installPwa()" class="text-primary hover:bg-primary/20 hover:text-primary flex gap-4 py-3">
+            <ion-icon name="download-outline" class="text-xl"></ion-icon>
+            <span class="text-base">{{ 'APP.menu.installApp' | transloco }}</span>
+          </a>
+        </li>
+        }
       </ul>
     </div>
 
