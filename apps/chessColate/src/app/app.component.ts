@@ -23,9 +23,6 @@ import {
 } from 'ionicons/icons';
 import {
   IonMenu,
-  IonHeader,
-  IonContent,
-  IonFooter,
   IonIcon,
   IonRouterOutlet,
   IonMenuToggle,
@@ -78,9 +75,6 @@ interface Notification {
   standalone: true,
   imports: [
     IonMenu,
-    IonHeader,
-    IonContent,
-    IonFooter,
     IonIcon,
     IonRouterOutlet,
     IonMenuToggle,
