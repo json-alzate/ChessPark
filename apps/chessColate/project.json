@@ -19,6 +19,11 @@
             "glob": "**/*",
             "input": "apps/chessColate/src/assets",
             "output": "assets"
+          },
+          {
+            "glob": "manifest.webmanifest",
+            "input": "apps/chessColate/src",
+            "output": "/"
           }
         ],
         "styles": [
@@ -30,6 +35,7 @@
       "configurations": {
         "production": {
           "outputHashing": "all",
+          "serviceWorker": "apps/chessColate/src/ngsw-config.json",
           "fileReplacements": [
             {
               "replace": "apps/chessColate/src/environments/environment.ts",

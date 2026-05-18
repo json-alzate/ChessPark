@@ -1,5 +1,6 @@
 import { bootstrapApplication } from '@angular/platform-browser';
-import { provideAppInitializer, inject } from '@angular/core';
+import { provideAppInitializer, inject, isDevMode } from '@angular/core';
+import { provideServiceWorker } from '@angular/service-worker';
 import {
   RouteReuseStrategy,
   provideRouter,
@@ -64,14 +65,6 @@ async function initializeApp(): Promise<void> {
   await puzzlesProvider.init();
 }
 
-if (environment.production) {
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('ngsw-worker.js');
-    });
-  }
-}
-
 bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
@@ -132,6 +125,12 @@ bootstrapApplication(AppComponent, {
       autoPause: true,
       trace: false,
       traceLimit: 75
+    }),
+
+    // PWA Service Worker
+    provideServiceWorker('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      registrationStrategy: 'registerWhenStable:30000'
     }),
   ],
 });
