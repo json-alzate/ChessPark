@@ -430,7 +430,8 @@
       "signInMessage": "Inicia sesión para más opciones"
     },
     "menu": {
-      "logout": "Cerrar Sesión"
+      "logout": "Cerrar Sesión",
+      "installApp": "Instalar App"
     },
     "components": {
       "loading": "Cargando...",

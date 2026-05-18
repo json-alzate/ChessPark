@@ -2,6 +2,9 @@
 <ion-menu [swipeGesture]="false" side="start" menuId="side-menu" contentId="main-content">
   <div class="h-full flex flex-col bg-base-100 text-base-content" data-theme="halloween">
 
+    <!-- Safe area spacer iOS -->
+    <div style="height: env(safe-area-inset-top, 0px); background: hsl(var(--b1)); flex-shrink: 0;"></div>
+
     <!-- User Profile / Header -->
     <div class="p-4 border-b border-base-200">
       @if (isAuthenticated) {
@@ -60,6 +63,16 @@
           </a>
         </li>
         }
+
+        @if (pwaService.isMobileBrowser && pwaService.canInstall()) {
+        <div class="divider my-1"></div>
+        <li>
+          <a (click)="installPwa()" class="text-primary hover:bg-primary/20 hover:text-primary flex gap-4 py-3">
+            <ion-icon name="download-outline" class="text-xl"></ion-icon>
+            <span class="text-base">{{ 'APP.menu.installApp' | transloco }}</span>
+          </a>
+        </li>
+        }
       </ul>
     </div>
 
@@ -79,6 +92,9 @@
 <!-- Menú lateral derecho (notificaciones) -->
 <ion-menu [swipeGesture]="false" side="end" menuId="notifications-menu" contentId="main-content">
   <div class="h-full flex flex-col bg-base-100 text-base-content" data-theme="halloween">
+
+    <!-- Safe area spacer iOS -->
+    <div style="height: env(safe-area-inset-top, 0px); background: hsl(var(--b1)); flex-shrink: 0;"></div>
 
     <!-- Header -->
     <div class="p-4 border-b border-base-200 flex justify-between items-center bg-base-200/50">
@@ -104,12 +120,11 @@
               <p class="text-xs opacity-80 mb-2 leading-relaxed">{{ notification.message }}</p>
               <p class="text-[10px] opacity-60 font-medium">{{ notification.time }}</p>
             </div>
-            
+
             @if (!notification.read) {
             <button class="btn btn-xs btn-ghost btn-circle absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity" (click)="markAsRead(notification.id)">
               <ion-icon name="checkmark-outline" class="text-base"></ion-icon>
             </button>
-            <!-- Badge para no leidas -->
             <div class="w-2.5 h-2.5 rounded-full bg-primary absolute top-4 right-4 group-hover:hidden"></div>
             }
           </div>

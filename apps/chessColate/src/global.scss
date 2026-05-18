@@ -173,6 +173,14 @@
   @apply min-h-screen flex flex-col bg-base-200;
 }
 
+// Safe area para ion-modal: garantiza que ion-fab y ion-content respeten
+// la barra de estado en iOS cuando viewport-fit=cover está activo.
+ion-modal {
+  --ion-safe-area-top: env(safe-area-inset-top, 0px);
+  --ion-safe-area-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+
 /* Modal de configuración de coordenadas: ajustes para desktop */
 @media (min-width: 1024px) {
   ion-modal.settings-modal::part(handle) {

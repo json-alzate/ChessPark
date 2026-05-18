@@ -19,6 +19,7 @@ import {
   checkmarkOutline,
   createOutline,
   globeOutline,
+  downloadOutline,
 } from 'ionicons/icons';
 import {
   IonMenu,
@@ -36,6 +37,7 @@ import { TranslocoPipe } from '@jsverse/transloco';
 import { AuthService } from '@services/auth.service';
 import { ProfileService } from '@services/profile.service';
 import { FirestoreService } from '@services/firestore.service';
+import { PwaService } from '@services/pwa.service';
 import { RevenueCatService, LogLevel } from '@chesspark/revenuecat';
 import { Capacitor } from '@capacitor/core';
 import { SplashScreen } from '@capacitor/splash-screen';
@@ -90,6 +92,7 @@ export class AppComponent implements OnInit, OnDestroy {
   authService = inject(AuthService);
   profileService = inject(ProfileService);
   firestoreService = inject(FirestoreService);
+  pwaService = inject(PwaService);
   revenueCat = inject(RevenueCatService);
   modalController = inject(ModalController);
   menuController = inject(MenuController);
@@ -184,6 +187,7 @@ export class AppComponent implements OnInit, OnDestroy {
       'checkmark-outline': checkmarkOutline,
       'create-outline': createOutline,
       'globe-outline': globeOutline,
+      'download-outline': downloadOutline,
     });
     this.initApp();
   }
@@ -428,5 +432,10 @@ export class AppComponent implements OnInit, OnDestroy {
    */
   closeNotificationsMenu() {
     this.menuController.close('notifications-menu');
+  }
+
+  async installPwa() {
+    await this.menuController.close('side-menu');
+    await this.pwaService.promptInstall();
   }
 }

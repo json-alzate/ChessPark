@@ -428,7 +428,8 @@
       "signInMessage": "Sign in for more options"
     },
     "menu": {
-      "logout": "Logout"
+      "logout": "Logout",
+      "installApp": "Install App"
     },
     "components": {
       "loading": "Loading...",
