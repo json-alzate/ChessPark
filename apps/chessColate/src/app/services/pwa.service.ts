@@ -1,27 +1,14 @@
 import { Injectable, signal } from '@angular/core';
 
-const IOS_BANNER_DISMISSED_KEY = 'pwa_ios_banner_dismissed';
-
 @Injectable({ providedIn: 'root' })
 export class PwaService {
   private deferredPrompt: BeforeInstallPromptEvent | null = null;
 
   readonly canInstall = signal(false);
-  readonly showIosBanner = signal(false);
-
   readonly isMobileBrowser = this.checkIsMobileBrowser();
-  readonly isIos = this.checkIsIos();
 
   constructor() {
     if (!this.isMobileBrowser) return;
-
-    if (this.isIos) {
-      const dismissed = localStorage.getItem(IOS_BANNER_DISMISSED_KEY);
-      if (!dismissed) {
-        this.showIosBanner.set(true);
-      }
-      return;
-    }
 
     window.addEventListener('beforeinstallprompt', (event) => {
       event.preventDefault();
@@ -45,11 +32,6 @@ export class PwaService {
     }
   }
 
-  dismissIosBanner(): void {
-    localStorage.setItem(IOS_BANNER_DISMISSED_KEY, '1');
-    this.showIosBanner.set(false);
-  }
-
   private checkIsMobileBrowser(): boolean {
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
       navigator.userAgent
@@ -58,10 +40,6 @@ export class PwaService {
       window.matchMedia('(display-mode: standalone)').matches ||
       (window.navigator as any).standalone === true;
     return isMobile && !isStandalone;
-  }
-
-  private checkIsIos(): boolean {
-    return /iPhone|iPad|iPod/i.test(navigator.userAgent);
   }
 }
 

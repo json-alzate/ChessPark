@@ -23,6 +23,9 @@ import {
 } from 'ionicons/icons';
 import {
   IonMenu,
+  IonHeader,
+  IonContent,
+  IonFooter,
   IonIcon,
   IonRouterOutlet,
   IonMenuToggle,
@@ -75,6 +78,9 @@ interface Notification {
   standalone: true,
   imports: [
     IonMenu,
+    IonHeader,
+    IonContent,
+    IonFooter,
     IonIcon,
     IonRouterOutlet,
     IonMenuToggle,
@@ -436,10 +442,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
   async installPwa() {
     await this.menuController.close('side-menu');
-    if (this.pwaService.isIos) {
-      this.pwaService.showIosBanner.set(true);
-    } else {
-      await this.pwaService.promptInstall();
-    }
+    await this.pwaService.promptInstall();
   }
 }

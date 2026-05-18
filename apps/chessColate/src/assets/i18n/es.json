@@ -451,11 +451,6 @@
       "notifyWhenNew": "Te notificaremos cuando tengas nuevas actividades",
       "markAllAsRead": "Marcar todas como leídas",
       "privacyPolicy": "Política de privacidad"
-    },
-    "pwa": {
-      "iosTitle": "Instalar ChessColate",
-      "iosStep1": "Toca el botón compartir",
-      "iosStep2": "luego \"Añadir a pantalla de inicio\""
     }
   },
   "CHESS960": {
