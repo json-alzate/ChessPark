@@ -16,7 +16,8 @@
     "android:run": "cd apps/chessColate && npx cap run android",
     "firebase:init": "firebase init hosting",
     "firebase:deploy": "firebase deploy",
-    "firebase:status": "firebase projects:list"
+    "firebase:status": "firebase projects:list",
+    "build:extension": "nx run chess-extension:build"
   },
   "private": true,
   "dependencies": {
@@ -99,6 +100,7 @@
     "@swc/helpers": "~0.5.11",
     "@tailwindcss/postcss": "^4.1.11",
     "@types/canvas-confetti": "^1.9.0",
+    "@types/chrome": "^0.0.320",
     "@types/jest": "^29.5.12",
     "@types/lodash": "^4.17.20",
     "@types/node": "^24.0.4",
@@ -107,6 +109,7 @@
     "autoprefixer": "^10.4.21",
     "cypress": "^14.2.1",
     "daisyui": "^5.0.46",
+    "esbuild": "^0.25.12",
     "eslint": "^9.8.0",
     "eslint-config-prettier": "^10.0.0",
     "eslint-plugin-cypress": "^3.5.0",

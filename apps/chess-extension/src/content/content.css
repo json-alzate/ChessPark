@@ -1,0 +1,11 @@
+piece.cce-highlight {
+  filter: drop-shadow(0 0 6px rgba(226, 184, 75, 0.9)) brightness(1.25);
+  z-index: 10;
+  position: relative;
+}
+
+piece.cce-dim {
+  opacity: 0.3;
+  filter: grayscale(0.6);
+  transition: opacity 0.15s, filter 0.15s;
+}
