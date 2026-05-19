@@ -1,7 +1,7 @@
 {
   "name": "ChessColate",
   "short_name": "ChessColate",
-  "description": "App para aprender y entrenar ajedrez",
+  "description": "Entrena ajedrez en minutos al día. Rutinas de puzzles que construyen hábito y aceleran tu progreso.",
   "theme_color": "#1a1a1a",
   "background_color": "#000000",
   "display": "standalone",
