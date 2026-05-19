@@ -15,13 +15,19 @@ import {
   PIECE_COLORS,
   PIECE_LABELS,
   DEFAULT_PLAN_TYPES,
+  PLAN_LABELS,
   defaultHighlights,
 } from '../shared/types';
+import { Trainer, fetchPuzzles, PLAN_PUZZLE_COUNT } from '../training/trainer';
 
 // ── Firebase ───────────────────────────────────────────────────────────────
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+
+// ── Training state ─────────────────────────────────────────────────────────
+let currentUserElo = 1500;
+let activeTrainer: Trainer | null = null;
 
 // Google OAuth2 web client from the Firebase project (type 3 in google-services.json)
 const GOOGLE_CLIENT_ID =
@@ -40,6 +46,20 @@ const elAuthError = document.getElementById('auth-error') as HTMLElement;
 const elHighlightsBody = document.getElementById('highlights-body') as HTMLElement;
 const elHighlightCount = document.getElementById('highlight-count') as HTMLElement;
 const elPlansContainer = document.getElementById('plans-container') as HTMLElement;
+
+// Training view elements
+const elPanelMain = document.getElementById('panel-main') as HTMLElement;
+const elTrainingView = document.getElementById('training-view') as HTMLElement;
+const elTrainingLoading = document.getElementById('training-loading') as HTMLElement;
+const elTrainingBoardArea = document.getElementById('training-board-area') as HTMLElement;
+const elTrainingBoard = document.getElementById('training-board') as HTMLElement;
+const elTrainingStatus = document.getElementById('training-status') as HTMLElement;
+const elTrainingResults = document.getElementById('training-results') as HTMLElement;
+const elTrainingScore = document.getElementById('training-score') as HTMLElement;
+const elTrainingPlanLabel = document.getElementById('training-plan-label') as HTMLElement;
+const elTrainingProgress = document.getElementById('training-progress') as HTMLElement;
+const elBtnBack = document.getElementById('btn-back') as HTMLButtonElement;
+const elBtnFinish = document.getElementById('btn-finish') as HTMLButtonElement;
 
 const PIECE_EMOJI: Record<string, string> = {
   pawn: '♟', knight: '♞', bishop: '♝', rook: '♜', queen: '♛', king: '♚',
@@ -172,11 +192,70 @@ function renderPlans(elosPerPlan: Record<string, number | undefined>) {
         <span class="plan-elo">${elo ?? '—'}</span>
         <span class="plan-count">${count} ${TIMER_SVG}</span>
       </div>`;
+
+    card.addEventListener('click', () => startTraining(type));
     grid.appendChild(card);
   }
 
   elPlansContainer.innerHTML = '';
   elPlansContainer.appendChild(grid);
+}
+
+// ── Training ───────────────────────────────────────────────────────────────
+function showMenuView() {
+  activeTrainer?.destroy();
+  activeTrainer = null;
+  elTrainingView.style.display = 'none';
+  elPanelMain.style.display = 'block';
+}
+
+function showTrainingView() {
+  elPanelMain.style.display = 'none';
+  elTrainingView.style.display = 'flex';
+  elTrainingLoading.style.display = 'flex';
+  elTrainingBoardArea.style.display = 'none';
+  elTrainingResults.style.display = 'none';
+}
+
+async function startTraining(planType: string) {
+  showTrainingView();
+  const count = PLAN_PUZZLE_COUNT[planType] ?? 5;
+  elTrainingPlanLabel.textContent = PLAN_LABELS[planType] ?? planType;
+  elTrainingProgress.textContent = '';
+  elTrainingStatus.textContent = '';
+  elTrainingStatus.className = 'training-status';
+
+  try {
+    const puzzles = await fetchPuzzles(currentUserElo, count);
+
+    elTrainingLoading.style.display = 'none';
+    elTrainingBoardArea.style.display = 'flex';
+
+    activeTrainer = new Trainer(
+      elTrainingBoard,
+      (status) => {
+        elTrainingStatus.className = 'training-status' + (status ? ` status-${status}` : '');
+        elTrainingStatus.textContent =
+          status === 'correct' ? '✓ Correct!' :
+          status === 'wrong'   ? '✗ Wrong — try again' : '';
+      },
+      (current, total) => {
+        elTrainingProgress.textContent = `${current} / ${total}`;
+      },
+      (solved, total) => {
+        elTrainingBoardArea.style.display = 'none';
+        elTrainingResults.style.display = 'flex';
+        elTrainingScore.textContent = `${solved} of ${total} puzzles solved`;
+      },
+    );
+
+    const assetsUrl = chrome.runtime.getURL('cm-chessboard/');
+    await activeTrainer.start(puzzles, assetsUrl);
+  } catch (err: unknown) {
+    elTrainingBoardArea.style.display = 'none';
+    elTrainingLoading.style.display = 'flex';
+    elTrainingLoading.innerHTML = `<p class="text-error">${err instanceof Error ? err.message : 'Error loading puzzles'}</p>`;
+  }
 }
 
 async function loadElosForUser(uid: string): Promise<Record<string, number | undefined>> {
@@ -212,6 +291,8 @@ elSignin.addEventListener('click', async () => {
 });
 
 elSignout.addEventListener('click', () => signOut(auth));
+elBtnBack.addEventListener('click', showMenuView);
+elBtnFinish.addEventListener('click', showMenuView);
 
 // ── Auth state ─────────────────────────────────────────────────────────────
 onAuthStateChanged(auth, async (user: User | null) => {
@@ -235,6 +316,7 @@ onAuthStateChanged(auth, async (user: User | null) => {
     if (globalElo !== null) {
       elUserElo.textContent = String(globalElo);
       elEloBadge.style.display = 'flex';
+      currentUserElo = globalElo;
     }
 
     renderPlans(eloData);

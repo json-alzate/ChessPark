@@ -1,5 +1,5 @@
 import { build } from 'esbuild';
-import { copyFileSync, mkdirSync, readdirSync, rmSync } from 'fs';
+import { copyFileSync, mkdirSync, readdirSync, rmSync, cpSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -55,5 +55,10 @@ for (const file of readdirSync(resolve(__dirname, 'icons'))) {
     resolve(outDir, 'icons', file),
   );
 }
+
+// cm-chessboard assets (SVG pieces + CSS)
+const cmSrc = resolve(__dirname, '../../node_modules/cm-chessboard/assets');
+const cmDst = resolve(outDir, 'cm-chessboard');
+cpSync(cmSrc, cmDst, { recursive: true });
 
 console.log('✓ Extension built to dist/');
