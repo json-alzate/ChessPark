@@ -136,6 +136,13 @@ function buildHighlightsUI(settings: HighlightSettings) {
       current[key] = next;
       await chrome.storage.sync.set({ highlights: current });
       updateCountBadge(current);
+
+      const tabs = await chrome.tabs.query({ url: 'https://lichess.org/*' });
+      for (const tab of tabs) {
+        if (tab.id) {
+          chrome.tabs.sendMessage(tab.id, { type: 'UPDATE_HIGHLIGHTS', settings: current }).catch(() => {});
+        }
+      }
     });
   });
 }

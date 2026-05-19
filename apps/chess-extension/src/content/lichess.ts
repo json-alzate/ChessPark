@@ -1,30 +1,39 @@
 import { type HighlightSettings, PIECE_TYPES, PIECE_COLORS, defaultHighlights } from '../shared/types';
 
+// Data attributes used to track which pieces we've modified
+const ATTR_HL  = 'data-cce-hl';
+const ATTR_DIM = 'data-cce-dim';
+
 let currentSettings: HighlightSettings = defaultHighlights();
 
-// ── Apply highlights via inline styles ────────────────────────────────────
-// We use style.filter / style.scale / style.opacity directly instead of CSS
-// classes, so we don't fight Lichess's CSS specificity.
+// ── Core highlight logic ──────────────────────────────────────────────────
+function restore() {
+  document.querySelectorAll<HTMLElement>(`piece[${ATTR_HL}]`).forEach(p => {
+    // Remove only our scale — keep Lichess's translate untouched
+    p.style.transform = p.style.transform.replace(/ scale\([^)]*\)/g, '');
+    p.style.removeProperty('filter');
+    p.removeAttribute(ATTR_HL);
+  });
+  document.querySelectorAll<HTMLElement>(`piece[${ATTR_DIM}]`).forEach(p => {
+    p.style.removeProperty('opacity');
+    p.removeAttribute(ATTR_DIM);
+  });
+}
+
 function applyHighlights(settings: HighlightSettings) {
   currentSettings = settings;
 
   const pieces = Array.from(document.querySelectorAll<HTMLElement>('piece'));
   if (!pieces.length) return;
 
+  restore(); // clean previous state first
+
   const anyActive = PIECE_TYPES.some(t =>
     PIECE_COLORS.some(c => settings[`${t}-${c}`]),
   );
+  if (!anyActive) return;
 
   for (const piece of pieces) {
-    // Always reset our own overrides first
-    piece.style.removeProperty('filter');
-    piece.style.removeProperty('scale');
-    piece.style.removeProperty('opacity');
-    piece.style.removeProperty('z-index');
-    piece.style.removeProperty('position');
-
-    if (!anyActive) continue;
-
     const highlighted = PIECE_TYPES.some(t =>
       PIECE_COLORS.some(c =>
         settings[`${t}-${c}`] &&
@@ -34,54 +43,60 @@ function applyHighlights(settings: HighlightSettings) {
     );
 
     if (highlighted) {
+      // Append scale to whatever transform Lichess already set (preserves translate)
+      piece.style.transform = piece.style.transform.replace(/ scale\([^)]*\)/g, '') + ' scale(1.2)';
       piece.style.filter =
-        'drop-shadow(0 0 6px rgba(226,184,75,1)) ' +
-        'drop-shadow(0 0 14px rgba(226,184,75,0.6)) ' +
+        'drop-shadow(0 0 4px rgba(249,115,22,1)) ' +
+        'drop-shadow(0 0 14px rgba(249,115,22,0.7)) ' +
         'brightness(1.3)';
-      piece.style.scale = '1.2';
-      piece.style.zIndex = '100';
-      piece.style.position = 'relative';
+      piece.setAttribute(ATTR_HL, '1');
     } else {
-      piece.style.opacity = '0.4';
+      piece.style.opacity = '0.35';
+      piece.setAttribute(ATTR_DIM, '1');
     }
   }
 }
 
-// ── MutationObserver: re-apply after Lichess updates the board ─────────────
+// ── Direct message from panel (primary channel) ───────────────────────────
+chrome.runtime.onMessage.addListener((msg) => {
+  if (msg.type === 'UPDATE_HIGHLIGHTS') {
+    applyHighlights(msg.settings as HighlightSettings);
+  }
+});
+
+// ── Storage fallback (applied on page load / persistence) ─────────────────
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area === 'sync' && 'highlights' in changes) {
+    applyHighlights((changes['highlights'].newValue as HighlightSettings) ?? defaultHighlights());
+  }
+});
+
+// ── MutationObserver: re-apply after Lichess moves a piece ───────────────
+// Watches childList only to avoid triggering on our own style writes.
 let boardObserver: MutationObserver | null = null;
 
 function watchBoard() {
   boardObserver?.disconnect();
-
   const board = document.querySelector('cg-board') ?? document.body;
-  let debounce: ReturnType<typeof setTimeout> | null = null;
+  let timer: ReturnType<typeof setTimeout> | null = null;
 
   boardObserver = new MutationObserver(() => {
-    if (debounce) clearTimeout(debounce);
-    debounce = setTimeout(() => applyHighlights(currentSettings), 80);
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(() => applyHighlights(currentSettings), 60);
   });
 
-  boardObserver.observe(board, { childList: true, subtree: true, attributes: true, attributeFilter: ['style', 'class'] });
+  boardObserver.observe(board, { childList: true, subtree: true });
 }
 
-// ── Storage change — panel toggled a piece ─────────────────────────────────
-chrome.storage.sync.onChanged.addListener((changes) => {
-  if ('highlights' in changes) {
-    const next = changes['highlights'].newValue as HighlightSettings | undefined;
-    applyHighlights(next ?? defaultHighlights());
-  }
-});
-
-// ── Init ───────────────────────────────────────────────────────────────────
+// ── Init ──────────────────────────────────────────────────────────────────
 async function init() {
   const result = await chrome.storage.sync.get('highlights');
   applyHighlights((result['highlights'] as HighlightSettings) ?? defaultHighlights());
   watchBoard();
 
-  // Watch for SPA navigation (Lichess loads puzzles without full reload)
+  // Re-watch on SPA navigation
   new MutationObserver(() => {
-    const board = document.querySelector('cg-board');
-    if (board) {
+    if (document.querySelector('cg-board')) {
       watchBoard();
       applyHighlights(currentSettings);
     }
