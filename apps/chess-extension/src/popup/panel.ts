@@ -18,7 +18,7 @@ import {
   PLAN_LABELS,
   defaultHighlights,
 } from '../shared/types';
-import { Trainer, fetchPuzzles, PLAN_PUZZLE_COUNT } from '../training/trainer';
+import { Trainer, generateBlocks, type TrainingBlock, THEME_LABELS } from '../training/trainer';
 
 // ── Firebase ───────────────────────────────────────────────────────────────
 const app = initializeApp(firebaseConfig);
@@ -60,10 +60,58 @@ const elTrainingPlanLabel = document.getElementById('training-plan-label') as HT
 const elTrainingProgress = document.getElementById('training-progress') as HTMLElement;
 const elBtnBack = document.getElementById('btn-back') as HTMLButtonElement;
 const elBtnFinish = document.getElementById('btn-finish') as HTMLButtonElement;
+const elBlockTimer = document.getElementById('block-timer') as HTMLElement;
+
+// Block presentation elements
+const elBlockPres = document.getElementById('block-presentation') as HTMLElement;
+const elBlockPresIdx = document.getElementById('block-pres-idx') as HTMLElement;
+const elBlockPresTotal = document.getElementById('block-pres-total') as HTMLElement;
+const elBlockPresLabel = document.getElementById('block-pres-label') as HTMLElement;
+const elBlockPresTheme = document.getElementById('block-pres-theme') as HTMLElement;
+const elBlockPresDuration = document.getElementById('block-pres-duration') as HTMLElement;
+const elBtnStartBlock = document.getElementById('btn-start-block') as HTMLButtonElement;
+
+// Puzzle timer elements
+const elPuzzleTimerFill = document.getElementById('puzzle-timer-fill') as HTMLElement;
+const elPuzzleTimerText = document.getElementById('puzzle-timer-text') as HTMLElement;
 
 const PIECE_EMOJI: Record<string, string> = {
   pawn: '♟', knight: '♞', bishop: '♝', rook: '♜', queen: '♛', king: '♚',
 };
+
+// ── Helpers ────────────────────────────────────────────────────────────────
+function formatTime(s: number): string {
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return m > 0 ? `${m}:${sec.toString().padStart(2, '0')}` : `${s}s`;
+}
+
+function updatePuzzleTimer(secs: number, total: number): void {
+  const pct = total > 0 ? (secs / total) * 100 : 0;
+  elPuzzleTimerFill.style.width = `${pct}%`;
+  elPuzzleTimerText.textContent = String(secs);
+  elPuzzleTimerFill.classList.toggle('warning', pct <= 40 && pct > 20);
+  elPuzzleTimerFill.classList.toggle('danger', pct <= 20);
+}
+
+function showBlockPresentation(block: TrainingBlock, idx: number, total: number): Promise<void> {
+  elTrainingProgress.textContent = `${idx + 1} / ${total}`;
+  elBlockPresIdx.textContent = String(idx + 1);
+  elBlockPresTotal.textContent = String(total);
+  elBlockPresLabel.textContent = block.label;
+  elBlockPresTheme.textContent = THEME_LABELS[block.theme] ?? block.theme;
+  elBlockPresDuration.textContent = formatTime(block.time);
+  elBlockPres.style.display = 'flex';
+
+  return new Promise(resolve => {
+    const handler = () => {
+      elBlockPres.style.display = 'none';
+      elBtnStartBlock.removeEventListener('click', handler);
+      resolve();
+    };
+    elBtnStartBlock.addEventListener('click', handler);
+  });
+}
 
 // ── Auth — launchWebAuthFlow ───────────────────────────────────────────────
 async function signInWithGoogle(): Promise<void> {
@@ -205,6 +253,9 @@ function renderPlans(elosPerPlan: Record<string, number | undefined>) {
 function showMenuView() {
   activeTrainer?.destroy();
   activeTrainer = null;
+  elBlockPres.style.display = 'none';
+  elBlockTimer.textContent = '';
+  elBlockTimer.className = 'block-timer';
   elTrainingView.style.display = 'none';
   elPanelMain.style.display = 'block';
 }
@@ -215,42 +266,54 @@ function showTrainingView() {
   elTrainingLoading.style.display = 'flex';
   elTrainingBoardArea.style.display = 'none';
   elTrainingResults.style.display = 'none';
+  elBlockPres.style.display = 'none';
+  elBlockTimer.textContent = '';
+  elBlockTimer.className = 'block-timer';
+  elPuzzleTimerFill.style.width = '100%';
+  elPuzzleTimerFill.className = 'puzzle-timer-fill';
+  elPuzzleTimerText.textContent = '';
 }
 
 async function startTraining(planType: string) {
   showTrainingView();
-  const count = PLAN_PUZZLE_COUNT[planType] ?? 5;
   elTrainingPlanLabel.textContent = PLAN_LABELS[planType] ?? planType;
   elTrainingProgress.textContent = '';
   elTrainingStatus.textContent = '';
   elTrainingStatus.className = 'training-status';
 
+  const blocks = generateBlocks(planType, currentUserElo);
+  const assetsUrl = chrome.runtime.getURL('cm-chessboard/');
+
+  activeTrainer = new Trainer(elTrainingBoard, {
+    onBlockStart: (block, idx, total) => showBlockPresentation(block, idx, total),
+    onPuzzleReady: () => {
+      elTrainingLoading.style.display = 'none';
+      elTrainingBoardArea.style.display = 'flex';
+    },
+    onBlockTime: (secs) => {
+      elBlockTimer.textContent = formatTime(secs);
+      elBlockTimer.classList.toggle('warning', secs <= 30 && secs > 10);
+      elBlockTimer.classList.toggle('danger', secs <= 10);
+    },
+    onPuzzleTime: (secs, total) => {
+      updatePuzzleTimer(secs, total);
+    },
+    onStatus: (status) => {
+      elTrainingStatus.className = 'training-status' + (status ? ` status-${status}` : '');
+      elTrainingStatus.textContent =
+        status === 'correct' ? '✓ Correct!' :
+        status === 'wrong'   ? '✗ Wrong'    :
+        status === 'timeout' ? '⏱ Time up!' : '';
+    },
+    onDone: (solved, total) => {
+      elTrainingBoardArea.style.display = 'none';
+      elTrainingResults.style.display = 'flex';
+      elTrainingScore.textContent = `${solved} of ${total} solved`;
+    },
+  });
+
   try {
-    const puzzles = await fetchPuzzles(currentUserElo, count);
-
-    elTrainingLoading.style.display = 'none';
-    elTrainingBoardArea.style.display = 'flex';
-
-    activeTrainer = new Trainer(
-      elTrainingBoard,
-      (status) => {
-        elTrainingStatus.className = 'training-status' + (status ? ` status-${status}` : '');
-        elTrainingStatus.textContent =
-          status === 'correct' ? '✓ Correct!' :
-          status === 'wrong'   ? '✗ Wrong — try again' : '';
-      },
-      (current, total) => {
-        elTrainingProgress.textContent = `${current} / ${total}`;
-      },
-      (solved, total) => {
-        elTrainingBoardArea.style.display = 'none';
-        elTrainingResults.style.display = 'flex';
-        elTrainingScore.textContent = `${solved} of ${total} puzzles solved`;
-      },
-    );
-
-    const assetsUrl = chrome.runtime.getURL('cm-chessboard/');
-    await activeTrainer.start(puzzles, assetsUrl);
+    await activeTrainer.start(blocks, assetsUrl);
   } catch (err: unknown) {
     elTrainingBoardArea.style.display = 'none';
     elTrainingLoading.style.display = 'flex';

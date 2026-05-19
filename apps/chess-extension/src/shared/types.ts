@@ -35,12 +35,12 @@ export interface PublicPlanInfo {
 export const DEFAULT_PLAN_TYPES = ['plan1', 'plan3', 'plan5', 'plan10', 'plan20', 'plan30'] as const;
 
 export const PLAN_LABELS: Record<string, string> = {
-  plan1: '1 puzzle',
-  plan3: '3 puzzles',
-  plan5: '5 puzzles',
-  plan10: '10 puzzles',
-  plan20: '20 puzzles',
-  plan30: '30 puzzles',
+  plan1: '1 min',
+  plan3: '3 min',
+  plan5: '5 min',
+  plan10: '10 min',
+  plan20: '20 min',
+  plan30: '30 min',
 };
 
 export const PIECE_LABELS: Record<PieceType, string> = {

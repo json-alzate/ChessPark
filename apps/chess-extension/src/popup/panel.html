@@ -93,6 +93,7 @@
         <span id="training-plan-label" class="training-plan-label"></span>
         <span id="training-progress" class="training-progress"></span>
       </div>
+      <span id="block-timer" class="block-timer"></span>
     </div>
 
     <!-- Loading state -->
@@ -104,6 +105,12 @@
     <!-- Board area -->
     <div id="training-board-area" class="training-board-area" style="display:none">
       <div id="training-board" class="training-board"></div>
+      <div class="puzzle-timer-wrap">
+        <div class="puzzle-timer-bar">
+          <div class="puzzle-timer-fill" id="puzzle-timer-fill"></div>
+        </div>
+        <span class="puzzle-timer-text" id="puzzle-timer-text"></span>
+      </div>
       <div id="training-status" class="training-status"></div>
     </div>
 
@@ -113,6 +120,17 @@
       <h3 class="results-title">Session complete!</h3>
       <p id="training-score" class="results-score"></p>
       <button id="btn-finish" class="btn btn-primary btn-block">Back to routines</button>
+    </div>
+
+    <!-- Block presentation overlay -->
+    <div id="block-presentation" class="block-presentation" style="display:none">
+      <div class="block-pres-content">
+        <div class="block-pres-num">Block <span id="block-pres-idx"></span> of <span id="block-pres-total"></span></div>
+        <div class="block-pres-label" id="block-pres-label"></div>
+        <div class="block-pres-theme" id="block-pres-theme"></div>
+        <div class="block-pres-duration" id="block-pres-duration"></div>
+        <button id="btn-start-block" class="btn btn-primary btn-start-block">Let's go!</button>
+      </div>
     </div>
 
   </div><!-- #training-view -->
