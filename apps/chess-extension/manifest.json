@@ -4,12 +4,13 @@
   "version": "1.0.0",
   "description": "ChessColate helper for Lichess — piece highlighting and training plans.",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwzKdeG/YwCA+mhurBYpeR3GTltIFe+6O6cvKiO4/2sqgzkYe//WN40nnoOqwZU+k89lHSK//5wq1toevyqO2bOGNWHT+lWl3tfnkejlqbxWsBQi63MQ6miG/887k0Jzs0tyCrD6wpBssKKbVGndLcP6cRmVdmt4sgKsh6cXIJ/ckU8XM4Z+pHu21JL6d0HD9lDzIUGYN3GBfv73glZp1GQzP+BtuLbTS82cKi1ARecX/hCy/JaccZWCGhEo9KrWld6gcASPicBGTMf82bMAnemDcnYgkOEss0XEuNRAUWLGyVBqJdYV45myxLGa36Cjn3mJJz2UDhYYBp5R/VHM2AwIDAQAB",
-  "permissions": ["storage", "windows", "identity", "tabs"],
+  "permissions": ["storage", "identity", "tabs"],
   "host_permissions": [
     "https://lichess.org/*",
     "https://cdn.jsdelivr.net/*"
   ],
   "action": {
+    "default_popup": "panel.html",
     "default_icon": {
       "16": "icons/icon16.png",
       "48": "icons/icon48.png",

@@ -27,6 +27,8 @@ export interface TrainerCallbacks {
   onPuzzleTime: (secondsLeft: number, total: number) => void;
   /** Feedback after each move/timeout */
   onStatus: (s: 'correct' | 'wrong' | 'timeout' | '') => void;
+  /** Called after each puzzle with the updated ELO */
+  onEloUpdate: (newElo: number) => void;
   /** Session finished */
   onDone: (solved: number, total: number) => void;
 }
@@ -158,6 +160,13 @@ async function fetchPuzzlesForBlock(theme: string, elo: number): Promise<Puzzle[
   }
 }
 
+// ─── ELO calculator (K=32, standard formula) ─────────────────────────────────
+
+function calcElo(playerElo: number, puzzleElo: number, result: 0 | 1): number {
+  const expected = 1 / (1 + Math.pow(10, (puzzleElo - playerElo) / 400));
+  return Math.round(playerElo + 32 * (result - expected));
+}
+
 // ─── UCI → chess.js ──────────────────────────────────────────────────────────
 
 function uciToMove(uci: string) {
@@ -202,6 +211,7 @@ export class Trainer {
   private solvedCount = 0;
   private totalAttempted = 0;
   private firstPuzzleInBlock = true;
+  private currentElo = 1500;
 
   // Incremented on each new puzzle/block to invalidate stale async callbacks
   private epoch = 0;
@@ -213,6 +223,7 @@ export class Trainer {
 
   async start(blocks: TrainingBlock[], assetsUrl: string): Promise<void> {
     this.blocks = blocks;
+    this.currentElo = blocks[0]?.elo ?? 1500;
 
     await preloadSprite(assetsUrl);
     this.boardEl.innerHTML = '';
@@ -348,6 +359,7 @@ export class Trainer {
         this.board?.disableMoveInput();
         this.cbs.onStatus('timeout');
         this.totalAttempted++;
+        this.applyElo(0);
         setTimeout(() => { if (!this.destroyed && this.epoch === epoch) this.advancePuzzle(); }, 1200);
       }
     }, 1000);
@@ -379,6 +391,7 @@ export class Trainer {
         this.cbs.onStatus('correct');
         this.solvedCount++;
         this.totalAttempted++;
+        this.applyElo(1);
         setTimeout(() => { if (!this.destroyed && this.epoch === epoch) this.advancePuzzle(); }, 1000);
       } else {
         setTimeout(() => { if (!this.destroyed && this.epoch === epoch) this.opponentMove(); }, 500);
@@ -389,6 +402,7 @@ export class Trainer {
       this.board!.disableMoveInput();
       this.cbs.onStatus('wrong');
       this.totalAttempted++;
+      this.applyElo(0);
       const epoch = this.epoch;
       setTimeout(() => { if (!this.destroyed && this.epoch === epoch) this.advancePuzzle(); }, 1000);
       return false;
@@ -408,12 +422,22 @@ export class Trainer {
         this.cbs.onStatus('correct');
         this.solvedCount++;
         this.totalAttempted++;
+        this.applyElo(1);
         setTimeout(() => { if (!this.destroyed && this.epoch === epoch) this.advancePuzzle(); }, 1000);
       } else {
         const color = this.chess.turn() === 'w' ? COLOR.white : COLOR.black;
         this.board?.enableMoveInput(this.handleInput.bind(this), color);
       }
     });
+  }
+
+  private applyElo(result: 0 | 1): void {
+    const block = this.blocks[this.currentBlockIdx];
+    if (!block) return;
+    const newElo = calcElo(this.currentElo, block.elo + 10, result);
+    this.currentElo = newElo;
+    block.elo = normalizeElo(newElo);
+    this.cbs.onEloUpdate(newElo);
   }
 
   private advancePuzzle(): void {

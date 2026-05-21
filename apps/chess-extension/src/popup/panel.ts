@@ -7,7 +7,7 @@ import {
   GoogleAuthProvider,
   type User,
 } from 'firebase/auth';
-import { getFirestore, doc, getDoc } from 'firebase/firestore';
+import { getFirestore, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { firebaseConfig } from '../shared/firebase-config';
 import {
   type HighlightSettings,
@@ -40,8 +40,6 @@ const elLoggedOut = document.getElementById('auth-logged-out') as HTMLElement;
 const elLoggedIn = document.getElementById('auth-logged-in') as HTMLElement;
 const elUserName = document.getElementById('user-name') as HTMLElement;
 const elUserEmail = document.getElementById('user-email') as HTMLElement;
-const elUserElo = document.getElementById('user-elo') as HTMLElement;
-const elEloBadge = document.getElementById('elo-badge') as HTMLElement;
 const elAuthError = document.getElementById('auth-error') as HTMLElement;
 const elHighlightsBody = document.getElementById('highlights-body') as HTMLElement;
 const elHighlightCount = document.getElementById('highlight-count') as HTMLElement;
@@ -92,6 +90,15 @@ function updatePuzzleTimer(secs: number, total: number): void {
   elPuzzleTimerText.textContent = String(secs);
   elPuzzleTimerFill.classList.toggle('warning', pct <= 40 && pct > 20);
   elPuzzleTimerFill.classList.toggle('danger', pct <= 20);
+}
+
+function saveElo(planType: string, newElo: number): void {
+  const uid = auth.currentUser?.uid;
+  if (!uid) return;
+  updateDoc(doc(db, 'Users', uid), {
+    elo: newElo,
+    [`elos.${planType}Total`]: newElo,
+  }).catch(() => {});
 }
 
 function showBlockPresentation(block: TrainingBlock, idx: number, total: number): Promise<void> {
@@ -298,6 +305,10 @@ async function startTraining(planType: string) {
     onPuzzleTime: (secs, total) => {
       updatePuzzleTimer(secs, total);
     },
+    onEloUpdate: (newElo) => {
+      currentUserElo = newElo;
+      saveElo(planType, newElo);
+    },
     onStatus: (status) => {
       elTrainingStatus.className = 'training-status' + (status ? ` status-${status}` : '');
       elTrainingStatus.textContent =
@@ -377,8 +388,6 @@ onAuthStateChanged(auth, async (user: User | null) => {
     })();
 
     if (globalElo !== null) {
-      elUserElo.textContent = String(globalElo);
-      elEloBadge.style.display = 'flex';
       currentUserElo = globalElo;
     }
 
