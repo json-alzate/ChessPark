@@ -1,5 +1,6 @@
 import { Chess } from 'chess.js';
 import { Chessboard, COLOR, INPUT_EVENT_TYPE, BORDER_TYPE } from 'cm-chessboard';
+import { Markers, MARKER_TYPE } from 'cm-chessboard/src/extensions/markers/Markers.js';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -29,6 +30,8 @@ export interface TrainerCallbacks {
   onStatus: (s: 'correct' | 'wrong' | 'timeout' | '') => void;
   /** Called after each puzzle with the updated ELO */
   onEloUpdate: (newElo: number) => void;
+  /** Called to play a sound */
+  onSound: (type: 'move' | 'capture' | 'castle' | 'check' | 'correct' | 'wrong' | 'timeout') => void;
   /** Session finished */
   onDone: (solved: number, total: number) => void;
 }
@@ -160,6 +163,20 @@ async function fetchPuzzlesForBlock(theme: string, elo: number): Promise<Puzzle[
   }
 }
 
+// ─── Move sound type ──────────────────────────────────────────────────────────
+
+type SoundType = 'move' | 'capture' | 'castle' | 'check' | 'correct' | 'wrong' | 'timeout';
+
+function moveSoundType(chess: InstanceType<typeof Chess>): SoundType {
+  const move = chess.history({ verbose: true }).slice(-1)[0];
+  if (!move) return 'move';
+  if (chess.isCheckmate()) return 'correct';
+  if (chess.inCheck()) return 'check';
+  if (move.flags.includes('k') || move.flags.includes('q')) return 'castle';
+  if (move.flags.includes('c') || move.flags.includes('e')) return 'capture';
+  return 'move';
+}
+
 // ─── ELO calculator (K=32, standard formula) ─────────────────────────────────
 
 function calcElo(playerElo: number, puzzleElo: number, result: 0 | 1): number {
@@ -239,6 +256,7 @@ export class Trainer {
         pieces: { type: 'svgSprite', file: 'pieces/standard.svg', tileSize: 40 },
         animationDuration: 200,
       },
+      extensions: [{ class: Markers, props: { autoMarkers: null } }],
     });
 
     await new Promise(r => setTimeout(r, 50));
@@ -304,6 +322,9 @@ export class Trainer {
     if (this.destroyed) return;
     const epoch = ++this.epoch; // capture epoch for this puzzle's callbacks
 
+    // Clean up any lingering markers from the previous puzzle
+    (this.board as any).removeMarkers?.();
+
     // Refill when exhausted
     if (this.currentPuzzleIdx >= this.puzzles.length) {
       const block = this.blocks[this.currentBlockIdx];
@@ -357,10 +378,12 @@ export class Trainer {
       if (seconds <= 0) {
         this.clearPuzzleTimer();
         this.board?.disableMoveInput();
+        const preFen = this.chess.fen();
+        this.cbs.onSound('timeout');
         this.cbs.onStatus('timeout');
         this.totalAttempted++;
         this.applyElo(0);
-        setTimeout(() => { if (!this.destroyed && this.epoch === epoch) this.advancePuzzle(); }, 1200);
+        setTimeout(() => { if (!this.destroyed && this.epoch === epoch) this.showSolution(preFen, epoch); }, 800);
       }
     }, 1000);
   }
@@ -372,9 +395,26 @@ export class Trainer {
   // ── Move handling ───────────────────────────────────────────────────────────
 
   private handleInput(event: Record<string, unknown>): boolean {
-    if (event['type'] === INPUT_EVENT_TYPE.moveInputStarted) return true;
+    if (event['type'] === INPUT_EVENT_TYPE.moveInputStarted) {
+      (this.board as any).removeMarkers();
+      const square = event['squareFrom'] as string;
+      const moves = this.chess.moves({ square, verbose: true });
+      (this.board as any).addLegalMovesMarkers(moves);
+      (this.board as any).addMarker(MARKER_TYPE.frame, square);
+      return true;
+    }
+
+    // Clean up markers when piece is deselected or move cycle ends
+    if (event['type'] === INPUT_EVENT_TYPE.moveInputCanceled ||
+        event['type'] === INPUT_EVENT_TYPE.moveInputFinished) {
+      (this.board as any).removeMarkers();
+      return true;
+    }
+
     if (event['type'] !== INPUT_EVENT_TYPE.validateMoveInput) return false;
     if (this.currentMoveIdx >= this.solutionMoves.length) return false;
+
+    (this.board as any).removeMarkers();
 
     const from = event['squareFrom'] as string;
     const to   = event['squareTo']   as string;
@@ -382,31 +422,75 @@ export class Trainer {
 
     if (from === expected.slice(0, 2) && to === expected.slice(2, 4)) {
       this.chess.move(uciToMove(expected));
-      this.board!.disableMoveInput();
       this.currentMoveIdx++;
       const epoch = this.epoch;
 
+      // Disable input outside the callback to avoid disrupting the state machine
+      setTimeout(() => { if (!this.destroyed && this.epoch === epoch) this.board?.disableMoveInput(); }, 0);
+
       if (this.currentMoveIdx >= this.solutionMoves.length) {
         this.clearPuzzleTimer();
+        this.cbs.onSound('correct');
         this.cbs.onStatus('correct');
         this.solvedCount++;
         this.totalAttempted++;
         this.applyElo(1);
         setTimeout(() => { if (!this.destroyed && this.epoch === epoch) this.advancePuzzle(); }, 1000);
       } else {
+        this.cbs.onSound(moveSoundType(this.chess));
         setTimeout(() => { if (!this.destroyed && this.epoch === epoch) this.opponentMove(); }, 500);
       }
       return true;
-    } else {
-      this.clearPuzzleTimer();
-      this.board!.disableMoveInput();
+    }
+
+    // Check legality — illegal moves (including wrong-square drops) are silently rejected
+    let testMove: ReturnType<typeof this.chess.move> | null = null;
+    try { testMove = this.chess.move({ from, to }); } catch { /* promotion without piece specified */ }
+    if (!testMove) return false;
+    this.chess.undo();
+
+    // Legal but wrong move — animate it on the board, then show the correct solution
+    const preFen = this.chess.fen();
+    this.clearPuzzleTimer();
+    const epoch = this.epoch;
+
+    this.chess.move({ from, to }); // apply so board reflects the wrong move position
+
+    setTimeout(() => {
+      if (this.destroyed || this.epoch !== epoch) return;
+      this.board?.disableMoveInput();
+      this.cbs.onSound('wrong');
       this.cbs.onStatus('wrong');
       this.totalAttempted++;
       this.applyElo(0);
-      const epoch = this.epoch;
-      setTimeout(() => { if (!this.destroyed && this.epoch === epoch) this.advancePuzzle(); }, 1000);
-      return false;
+    }, 0);
+
+    setTimeout(() => {
+      if (this.destroyed || this.epoch !== epoch) return;
+      this.showSolution(preFen, epoch);
+    }, 1000);
+
+    return true; // let cm-chessboard animate the piece to the destination
+  }
+
+  // Animate the remaining correct solution moves, then advance to next puzzle
+  private async showSolution(preFen: string, epoch: number): Promise<void> {
+    if (this.destroyed || this.epoch !== epoch) return;
+
+    this.chess = new Chess(preFen);
+    await this.board!.setPosition(preFen, false);
+
+    for (let i = this.currentMoveIdx; i < this.solutionMoves.length; i++) {
+      await new Promise<void>(r => setTimeout(r, 500));
+      if (this.destroyed || this.epoch !== epoch) return;
+      this.chess.move(uciToMove(this.solutionMoves[i]));
+      await this.board!.setPosition(this.chess.fen(), true);
+      if (this.destroyed || this.epoch !== epoch) return;
     }
+
+    await new Promise<void>(r => setTimeout(r, 600));
+    if (this.destroyed || this.epoch !== epoch) return;
+    this.advancePuzzle();
   }
 
   private opponentMove(): void {
@@ -417,8 +501,10 @@ export class Trainer {
 
     this.board!.setPosition(this.chess.fen(), true).then(() => {
       if (this.destroyed || this.epoch !== epoch) return;
+      this.cbs.onSound(moveSoundType(this.chess));
       if (this.currentMoveIdx >= this.solutionMoves.length) {
         this.clearPuzzleTimer();
+        this.cbs.onSound('correct');
         this.cbs.onStatus('correct');
         this.solvedCount++;
         this.totalAttempted++;

@@ -77,6 +77,31 @@ const PIECE_EMOJI: Record<string, string> = {
   pawn: '♟', knight: '♞', bishop: '♝', rook: '♜', queen: '♛', king: '♚',
 };
 
+// ── Sounds ────────────────────────────────────────────────────────────────
+const soundCache: Record<string, HTMLAudioElement> = {};
+
+function playSound(file: string): void {
+  try {
+    const url = chrome.runtime.getURL(`sounds/${file}`);
+    if (!soundCache[file]) soundCache[file] = new Audio(url);
+    const audio = soundCache[file];
+    audio.currentTime = 0;
+    audio.play().catch(() => {});
+  } catch { /* ignore */ }
+}
+
+function handleSound(type: 'move' | 'capture' | 'castle' | 'check' | 'correct' | 'wrong' | 'timeout'): void {
+  switch (type) {
+    case 'move':    playSound('Move.mp3'); break;
+    case 'capture': playSound('Capture.mp3'); break;
+    case 'castle':  playSound('Castles.mp3'); break;
+    case 'check':   playSound('Check.mp3'); break;
+    case 'correct': playSound('PuzzleStormGood.mp3'); break;
+    case 'wrong':
+    case 'timeout': playSound('Error.mp3'); break;
+  }
+}
+
 // ── Helpers ────────────────────────────────────────────────────────────────
 function formatTime(s: number): string {
   const m = Math.floor(s / 60);
@@ -314,6 +339,7 @@ async function startTraining(planType: string) {
       currentUserElo = newElo;
       saveElo(planType, newElo);
     },
+    onSound: handleSound,
     onStatus: (status) => {
       elTrainingStatus.className = 'training-status' + (status ? ` status-${status}` : '');
       elTrainingStatus.textContent =

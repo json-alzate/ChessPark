@@ -61,4 +61,12 @@ const cmSrc = resolve(__dirname, '../../node_modules/cm-chessboard/assets');
 const cmDst = resolve(outDir, 'cm-chessboard');
 cpSync(cmSrc, cmDst, { recursive: true });
 
+// Sound files
+const soundsSrc = resolve(__dirname, '../../apps/chessColate/src/assets/sounds/lisp');
+const soundsDst = resolve(outDir, 'sounds');
+mkdirSync(soundsDst, { recursive: true });
+for (const file of ['Move.mp3', 'Capture.mp3', 'Castles.mp3', 'Check.mp3', 'Error.mp3', 'PuzzleStormGood.mp3']) {
+  copyFileSync(resolve(soundsSrc, file), resolve(soundsDst, file));
+}
+
 console.log('✓ Extension built to dist/');
