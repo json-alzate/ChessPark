@@ -257,7 +257,7 @@ function renderPlans(elosPerPlan: Record<string, number | undefined>) {
 }
 
 // ── Training ───────────────────────────────────────────────────────────────
-function showMenuView() {
+async function showMenuView() {
   activeTrainer?.destroy();
   activeTrainer = null;
   elBlockPres.style.display = 'none';
@@ -265,6 +265,11 @@ function showMenuView() {
   elBlockTimer.className = 'block-timer';
   elTrainingView.style.display = 'none';
   elPanelMain.style.display = 'block';
+
+  const uid = auth.currentUser?.uid;
+  if (uid) {
+    renderPlans(await loadElosForUser(uid));
+  }
 }
 
 function showTrainingView() {
