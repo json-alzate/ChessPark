@@ -203,6 +203,9 @@ export class Trainer {
   private totalAttempted = 0;
   private firstPuzzleInBlock = true;
 
+  // Incremented on each new puzzle/block to invalidate stale async callbacks
+  private epoch = 0;
+
   constructor(
     private readonly boardEl: HTMLElement,
     private readonly cbs: TrainerCallbacks,
@@ -237,6 +240,7 @@ export class Trainer {
     if (this.destroyed) return;
     if (this.currentBlockIdx >= this.blocks.length) { this.finish(); return; }
 
+    this.epoch++; // invalidate any pending puzzle callbacks from previous block
     const block = this.blocks[this.currentBlockIdx];
     this.firstPuzzleInBlock = true;
 
@@ -287,12 +291,13 @@ export class Trainer {
 
   private async loadPuzzle(): Promise<void> {
     if (this.destroyed) return;
+    const epoch = ++this.epoch; // capture epoch for this puzzle's callbacks
 
     // Refill when exhausted
     if (this.currentPuzzleIdx >= this.puzzles.length) {
       const block = this.blocks[this.currentBlockIdx];
       const more = await fetchPuzzlesForBlock(block.theme, block.elo);
-      if (this.destroyed) return;
+      if (this.destroyed || this.epoch !== epoch) return;
       if (more.length === 0) return; // wait for block timer
       this.puzzles = more;
       this.currentPuzzleIdx = 0;
@@ -310,7 +315,7 @@ export class Trainer {
 
     await this.board!.setOrientation(userColor, false);
     await this.board!.setPosition(this.chess.fen(), false);
-    if (this.destroyed) return;
+    if (this.destroyed || this.epoch !== epoch) return;
 
     // Signal panel to show the board area (only needed on first puzzle of each block)
     if (this.firstPuzzleInBlock) {
@@ -324,7 +329,7 @@ export class Trainer {
     this.startPuzzleTimer(this.currentPuzzleTime);
 
     setTimeout(() => {
-      if (!this.destroyed) {
+      if (!this.destroyed && this.epoch === epoch) {
         this.board?.enableMoveInput(this.handleInput.bind(this), userColor);
       }
     }, 300);
@@ -332,9 +337,10 @@ export class Trainer {
 
   private startPuzzleTimer(seconds: number): void {
     this.clearPuzzleTimer();
+    const epoch = this.epoch;
     this.cbs.onPuzzleTime(seconds, seconds);
     this.puzzleInterval = setInterval(() => {
-      if (this.destroyed) { this.clearPuzzleTimer(); return; }
+      if (this.destroyed || this.epoch !== epoch) { this.clearPuzzleTimer(); return; }
       seconds--;
       this.cbs.onPuzzleTime(seconds, this.currentPuzzleTime);
       if (seconds <= 0) {
@@ -342,7 +348,7 @@ export class Trainer {
         this.board?.disableMoveInput();
         this.cbs.onStatus('timeout');
         this.totalAttempted++;
-        setTimeout(() => { if (!this.destroyed) this.advancePuzzle(); }, 1200);
+        setTimeout(() => { if (!this.destroyed && this.epoch === epoch) this.advancePuzzle(); }, 1200);
       }
     }, 1000);
   }
@@ -366,15 +372,16 @@ export class Trainer {
       this.chess.move(uciToMove(expected));
       this.board!.disableMoveInput();
       this.currentMoveIdx++;
+      const epoch = this.epoch;
 
       if (this.currentMoveIdx >= this.solutionMoves.length) {
         this.clearPuzzleTimer();
         this.cbs.onStatus('correct');
         this.solvedCount++;
         this.totalAttempted++;
-        setTimeout(() => { if (!this.destroyed) this.advancePuzzle(); }, 1000);
+        setTimeout(() => { if (!this.destroyed && this.epoch === epoch) this.advancePuzzle(); }, 1000);
       } else {
-        setTimeout(() => { if (!this.destroyed) this.opponentMove(); }, 500);
+        setTimeout(() => { if (!this.destroyed && this.epoch === epoch) this.opponentMove(); }, 500);
       }
       return true;
     } else {
@@ -382,24 +389,26 @@ export class Trainer {
       this.board!.disableMoveInput();
       this.cbs.onStatus('wrong');
       this.totalAttempted++;
-      setTimeout(() => { if (!this.destroyed) this.advancePuzzle(); }, 1000);
+      const epoch = this.epoch;
+      setTimeout(() => { if (!this.destroyed && this.epoch === epoch) this.advancePuzzle(); }, 1000);
       return false;
     }
   }
 
   private opponentMove(): void {
+    const epoch = this.epoch; // capture before async work
     const move = this.solutionMoves[this.currentMoveIdx];
     this.chess.move(uciToMove(move));
     this.currentMoveIdx++;
 
     this.board!.setPosition(this.chess.fen(), true).then(() => {
-      if (this.destroyed) return;
+      if (this.destroyed || this.epoch !== epoch) return;
       if (this.currentMoveIdx >= this.solutionMoves.length) {
         this.clearPuzzleTimer();
         this.cbs.onStatus('correct');
         this.solvedCount++;
         this.totalAttempted++;
-        setTimeout(() => { if (!this.destroyed) this.advancePuzzle(); }, 1000);
+        setTimeout(() => { if (!this.destroyed && this.epoch === epoch) this.advancePuzzle(); }, 1000);
       } else {
         const color = this.chess.turn() === 'w' ? COLOR.white : COLOR.black;
         this.board?.enableMoveInput(this.handleInput.bind(this), color);
