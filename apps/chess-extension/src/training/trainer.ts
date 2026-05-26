@@ -316,6 +316,26 @@ export class Trainer {
     if (this.blockInterval) { clearInterval(this.blockInterval); this.blockInterval = null; }
   }
 
+  private pauseBlockTimer(): void {
+    if (this.blockInterval) { clearInterval(this.blockInterval); this.blockInterval = null; }
+  }
+
+  private resumeBlockTimer(): void {
+    if (this.blockTimeLeft <= 0 || this.blockInterval) return;
+    this.blockInterval = setInterval(() => {
+      if (this.destroyed) { this.clearBlockTimer(); return; }
+      this.blockTimeLeft--;
+      this.cbs.onBlockTime(this.blockTimeLeft);
+      if (this.blockTimeLeft <= 0) {
+        this.clearBlockTimer();
+        this.clearPuzzleTimer();
+        this.board?.disableMoveInput();
+        this.currentBlockIdx++;
+        this.startBlock();
+      }
+    }, 1000);
+  }
+
   // ── Puzzle lifecycle ────────────────────────────────────────────────────────
 
   private async loadPuzzle(): Promise<void> {
@@ -477,6 +497,8 @@ export class Trainer {
   private async showSolution(preFen: string, epoch: number): Promise<void> {
     if (this.destroyed || this.epoch !== epoch) return;
 
+    this.pauseBlockTimer(); // don't count solution time against the block
+
     this.chess = new Chess(preFen);
     await this.board!.setPosition(preFen, false);
 
@@ -490,6 +512,8 @@ export class Trainer {
 
     await new Promise<void>(r => setTimeout(r, 600));
     if (this.destroyed || this.epoch !== epoch) return;
+
+    this.resumeBlockTimer();
     this.advancePuzzle();
   }
 
