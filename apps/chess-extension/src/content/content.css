@@ -1,0 +1,4 @@
+/* Transitions for highlight changes — the actual values are set via inline styles in lichess.ts */
+piece {
+  transition: filter 0.12s ease, scale 0.12s ease, opacity 0.12s ease;
+}
