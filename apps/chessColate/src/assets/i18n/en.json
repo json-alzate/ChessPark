@@ -141,7 +141,9 @@
       "gosh2": "). You must solve the puzzle without seeing the pieces.",
       "yourTurn": "Your turn",
       "findBestMoveWhite": "Find the best move for White.",
-      "findBestMoveBlack": "Find the best move for Black."
+      "findBestMoveBlack": "Find the best move for Black.",
+      "whiteToMove": "White to move.",
+      "blackToMove": "Black to move."
     },
     "exitTraining": {
       "title": "Exit training",

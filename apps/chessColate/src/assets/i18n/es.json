@@ -141,7 +141,9 @@
       "gosh2": "). Deberás resolver el puzzle sin ver las piezas.",
       "yourTurn": "Tu turno",
       "findBestMoveWhite": "Encuentra el mejor movimiento para las blancas.",
-      "findBestMoveBlack": "Encuentra el mejor movimiento para las negras."
+      "findBestMoveBlack": "Encuentra el mejor movimiento para las negras.",
+      "whiteToMove": "Juegan blancas.",
+      "blackToMove": "Juegan negras."
     },
     "exitTraining": {
       "title": "Salir del entrenamiento",

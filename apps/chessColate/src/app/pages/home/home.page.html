@@ -58,8 +58,8 @@
           <app-training-menu></app-training-menu>
           <!-- Botones mobile only -->
           <div class="flex flex-row gap-1 mt-2 px-2 lg:hidden">
-            <a class="btn btn-sm btn-soft btn-info" [routerLink]="['/puzzles/custom-plans']">{{ 'CUSTOM_PLANS.listTitle' | transloco }}</a>
-            <a class="btn btn-sm btn-soft btn-info flex-1 min-w-0" [routerLink]="['/puzzles/public-plans']">{{ 'PUBLIC_PLANS.title' | transloco }}</a>
+            <a class="btn btn-sm btn-soft " [routerLink]="['/puzzles/custom-plans']">{{ 'CUSTOM_PLANS.listTitle' | transloco }}</a>
+            <a class="btn btn-sm btn-soft  flex-1 min-w-0" [routerLink]="['/puzzles/public-plans']">{{ 'PUBLIC_PLANS.title' | transloco }}</a>
           </div>
           }
         </div>
@@ -110,14 +110,14 @@
             <div class="card bg-base-100 shadow-sm overflow-hidden cursor-pointer hover:-translate-y-1 transition-all active:scale-[0.98]" (click)="startReto333Plan()">
               <div class="flex flex-row items-stretch w-full">
                 <div class="w-[35%] bg-base-200 flex flex-col items-center justify-center p-4 relative overflow-hidden">
-                  <div class="absolute left-0 top-0 bottom-0 w-1 bg-warning rounded-r-sm"></div>
-                  <h2 class="text-4xl md:text-5xl font-black text-warning tracking-tighter z-10 italic">333</h2>
+                  <div class="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-r-sm"></div>
+                  <h2 class="text-4xl md:text-5xl font-black text-primary tracking-tighter z-10 italic">333</h2>
                   <span class="text-[9px] md:text-xs text-base-content/40 font-bold uppercase tracking-widest mt-1 z-10 text-center">{{ 'RETO_333.survival' | transloco }}</span>
                 </div>
                 <div class="w-[65%] p-4 flex flex-col justify-between">
                   <div>
                     <div class="flex items-center justify-between mb-2">
-                      <div class="badge badge-sm badge-warning badge-outline font-semibold">{{ 'RETO_333.mateIn1' | transloco }}</div>
+                      <div class="badge badge-sm badge-outline font-semibold">{{ 'RETO_333.mateIn1' | transloco }}</div>
                     </div>
                     @if (reto333Stats) {
                     <div class="grid grid-cols-2 gap-2 mt-3 mb-1">
@@ -129,7 +129,7 @@
                       </div>
                       <div class="flex flex-col bg-base-200/50 p-2 rounded-xl border border-base-content/5">
                         <span class="text-[9px] uppercase tracking-wider text-base-content/50 font-semibold mb-0.5">{{ 'RETO_333.time' | transloco }}</span>
-                        <span class="font-bold text-sm md:text-base leading-none text-info">
+                        <span class="font-bold text-sm md:text-base leading-none text-base-content">
                           {{ reto333Stats.timeString }}
                         </span>
                       </div>
@@ -151,7 +151,7 @@
                     </div>
                     }
                   </div>
-                  <button class="btn btn-warning btn-xs w-full mt-3 font-bold shadow-md">
+                  <button class="btn btn-primary btn-xs w-full mt-3 font-bold shadow-md">
                     {{ (reto333Stats ? 'RETO_333.tryAgain' : 'RETO_333.acceptChallenge') | transloco }}
                   </button>
                 </div>
@@ -187,14 +187,14 @@
             <div class="card bg-base-100 shadow-sm overflow-hidden cursor-pointer hover:-translate-y-1 transition-all active:scale-[0.98]" (click)="startReto333Plan()">
               <div class="flex flex-row items-stretch w-full">
                 <div class="w-[35%] bg-base-200 flex flex-col items-center justify-center p-4 relative overflow-hidden">
-                  <div class="absolute left-0 top-0 bottom-0 w-1 bg-warning rounded-r-sm"></div>
-                  <h2 class="text-4xl md:text-5xl font-black text-warning tracking-tighter z-10 italic">333</h2>
+                  <div class="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-r-sm"></div>
+                  <h2 class="text-4xl md:text-5xl font-black text-primary tracking-tighter z-10 italic">333</h2>
                   <span class="text-[9px] md:text-xs text-base-content/40 font-bold uppercase tracking-widest mt-1 z-10 text-center">{{ 'RETO_333.survival' | transloco }}</span>
                 </div>
                 <div class="w-[65%] p-4 flex flex-col justify-between">
                   <div>
                     <div class="flex items-center justify-between mb-2">
-                      <div class="badge badge-sm badge-warning badge-outline font-semibold">{{ 'RETO_333.mateIn1' | transloco }}</div>
+                      <div class="badge badge-sm badge-outline font-semibold">{{ 'RETO_333.mateIn1' | transloco }}</div>
                     </div>
                     @if (reto333Stats) {
                     <div class="grid grid-cols-2 gap-2 mt-3 mb-1">
@@ -206,7 +206,7 @@
                       </div>
                       <div class="flex flex-col bg-base-200/50 p-2 rounded-xl border border-base-content/5">
                         <span class="text-[9px] uppercase tracking-wider text-base-content/50 font-semibold mb-0.5">{{ 'RETO_333.time' | transloco }}</span>
-                        <span class="font-bold text-sm md:text-base leading-none text-info">
+                        <span class="font-bold text-sm md:text-base leading-none text-base-content">
                           {{ reto333Stats.timeString }}
                         </span>
                       </div>
@@ -228,7 +228,7 @@
                     </div>
                     }
                   </div>
-                  <button class="btn btn-warning btn-xs w-full mt-3 font-bold shadow-md">
+                  <button class="btn btn-primary btn-xs w-full mt-3 font-bold shadow-md">
                     {{ (reto333Stats ? 'RETO_333.tryAgain' : 'RETO_333.acceptChallenge') | transloco }}
                   </button>
                 </div>
@@ -246,14 +246,14 @@
 
               <!-- Lado izquierdo: Tablero -->
               <div class="relative min-w-0">
-                <div class="flex items-center gap-2 pb-2">
+                <div class="skeleton w-full aspect-square rounded-md"></div>
+                <div class="flex items-center gap-2 pt-2">
                   <div class="skeleton w-6 h-6 md:w-8 md:h-8 rounded-full shrink-0"></div>
                   <div class="flex flex-col gap-1 w-full">
                     <div class="skeleton h-3 md:h-4 w-3/4 max-w-[120px]"></div>
                     <div class="skeleton h-2 md:h-3 w-5/6 max-w-[150px]"></div>
                   </div>
                 </div>
-                <div class="skeleton w-full aspect-square rounded-md"></div>
               </div>
 
               <!-- Lado derecho: Textos y botones -->
@@ -279,33 +279,33 @@
             <div class="card-body grid grid-cols-[55%_1fr] md:grid-cols-[3fr_2fr] gap-3 p-3 w-full max-w-full">
               <!-- Lado izquierdo: Tablero -->
               <div class="relative min-w-0">
-                <div class="flex items-center gap-2 pb-2">
-                  <img [src]="'assets/images/king-' + playerColor + '.svg'" [alt]="playerColor"
-                    class="h-6 w-6 md:h-8 md:w-8" />
-                  <div class="flex flex-col min-w-0">
-                    <span class="font-semibold text-xs md:text-base leading-tight">{{ 'PUZZLES.help.yourTurn' | transloco
-                      }}</span>
-                    <span class="text-[10px] md:text-sm text-base-content/80 leading-tight truncate">
-                      @if (playerColor === 'white') { {{
-                      'PUZZLES.help.findBestMoveWhite' | transloco }} } @else { {{
-                      'PUZZLES.help.findBestMoveBlack' | transloco }} }
-                    </span>
-                  </div>
-                </div>
-
                 <lib-board-puzzle [setPuzzle]="infinitePuzzle" [setForceStopTimer]="false" [showBoardControls]="false"
                   (puzzleCompleted)="onInfinitePuzzleCompleted('good')" (puzzleFailed)="onInfinitePuzzleCompleted('bad')"
                   (puzzleEndByTime)="onInfinitePuzzleCompleted('timeOut')">
                 </lib-board-puzzle>
+
+                <div class="flex items-center gap-2 pt-2">
+                  <img [src]="'assets/images/king-' + playerColor + '.svg'" [alt]="playerColor"
+                    class="h-6 w-6 md:h-8 md:w-8 shrink-0" />
+                  <div class="flex flex-col min-w-0">
+                    <span class="font-semibold text-xs md:text-base leading-tight">{{ 'PUZZLES.help.yourTurn' | transloco
+                      }}</span>
+                    <span class="text-[10px] md:text-sm text-base-content/80 leading-tight whitespace-nowrap">
+                      @if (playerColor === 'white') { {{
+                      'PUZZLES.help.whiteToMove' | transloco }} } @else { {{
+                      'PUZZLES.help.blackToMove' | transloco }} }
+                    </span>
+                  </div>
+                </div>
               </div>
 
               <!-- Lado derecho: Textos y botones -->
               <div class="flex flex-col text-left min-w-0">
                 <div class="my-auto">
-                  <div class="flex items-center gap-2">
-                    <span class="font-bold text-xs md:text-sm text-primary">ELO {{ infinityElo }}</span>
-                    <button class="btn btn-circle btn-ghost btn-xs md:btn-sm text-primary" (click)="isStatsModalOpen = true">
-                      <ion-icon name="stats-chart-outline" class="text-lg"></ion-icon>
+                  <div class="flex items-center justify-between">
+                    <span class="text-sm font-medium" [class.opacity-50]="infinityElo === '1500?'">{{ infinityElo }}</span>
+                    <button class="btn btn-circle btn-xs md:btn-sm bg-base-300 hover:bg-base-200 border-0 shadow-none" (click)="isStatsModalOpen = true">
+                      <ion-icon name="stats-chart-outline" class="text-base"></ion-icon>
                     </button>
                   </div>
                   <h3 class="text-sm md:text-2xl font-bold mb-1 leading-tight">
