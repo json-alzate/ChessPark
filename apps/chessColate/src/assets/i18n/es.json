@@ -112,7 +112,8 @@
       "continueTraining": "Continuar Entrenamiento",
       "continuousTraining": "Entrenamiento continuo",
       "resolveUnlimited": "Resuelve problemas ilimitados",
-      "trainNow": "Entrenar ahora"
+      "trainNow": "Entrenar ahora",
+      "anyTheme": "¡No sabes qué esperar!"
     },
     "colors": {
       "white": "Blancas",

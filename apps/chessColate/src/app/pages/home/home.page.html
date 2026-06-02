@@ -296,22 +296,24 @@
           </div>
           } @else if (infinitePuzzle) {
           <div class="card bg-base-100 shadow-sm overflow-hidden lg:flex-1">
-            <div class="card-body grid grid-cols-[55%_1fr] md:grid-cols-[3fr_2fr] gap-3 p-3 w-full max-w-full">
+            <div class="card-body grid grid-cols-[55%_1fr] md:grid-cols-[3fr_2fr] gap-3 p-3 w-full max-w-full items-center">
               <!-- Lado izquierdo: Tablero -->
-              <div class="relative min-w-0">
+              <div class="relative min-w-0 self-center">
                 <lib-board-puzzle [setPuzzle]="infinitePuzzle" [setForceStopTimer]="false" [showBoardControls]="false"
                   (puzzleCompleted)="onInfinitePuzzleCompleted('good')"
                   (puzzleFailed)="onInfinitePuzzleCompleted('bad')"
                   (puzzleEndByTime)="onInfinitePuzzleCompleted('timeOut')">
                 </lib-board-puzzle>
+              </div>
 
-                <div class="flex items-center gap-2 pt-2">
+              <!-- Lado derecho: Textos y botones -->
+              <div class="flex flex-col text-left min-w-0 gap-12 lg:gap-[65px]">
+                <div class="flex items-center gap-2">
                   <img [src]="'assets/images/king-' + playerColor + '.svg'" [alt]="playerColor"
                     class="h-6 w-6 md:h-8 md:w-8 shrink-0" />
                   <div class="flex flex-col min-w-0">
                     <span class="font-semibold text-xs md:text-base leading-tight">{{ 'PUZZLES.help.yourTurn' |
-                      transloco
-                      }}</span>
+                      transloco }}</span>
                     <span class="text-[10px] md:text-sm text-base-content/80 leading-tight whitespace-nowrap">
                       @if (playerColor === 'white') { {{
                       'PUZZLES.help.whiteToMove' | transloco }} } @else { {{
@@ -319,27 +321,23 @@
                     </span>
                   </div>
                 </div>
-              </div>
-
-              <!-- Lado derecho: Textos y botones -->
-              <div class="flex flex-col text-left min-w-0">
-                <div class="my-auto">
+                <div class="flex flex-col gap-1">
                   <div class="flex items-center justify-between">
                     <span class="text-sm font-medium" [class.opacity-50]="infinityElo === '1500?'">{{ infinityElo
                       }}</span>
-                    <button class="btn btn-circle btn-xs md:btn-sm bg-base-300 hover:bg-base-200 border-0 shadow-none"
+                    <button class="btn btn-circle btn-xs md:btn-sm btn-primary"
                       (click)="isStatsModalOpen = true">
                       <ion-icon name="stats-chart-outline" class="text-base"></ion-icon>
                     </button>
                   </div>
-                  <h3 class="text-sm md:text-2xl font-bold mb-1 leading-tight">
+                  <h3 class="text-sm md:text-2xl font-bold leading-tight">
                     {{ 'PUZZLES.general.continuousTraining' | transloco }}
                   </h3>
                   <p
-                    class="text-[10px] md:text-base text-base-content/80 mb-2 md:mb-3 font-medium leading-tight line-clamp-4 md:line-clamp-none">
+                    class="text-[10px] md:text-base text-base-content/80 font-medium leading-tight line-clamp-4 md:line-clamp-none">
                     {{ 'PUZZLES.general.resolveUnlimited' | transloco }}
                   </p>
-                  <div class="flex flex-col w-full gap-2">
+                  <div class="flex flex-col w-full gap-2 mt-2">
                     @if (isInfinitePuzzleSolved) {
                     @if (infinitePuzzleProblemState === 'bad' ||
                     infinitePuzzleProblemState === 'timeOut') {

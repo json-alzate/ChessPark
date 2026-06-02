@@ -112,7 +112,8 @@
       "continueTraining": "Continue training",
       "continuousTraining": "Continuous training",
       "resolveUnlimited": "Solve unlimited puzzles",
-      "trainNow": "Train now"
+      "trainNow": "Train now",
+      "anyTheme": "You never know what to expect!"
     },
     "colors": {
       "white": "White",

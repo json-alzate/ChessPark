@@ -90,20 +90,27 @@
               </div>
               } }
             </div>
-            @if (($any(plan)?.blocks?.[currentIndexBlock])) { @if
-            (plan.blocks[currentIndexBlock].theme) {
-            <span class="text-sm text-base-content/70">{{
-              appService.getNameThemePuzzleByValue(
-                plan.blocks[currentIndexBlock].theme
-              )
-            }}</span>
-            } @if (plan.blocks[currentIndexBlock].openingFamily) {
-            <span class="text-sm text-base-content/70">{{
-              appService.getNameOpeningByValue(
-                plan.blocks[currentIndexBlock].openingFamily ?? ''
-              )
-            }}</span>
-            } }
+            @if (($any(plan)?.blocks?.[currentIndexBlock])) {
+              @if (plan.planType === 'infinity') {
+              <span class="text-sm text-base-content/50 italic">{{
+                'PUZZLES.general.anyTheme' | transloco
+              }}</span>
+              } @else {
+                @if (plan.blocks[currentIndexBlock].theme) {
+                <span class="text-sm text-base-content/70">{{
+                  appService.getNameThemePuzzleByValue(
+                    plan.blocks[currentIndexBlock].theme
+                  )
+                }}</span>
+                } @if (plan.blocks[currentIndexBlock].openingFamily) {
+                <span class="text-sm text-base-content/70">{{
+                  appService.getNameOpeningByValue(
+                    plan.blocks[currentIndexBlock].openingFamily ?? ''
+                  )
+                }}</span>
+                }
+              }
+            }
           </div>
         </div>
       </div>
