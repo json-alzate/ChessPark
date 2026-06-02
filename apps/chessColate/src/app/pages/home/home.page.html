@@ -58,8 +58,10 @@
           <app-training-menu></app-training-menu>
           <!-- Botones mobile only -->
           <div class="flex flex-row gap-1 mt-2 px-2 lg:hidden">
-            <a class="btn btn-sm btn-soft " [routerLink]="['/puzzles/custom-plans']">{{ 'CUSTOM_PLANS.listTitle' | transloco }}</a>
-            <a class="btn btn-sm btn-soft  flex-1 min-w-0" [routerLink]="['/puzzles/public-plans']">{{ 'PUBLIC_PLANS.title' | transloco }}</a>
+            <a class="btn btn-sm btn-primary btn-soft " [routerLink]="['/puzzles/custom-plans']">{{
+              'CUSTOM_PLANS.listTitle' | transloco }}</a>
+            <a class="btn btn-sm btn-primary btn-soft  flex-1 min-w-0" [routerLink]="['/puzzles/public-plans']">{{
+              'PUBLIC_PLANS.title' | transloco }}</a>
           </div>
           }
         </div>
@@ -69,9 +71,11 @@
           @if (isInitialized) {
           <div>
             <div class="hidden lg:grid lg:grid-cols-3 lg:gap-3 lg:mt-2 lg:mb-2">
-              <a class="btn btn-sm btn-soft btn-info lg:col-span-1" [routerLink]="['/puzzles/custom-plans']">{{ 'CUSTOM_PLANS.listTitle' |
+              <a class="btn btn-sm btn-soft btn-primary lg:col-span-1" [routerLink]="['/puzzles/custom-plans']">{{
+                'CUSTOM_PLANS.listTitle' |
                 transloco }}</a>
-              <a class="btn btn-sm btn-soft btn-info lg:flex-none lg:col-span-2" [routerLink]="['/puzzles/public-plans']">{{
+              <a class="btn btn-sm btn-soft btn-primary lg:flex-none lg:col-span-2"
+                [routerLink]="['/puzzles/public-plans']">{{
                 'PUBLIC_PLANS.title' | transloco }}</a>
             </div>
           </div>
@@ -107,12 +111,16 @@
               </div>
             </div>
             } @else {
-            <div class="card bg-base-100 shadow-sm overflow-hidden cursor-pointer hover:-translate-y-1 transition-all active:scale-[0.98]" (click)="startReto333Plan()">
+            <div
+              class="card bg-base-100 shadow-sm overflow-hidden cursor-pointer hover:-translate-y-1 transition-all active:scale-[0.98]"
+              (click)="startReto333Plan()">
               <div class="flex flex-row items-stretch w-full">
                 <div class="w-[35%] bg-base-200 flex flex-col items-center justify-center p-4 relative overflow-hidden">
                   <div class="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-r-sm"></div>
                   <h2 class="text-4xl md:text-5xl font-black text-primary tracking-tighter z-10 italic">333</h2>
-                  <span class="text-[9px] md:text-xs text-base-content/40 font-bold uppercase tracking-widest mt-1 z-10 text-center">{{ 'RETO_333.survival' | transloco }}</span>
+                  <span
+                    class="text-[9px] md:text-xs text-base-content/40 font-bold uppercase tracking-widest mt-1 z-10 text-center">{{
+                    'RETO_333.survival' | transloco }}</span>
                 </div>
                 <div class="w-[65%] p-4 flex flex-col justify-between">
                   <div>
@@ -122,22 +130,26 @@
                     @if (reto333Stats) {
                     <div class="grid grid-cols-2 gap-2 mt-3 mb-1">
                       <div class="flex flex-col bg-base-200/50 p-2 rounded-xl border border-base-content/5">
-                        <span class="text-[9px] uppercase tracking-wider text-base-content/50 font-semibold mb-0.5">{{ 'RETO_333.streak' | transloco }}</span>
+                        <span class="text-[9px] uppercase tracking-wider text-base-content/50 font-semibold mb-0.5">{{
+                          'RETO_333.streak' | transloco }}</span>
                         <span class="font-bold text-sm md:text-base leading-none text-base-content">
                           {{ reto333Stats.lastScore }}<span class="text-[10px] text-base-content/40 ml-0.5">/333</span>
                         </span>
                       </div>
                       <div class="flex flex-col bg-base-200/50 p-2 rounded-xl border border-base-content/5">
-                        <span class="text-[9px] uppercase tracking-wider text-base-content/50 font-semibold mb-0.5">{{ 'RETO_333.time' | transloco }}</span>
+                        <span class="text-[9px] uppercase tracking-wider text-base-content/50 font-semibold mb-0.5">{{
+                          'RETO_333.time' | transloco }}</span>
                         <span class="font-bold text-sm md:text-base leading-none text-base-content">
                           {{ reto333Stats.timeString }}
                         </span>
                       </div>
                     </div>
                     @if (reto333Stats.completed) {
-                    <div class="px-2 py-1 mt-1 bg-success/10 border border-success/20 rounded-lg flex items-center justify-center gap-1.5 text-success">
+                    <div
+                      class="px-2 py-1 mt-1 bg-success/10 border border-success/20 rounded-lg flex items-center justify-center gap-1.5 text-success">
                       <ion-icon name="trophy"></ion-icon>
-                      <span class="text-[10px] md:text-xs font-bold uppercase tracking-widest">{{ 'RETO_333.crowned' | transloco }}</span>
+                      <span class="text-[10px] md:text-xs font-bold uppercase tracking-widest">{{ 'RETO_333.crowned' |
+                        transloco }}</span>
                     </div>
                     }
                     } @else {
@@ -151,7 +163,7 @@
                     </div>
                     }
                   </div>
-                  <button class="btn btn-primary btn-xs w-full mt-3 font-bold shadow-md">
+                  <button class="btn btn-primary btn-xs  mt-3 font-bold shadow-md">
                     {{ (reto333Stats ? 'RETO_333.tryAgain' : 'RETO_333.acceptChallenge') | transloco }}
                   </button>
                 </div>
@@ -184,12 +196,16 @@
               </div>
             </div>
             } @else {
-            <div class="card bg-base-100 shadow-sm overflow-hidden cursor-pointer hover:-translate-y-1 transition-all active:scale-[0.98]" (click)="startReto333Plan()">
+            <div
+              class="card bg-base-100 shadow-sm overflow-hidden cursor-pointer hover:-translate-y-1 transition-all active:scale-[0.98]"
+              (click)="startReto333Plan()">
               <div class="flex flex-row items-stretch w-full">
                 <div class="w-[35%] bg-base-200 flex flex-col items-center justify-center p-4 relative overflow-hidden">
                   <div class="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-r-sm"></div>
                   <h2 class="text-4xl md:text-5xl font-black text-primary tracking-tighter z-10 italic">333</h2>
-                  <span class="text-[9px] md:text-xs text-base-content/40 font-bold uppercase tracking-widest mt-1 z-10 text-center">{{ 'RETO_333.survival' | transloco }}</span>
+                  <span
+                    class="text-[9px] md:text-xs text-base-content/40 font-bold uppercase tracking-widest mt-1 z-10 text-center">{{
+                    'RETO_333.survival' | transloco }}</span>
                 </div>
                 <div class="w-[65%] p-4 flex flex-col justify-between">
                   <div>
@@ -199,22 +215,26 @@
                     @if (reto333Stats) {
                     <div class="grid grid-cols-2 gap-2 mt-3 mb-1">
                       <div class="flex flex-col bg-base-200/50 p-2 rounded-xl border border-base-content/5">
-                        <span class="text-[9px] uppercase tracking-wider text-base-content/50 font-semibold mb-0.5">{{ 'RETO_333.streak' | transloco }}</span>
+                        <span class="text-[9px] uppercase tracking-wider text-base-content/50 font-semibold mb-0.5">{{
+                          'RETO_333.streak' | transloco }}</span>
                         <span class="font-bold text-sm md:text-base leading-none text-base-content">
                           {{ reto333Stats.lastScore }}<span class="text-[10px] text-base-content/40 ml-0.5">/333</span>
                         </span>
                       </div>
                       <div class="flex flex-col bg-base-200/50 p-2 rounded-xl border border-base-content/5">
-                        <span class="text-[9px] uppercase tracking-wider text-base-content/50 font-semibold mb-0.5">{{ 'RETO_333.time' | transloco }}</span>
+                        <span class="text-[9px] uppercase tracking-wider text-base-content/50 font-semibold mb-0.5">{{
+                          'RETO_333.time' | transloco }}</span>
                         <span class="font-bold text-sm md:text-base leading-none text-base-content">
                           {{ reto333Stats.timeString }}
                         </span>
                       </div>
                     </div>
                     @if (reto333Stats.completed) {
-                    <div class="px-2 py-1 mt-1 bg-success/10 border border-success/20 rounded-lg flex items-center justify-center gap-1.5 text-success">
+                    <div
+                      class="px-2 py-1 mt-1 bg-success/10 border border-success/20 rounded-lg flex items-center justify-center gap-1.5 text-success">
                       <ion-icon name="trophy"></ion-icon>
-                      <span class="text-[10px] md:text-xs font-bold uppercase tracking-widest">{{ 'RETO_333.crowned' | transloco }}</span>
+                      <span class="text-[10px] md:text-xs font-bold uppercase tracking-widest">{{ 'RETO_333.crowned' |
+                        transloco }}</span>
                     </div>
                     }
                     } @else {
@@ -280,7 +300,8 @@
               <!-- Lado izquierdo: Tablero -->
               <div class="relative min-w-0">
                 <lib-board-puzzle [setPuzzle]="infinitePuzzle" [setForceStopTimer]="false" [showBoardControls]="false"
-                  (puzzleCompleted)="onInfinitePuzzleCompleted('good')" (puzzleFailed)="onInfinitePuzzleCompleted('bad')"
+                  (puzzleCompleted)="onInfinitePuzzleCompleted('good')"
+                  (puzzleFailed)="onInfinitePuzzleCompleted('bad')"
                   (puzzleEndByTime)="onInfinitePuzzleCompleted('timeOut')">
                 </lib-board-puzzle>
 
@@ -288,7 +309,8 @@
                   <img [src]="'assets/images/king-' + playerColor + '.svg'" [alt]="playerColor"
                     class="h-6 w-6 md:h-8 md:w-8 shrink-0" />
                   <div class="flex flex-col min-w-0">
-                    <span class="font-semibold text-xs md:text-base leading-tight">{{ 'PUZZLES.help.yourTurn' | transloco
+                    <span class="font-semibold text-xs md:text-base leading-tight">{{ 'PUZZLES.help.yourTurn' |
+                      transloco
                       }}</span>
                     <span class="text-[10px] md:text-sm text-base-content/80 leading-tight whitespace-nowrap">
                       @if (playerColor === 'white') { {{
@@ -303,8 +325,10 @@
               <div class="flex flex-col text-left min-w-0">
                 <div class="my-auto">
                   <div class="flex items-center justify-between">
-                    <span class="text-sm font-medium" [class.opacity-50]="infinityElo === '1500?'">{{ infinityElo }}</span>
-                    <button class="btn btn-circle btn-xs md:btn-sm bg-base-300 hover:bg-base-200 border-0 shadow-none" (click)="isStatsModalOpen = true">
+                    <span class="text-sm font-medium" [class.opacity-50]="infinityElo === '1500?'">{{ infinityElo
+                      }}</span>
+                    <button class="btn btn-circle btn-xs md:btn-sm bg-base-300 hover:bg-base-200 border-0 shadow-none"
+                      (click)="isStatsModalOpen = true">
                       <ion-icon name="stats-chart-outline" class="text-base"></ion-icon>
                     </button>
                   </div>
@@ -321,7 +345,8 @@
                     infinitePuzzleProblemState === 'timeOut') {
                     <div class="text-error font-bold text-center text-xs md:text-sm animate-pulse">{{
                       'PUZZLE_SOLUTION.feedback.wrong' | transloco }}</div>
-                    <button class="btn btn-xs md:btn-md btn-outline btn-error w-full font-bold" (click)="showSolution()">
+                    <button class="btn btn-xs md:btn-md btn-outline btn-error w-full font-bold"
+                      (click)="showSolution()">
                       <span>{{ 'PUZZLE_SOLUTION.actions.solution' | transloco }}</span>
                       <ion-icon name="eye" class="hidden md:inline"></ion-icon>
                     </button>
@@ -329,12 +354,14 @@
                     <div class="text-success font-bold text-center text-xs md:text-sm animate-bounce">{{
                       'PUZZLE_SOLUTION.feedback.excellent' | transloco }}</div>
                     }
-                    <button class="btn btn-xs md:btn-md btn-primary w-full shadow-md font-bold" (click)="startInfinityPlan()">
+                    <button class="btn btn-xs md:btn-md btn-primary w-full shadow-md font-bold"
+                      (click)="startInfinityPlan()">
                       <span>{{ 'COMMON.actions.continue' | transloco }}</span>
                       <ion-icon name="arrow-forward" class="hidden md:inline"></ion-icon>
                     </button>
                     } @else {
-                    <button class="btn btn-xs md:btn-md btn-primary w-full shadow-md font-bold" (click)="startInfinityPlan()">
+                    <button class="btn btn-xs md:btn-md btn-primary w-full shadow-md font-bold"
+                      (click)="startInfinityPlan()">
                       <span>{{ 'PUZZLES.general.trainNow' | transloco }}</span>
                       <ion-icon name="arrow-forward" class="hidden md:inline"></ion-icon>
                     </button>
@@ -351,88 +378,99 @@
         <div class="order-4 lg:col-start-2 lg:row-start-2 lg:relative">
 
           @if (isNativePlatform) {
-            <!-- NATIVO: tarjeta de donación -->
-            <!-- Mobile -->
-            <div class="px-2 mt-4 mb-8 lg:hidden">
-              <div class="relative overflow-hidden rounded-2xl">
-                <div class="opacity-40 pointer-events-none blur-[1px]">
-                  <div class="card bg-base-100 shadow-sm border border-base-200">
-                    <figure class="p-6 bg-base-200/30">
-                      <img src="assets/images/plan-icons/custom.png" alt="Woodpecker Method"
-                        class="h-28 md:h-36 object-contain" />
-                    </figure>
-                    <div class="card-body p-4 flex flex-row items-center justify-between w-full">
-                      <div class="text-left">
-                        <h4 class="font-bold text-base md:text-lg">{{ 'DONATION.homeCard.woodpeckerTitle' | transloco }}</h4>
-                        <div class="text-sm text-base-content/60">{{ 'DONATION.homeCard.comingSoon' | transloco }}</div>
-                      </div>
-                      <div class="badge badge-primary badge-outline text-xs md:text-sm">Pro</div>
+          <!-- NATIVO: tarjeta de donación -->
+          <!-- Mobile -->
+          <div class="px-2 mt-4 mb-8 lg:hidden">
+            <div class="relative overflow-hidden rounded-2xl">
+              <div class="opacity-40 pointer-events-none blur-[1px]">
+                <div class="card bg-base-100 shadow-sm border border-base-200">
+                  <figure class="p-6 bg-base-200/30">
+                    <img src="assets/images/plan-icons/custom.png" alt="Woodpecker Method"
+                      class="h-28 md:h-36 object-contain" />
+                  </figure>
+                  <div class="card-body p-4 flex flex-row items-center justify-between w-full">
+                    <div class="text-left">
+                      <h4 class="font-bold text-base md:text-lg">{{ 'DONATION.homeCard.woodpeckerTitle' | transloco }}
+                      </h4>
+                      <div class="text-sm text-base-content/60">{{ 'DONATION.homeCard.comingSoon' | transloco }}</div>
                     </div>
+                    <div class="badge badge-primary badge-outline text-xs md:text-sm">Pro</div>
                   </div>
                 </div>
-                <div class="absolute inset-0 flex items-center justify-center bg-base-100/60 backdrop-blur-sm z-10 pointer-events-auto">
-                  <div class="card bg-base-200 shadow-xl max-w-sm mx-4 border border-base-300">
-                    <div class="card-body text-center p-5 md:p-6 space-y-3">
-                      <h3 class="text-lg md:text-xl font-bold flex items-center justify-center gap-1">
-                        <ion-icon name="heart" class="text-error"></ion-icon>
-                        {{ 'DONATION.homeCard.title' | transloco }}
-                      </h3>
-                      <p class="text-xs md:text-sm text-base-content/80 leading-snug"
-                        [innerHTML]="'DONATION.homeCard.description' | transloco"></p>
-                      <a [routerLink]="['/donation']" class="btn btn-primary w-full mt-2 shadow-sm">
-                        {{ 'DONATION.homeCard.button' | transloco }}
-                      </a>
-                    </div>
+              </div>
+              <div
+                class="absolute inset-0 flex items-center justify-center bg-base-100/60 backdrop-blur-sm z-10 pointer-events-auto">
+                <div class="card bg-base-200 shadow-xl max-w-sm mx-4 border border-base-300">
+                  <div class="card-body text-center p-5 md:p-6 space-y-3">
+                    <h3 class="text-lg md:text-xl font-bold flex items-center justify-center gap-1">
+                      <ion-icon name="heart" class="text-error"></ion-icon>
+                      {{ 'DONATION.homeCard.title' | transloco }}
+                    </h3>
+                    <p class="text-xs md:text-sm text-base-content/80 leading-snug"
+                      [innerHTML]="'DONATION.homeCard.description' | transloco"></p>
+                    <a [routerLink]="['/donation']" class="btn btn-primary w-full mt-2 shadow-sm">
+                      {{ 'DONATION.homeCard.button' | transloco }}
+                    </a>
                   </div>
                 </div>
               </div>
             </div>
-            <!-- Desktop -->
-            <div class="hidden lg:absolute lg:inset-0 lg:top-2 lg:flex lg:flex-col items-center justify-center gap-3 px-5 py-4 bg-base-100 rounded-xl shadow-sm border border-base-200 text-center">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor" class="w-8 h-8 shrink-0 text-error"><path d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/></svg>
-              <div>
-                <p class="font-bold text-base leading-tight mb-1">{{ 'DONATION.homeCard.title' | transloco }}</p>
-                <p class="text-sm text-base-content/70 leading-snug line-clamp-2" [innerHTML]="'DONATION.homeCard.description' | transloco"></p>
-              </div>
-              <a [routerLink]="['/donation']" class="btn btn-sm btn-primary shadow-sm w-full">
-                {{ 'DONATION.homeCard.button' | transloco }}
-              </a>
+          </div>
+          <!-- Desktop -->
+          <div
+            class="hidden lg:absolute lg:inset-0 lg:top-2 lg:flex lg:flex-col items-center justify-center gap-3 px-5 py-4 bg-base-100 rounded-xl shadow-sm border border-base-200 text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor"
+              class="w-8 h-8 shrink-0 text-error">
+              <path
+                d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z" />
+            </svg>
+            <div>
+              <p class="font-bold text-base leading-tight mb-1">{{ 'DONATION.homeCard.title' | transloco }}</p>
+              <p class="text-sm text-base-content/70 leading-snug line-clamp-2"
+                [innerHTML]="'DONATION.homeCard.description' | transloco"></p>
             </div>
+            <a [routerLink]="['/donation']" class="btn btn-sm btn-primary shadow-sm w-full">
+              {{ 'DONATION.homeCard.button' | transloco }}
+            </a>
+          </div>
 
           } @else {
-            <!-- WEB: tarjeta próximamente en tiendas -->
-            <!-- Mobile -->
-            <div class="px-2 mt-4 mb-8 lg:hidden">
-              <div class="card bg-base-100 shadow-sm border border-base-200 text-center">
-                <div class="card-body p-5 space-y-3">
-                  <div class="flex justify-center">
-                    <img src="assets/images/home_icon.png" alt="ChessColate" class="w-14 h-14 object-contain" />
-                  </div>
-                  <div>
-                    <h3 class="font-bold text-base leading-tight">{{ 'DOWNLOAD.homeCard.title' | transloco }}</h3>
-                    <p class="text-xs text-base-content/60 mt-1 leading-snug">{{ 'DOWNLOAD.homeCard.description' | transloco }}</p>
-                  </div>
-                  <div class="flex gap-2 justify-center pt-1 opacity-50">
-                    <ion-icon name="logo-google-playstore" class="text-2xl"></ion-icon>
-                    <ion-icon name="logo-apple" class="text-2xl"></ion-icon>
-                  </div>
-                  <div class="badge badge-outline badge-sm mx-auto">{{ 'DOWNLOAD.homeCard.comingSoon' | transloco }}</div>
+          <!-- WEB: tarjeta próximamente en tiendas -->
+          <!-- Mobile -->
+          <div class="px-2 mt-4 mb-8 lg:hidden">
+            <div class="card bg-base-100 shadow-sm border border-base-200 text-center">
+              <div class="card-body p-5 space-y-3">
+                <div class="flex justify-center">
+                  <img src="assets/images/home_icon.png" alt="ChessColate" class="w-14 h-14 object-contain" />
                 </div>
+                <div>
+                  <h3 class="font-bold text-base leading-tight">{{ 'DOWNLOAD.homeCard.title' | transloco }}</h3>
+                  <p class="text-xs text-base-content/60 mt-1 leading-snug">{{ 'DOWNLOAD.homeCard.description' |
+                    transloco }}</p>
+                </div>
+                <div class="flex gap-2 justify-center pt-1 opacity-50">
+                  <ion-icon name="logo-google-playstore" class="text-2xl"></ion-icon>
+                  <ion-icon name="logo-apple" class="text-2xl"></ion-icon>
+                </div>
+                <div class="badge badge-outline badge-sm mx-auto">{{ 'DOWNLOAD.homeCard.comingSoon' | transloco }}</div>
               </div>
             </div>
-            <!-- Desktop -->
-            <div class="hidden lg:absolute lg:inset-0 lg:top-2 lg:flex lg:flex-col items-center justify-center gap-3 px-5 py-4 bg-base-100 rounded-xl shadow-sm border border-base-200 text-center">
-              <img src="assets/images/home_icon.png" alt="ChessColate" class="w-12 h-12 object-contain" />
-              <div>
-                <p class="font-bold text-base leading-tight mb-1">{{ 'DOWNLOAD.homeCard.title' | transloco }}</p>
-                <p class="text-sm text-base-content/70 leading-snug line-clamp-3">{{ 'DOWNLOAD.homeCard.description' | transloco }}</p>
-              </div>
-              <div class="flex gap-3 justify-center opacity-50">
-                <ion-icon name="logo-google-playstore" class="text-2xl"></ion-icon>
-                <ion-icon name="logo-apple" class="text-2xl"></ion-icon>
-              </div>
-              <div class="badge badge-outline badge-sm">{{ 'DOWNLOAD.homeCard.comingSoon' | transloco }}</div>
+          </div>
+          <!-- Desktop -->
+          <div
+            class="hidden lg:absolute lg:inset-0 lg:top-2 lg:flex lg:flex-col items-center justify-center gap-3 px-5 py-4 bg-base-100 rounded-xl shadow-sm border border-base-200 text-center">
+            <img src="assets/images/home_icon.png" alt="ChessColate" class="w-12 h-12 object-contain" />
+            <div>
+              <p class="font-bold text-base leading-tight mb-1">{{ 'DOWNLOAD.homeCard.title' | transloco }}</p>
+              <p class="text-sm text-base-content/70 leading-snug line-clamp-3">{{ 'DOWNLOAD.homeCard.description' |
+                transloco }}</p>
             </div>
+            <div class="flex gap-3 justify-center opacity-50">
+              <ion-icon name="logo-google-playstore" class="text-2xl"></ion-icon>
+              <ion-icon name="logo-apple" class="text-2xl"></ion-icon>
+            </div>
+            <div class="badge badge-outline badge-sm">{{ 'DOWNLOAD.homeCard.comingSoon' | transloco }}</div>
+          </div>
           }
 
         </div>
@@ -447,21 +485,24 @@
         <ion-content>
           <div data-theme="halloween" class="min-h-full bg-base-100 text-base-content flex flex-col">
             <div class="p-4 flex-1">
-            <!-- Modal Header -->
-            <div class="flex items-start justify-between mb-4 mt-2">
-              <div class="flex flex-col gap-1 pr-2">
-                <h2 class="text-2xl font-bold leading-tight text-base-content">{{ 'PLAN_PLAYED.statistics' | transloco }}</h2>
-                <span class="text-sm font-medium text-base-content/60">{{ 'PUZZLES.general.continuousTraining' | transloco }}</span>
-                <div class="text-lg mt-1">
-                  <span class="font-bold text-base-content">{{ 'PLAN_PLAYED.totalElo' | transloco }}: </span>
-                  <span class="font-bold text-primary">{{ infinityElo }}</span>
+              <!-- Modal Header -->
+              <div class="flex items-start justify-between mb-4 mt-2">
+                <div class="flex flex-col gap-1 pr-2">
+                  <h2 class="text-2xl font-bold leading-tight text-base-content">{{ 'PLAN_PLAYED.statistics' | transloco
+                    }}</h2>
+                  <span class="text-sm font-medium text-base-content/60">{{ 'PUZZLES.general.continuousTraining' |
+                    transloco }}</span>
+                  <div class="text-lg mt-1">
+                    <span class="font-bold text-base-content">{{ 'PLAN_PLAYED.totalElo' | transloco }}: </span>
+                    <span class="font-bold text-primary">{{ infinityElo }}</span>
+                  </div>
                 </div>
+                <button class="btn btn-sm btn-circle btn-ghost bg-base-200 flex-shrink-0 mt-1"
+                  (click)="isStatsModalOpen = false">
+                  <ion-icon name="close"></ion-icon>
+                </button>
               </div>
-              <button class="btn btn-sm btn-circle btn-ghost bg-base-200 flex-shrink-0 mt-1" (click)="isStatsModalOpen = false">
-                <ion-icon name="close"></ion-icon>
-              </button>
-            </div>
-            <app-plan-chart [plan]="infinityPlanProps" [showEloPlanHeader]="false"></app-plan-chart>
+              <app-plan-chart [plan]="infinityPlanProps" [showEloPlanHeader]="false"></app-plan-chart>
             </div>
           </div>
         </ion-content>
