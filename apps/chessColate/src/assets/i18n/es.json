@@ -232,7 +232,15 @@
       "increase": "Aumenta",
       "decrease": "Disminuye",
       "eloMin": "ELO mínimo",
-      "eloMax": "ELO máximo"
+      "eloMax": "ELO máximo",
+      "auto": "Automático",
+      "customElo": "ELO personalizado"
+    },
+    "color": {
+      "label": "Color",
+      "white": "Blancas",
+      "black": "Negras",
+      "random": "Aleatorio"
     },
     "actions": {
       "add": "Añadir"

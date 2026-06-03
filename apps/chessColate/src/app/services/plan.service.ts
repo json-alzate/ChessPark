@@ -46,7 +46,10 @@ export class PlanService {
       } else if (b.theme === 'all') {
         theme = this.blockService.getRandomTheme();
       }
-      const blockWithTheme = { ...b, theme, elo: eloBase };
+      const eloForBlock = (b.eloMin !== undefined && b.eloMax !== undefined)
+        ? b.eloMin + Math.floor(Math.random() * (b.eloMax - b.eloMin + 1))
+        : (planElos?.themes?.[theme] ?? planElos?.total ?? eloToStart);
+      const blockWithTheme = { ...b, theme, elo: eloForBlock };
       const puzzles = await this.blockService.getPuzzlesForBlock(blockWithTheme);
       blockUpdatedToAdd.push({
         ...blockWithTheme,

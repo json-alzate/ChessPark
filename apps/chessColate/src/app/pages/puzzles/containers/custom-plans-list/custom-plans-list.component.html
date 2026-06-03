@@ -179,9 +179,10 @@
 
   <!-- Botón crear — móvil (reemplaza ion-fab) -->
   @if (profile$ | async) {
-    <div class="fixed bottom-6 right-5 md:hidden z-50" data-theme="halloween">
+    <div class="fixed bottom-6 right-5 md:hidden z-50">
       <button
         type="button"
+        data-theme="halloween"
         class="btn btn-primary btn-circle btn-lg shadow-xl"
         (click)="goToCreate()"
         [attr.aria-label]="'CUSTOM_PLANS.create' | transloco"

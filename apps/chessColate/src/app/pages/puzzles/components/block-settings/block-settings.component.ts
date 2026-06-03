@@ -38,6 +38,7 @@ export class BlockSettingsComponent implements OnInit, AfterViewInit {
   private translocoService = inject(TranslocoService);
 
   color: 'white' | 'black' | 'random' = 'random';
+  useCustomElo = false;
   puzzlesGroupsThemes: PuzzleThemesGroup[] = [];
   form!: FormGroup;
 
@@ -161,19 +162,18 @@ export class BlockSettingsComponent implements OnInit, AfterViewInit {
   onSubmit(event: Event): void {
     event.preventDefault();
     if (this.form.invalid) return;
-    const val = this.form.getRawValue();
+    const { eloMin, eloMax, ...rest } = this.form.getRawValue();
     const newBlock: Block = {
-      ...val,
+      ...rest,
       color: this.color,
-      time: val.time === 0 ? -1 : val.time,
-      puzzlesCount: val.puzzlesCount ?? 0,
-      elo: Math.round((val.eloMin + val.eloMax) / 2),
-      eloMin: val.eloMin,
-      eloMax: val.eloMax,
+      time: rest.time === 0 ? -1 : rest.time,
+      puzzlesCount: rest.puzzlesCount ?? 0,
+      elo: this.useCustomElo ? Math.round((eloMin + eloMax) / 2) : 0,
+      ...(this.useCustomElo ? { eloMin, eloMax } : {}),
       puzzleTimes: {
-        total: val.puzzleTime,
-        warningOn: val.puzzleTime / 2,
-        dangerOn: val.puzzleTime / 4,
+        total: rest.puzzleTime,
+        warningOn: rest.puzzleTime / 2,
+        dangerOn: rest.puzzleTime / 4,
       },
       puzzlesPlayed: [],
     };

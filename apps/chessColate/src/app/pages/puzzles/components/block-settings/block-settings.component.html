@@ -163,65 +163,81 @@
           <div class="flex items-center justify-between pr-6">
             <span class="font-semibold">{{ 'NEW_BLOCK.theme.difficulty' | transloco }}</span>
             <span class="text-sm text-base-content/50">
-              ELO {{ eloMinField?.value }} – {{ eloMaxField?.value }}
+              @if (useCustomElo) {
+                ELO {{ eloMinField?.value }} – {{ eloMaxField?.value }}
+              } @else {
+                {{ 'NEW_BLOCK.difficulty.auto' | transloco }}
+              }
             </span>
           </div>
         </summary>
         <div class="collapse-content space-y-4 pt-2">
-          <div>
-            <div class="flex justify-between items-center mb-1">
-              <span class="text-sm font-medium">{{ 'NEW_BLOCK.difficulty.eloMin' | transloco }}</span>
-              <span class="text-sm text-base-content/50">{{ eloMinField?.value }}</span>
-            </div>
-            <input type="range" formControlName="eloMin" min="400" max="2800" step="100" class="range range-sm w-full" />
-            <div class="flex justify-between text-xs text-base-content/30 px-1 mt-1">
-              <span>400</span>
-              <span>1600</span>
-              <span>2800</span>
-            </div>
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-medium">{{ 'NEW_BLOCK.difficulty.customElo' | transloco }}</span>
+            <input type="checkbox" class="toggle toggle-sm" [checked]="useCustomElo" (change)="useCustomElo = !useCustomElo" />
           </div>
-          <div>
-            <div class="flex justify-between items-center mb-1">
-              <span class="text-sm font-medium">{{ 'NEW_BLOCK.difficulty.eloMax' | transloco }}</span>
-              <span class="text-sm text-base-content/50">{{ eloMaxField?.value }}</span>
+          @if (useCustomElo) {
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <span class="text-sm font-medium">{{ 'NEW_BLOCK.difficulty.eloMin' | transloco }}</span>
+                <span class="text-sm text-base-content/50">{{ eloMinField?.value }}</span>
+              </div>
+              <input type="range" formControlName="eloMin" min="400" max="2800" step="100" class="range range-sm w-full" />
+              <div class="flex justify-between text-xs text-base-content/30 px-1 mt-1">
+                <span>400</span>
+                <span>1600</span>
+                <span>2800</span>
+              </div>
             </div>
-            <input type="range" formControlName="eloMax" min="400" max="2800" step="100" class="range range-sm w-full" />
-            <div class="flex justify-between text-xs text-base-content/30 px-1 mt-1">
-              <span>400</span>
-              <span>1600</span>
-              <span>2800</span>
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <span class="text-sm font-medium">{{ 'NEW_BLOCK.difficulty.eloMax' | transloco }}</span>
+                <span class="text-sm text-base-content/50">{{ eloMaxField?.value }}</span>
+              </div>
+              <input type="range" formControlName="eloMax" min="400" max="2800" step="100" class="range range-sm w-full" />
+              <div class="flex justify-between text-xs text-base-content/30 px-1 mt-1">
+                <span>400</span>
+                <span>1600</span>
+                <span>2800</span>
+              </div>
             </div>
-          </div>
+          }
         </div>
       </details>
 
       <!-- Selector de color -->
-      <div class="grid grid-cols-3 gap-2 pt-2">
-        <button type="button"
-          class="btn"
-          [class.btn-primary]="color === 'white'"
-          [class.btn-outline]="color !== 'white'"
-          (click)="color = 'white'">
-          <img src="assets/images/king-white.svg" class="h-6 w-6" alt="" />
-        </button>
-        <button type="button"
-          class="btn"
-          [class.btn-primary]="color === 'random'"
-          [class.btn-outline]="color !== 'random'"
-          (click)="color = 'random'">
-          <ion-icon name="shuffle" class="text-lg"></ion-icon>
-        </button>
-        <button type="button"
-          class="btn"
-          [class.btn-primary]="color === 'black'"
-          [class.btn-outline]="color !== 'black'"
-          (click)="color = 'black'">
-          <img src="assets/images/king-black.svg" class="h-6 w-6" alt="" />
-        </button>
+      <div class="space-y-2 pt-1">
+        <span class="text-sm font-semibold">{{ 'NEW_BLOCK.color.label' | transloco }}</span>
+        <div class="grid grid-cols-3 gap-2">
+          <button type="button"
+            class="btn flex-col gap-1 h-auto py-3"
+            [class.btn-primary]="color === 'white'"
+            [class.btn-outline]="color !== 'white'"
+            (click)="color = 'white'">
+            <img src="assets/images/king-white.svg" class="h-6 w-6" alt="" />
+            <span class="text-xs font-medium">{{ 'NEW_BLOCK.color.white' | transloco }}</span>
+          </button>
+          <button type="button"
+            class="btn flex-col gap-1 h-auto py-3"
+            [class.btn-neutral]="color === 'random'"
+            [class.btn-outline]="color !== 'random'"
+            (click)="color = 'random'">
+            <ion-icon name="shuffle" class="text-lg"></ion-icon>
+            <span class="text-xs font-medium">{{ 'NEW_BLOCK.color.random' | transloco }}</span>
+          </button>
+          <button type="button"
+            class="btn flex-col gap-1 h-auto py-3"
+            [class.btn-primary]="color === 'black'"
+            [class.btn-outline]="color !== 'black'"
+            (click)="color = 'black'">
+            <img src="assets/images/king-black.svg" class="h-6 w-6" alt="" />
+            <span class="text-xs font-medium">{{ 'NEW_BLOCK.color.black' | transloco }}</span>
+          </button>
+        </div>
       </div>
 
       <!-- Agregar bloque -->
-      <button type="submit" [disabled]="!form.valid" class="btn btn-primary btn-block">
+      <button type="submit" [disabled]="!form.valid" class="btn btn-primary btn-block mt-4">
         {{ 'NEW_BLOCK.actions.add' | transloco }}
       </button>
 
