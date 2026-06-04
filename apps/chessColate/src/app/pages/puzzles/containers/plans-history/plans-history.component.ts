@@ -95,7 +95,7 @@ export class PlansHistoryComponent implements OnInit, OnDestroy {
   loadPlans(): void {
     this.isLoading = true;
     try {
-      this.plans = this.planStorageService.getAllPlans();
+      this.plans = this.planStorageService.getAllPlans().filter(p => p.planType !== 'reto333');
       this.groupPlansByDate();
       this.calculateStreak();
     } catch (error) {
