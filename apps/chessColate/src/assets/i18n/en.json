@@ -292,7 +292,10 @@
     "successRate": "Success rate",
     "streak": "Streak",
     "days": "days",
-    "day": "day"
+    "day": "day",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "daysAgo": "{{ days }} days ago"
   },
   "CUSTOM_PLANS": {
     "listTitle": "Custom routines",

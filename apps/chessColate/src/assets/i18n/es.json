@@ -292,7 +292,10 @@
     "successRate": "Tasa de aciertos",
     "streak": "Racha",
     "days": "días",
-    "day": "día"
+    "day": "día",
+    "today": "Hoy",
+    "yesterday": "Ayer",
+    "daysAgo": "Hace {{ days }} días"
   },
   "CUSTOM_PLANS": {
     "listTitle": "Rutinas personalizadas",
