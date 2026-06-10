@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "798600509062-7spqjugvu6a6tt6oh3n10qdpg63cp6q3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jheison.chesscolate",
+            "certificate_hash": "5f156aa246c09bac014424b50c2d1f54ef047cbf"
+          }
+        },
+        {
           "client_id": "798600509062-a1mdvrcbfg9brjudlu1mh64bkl0ehioo.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -46,6 +54,14 @@
           }
         },
         {
+          "client_id": "798600509062-pbr3dch25avhv9d2ir7brdfg1h2sfu2v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jheison.chesscolate",
+            "certificate_hash": "956d48ea87e03e6a0a8e987e3cca17f8bb52da65"
+          }
+        },
+        {
           "client_id": "798600509062-1hrnp7meoueqo1v0lipqdnrqpjln44nv.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -63,7 +79,7 @@
               "client_type": 3
             },
             {
-              "client_id": "798600509062-q6h0n9urq24g7a2v25vnfg1kev96pkov.apps.googleusercontent.com",
+              "client_id": "798600509062-jiikqq641rlaqhhn41ico07k954phqqj.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
                 "bundle_id": "com.jheison.chesscolate"
