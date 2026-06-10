@@ -257,6 +257,7 @@
   },
   "PLAN_PLAYED": {
     "totalElo": "ELO Total",
+    "loginToSeeElo": "Inicia sesión para ver tu ELO",
     "record": "Récord",
     "puzzlesPlayed": "Ejercicios jugados",
     "statistics": "Estadísticas de la rutina",

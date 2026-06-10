@@ -257,6 +257,7 @@
   },
   "PLAN_PLAYED": {
     "totalElo": "Total ELO",
+    "loginToSeeElo": "Log in to see your ELO",
     "record": "Record",
     "puzzlesPlayed": "Puzzles played",
     "statistics": "Statistics of the routine",
@@ -357,7 +358,8 @@
       "points": "points",
       "beatRecord": "Beat your record!",
       "firstTime": "First time",
-      "setRecord": "Set your record!"
+      "setRecord": "Set your record!",
+      "infinite": "Infinite Mode"
     },
     "stats": {
       "correct": "Correct",
@@ -371,6 +373,7 @@
     "results": {
       "title": "Game Result",
       "newRecord": "NEW RECORD!",
+      "newRecordShort": "New RECORD with",
       "finalScore": "Final Score",
       "congratulations": "Congratulations!",
       "doubleRecord": "You achieved a DOUBLE RECORD playing with",

@@ -151,7 +151,7 @@
                             } @else if (config.type === 'puzzles') {
                             <span>{{ config.puzzles }} {{ 'NEW_BLOCK.fields.puzzles' | transloco }}</span>
                             } @else if (config.type === 'both') {
-                            <span>{{ (config.time ?? 0) | secondsToMinutesSeconds }} {{ 'NEW_BLOCK.or' | transloco }} {{
+                            <span>{{ (config.time ?? 0) | secondsToMinutesSeconds }} {{ 'NEW_BLOCK.form.or' | transloco }} {{
                               config.puzzles }} {{ 'NEW_BLOCK.fields.puzzles' | transloco }}</span>
                             } @else {
                             <ion-icon name="infinite-outline" class="h-4 w-4"></ion-icon>
