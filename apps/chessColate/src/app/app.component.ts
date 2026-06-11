@@ -236,8 +236,9 @@ export class AppComponent implements OnInit, OnDestroy {
     // Inicializar Firestore
     await this.firestoreService.init();
 
-    // Inicializar RevenueCat (solo en plataformas nativas)
-    await this.initRevenueCat();
+    // Inicializar RevenueCat en segundo plano: no debe bloquear el ocultado
+    // del splash ni la carga del home (el SDK nativo tarda en responder)
+    this.initRevenueCat();
 
     // Escuchar el estado del usuario - login/logout
     this.authService
