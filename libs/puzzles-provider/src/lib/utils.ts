@@ -140,6 +140,26 @@ export function generateEloSequenceInRange(eloMin: number, eloMax: number): numb
 }
 
 /**
+ * Filtra una secuencia de ELOs dejando solo aquellos cuyo rango de archivo existe
+ * realmente, según el conjunto de "starts" válidos del manifiesto.
+ *
+ * Aplica el mismo floor que `getEloRange`, de modo que el start filtrado coincide
+ * exactamente con el nombre del archivo en el repositorio. Evita pedir URLs 404.
+ *
+ * Si `validStarts` es `undefined` (tema/apertura inexistente en el manifiesto),
+ * devuelve un arreglo vacío: no hay nada que pedir.
+ */
+export function filterEloSequenceByManifest(
+  sequence: number[],
+  validStarts: Set<number> | undefined
+): number[] {
+  if (!validStarts) return [];
+  return sequence.filter((elo) =>
+    validStarts.has(Math.floor(elo / ELO_CONSTANTS.ELO_STEP) * ELO_CONSTANTS.ELO_STEP)
+  );
+}
+
+/**
  * Limita el número de puzzles según el máximo permitido
  */
 export function limitPuzzleCount(count?: number): number {

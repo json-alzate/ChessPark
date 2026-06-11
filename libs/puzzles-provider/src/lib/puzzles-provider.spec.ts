@@ -1,5 +1,5 @@
 import { PuzzlesProvider, createPuzzlesProvider } from './puzzles-provider';
-import { ELO_CONSTANTS } from './constants';
+import { getValidEloStarts } from './manifest';
 import { Puzzle } from './types';
 
 // Mock de fetch global
@@ -38,7 +38,7 @@ describe('PuzzlesProvider', () => {
   });
 
   describe('getPuzzles', () => {
-    const mockPuzzles: Puzzle[] = [
+    const mockPuzzles: Partial<Puzzle>[] = [
       {
         uid: '00001',
         fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
@@ -65,7 +65,7 @@ describe('PuzzlesProvider', () => {
 
     it('debe obtener puzzles con opciones por defecto', async () => {
       await provider.init();
-      const puzzles = await provider.getPuzzles();
+      const puzzles = await provider.getPuzzles({ elo: 1500 });
 
       expect(puzzles).toBeDefined();
       expect(Array.isArray(puzzles)).toBe(true);
@@ -81,7 +81,8 @@ describe('PuzzlesProvider', () => {
 
     it('debe normalizar ELO menor al mínimo', async () => {
       await provider.init();
-      const puzzles = await provider.getPuzzles({ elo: 100 });
+      // 'fork' existe en todo el rango 400-2800 en el manifiesto
+      const puzzles = await provider.getPuzzles({ elo: 100, theme: 'fork' });
 
       expect(puzzles).toBeDefined();
       // Debería usar ELO_CONSTANTS.MIN_ELO (400)
@@ -91,7 +92,8 @@ describe('PuzzlesProvider', () => {
 
     it('debe normalizar ELO mayor al máximo', async () => {
       await provider.init();
-      const puzzles = await provider.getPuzzles({ elo: 3000 });
+      // 'fork' existe en todo el rango 400-2800 en el manifiesto
+      const puzzles = await provider.getPuzzles({ elo: 3000, theme: 'fork' });
 
       expect(puzzles).toBeDefined();
       // Debería usar ELO_CONSTANTS.MAX_ELO (2800)
@@ -101,14 +103,14 @@ describe('PuzzlesProvider', () => {
 
     it('debe limitar la cantidad de puzzles al máximo permitido', async () => {
       await provider.init();
-      const puzzles = await provider.getPuzzles({ count: 500 });
+      const puzzles = await provider.getPuzzles({ count: 500, elo: 1500 });
 
       // No debe devolver más de 200 (MAX_PUZZLE_COUNT)
       expect(puzzles.length).toBeLessThanOrEqual(200);
     });
 
     it('debe filtrar por color cuando se especifica', async () => {
-      const mockPuzzlesWithColor: Puzzle[] = [
+      const mockPuzzlesWithColor: Partial<Puzzle>[] = [
         {
           uid: '00001',
           fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
@@ -168,7 +170,7 @@ describe('PuzzlesProvider', () => {
 
     it('debe elegir un tema aleatorio si no se especifica tema ni apertura', async () => {
       await provider.init();
-      await provider.getPuzzles();
+      await provider.getPuzzles({ elo: 1500 });
 
       // Verificar que se hizo una llamada a fetch con algún tema
       expect(fetch).toHaveBeenCalled();
@@ -177,7 +179,7 @@ describe('PuzzlesProvider', () => {
     });
 
     it('debe procesar múltiples ELOs en paralelo usando batches', async () => {
-      const mockPuzzlesBatch: Puzzle[] = Array.from({ length: 10 }, (_, i) => ({
+      const mockPuzzlesBatch: Partial<Puzzle>[] = Array.from({ length: 10 }, (_, i) => ({
         uid: `0000${i}`,
         fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
         moves: 'e2e4 e7e5',
@@ -265,6 +267,56 @@ describe('PuzzlesProvider', () => {
       expect(callOrder.length).toBeGreaterThan(1);
 
       providerWithBatch.close();
+    });
+  });
+
+  describe('filtrado por manifiesto', () => {
+    beforeEach(() => {
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => [],
+      });
+    });
+
+    it('no debe pedir nada si el tema no existe en el manifiesto', async () => {
+      await provider.init();
+      const puzzles = await provider.getPuzzles({
+        elo: 1500,
+        theme: 'tema_inexistente_xyz',
+      });
+
+      expect(puzzles).toEqual([]);
+      expect(fetch).not.toHaveBeenCalled();
+    });
+
+    it('no debe pedir nada si la apertura no existe en el manifiesto', async () => {
+      await provider.init();
+      const puzzles = await provider.getPuzzles({
+        elo: 1500,
+        openingFamily: 'Apertura_Inexistente_XYZ',
+      });
+
+      expect(puzzles).toEqual([]);
+      expect(fetch).not.toHaveBeenCalled();
+    });
+
+    it('solo debe pedir URLs cuyo rango de ELO existe para el tema', async () => {
+      await provider.init();
+      await provider.getPuzzles({ elo: 1500, theme: 'fork', count: 200 });
+
+      const validStarts = getValidEloStarts('fork');
+      expect(validStarts).toBeDefined();
+
+      const fetchCalls = (global.fetch as jest.Mock).mock.calls;
+      expect(fetchCalls.length).toBeGreaterThan(0);
+      // Cada URL pedida debe corresponder a un ELO start presente en el manifiesto
+      fetchCalls.forEach((call) => {
+        const match = (call[0] as string).match(/_(\d+)_\d+\.json$/);
+        expect(match).not.toBeNull();
+        const start = parseInt(match![1], 10);
+        expect(validStarts!.has(start)).toBe(true);
+      });
     });
   });
 
