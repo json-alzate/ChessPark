@@ -99,6 +99,11 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
   isPlaying = false;
 
   currentMoveNumber = 0;
+  // Token de identidad por puzzle: se incrementa en cada stopTimer() (cambio/parada
+  // de puzzle). Las tareas async capturan su valor al entrar y abortan tras cada
+  // await si ya no coincide, evitando que un callback de un puzzle anterior mute el
+  // estado del puzzle actual (causa del desfase de currentMoveNumber en plan30).
+  private puzzleGenerationId = 0;
   arrayFenSolution: string[] = [];
   arrayMovesSolution: string[] = [];
   totalMoves = 0;
@@ -198,6 +203,11 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
         this.renderer.setStyle(pieces[0], 'opacity', '1');
       }
       this.board.setPosition(this.puzzle.fen);
+      // Garantizar que el input quede habilitado para el puzzle nuevo: un
+      // startStreamSolution() interrumpido pudo dejar el tablero con
+      // disableMoveInput() y "pegado". Es idempotente.
+      this.board.disableMoveInput();
+      this.board.enableMoveInput(this.handleMoveInput);
     } else {
       await this.buildBoard(this.puzzle.fen);
     }
@@ -210,6 +220,9 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
     // eslint-disable-next-line max-len
     this.currentMoveNumber = 0;
     this.allowMoveArrows = false;
+    // Si un stream de solución quedó interrumpido por el cambio de puzzle, este
+    // reset evita que el componente quede bloqueado y desbloquea triggerStreamSolution.
+    this.isStreaming = false;
 
     this.arrayFenSolution = [];
     // se construye un arreglo con los fen de la solución
@@ -270,9 +283,14 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
 
     console.log('buildBoard', fen);
 
-    this.board.enableMoveInput((event) => {
-      // handle user input here
-      switch (event.type) {
+    this.board.enableMoveInput(this.handleMoveInput);
+  }
+
+  // Handler de input del tablero extraído a propiedad de clase (arrow para
+  // preservar `this`) para poder rehabilitarlo desde initPuzzle() tras un stream.
+  private handleMoveInput = (event: any) => {
+    // handle user input here
+    switch (event.type) {
         case 'moveInputStarted':
           this.board.removeMarkers();
           this.showLastMove();
@@ -422,9 +440,10 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
         default:
           return true;
       }
-    });
+  };
 
-    // let startSquare;
+  // Código de enableSquareSelect deshabilitado; se conserva como referencia.
+  // let startSquare;
     // let endSquare;
     // this.board.enableSquareSelect((event) => {
 
@@ -500,7 +519,6 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
 
     //   }
     // });
-  }
 
   removeMarkerNotLastMove(square?: string) {
     let markersToProcess: { type: any; square?: string }[] = [];
@@ -636,6 +654,11 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   stopTimer() {
+    // Invalida cualquier tarea async pendiente del puzzle/estado anterior
+    // (puzzleMoveResponse, startStreamSolution). stopTimer() es el único punto de
+    // parada universal (lo llaman setPuzzle, fallo, timeout, completado y
+    // setForceStopTimer), por lo que es el choke point correcto para el token.
+    this.puzzleGenerationId++;
     this.subsSeconds = undefined as any;
     if (this.timerUnsubscribe$) {
       this.timerUnsubscribe$.next();
@@ -644,6 +667,11 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
     // Resetear el progreso suave
     this.smoothProgress = 0;
     this.timerStartTime = 0;
+  }
+
+  /** Promesa que resuelve tras `ms` milisegundos (reemplaza los setTimeout inline). */
+  private delay(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   validateMove() {
@@ -696,6 +724,9 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
    * @param moveNumber: number
    */
   async puzzleMoveResponse() {
+    // Identidad del puzzle en el momento de invocar; si cambia durante el delay
+    // significa que entró otro puzzle y este callback debe descartarse.
+    const gen = this.puzzleGenerationId;
     this.currentMoveNumber++;
 
     if (this.arrayFenSolution.length === this.currentMoveNumber) {
@@ -713,9 +744,11 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
       this.stopTimer();
       this.isPlaying = false;
     } else {
-      await new Promise<void>((resolve, reject) => {
-        setTimeout(() => resolve(), 500);
-      });
+      await this.delay(500);
+      // Si entró otro puzzle durante el delay, abortar sin tocar el estado nuevo.
+      if (gen !== this.puzzleGenerationId) {
+        return;
+      }
 
       this.chessInstance.load(this.arrayFenSolution[this.currentMoveNumber]);
       const fen = this.chessInstance.fen();
@@ -728,6 +761,9 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
       this.board.removeArrows();
 
       await this.board.setPosition(fen, true);
+      if (gen !== this.puzzleGenerationId) {
+        return;
+      }
       const from = this.arrayMovesSolution[this.currentMoveNumber - 1].slice(
         0,
         2
@@ -741,16 +777,25 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async startStreamSolution() {
+    // Identidad del puzzle; si cambia durante la animación (entró otro puzzle),
+    // se corta el bucle. initPuzzle() rehabilita el input del puzzle nuevo.
+    const gen = this.puzzleGenerationId;
     this.isStreaming = true;
     this.board.disableMoveInput();
 
     // Reset board to the correct position at currentMoveNumber (handles both fail and timeOut)
     await this.board.setPosition(this.arrayFenSolution[this.currentMoveNumber], false);
-    await new Promise<void>((resolve) => setTimeout(resolve, 600));
+    await this.delay(600);
+    if (gen !== this.puzzleGenerationId) {
+      return;
+    }
 
     for (let i = this.currentMoveNumber + 1; i < this.arrayFenSolution.length; i++) {
       const prevFen = this.arrayFenSolution[i - 1];
       await this.board.setPosition(this.arrayFenSolution[i], true);
+      if (gen !== this.puzzleGenerationId) {
+        return;
+      }
       this.soundsService.determineChessMoveType(prevFen, this.arrayFenSolution[i]);
 
       const moveStr = this.arrayMovesSolution[i];
@@ -758,11 +803,17 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
         this.showLastMove(moveStr.slice(0, 2), moveStr.slice(2, 4));
       }
 
-      await new Promise<void>((resolve) => setTimeout(resolve, 1000));
+      await this.delay(1000);
+      if (gen !== this.puzzleGenerationId) {
+        return;
+      }
     }
 
     this.isStreaming = false;
-    await new Promise<void>((resolve) => setTimeout(resolve, 800));
+    await this.delay(800);
+    if (gen !== this.puzzleGenerationId) {
+      return;
+    }
     this.streamSolutionFinished.emit();
   }
 
