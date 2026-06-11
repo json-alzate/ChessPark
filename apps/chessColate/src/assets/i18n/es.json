@@ -380,6 +380,8 @@
       "overallRecord": "¡Nuevo RÉCORD GENERAL jugando con",
       "colorRecord": "¡Nuevo RÉCORD jugando con",
       "goodGame": "Buen juego",
+      "recordTied": "¡Récord igualado!",
+      "tiedRecordWith": "Igualaste tu mejor puntaje con",
       "bestScoreWith": "Tu mejor puntaje con",
       "is": "es",
       "continue": "Continuar"

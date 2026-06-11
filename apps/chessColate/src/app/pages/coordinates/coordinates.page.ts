@@ -117,6 +117,7 @@ export class CoordinatesPage {
 
   // Modal de resultados
   isNewRecord = false;
+  isTiedRecord = false;
   recordType: 'color' | 'overall' | 'both' | null = null;
 
   // Mejores puntajes
@@ -466,6 +467,7 @@ export class CoordinatesPage {
     const currentBestScoreOverall = this.userStats.bestScore;
 
     this.isNewRecord = false;
+    this.isTiedRecord = false;
     this.recordType = null;
 
     // Verificar si es nuevo récord por color
@@ -478,6 +480,15 @@ export class CoordinatesPage {
     if (newScore > currentBestScoreOverall) {
       this.isNewRecord = true;
       this.recordType = this.recordType === 'color' ? 'both' : 'overall';
+    }
+
+    // Si no superó el récord pero igualó el mejor puntaje por color
+    if (
+      !this.isNewRecord &&
+      newScore > 0 &&
+      newScore === currentBestScoreByColor
+    ) {
+      this.isTiedRecord = true;
     }
 
     if (this.isNewRecord && this.recordType) {

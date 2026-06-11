@@ -22,6 +22,11 @@
                                     <ion-icon name="trophy"></ion-icon>
                                     NEW
                                 </div>
+                            } @else if (isTiedRecord) {
+                                <div class="badge badge-info p-3 h-auto font-black shadow-lg animate-bounce gap-1">
+                                    <ion-icon name="medal"></ion-icon>
+                                    =
+                                </div>
                             }
                         </div>
 
@@ -64,15 +69,23 @@
                     <div class="card-body p-5">
                         <div class="flex items-center gap-4">
                             <div class="w-12 h-12 rounded-2xl bg-primary/20 flex items-center justify-center text-primary text-2xl">
-                                <ion-icon [name]="isNewRecord ? 'trophy' : 'medal'"></ion-icon>
+                                <ion-icon [name]="isNewRecord ? 'trophy' : (isTiedRecord ? 'medal' : 'medal')"></ion-icon>
                             </div>
                             <div class="flex-1">
                                 <h3 class="font-bold text-sm">
-                                    {{ isNewRecord ? ('COORDINATES.results.congratulations' | transloco) : ('COORDINATES.results.goodGame' | transloco) }}
+                                    @if (isNewRecord) {
+                                        {{ 'COORDINATES.results.congratulations' | transloco }}
+                                    } @else if (isTiedRecord) {
+                                        {{ 'COORDINATES.results.recordTied' | transloco }}
+                                    } @else {
+                                        {{ 'COORDINATES.results.goodGame' | transloco }}
+                                    }
                                 </h3>
                                 <p class="text-xs opacity-70">
                                     @if (isNewRecord) {
                                         {{ 'COORDINATES.results.newRecordShort' | transloco }} {{ currentColorInBoard === 'white' ? ('COORDINATES.game.whites' | transloco) : ('COORDINATES.game.blacks' | transloco) }}: {{ score }}!
+                                    } @else if (isTiedRecord) {
+                                        {{ 'COORDINATES.results.tiedRecordWith' | transloco }} {{ currentColorInBoard === 'white' ? ('COORDINATES.game.whites' | transloco) : ('COORDINATES.game.blacks' | transloco) }}: <span class="font-black text-primary">{{ score }}</span>!
                                     } @else {
                                         {{ 'COORDINATES.results.bestScoreWith' | transloco }} {{ currentColorInBoard === 'white' ? ('COORDINATES.game.whites' | transloco) : ('COORDINATES.game.blacks' | transloco) }} {{ 'COORDINATES.results.is' | transloco }} <span class="font-black text-primary">{{ bestScoreByColor }}</span>.
                                     }

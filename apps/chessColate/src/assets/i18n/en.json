@@ -380,6 +380,8 @@
       "overallRecord": "New OVERALL RECORD playing with",
       "colorRecord": "New RECORD playing with",
       "goodGame": "Good game",
+      "recordTied": "Record tied!",
+      "tiedRecordWith": "You matched your best with",
       "bestScoreWith": "Your best score with",
       "is": "is",
       "continue": "Continue"

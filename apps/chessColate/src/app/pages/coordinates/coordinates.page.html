@@ -88,7 +88,7 @@
   </div>
 
   <!-- Modal de Resultados -->
-  <app-game-results-modal #resultsModal [isNewRecord]="isNewRecord" [recordType]="recordType" [score]="score"
+  <app-game-results-modal #resultsModal [isNewRecord]="isNewRecord" [isTiedRecord]="isTiedRecord" [recordType]="recordType" [score]="score"
     [squaresGood]="squaresGood" [squaresBad]="squaresBad" [currentColorInBoard]="currentColorInBoard"
     [currentGameStats]="currentGameStats"
     [bestScoreByColor]="getBestScoreByColor(currentColorInBoard === 'white' ? 'w' : 'b')"
