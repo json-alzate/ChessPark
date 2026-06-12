@@ -1,8 +1,8 @@
-<ion-modal #resultsModal [initialBreakpoint]="0.8" [breakpoints]="[0, 0.8]" handleBehavior="cycle" class="results-modal">
+<ion-modal #resultsModal class="results-modal">
     <ng-template>
 
         <ion-content class="bg-base-200">
-            <div class="px-4 py-8 space-y-6" data-theme="halloween">
+            <div class="min-h-full flex flex-col justify-center px-4 py-8 space-y-6" data-theme="halloween">
                 
                 <!-- Main Header Card / Score -->
                 <div class="card bg-base-100 shadow-xl border border-base-content/5 overflow-hidden">
@@ -50,17 +50,17 @@
 
                 <!-- Stats Grid -->
                 <div class="grid grid-cols-3 gap-3">
-                    <div class="p-4 rounded-3xl bg-base-100 shadow-sm border border-base-content/5 flex flex-col items-center justify-center text-center">
+                    <div class="p-4 rounded-3xl bg-success/10 shadow-sm border border-success/20 flex flex-col items-center justify-center text-center">
                         <span class="text-xl font-black text-success">{{ squaresGood.length }}</span>
-                        <span class="text-[9px] uppercase font-bold text-base-content/30 mt-1">{{ 'COORDINATES.stats.correct' | transloco }}</span>
+                        <span class="text-[9px] uppercase font-bold text-base-content/40 mt-1">{{ 'COORDINATES.stats.correct' | transloco }}</span>
                     </div>
-                    <div class="p-4 rounded-3xl bg-base-100 shadow-sm border border-base-content/5 flex flex-col items-center justify-center text-center">
+                    <div class="p-4 rounded-3xl bg-error/10 shadow-sm border border-error/20 flex flex-col items-center justify-center text-center">
                         <span class="text-xl font-black text-error">{{ squaresBad.length }}</span>
-                        <span class="text-[9px] uppercase font-bold text-base-content/30 mt-1">{{ 'COORDINATES.stats.errors' | transloco }}</span>
+                        <span class="text-[9px] uppercase font-bold text-base-content/40 mt-1">{{ 'COORDINATES.stats.errors' | transloco }}</span>
                     </div>
-                    <div class="p-4 rounded-3xl bg-base-100 shadow-sm border border-base-content/5 flex flex-col items-center justify-center text-center">
-                        <span class="text-xl font-black text-info">{{ currentGameStats.accuracy | number:'1.0-0' }}%</span>
-                        <span class="text-[9px] uppercase font-bold text-base-content/30 mt-1">{{ 'COORDINATES.stats.accuracy' | transloco }}</span>
+                    <div class="p-4 rounded-3xl bg-primary/10 shadow-sm border border-primary/20 flex flex-col items-center justify-center text-center">
+                        <span class="text-xl font-black text-primary">{{ currentGameStats.accuracy | number:'1.0-0' }}%</span>
+                        <span class="text-[9px] uppercase font-bold text-base-content/40 mt-1">{{ 'COORDINATES.stats.accuracy' | transloco }}</span>
                     </div>
                 </div>
 
