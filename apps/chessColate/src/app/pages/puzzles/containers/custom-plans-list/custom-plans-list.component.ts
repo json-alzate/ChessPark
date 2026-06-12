@@ -144,7 +144,7 @@ export class CustomPlansListComponent implements OnInit, OnDestroy {
     }
 
     const loader = await this.loadingController.create({
-      message: 'Cargando puzzles...',
+      message: this.translocoService.translate('PUZZLES.loader.loadingPuzzles'),
     });
     await loader.present();
 
@@ -153,7 +153,10 @@ export class CustomPlansListComponent implements OnInit, OnDestroy {
         plan,
         eloToStart,
         (loaded, total) => {
-          loader.message = `Cargando puzzles... ${loaded}/${total}`;
+          loader.message = this.translocoService.translate(
+            'PUZZLES.loader.loadingPuzzlesProgress',
+            { loaded, total }
+          );
         }
       );
       await loader.dismiss();

@@ -8,7 +8,7 @@ import {
   IonIcon,
 } from '@ionic/angular/standalone';
 
-import { TranslocoPipe } from '@jsverse/transloco';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
 import { Plan, Puzzle, UserPuzzle, Block } from '@cpark/models';
 import { PlanFacadeService, PublicPlansFacadeService } from '@cpark/state';
@@ -73,6 +73,7 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
   private planStorageService = inject(PlanStorageService);
   private loadingController = inject(LoadingController);
   private confettiService = inject(ConfettiService);
+  private translocoService = inject(TranslocoService);
 
   plan: Plan | null = null;
   puzzlesPerPage = 4;
@@ -390,7 +391,7 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
 
     this.isLoadingToPlay = true;
     const loader = await this.loadingController.create({
-      message: 'Preparando rutina...',
+      message: this.translocoService.translate('PUZZLES.loader.preparingRoutine'),
     });
     await loader.present();
 
@@ -417,7 +418,10 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
           loaded++;
 
           if (loader) {
-            loader.message = `Cargando puzzles... ${loaded}/${total}`;
+            loader.message = this.translocoService.translate(
+              'PUZZLES.loader.loadingPuzzlesProgress',
+              { loaded, total }
+            );
           }
 
           return block;

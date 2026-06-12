@@ -115,6 +115,12 @@
       "trainNow": "Entrenar ahora",
       "anyTheme": "¡No sabes qué esperar!"
     },
+    "loader": {
+      "creatingRoutine": "Creando rutina...",
+      "preparingRoutine": "Preparando rutina...",
+      "loadingPuzzles": "Cargando ejercicios...",
+      "loadingPuzzlesProgress": "Cargando ejercicios... {{loaded}}/{{total}}"
+    },
     "colors": {
       "white": "Blancas",
       "black": "Negras",
@@ -436,7 +442,8 @@
       "solution": "Ver la solución",
       "playAndClose": "Reproducir y cerrar",
       "playing": "Reproduciendo...",
-      "closing": "Cerrando..."
+      "closing": "Cerrando...",
+      "close": "Cerrar"
     },
     "themes": "Temas"
   },

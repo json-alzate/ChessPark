@@ -20,6 +20,7 @@ import { addIcons } from 'ionicons';
 import { timerOutline } from 'ionicons/icons';
 import { Block, Plan, PlanTypes } from '@cpark/models';
 import { Router } from '@angular/router';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-training-menu',
@@ -34,6 +35,7 @@ export class TrainingMenuComponent implements OnInit, OnDestroy {
   private profileService = inject(ProfileService);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
+  private translocoService = inject(TranslocoService);
   private destroy$ = new Subject<void>();
 
   constructor(private loadingController: LoadingController) {
@@ -83,7 +85,7 @@ export class TrainingMenuComponent implements OnInit, OnDestroy {
     const planType = `plan${planNumber}` as PlanTypes;
 
     const loader = await this.loadingController.create({
-      message: 'Creando plan...',
+      message: this.translocoService.translate('PUZZLES.loader.creatingRoutine'),
     });
     await loader.present();
 
@@ -101,7 +103,10 @@ export class TrainingMenuComponent implements OnInit, OnDestroy {
 
         // Actualizar el mensaje de progreso
         if (loader) {
-          loader.message = `Cargando puzzles... ${loaded}/${total}`;
+          loader.message = this.translocoService.translate(
+            'PUZZLES.loader.loadingPuzzlesProgress',
+            { loaded, total }
+          );
         }
 
         return block;

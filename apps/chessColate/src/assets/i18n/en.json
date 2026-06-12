@@ -115,6 +115,12 @@
       "trainNow": "Train now",
       "anyTheme": "You never know what to expect!"
     },
+    "loader": {
+      "creatingRoutine": "Creating routine...",
+      "preparingRoutine": "Preparing routine...",
+      "loadingPuzzles": "Loading puzzles...",
+      "loadingPuzzlesProgress": "Loading puzzles... {{loaded}}/{{total}}"
+    },
     "colors": {
       "white": "White",
       "black": "Black",
@@ -436,7 +442,8 @@
       "solution": "See the solution",
       "playAndClose": "Play and close",
       "playing": "Playing...",
-      "closing": "Closing..."
+      "closing": "Closing...",
+      "close": "Close"
     },
     "themes": "Themes"
   },
