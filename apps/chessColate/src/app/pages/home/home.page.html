@@ -12,7 +12,7 @@
         El grid equaliza la altura de cada fila, alineando menú y tarjeta perfectamente.
         En mobile: 1 columna, orden HTML (menú → botones+reto → puzzle → donación).
       -->
-      <div class="grid grid-cols-1 lg:grid-cols-[5fr_4fr] lg:gap-x-3 lg:gap-y-2 lg:px-6 lg:mt-2">
+      <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-[5fr_4fr] lg:gap-x-3 lg:gap-y-2 lg:px-4 xl:px-6 lg:mt-2">
 
         <!-- ===== CELDA 1: Menú de entrenamiento (desktop: row1 col1) ===== -->
         <div class="order-1 lg:col-start-1 lg:row-start-1">
@@ -74,11 +74,12 @@
         <div class="order-3 lg:col-start-1 lg:row-start-2">
           @if (isInitialized) {
           <div>
-            <div class="hidden lg:grid lg:grid-cols-3 lg:gap-3 lg:mt-2 lg:mb-2">
-              <a class="btn btn-sm btn-soft btn-primary lg:col-span-1" [routerLink]="['/puzzles/custom-plans']">{{
+            <div class="hidden lg:grid lg:grid-cols-2 xl:grid-cols-3 lg:gap-3 lg:mt-2 lg:mb-2">
+              <a class="btn btn-sm btn-soft btn-primary text-xs xl:text-sm whitespace-nowrap lg:col-span-1"
+                [routerLink]="['/puzzles/custom-plans']">{{
                 'CUSTOM_PLANS.listTitle' |
                 transloco }}</a>
-              <a class="btn btn-sm btn-soft btn-primary lg:flex-none lg:col-span-2"
+              <a class="btn btn-sm btn-soft btn-primary text-xs xl:text-sm whitespace-nowrap lg:flex-none lg:col-span-1 xl:col-span-2"
                 [routerLink]="['/puzzles/public-plans']">{{
                 'PUBLIC_PLANS.title' | transloco }}</a>
             </div>
@@ -119,14 +120,14 @@
               class="card bg-base-100 shadow-sm overflow-hidden cursor-pointer hover:-translate-y-1 transition-all active:scale-[0.98]"
               (click)="startReto333Plan()">
               <div class="flex flex-row items-stretch w-full">
-                <div class="w-[35%] bg-base-200 flex flex-col items-center justify-center p-4 relative overflow-hidden">
+                <div class="w-[35%] bg-base-200 flex flex-col items-center justify-center p-3 xl:p-4 relative overflow-hidden">
                   <div class="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-r-sm"></div>
-                  <h2 class="text-4xl md:text-5xl font-black text-primary tracking-tighter z-10 italic">333</h2>
+                  <h2 class="text-4xl md:text-5xl lg:text-4xl xl:text-5xl font-black text-primary tracking-tighter z-10 italic">333</h2>
                   <span
                     class="text-[9px] md:text-xs text-base-content/40 font-bold uppercase tracking-widest mt-1 z-10 text-center">{{
                     'RETO_333.survival' | transloco }}</span>
                 </div>
-                <div class="w-[65%] p-4 flex flex-col justify-between">
+                <div class="w-[65%] p-3 xl:p-4 flex flex-col justify-between">
                   <div>
                     <div class="flex items-center justify-between mb-2">
                       <div class="badge badge-sm badge-outline font-semibold">{{ 'RETO_333.mateIn1' | transloco }}</div>
@@ -167,7 +168,7 @@
                     </div>
                     }
                   </div>
-                  <button class="btn btn-primary btn-xs  mt-3 font-bold shadow-md">
+                  <button class="btn btn-primary btn-xs  mt-3 font-bold shadow-md whitespace-nowrap">
                     {{ (reto333Stats ? 'RETO_333.tryAgain' : 'RETO_333.acceptChallenge') | transloco }}
                   </button>
                 </div>
@@ -311,12 +312,12 @@
               </div>
 
               <!-- Lado derecho: Textos y botones -->
-              <div class="flex flex-col text-left min-w-0 gap-12 lg:gap-[65px]">
+              <div class="flex flex-col text-left min-w-0 gap-12 lg:gap-8 xl:gap-[65px]">
                 <div class="flex items-center gap-2">
                   <img [src]="'assets/images/king-' + playerColor + '.svg'" [alt]="playerColor"
-                    class="h-6 w-6 md:h-8 md:w-8 shrink-0" />
+                    class="h-6 w-6 md:h-8 md:w-8 lg:h-7 lg:w-7 xl:h-8 xl:w-8 shrink-0" />
                   <div class="flex flex-col min-w-0">
-                    <span class="font-semibold text-xs md:text-base leading-tight">{{ 'PUZZLES.help.yourTurn' |
+                    <span class="font-semibold text-xs md:text-base lg:text-sm xl:text-base leading-tight">{{ 'PUZZLES.help.yourTurn' |
                       transloco }}</span>
                     <span class="text-[10px] md:text-sm text-base-content/80 leading-tight whitespace-nowrap">
                       @if (playerColor === 'white') { {{
@@ -334,11 +335,11 @@
                       <ion-icon name="stats-chart-outline" class="text-base"></ion-icon>
                     </button>
                   </div>
-                  <h3 class="text-sm md:text-2xl font-bold leading-tight">
+                  <h3 class="text-sm md:text-2xl lg:text-lg xl:text-2xl font-bold leading-tight">
                     {{ 'PUZZLES.general.continuousTraining' | transloco }}
                   </h3>
                   <p
-                    class="text-[10px] md:text-base text-base-content/80 font-medium leading-tight line-clamp-4 md:line-clamp-none">
+                    class="text-[10px] md:text-base lg:text-sm xl:text-base text-base-content/80 font-medium leading-tight line-clamp-4 md:line-clamp-none">
                     {{ 'PUZZLES.general.resolveUnlimited' | transloco }}
                   </p>
                   <div class="flex flex-col w-full gap-2 mt-2">
