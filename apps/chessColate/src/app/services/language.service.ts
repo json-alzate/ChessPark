@@ -4,6 +4,9 @@ import { firstValueFrom } from 'rxjs';
 
 export type SupportedLang = 'en' | 'es';
 
+/** Clave usada para persistir el idioma en localStorage (usuarios invitados) */
+const LANG_STORAGE_KEY = 'chessColate_lang';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -21,13 +24,40 @@ export class LanguageService {
   }
 
   /**
-   * Cambia el idioma de la aplicación
+   * Cambia el idioma de la aplicación.
+   * Persiste también el valor en una variable local (localStorage) para que
+   * el idioma se mantenga cuando el usuario no está autenticado.
    */
   async setLanguage(lang: SupportedLang): Promise<void> {
     // Simply set the active language - Transloco will load translations automatically
     this.translocoService.setActiveLang(lang);
+    // Persistir localmente el idioma seleccionado
+    this.setStoredLang(lang);
     // Wait for the translation to be loaded
     await firstValueFrom(this.translocoService.selectTranslate('COMMON.actions.cancel', {}, lang));
+  }
+
+  /**
+   * Lee el idioma persistido localmente. Devuelve null si no hay uno válido.
+   */
+  getStoredLang(): SupportedLang | null {
+    try {
+      const stored = localStorage.getItem(LANG_STORAGE_KEY);
+      return stored && this.isLanguageAvailable(stored) ? (stored as SupportedLang) : null;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Guarda el idioma en localStorage.
+   */
+  private setStoredLang(lang: SupportedLang): void {
+    try {
+      localStorage.setItem(LANG_STORAGE_KEY, lang);
+    } catch {
+      // Si localStorage no está disponible, se ignora silenciosamente
+    }
   }
 
   /**
@@ -49,11 +79,13 @@ export class LanguageService {
   }
 
   /**
-   * Inicializa el idioma basado en el perfil del usuario o el navegador
-   * Por defecto, si no se ha iniciado sesión, el idioma será inglés
+   * Inicializa el idioma. Si el usuario no está autenticado se toma el idioma
+   * persistido localmente; si no hay ninguno, se usa inglés por defecto.
+   * Cuando el perfil se cargue desde Firestore, ese idioma predominará.
    */
   async initializeLanguage(): Promise<void> {
-    await this.setLanguage('en');
+    const storedLang = this.getStoredLang();
+    await this.setLanguage(storedLang ?? 'en');
   }
 
   /**
