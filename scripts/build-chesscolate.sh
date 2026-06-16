@@ -81,13 +81,72 @@ select_platform() {
     done
 }
 
+# Archivos donde viven las versiones
+ENV_PROD_FILE="apps/chessColate/src/environments/environment.prod.ts"
+GRADLE_FILE="apps/chessColate/android/app/build.gradle"
+
+# Función para preguntar si se despliega en tienda e incrementar la versión
+prompt_store_deploy() {
+    echo ""
+    read -p "¿Vas a desplegar en tienda? (s/n): " store_answer
+    if [[ ! "$store_answer" =~ ^[sSyY]$ ]]; then
+        info "No es despliegue en tienda, no se incrementa la versión"
+        return 0
+    fi
+
+    # Leer versión actual de la app (la que aparece en el menú)
+    local current_version
+    current_version=$(grep -oP "version:\s*'\K[0-9]+\.[0-9]+\.[0-9]+" "$ENV_PROD_FILE" | head -1)
+    # Leer versionCode actual de Android
+    local current_code
+    current_code=$(grep -oP 'versionCode\s+\K[0-9]+' "$GRADLE_FILE" | head -1)
+
+    if [ -z "$current_version" ] || [ -z "$current_code" ]; then
+        error "No se pudo leer la versión actual (app o versionCode de Android)"
+        exit 1
+    fi
+
+    # Calcular la versión sugerida (incrementar el patch)
+    local major minor patch suggested
+    IFS='.' read -r major minor patch <<< "$current_version"
+    suggested="${major}.${minor}.$((patch + 1))"
+    local new_code=$((current_code + 1))
+
+    echo ""
+    info "Versión actual de la app (menú):   ${YELLOW}${current_version}${NC}"
+    info "Versión sugerida (siguiente):      ${GREEN}${suggested}${NC}"
+    info "versionCode Android:               ${YELLOW}${current_code}${NC} → ${GREEN}${new_code}${NC}"
+    echo ""
+
+    local new_version
+    read -p "Escribe la nueva versión x.y.z [${suggested}]: " new_version
+    new_version=${new_version:-$suggested}
+
+    # Validar el formato x.y.z
+    if [[ ! "$new_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+        error "Formato de versión inválido: \"$new_version\" (esperado x.y.z)"
+        exit 1
+    fi
+
+    # Actualizar la versión de la app (menú) en environment.prod.ts
+    sed -i -E "s/version:[[:space:]]*'[0-9]+\.[0-9]+\.[0-9]+'/version: '${new_version}'/" "$ENV_PROD_FILE"
+    # Actualizar versionName y versionCode en build.gradle
+    sed -i -E "s/versionName[[:space:]]+\"[0-9]+\.[0-9]+\.[0-9]+\"/versionName \"${new_version}\"/" "$GRADLE_FILE"
+    sed -i -E "s/versionCode[[:space:]]+[0-9]+/versionCode ${new_code}/" "$GRADLE_FILE"
+
+    echo ""
+    success "Versión actualizada: app ${current_version} → ${new_version}, versionCode ${current_code} → ${new_code}"
+    echo ""
+}
+
 # Función para ejecutar comandos
 execute_command() {
     local command=$1
     local description=$2
     
     info "$description..."
-    if eval "$command"; then
+    # Ejecutar en un subshell para que los 'cd' del comando no afecten al shell principal
+    if ( eval "$command" ); then
         success "$description completado"
         return 0
     else
@@ -135,6 +194,11 @@ build_platform() {
     # Ejecutar acción
     case $action in
         build)
+            # Solo para plataformas de tienda (android/ios) preguntamos por el despliegue
+            if [[ "$platform" =~ ^(android|ios)$ ]]; then
+                prompt_store_deploy
+            fi
+
             execute_command "$build_cmd" "Compilando y sincronizando"
             
             if [ -n "$open_cmd" ]; then

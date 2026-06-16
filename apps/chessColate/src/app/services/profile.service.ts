@@ -177,8 +177,10 @@ export class ProfileService implements IProfileService {
   async clearProfile() {
     this.profile = null;
 
-    // Si no hay sesión, los textos deben estar en inglés
-    await this.languageService.setLanguage('en');
+    // Sin sesión: respetar el idioma persistido localmente (preferencia del
+    // invitado). Si no hay ninguno guardado, se usa inglés por defecto.
+    const storedLang = this.languageService.getStoredLang() ?? 'en';
+    await this.languageService.setLanguage(storedLang);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const action = setProfile({ profile: null as any });

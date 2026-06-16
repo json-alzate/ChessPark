@@ -506,12 +506,13 @@
       "subtitle": "ChessColate is an independent project made with passion. Your support lets us keep it <strong>ad-free</strong> and keep developing <strong>new features</strong>.",
       "mostPopular": "⭐ Most popular",
       "supportWith": "Support with",
+      "chooseAmount": "Choose the amount you prefer. Every contribution keeps ChessColate alive and improving.",
       "whatsIncluded": "Your support makes possible",
       "features": {
         "noAds": "No ads",
-        "newPuzzles": "New puzzles",
         "newFeatures": "New features",
-        "activeServers": "Active servers"
+        "continuousImprovements": "Continuous improvements",
+        "independentProject": "Independent project"
       },
       "security": "Recurring subscriptions processed by RevenueCat, App Store, and Google Play.",
       "cancel": "Cancel anytime from your device settings.",
@@ -519,25 +520,11 @@
       "loginRequired": "Sign in to donate",
       "loginRequiredDesc": "You need an account to process your donation and recover it in the future."
     },
-    "tiers": {
-      "pawn": {
-        "name": "Pawn",
-        "description": "A coffee a month. Keeps servers running and puzzles flowing."
-      },
-      "rook": {
-        "name": "Rook",
-        "description": "Funds new features and continuous improvements for the whole community."
-      },
-      "queen": {
-        "name": "Queen",
-        "description": "Maximum impact. Accelerates development and makes you a project sponsor."
-      }
-    },
     "homeCard": {
       "title": "Support ChessColate",
-      "description": "With your donation we will continue developing features like a <strong>personalized Woodpecker method</strong> and <strong>open challenges</strong>.",
+      "description": "ChessColate is an independent project. Your donation helps us keep it <strong>ad-free</strong> and keep improving it.",
       "button": "Make a donation",
-      "woodpeckerTitle": "Woodpecker Method",
+      "woodpeckerTitle": "New features on the way",
       "comingSoon": "Coming soon..."
     }
   },

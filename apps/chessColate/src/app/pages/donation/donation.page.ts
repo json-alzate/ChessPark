@@ -10,7 +10,7 @@ import {
 } from '@ionic/angular/standalone';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
-import { heartOutline, heart, arrowBackOutline, arrowForwardOutline, informationCircleOutline, trophyOutline, cafeOutline, starOutline, banOutline, extensionPuzzleOutline, codeSlashOutline, serverOutline, logInOutline } from 'ionicons/icons';
+import { heartOutline, heart, arrowBackOutline, arrowForwardOutline, informationCircleOutline, trophyOutline, cafeOutline, starOutline, banOutline, trendingUpOutline, codeSlashOutline, logInOutline } from 'ionicons/icons';
 import { RevenueCatService } from '@chesspark/revenuecat';
 import { Package, PurchasesError, PURCHASES_ERROR_CODE } from '@chesspark/revenuecat';
 import { Capacitor } from '@capacitor/core';
@@ -19,7 +19,7 @@ import { ProfileService } from '@services/profile.service';
 import { LoginComponent } from '@shared/components/login/login.component';
 import { Subscription } from 'rxjs';
 
-addIcons({ heartOutline, heart, arrowBackOutline, arrowForwardOutline, informationCircleOutline, trophyOutline, cafeOutline, starOutline, banOutline, extensionPuzzleOutline, codeSlashOutline, serverOutline, logInOutline });
+addIcons({ heartOutline, heart, arrowBackOutline, arrowForwardOutline, informationCircleOutline, trophyOutline, cafeOutline, starOutline, banOutline, trendingUpOutline, codeSlashOutline, logInOutline });
 
 export interface DonationOption {
   id: string;
