@@ -100,4 +100,9 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/privacy/privacy.page').then((m) => m.PrivacyPage),
   },
+  {
+    path: 'settings',
+    loadComponent: () =>
+      import('./pages/settings/settings.page').then((m) => m.SettingsPage),
+  },
 ];

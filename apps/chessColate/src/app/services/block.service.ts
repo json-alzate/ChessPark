@@ -641,7 +641,7 @@ export class BlockService {
               puzzleTimes: {
                 warningOn: 10,
                 dangerOn: 5,
-                total: 15,
+                total: 35,
               },
               goshPuzzle: true,
               goshPuzzleTime: 15,

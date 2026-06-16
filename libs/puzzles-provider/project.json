@@ -12,7 +12,14 @@
         "outputPath": "dist/libs/puzzles-provider",
         "main": "libs/puzzles-provider/src/index.ts",
         "tsConfig": "libs/puzzles-provider/tsconfig.lib.json",
-        "assets": ["libs/puzzles-provider/*.md"]
+        "assets": [
+          "libs/puzzles-provider/*.md",
+          {
+            "glob": "puzzles-manifest.json",
+            "input": "libs/puzzles-provider/src/lib",
+            "output": "src/lib"
+          }
+        ]
       }
     },
     "test": {

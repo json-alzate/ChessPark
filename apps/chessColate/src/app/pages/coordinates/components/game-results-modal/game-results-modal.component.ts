@@ -36,6 +36,7 @@ export class GameResultsModalComponent {
   @ViewChild(IonModal) modal!: IonModal;
   
   @Input() isNewRecord = false;
+  @Input() isTiedRecord = false;
   @Input() recordType: 'color' | 'overall' | 'both' | null = null;
   @Input() score = 0;
   @Input() squaresGood: string[] = [];

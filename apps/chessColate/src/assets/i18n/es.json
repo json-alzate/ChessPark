@@ -96,7 +96,7 @@
   },
   "PUZZLES": {
     "menu": {
-      "title": "Rutinas de entrenamiento",
+      "title": "Entrenamiento",
       "warmup": "Calentamiento",
       "customTraining": "Rutina personalizada",
       "history": "Historial"
@@ -114,6 +114,12 @@
       "resolveUnlimited": "Resuelve problemas ilimitados",
       "trainNow": "Entrenar ahora",
       "anyTheme": "¡No sabes qué esperar!"
+    },
+    "loader": {
+      "creatingRoutine": "Creando rutina...",
+      "preparingRoutine": "Preparando rutina...",
+      "loadingPuzzles": "Cargando ejercicios...",
+      "loadingPuzzlesProgress": "Cargando ejercicios... {{loaded}}/{{total}}"
     },
     "colors": {
       "white": "Blancas",
@@ -299,7 +305,8 @@
     "daysAgo": "Hace {{ days }} días"
   },
   "CUSTOM_PLANS": {
-    "listTitle": "Rutinas personalizadas",
+    "listTitle": "Entrenamiento personalizado",
+    "shortTitle": "Personalizado",
     "empty": "Aún no has creado ninguna rutina personalizada.",
     "createFirst": "Crear mi primera rutina",
     "untitled": "Sin título",
@@ -314,7 +321,8 @@
     "authRequired": "Inicia sesión para crear y gestionar tus rutinas personalizadas"
   },
   "PUBLIC_PLANS": {
-    "title": "Rutinas públicas",
+    "title": "Entrenamiento público",
+    "shortTitle": "Público",
     "tabs": {
       "public": "Públicos",
       "myInteractions": "Mis interacciones"
@@ -380,6 +388,8 @@
       "overallRecord": "¡Nuevo RÉCORD GENERAL jugando con",
       "colorRecord": "¡Nuevo RÉCORD jugando con",
       "goodGame": "Buen juego",
+      "recordTied": "¡Récord igualado!",
+      "tiedRecordWith": "Igualaste tu mejor puntaje con",
       "bestScoreWith": "Tu mejor puntaje con",
       "is": "es",
       "continue": "Continuar"
@@ -414,6 +424,11 @@
       "exit": "Salir"
     }
   },
+  "SETTINGS": {
+    "title": "Ajustes",
+    "language": "Idioma",
+    "appearance": "Apariencia"
+  },
   "PUZZLE_SOLUTION": {
     "game": {
       "turn": "Tu turno",
@@ -434,7 +449,8 @@
       "solution": "Ver la solución",
       "playAndClose": "Reproducir y cerrar",
       "playing": "Reproduciendo...",
-      "closing": "Cerrando..."
+      "closing": "Cerrando...",
+      "close": "Cerrar"
     },
     "themes": "Temas"
   },

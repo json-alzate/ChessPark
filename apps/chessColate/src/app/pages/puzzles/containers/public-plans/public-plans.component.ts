@@ -13,7 +13,7 @@ import {
     LoadingController,
 } from '@ionic/angular/standalone';
 
-import { TranslocoPipe } from '@jsverse/transloco';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
 import { PublicPlan, PublicPlanFilter, PlanInteraction } from '@cpark/models';
 
@@ -59,6 +59,7 @@ export class PublicPlansComponent implements OnInit, OnDestroy {
     private firestoreService = inject(FirestoreService);
     private router = inject(Router);
     private loadingController = inject(LoadingController);
+    private translocoService = inject(TranslocoService);
     private store = inject(Store<AppState>);
     private destroy$ = new Subject<void>();
 
@@ -243,7 +244,7 @@ export class PublicPlansComponent implements OnInit, OnDestroy {
         }
 
         const loader = await this.loadingController.create({
-            message: 'Cargando puzzles...',
+            message: this.translocoService.translate('PUZZLES.loader.loadingPuzzles'),
         });
         await loader.present();
 
@@ -252,7 +253,10 @@ export class PublicPlansComponent implements OnInit, OnDestroy {
                 plan,
                 eloToStart,
                 (loaded, total) => {
-                    loader.message = `Cargando puzzles... ${loaded}/${total}`;
+                    loader.message = this.translocoService.translate(
+                        'PUZZLES.loader.loadingPuzzlesProgress',
+                        { loaded, total }
+                    );
                 }
             );
             await loader.dismiss();

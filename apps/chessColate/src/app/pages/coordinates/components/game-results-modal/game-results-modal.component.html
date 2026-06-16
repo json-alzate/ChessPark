@@ -1,8 +1,8 @@
-<ion-modal #resultsModal [initialBreakpoint]="0.8" [breakpoints]="[0, 0.8]" handleBehavior="cycle" class="results-modal">
+<ion-modal #resultsModal class="results-modal">
     <ng-template>
 
         <ion-content class="bg-base-200">
-            <div class="px-4 py-8 space-y-6" data-theme="halloween">
+            <div class="min-h-full flex flex-col justify-center px-4 py-8 space-y-6" data-theme="halloween">
                 
                 <!-- Main Header Card / Score -->
                 <div class="card bg-base-100 shadow-xl border border-base-content/5 overflow-hidden">
@@ -21,6 +21,11 @@
                                 <div class="badge badge-warning p-3 h-auto font-black shadow-lg animate-bounce gap-1">
                                     <ion-icon name="trophy"></ion-icon>
                                     NEW
+                                </div>
+                            } @else if (isTiedRecord) {
+                                <div class="badge badge-info p-3 h-auto font-black shadow-lg animate-bounce gap-1">
+                                    <ion-icon name="medal"></ion-icon>
+                                    =
                                 </div>
                             }
                         </div>
@@ -45,17 +50,17 @@
 
                 <!-- Stats Grid -->
                 <div class="grid grid-cols-3 gap-3">
-                    <div class="p-4 rounded-3xl bg-base-100 shadow-sm border border-base-content/5 flex flex-col items-center justify-center text-center">
+                    <div class="p-4 rounded-3xl bg-success/10 shadow-sm border border-success/20 flex flex-col items-center justify-center text-center">
                         <span class="text-xl font-black text-success">{{ squaresGood.length }}</span>
-                        <span class="text-[9px] uppercase font-bold text-base-content/30 mt-1">{{ 'COORDINATES.stats.correct' | transloco }}</span>
+                        <span class="text-[9px] uppercase font-bold text-base-content/40 mt-1">{{ 'COORDINATES.stats.correct' | transloco }}</span>
                     </div>
-                    <div class="p-4 rounded-3xl bg-base-100 shadow-sm border border-base-content/5 flex flex-col items-center justify-center text-center">
+                    <div class="p-4 rounded-3xl bg-error/10 shadow-sm border border-error/20 flex flex-col items-center justify-center text-center">
                         <span class="text-xl font-black text-error">{{ squaresBad.length }}</span>
-                        <span class="text-[9px] uppercase font-bold text-base-content/30 mt-1">{{ 'COORDINATES.stats.errors' | transloco }}</span>
+                        <span class="text-[9px] uppercase font-bold text-base-content/40 mt-1">{{ 'COORDINATES.stats.errors' | transloco }}</span>
                     </div>
-                    <div class="p-4 rounded-3xl bg-base-100 shadow-sm border border-base-content/5 flex flex-col items-center justify-center text-center">
-                        <span class="text-xl font-black text-info">{{ currentGameStats.accuracy | number:'1.0-0' }}%</span>
-                        <span class="text-[9px] uppercase font-bold text-base-content/30 mt-1">{{ 'COORDINATES.stats.accuracy' | transloco }}</span>
+                    <div class="p-4 rounded-3xl bg-primary/10 shadow-sm border border-primary/20 flex flex-col items-center justify-center text-center">
+                        <span class="text-xl font-black text-primary">{{ currentGameStats.accuracy | number:'1.0-0' }}%</span>
+                        <span class="text-[9px] uppercase font-bold text-base-content/40 mt-1">{{ 'COORDINATES.stats.accuracy' | transloco }}</span>
                     </div>
                 </div>
 
@@ -64,15 +69,23 @@
                     <div class="card-body p-5">
                         <div class="flex items-center gap-4">
                             <div class="w-12 h-12 rounded-2xl bg-primary/20 flex items-center justify-center text-primary text-2xl">
-                                <ion-icon [name]="isNewRecord ? 'trophy' : 'medal'"></ion-icon>
+                                <ion-icon [name]="isNewRecord ? 'trophy' : (isTiedRecord ? 'medal' : 'medal')"></ion-icon>
                             </div>
                             <div class="flex-1">
                                 <h3 class="font-bold text-sm">
-                                    {{ isNewRecord ? ('COORDINATES.results.congratulations' | transloco) : ('COORDINATES.results.goodGame' | transloco) }}
+                                    @if (isNewRecord) {
+                                        {{ 'COORDINATES.results.congratulations' | transloco }}
+                                    } @else if (isTiedRecord) {
+                                        {{ 'COORDINATES.results.recordTied' | transloco }}
+                                    } @else {
+                                        {{ 'COORDINATES.results.goodGame' | transloco }}
+                                    }
                                 </h3>
                                 <p class="text-xs opacity-70">
                                     @if (isNewRecord) {
                                         {{ 'COORDINATES.results.newRecordShort' | transloco }} {{ currentColorInBoard === 'white' ? ('COORDINATES.game.whites' | transloco) : ('COORDINATES.game.blacks' | transloco) }}: {{ score }}!
+                                    } @else if (isTiedRecord) {
+                                        {{ 'COORDINATES.results.tiedRecordWith' | transloco }} {{ currentColorInBoard === 'white' ? ('COORDINATES.game.whites' | transloco) : ('COORDINATES.game.blacks' | transloco) }}: <span class="font-black text-primary">{{ score }}</span>!
                                     } @else {
                                         {{ 'COORDINATES.results.bestScoreWith' | transloco }} {{ currentColorInBoard === 'white' ? ('COORDINATES.game.whites' | transloco) : ('COORDINATES.game.blacks' | transloco) }} {{ 'COORDINATES.results.is' | transloco }} <span class="font-black text-primary">{{ bestScoreByColor }}</span>.
                                     }

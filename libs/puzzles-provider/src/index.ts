@@ -32,5 +32,14 @@ export {
   filterByColor,
   normalizeElo,
   generateEloSequence,
+  filterEloSequenceByManifest,
   limitPuzzleCount,
 } from './lib/utils';
+
+// Exportar utilidades del manifiesto de combinaciones válidas
+export {
+  getValidEloStarts,
+  getManifestThemes,
+  getManifestOpenings,
+  MANIFEST_ELO_STEP,
+} from './lib/manifest';

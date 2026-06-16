@@ -1,9 +1,11 @@
 import { PuzzlesCacheService } from './cache.service';
-import { AVAILABLE_THEMES, DEFAULT_CONFIG, ELO_CONSTANTS } from './constants';
+import { DEFAULT_CONFIG } from './constants';
+import { getManifestThemes, getValidEloStarts } from './manifest';
 import { Puzzle, PuzzleQueryOptions, PuzzlesProviderConfig } from './types';
 import {
   buildPuzzleUrl,
   filterByColor,
+  filterEloSequenceByManifest,
   generateEloSequence,
   generateEloSequenceInRange,
   limitPuzzleCount,
@@ -78,7 +80,7 @@ export class PuzzlesProvider {
 
     // Si no se especifica tema ni apertura, elegir un tema aleatorio
     let theme = options.theme;
-    let openingFamily = options.openingFamily;
+    const openingFamily = options.openingFamily;
 
     if (!theme && !openingFamily) {
       theme = this.getRandomTheme();
@@ -91,6 +93,14 @@ export class PuzzlesProvider {
     } else {
       const elo = normalizeElo(options.elo);
       eloSequence = generateEloSequence(elo);
+    }
+
+    // Filtrar la secuencia contra el manifiesto: solo se piden URLs que existen.
+    // Si la combinación tema/apertura no está en el manifiesto, no hay nada que pedir.
+    const validStarts = getValidEloStarts(theme, openingFamily);
+    eloSequence = filterEloSequenceByManifest(eloSequence, validStarts);
+    if (eloSequence.length === 0) {
+      return [];
     }
 
     let allPuzzles: Puzzle[] = [];
@@ -244,11 +254,13 @@ export class PuzzlesProvider {
   }
 
   /**
-   * Obtiene un tema aleatorio de la lista de temas disponibles
+   * Obtiene un tema aleatorio de la lista de temas con archivos reales disponibles
+   * (claves del manifiesto), para no caer nunca en un tema sin puzzles.
    */
   private getRandomTheme(): string {
-    const randomIndex = Math.floor(Math.random() * AVAILABLE_THEMES.length);
-    return AVAILABLE_THEMES[randomIndex];
+    const themes = getManifestThemes();
+    const randomIndex = Math.floor(Math.random() * themes.length);
+    return themes[randomIndex];
   }
 
   /**

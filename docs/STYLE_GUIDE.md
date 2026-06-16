@@ -13,6 +13,7 @@ Esta guía define los estándares de diseño y estructura para la aplicación Ch
 7. [Espaciado y Layout](#espaciado-y-layout)
 8. [Estados y Feedback](#estados-y-feedback)
 9. [Responsive Design](#responsive-design)
+10. [Navegación / Menú lateral](#navegación--menú-lateral)
 
 ---
 
@@ -531,6 +532,46 @@ Para botones fijos en mobile:
   </div>
 </div>
 ```
+
+---
+
+## 🧭 Navegación / Menú lateral
+
+El menú lateral izquierdo (`side-menu`) se define en
+`apps/chessColate/src/app/app.component.ts` mediante el array `menuOptions`.
+
+### Orden canónico de grupos
+
+Las opciones se organizan en **grupos lógicos**, separados visualmente con un
+`divider`. Toda opción nueva debe ubicarse en el grupo que le corresponda,
+respetando este orden:
+
+1. **Inicio** — Home.
+2. **Planes de puzzles** (núcleo de la app) — flujo descubrir → crear → revisar:
+   Planes públicos · Planes personalizados · Historial.
+3. **Ejercicios de entrenamiento** — Coordenadas · Recorrido del caballo · Chess960.
+4. **App y cuenta** — Ajustes · Donar (solo nativo).
+
+> El razonamiento detrás de este orden está documentado en
+> [docs/decisions/0001-orden-menu-lateral.md](decisions/0001-orden-menu-lateral.md).
+> Si vas a cambiar la navegación, léelo primero y actualiza el ADR.
+
+### Cómo agregar una opción
+
+```ts
+{
+  title: 'MI_FEATURE.title',     // clave de transloco
+  icon: 'icono-outline',          // registrar también en addIcons()
+  route: '/mi-ruta',
+  enabled: true,
+  hideOnWeb: true,                // opcional: ocultar en web (solo nativo)
+  divider: true,                  // opcional: marca el inicio de un grupo
+}
+```
+
+- `divider: true` se pone en la **primera** opción de cada grupo (no en todas).
+- Si la opción solo aplica a móvil/escritorio nativo, usa `hideOnWeb: true`.
+- Recuerda registrar el icono en `addIcons({ ... })` del constructor.
 
 ---
 

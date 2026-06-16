@@ -45,6 +45,9 @@
       <ul class="menu bg-base-100 w-full rounded-box gap-1">
         @for (option of menuOptions; track option.title) {
           @if (!option.hideOnWeb || isNativePlatform) {
+            @if (option.divider) {
+              <div class="divider my-1"></div>
+            }
             <li [class.disabled]="!option.enabled">
               <a (click)="option.enabled ? navigateTo(option.route) : null" class="flex gap-4 py-3">
                 <ion-icon [name]="option.icon" class="text-xl"></ion-icon>

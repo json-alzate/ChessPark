@@ -162,7 +162,9 @@ export class ProfileService implements IProfileService {
   async setProfile(profile: Profile) {
     this.profile = profile;
 
-    // Cambiar el idioma de la aplicación si el perfil lo tiene definido y es válido
+    // El idioma de Firestore (perfil) siempre predomina. Al hacer setLanguage
+    // también se sincroniza la variable local, de modo que cualquier idioma que
+    // tuviera el invitado queda alineado con lo que viene del perfil.
     if (profile && profile.lang && this.languageService.isLanguageAvailable(profile.lang)) {
       await this.languageService.setLanguage(profile.lang as SupportedLang);
     }
