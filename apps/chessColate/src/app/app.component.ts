@@ -59,6 +59,8 @@ interface MenuOption {
   route: string;
   enabled: boolean;
   hideOnWeb?: boolean;
+  /** Renderiza un separador visual encima de esta opción (inicio de grupo) */
+  divider?: boolean;
 }
 
 interface Notification {
@@ -106,18 +108,48 @@ export class AppComponent implements OnInit, OnDestroy {
   version = environment.version;
 
   // Opciones del menú
+  // Organizadas por grupos lógicos (separados por `divider`):
+  //  1. Inicio
+  //  2. Planes de puzzles (núcleo de la app): descubrir → crear → revisar
+  //  3. Ejercicios de entrenamiento
+  //  4. App y cuenta
   menuOptions: MenuOption[] = [
+    // --- Inicio ---
     {
       title: 'MENU.navigation.home',
       icon: 'home-outline',
       route: '/home',
       enabled: true,
     },
+
+    // --- Planes de puzzles ---
+    {
+      title: 'PUBLIC_PLANS.title',
+      icon: 'globe-outline',
+      route: '/puzzles/public-plans',
+      enabled: true,
+      divider: true,
+    },
+    {
+      title: 'CUSTOM_PLANS.listTitle',
+      icon: 'create-outline',
+      route: '/puzzles/custom-plans',
+      enabled: true,
+    },
+    {
+      title: 'PLANS_HISTORY.title',
+      icon: 'time-outline',
+      route: '/puzzles/plans-history',
+      enabled: true,
+    },
+
+    // --- Ejercicios de entrenamiento ---
     {
       title: 'MENU.navigation.coordinates',
       icon: 'grid-outline',
       route: '/coordinates',
       enabled: true,
+      divider: true,
     },
     {
       title: 'KNIGHT_TOUR.title',
@@ -131,23 +163,14 @@ export class AppComponent implements OnInit, OnDestroy {
       route: '/chess960',
       enabled: true,
     },
+
+    // --- App y cuenta ---
     {
-      title: 'PLANS_HISTORY.title',
-      icon: 'time-outline',
-      route: '/puzzles/plans-history',
+      title: 'SETTINGS.title',
+      icon: 'settings-outline',
+      route: '/settings',
       enabled: true,
-    },
-    {
-      title: 'CUSTOM_PLANS.listTitle',
-      icon: 'create-outline',
-      route: '/puzzles/custom-plans',
-      enabled: true,
-    },
-    {
-      title: 'PUBLIC_PLANS.title',
-      icon: 'globe-outline',
-      route: '/puzzles/public-plans',
-      enabled: true,
+      divider: true,
     },
     {
       title: 'APP.components.donate',
@@ -155,12 +178,6 @@ export class AppComponent implements OnInit, OnDestroy {
       route: '/donation',
       enabled: true,
       hideOnWeb: true,
-    },
-    {
-      title: 'SETTINGS.title',
-      icon: 'settings-outline',
-      route: '/settings',
-      enabled: true,
     },
   ];
 
