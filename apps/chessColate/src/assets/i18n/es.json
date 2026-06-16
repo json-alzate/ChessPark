@@ -96,7 +96,7 @@
   },
   "PUZZLES": {
     "menu": {
-      "title": "Rutinas de entrenamiento",
+      "title": "Entrenamiento",
       "warmup": "Calentamiento",
       "customTraining": "Rutina personalizada",
       "history": "Historial"
@@ -305,7 +305,8 @@
     "daysAgo": "Hace {{ days }} días"
   },
   "CUSTOM_PLANS": {
-    "listTitle": "Rutinas personalizadas",
+    "listTitle": "Entrenamiento personalizado",
+    "shortTitle": "Personalizado",
     "empty": "Aún no has creado ninguna rutina personalizada.",
     "createFirst": "Crear mi primera rutina",
     "untitled": "Sin título",
@@ -320,7 +321,8 @@
     "authRequired": "Inicia sesión para crear y gestionar tus rutinas personalizadas"
   },
   "PUBLIC_PLANS": {
-    "title": "Rutinas públicas",
+    "title": "Entrenamiento público",
+    "shortTitle": "Público",
     "tabs": {
       "public": "Públicos",
       "myInteractions": "Mis interacciones"
@@ -421,6 +423,11 @@
       "language": "Idioma",
       "exit": "Salir"
     }
+  },
+  "SETTINGS": {
+    "title": "Ajustes",
+    "language": "Idioma",
+    "appearance": "Apariencia"
   },
   "PUZZLE_SOLUTION": {
     "game": {

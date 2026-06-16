@@ -20,6 +20,7 @@ import {
   createOutline,
   globeOutline,
   downloadOutline,
+  settingsOutline,
 } from 'ionicons/icons';
 import {
   IonMenu,
@@ -155,6 +156,12 @@ export class AppComponent implements OnInit, OnDestroy {
       enabled: true,
       hideOnWeb: true,
     },
+    {
+      title: 'SETTINGS.title',
+      icon: 'settings-outline',
+      route: '/settings',
+      enabled: true,
+    },
   ];
 
   // Notificaciones
@@ -188,6 +195,7 @@ export class AppComponent implements OnInit, OnDestroy {
       'create-outline': createOutline,
       'globe-outline': globeOutline,
       'download-outline': downloadOutline,
+      'settings-outline': settingsOutline,
     });
     this.initApp();
   }

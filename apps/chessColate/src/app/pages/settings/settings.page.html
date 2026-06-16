@@ -1,0 +1,63 @@
+<ion-content [fullscreen]="true">
+  <div class="min-h-screen bg-base-100" data-theme="halloween">
+    <app-navbar></app-navbar>
+
+    <div class="container mx-auto px-4 py-8 max-w-lg pb-16">
+
+      <!-- Header -->
+      <div class="mb-8">
+        <div class="breadcrumbs text-sm mb-1">
+          <ul>
+            <li>
+              <a (click)="goToHome()" class="cursor-pointer gap-1">
+                <ion-icon name="home-outline" class="h-4 w-4"></ion-icon>
+                <span>{{ 'MENU.navigation.home' | transloco }}</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <h2 class="text-2xl font-bold">{{ 'SETTINGS.title' | transloco }}</h2>
+      </div>
+
+      <!-- Idioma -->
+      <section class="mb-8">
+        <div class="flex items-center gap-2 mb-3 opacity-80">
+          <ion-icon name="language-outline" class="text-xl"></ion-icon>
+          <h2 class="text-lg font-bold">{{ 'SETTINGS.language' | transloco }}</h2>
+        </div>
+
+        <ul class="menu bg-base-200/40 border border-base-content/10 w-full rounded-box gap-1 p-2">
+          @for (language of languages; track language.code) {
+            <li>
+              <a (click)="changeLanguage(language.code)"
+                class="flex items-center justify-between py-3"
+                [class.active]="currentLang === language.code">
+                <span class="text-base">{{ language.labelKey | transloco }}</span>
+                @if (currentLang === language.code) {
+                  <ion-icon name="checkmark-outline" color="primary" class="text-xl"></ion-icon>
+                }
+              </a>
+            </li>
+          }
+        </ul>
+      </section>
+
+      <!-- Apariencia (próximamente: estilo de piezas y color de tablero) -->
+      <!--
+        Estos ajustes se implementarán más adelante. El modelo Profile ya tiene
+        los campos `pieces` y `board` y se persistirían con
+        profileService.requestUpdateProfile({ pieces }) / ({ board }).
+
+      <section class="mb-8">
+        <div class="flex items-center gap-2 mb-3 opacity-80">
+          <ion-icon name="color-palette-outline" class="text-xl"></ion-icon>
+          <h2 class="text-lg font-bold">{{ 'SETTINGS.appearance' | transloco }}</h2>
+        </div>
+        TODO: selector de piezas (ion-icon name="color-palette-outline")
+        TODO: selector de tablero (ion-icon name="grid-outline")
+      </section>
+      -->
+
+    </div>
+  </div>
+</ion-content>

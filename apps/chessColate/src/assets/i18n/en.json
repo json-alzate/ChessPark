@@ -96,7 +96,7 @@
   },
   "PUZZLES": {
     "menu": {
-      "title": "Training Routines",
+      "title": "Training",
       "warmup": "Warmup",
       "customTraining": "Custom Training",
       "history": "History"
@@ -305,7 +305,8 @@
     "daysAgo": "{{ days }} days ago"
   },
   "CUSTOM_PLANS": {
-    "listTitle": "Custom routines",
+    "listTitle": "Custom training",
+    "shortTitle": "Custom",
     "empty": "You haven't created any custom routines yet.",
     "createFirst": "Create my first routine",
     "untitled": "Untitled",
@@ -320,7 +321,8 @@
     "authRequired": "Log in to create and manage your custom routines"
   },
   "PUBLIC_PLANS": {
-    "title": "Public routines",
+    "title": "Public training",
+    "shortTitle": "Public",
     "tabs": {
       "public": "Public",
       "myInteractions": "My interactions"
@@ -421,6 +423,11 @@
       "language": "Language",
       "exit": "Logout"
     }
+  },
+  "SETTINGS": {
+    "title": "Settings",
+    "language": "Language",
+    "appearance": "Appearance"
   },
   "PUZZLE_SOLUTION": {
     "game": {
