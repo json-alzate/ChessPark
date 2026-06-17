@@ -544,7 +544,15 @@
     "title": "El Desafío Definitivo",
     "description": "Resuelve 333 problemas seguidos sin cometer un solo error.",
     "tryAgain": "Intentar de Nuevo",
-    "acceptChallenge": "Aceptar Reto"
+    "acceptChallenge": "Aceptar Reto",
+    "loading": "Iniciando Reto 333...",
+    "completedTitle": "¡Reto Completado!",
+    "goodTry": "¡Buen Intento!",
+    "puzzlesSolved": "Puzzles logrados",
+    "totalTime": "Tiempo total",
+    "eloReached": "ELO Alcanzado",
+    "backToHome": "Volver al Home",
+    "retry": "Volver a intentar"
   },
   "KNIGHT_TOUR": {
     "title": "Recorrido del Caballo",

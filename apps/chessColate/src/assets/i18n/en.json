@@ -544,7 +544,15 @@
     "title": "The Ultimate Challenge",
     "description": "Solve 333 puzzles in a row without making a single mistake.",
     "tryAgain": "Try Again",
-    "acceptChallenge": "Accept Challenge"
+    "acceptChallenge": "Accept Challenge",
+    "loading": "Starting Challenge 333...",
+    "completedTitle": "Challenge Completed!",
+    "goodTry": "Good Try!",
+    "puzzlesSolved": "Puzzles solved",
+    "totalTime": "Total time",
+    "eloReached": "ELO Reached",
+    "backToHome": "Back to Home",
+    "retry": "Try again"
   },
   "KNIGHT_TOUR": {
     "title": "Knight Tour",

@@ -16,7 +16,7 @@ import { Subscription } from 'rxjs';
 import { Store, select } from '@ngrx/store';
 import { AuthState, getIsInitialized } from '@cpark/state';
 
-import { TranslocoPipe } from '@jsverse/transloco';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
 import { Block, Plan, PlanTypes, Puzzle } from '@cpark/models';
 
@@ -94,6 +94,7 @@ export class HomePage implements OnInit, ViewWillEnter, ViewWillLeave {
   private modalController = inject(ModalController);
   private store = inject(Store<AuthState>);
   private infinityPoolService = inject(InfinityPuzzlePoolService);
+  private translocoService = inject(TranslocoService);
 
   isInitialized = false;
   private initSubscription?: Subscription;
@@ -234,7 +235,7 @@ export class HomePage implements OnInit, ViewWillEnter, ViewWillLeave {
 
   async startReto333Plan() {
     const loader = await this.loadingController.create({
-      message: 'Iniciando Reto 333...',
+      message: this.translocoService.translate('RETO_333.loading'),
     });
     await loader.present();
 

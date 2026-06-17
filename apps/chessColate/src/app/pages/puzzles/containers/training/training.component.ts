@@ -710,7 +710,7 @@ export class TrainingComponent implements OnInit, OnDestroy {
     this.cleanupResources();
     
     const loader = await this.loadingController.create({
-      message: 'Iniciando Reto 333...',
+      message: this.translocoService.translate('RETO_333.loading'),
     });
     await loader.present();
 
