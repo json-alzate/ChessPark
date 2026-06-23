@@ -1,0 +1,60 @@
+<ion-content [scrollY]="false">
+  <div class="flex h-full flex-col p-5">
+    <!-- Botón saltar -->
+    <div class="flex justify-end">
+      <button type="button" class="btn btn-ghost btn-sm" (click)="complete()">
+        {{ 'ONBOARDING.skip' | transloco }}
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+
+    <!-- Carrusel manual -->
+    <div class="flex-1 overflow-hidden">
+      <div
+        class="flex h-full transition-transform duration-300 ease-out"
+        [style.transform]="'translateX(-' + currentSlide * 100 + '%)'">
+        @for (slide of slides; track slide.titleKey) {
+        <div class="flex h-full w-full shrink-0 flex-col items-center justify-center gap-5 px-4 text-center">
+          <div class="flex h-24 w-24 items-center justify-center rounded-full bg-primary/10">
+            <ion-icon [name]="slide.icon" class="text-5xl text-primary"></ion-icon>
+          </div>
+          <h2 class="text-2xl font-bold">{{ slide.titleKey | transloco }}</h2>
+          <p class="max-w-sm text-base text-base-content/70">{{ slide.descKey | transloco }}</p>
+        </div>
+        }
+      </div>
+    </div>
+
+    <!-- Indicadores (dots) -->
+    <div class="flex justify-center gap-2 py-4">
+      @for (slide of slides; track $index) {
+      <button
+        type="button"
+        class="h-2 rounded-full transition-all"
+        [class.w-6]="$index === currentSlide"
+        [class.bg-primary]="$index === currentSlide"
+        [class.w-2]="$index !== currentSlide"
+        [class.bg-base-300]="$index !== currentSlide"
+        (click)="goTo($index)"
+        [attr.aria-label]="'slide ' + ($index + 1)"></button>
+      }
+    </div>
+
+    <!-- Controles -->
+    <div class="flex items-center gap-2">
+      @if (currentSlide > 0) {
+      <ion-button fill="clear" (click)="prev()">
+        <ion-icon name="arrow-back" slot="start"></ion-icon>
+        {{ 'ONBOARDING.back' | transloco }}
+      </ion-button>
+      }
+      <div class="flex-1"></div>
+      <ion-button (click)="next()">
+        {{ (isLastSlide ? 'ONBOARDING.start' : 'ONBOARDING.next') | transloco }}
+        @if (!isLastSlide) {
+        <ion-icon name="arrow-forward" slot="end"></ion-icon>
+        }
+      </ion-button>
+    </div>
+  </div>
+</ion-content>

@@ -171,6 +171,89 @@
       "loginToStart": "Inicia sesión para registrar tu progreso",
       "countPlansEnded": "planes terminados en el último año",
       "loadingPuzzles": "Cargando ejercicios del entrenamiento..."
+    },
+    "categories": {
+      "bullet": "Bullet",
+      "blitz": "Blitz",
+      "rapid": "Rápida",
+      "classical": "Clásica"
+    },
+    "viewBlocks": "Qué entrenas",
+    "plans": {
+      "plan1": {
+        "summary": "Sesión relámpago para afinar el ojo táctico.",
+        "phases": {
+          "p1": "Calentamiento exprés · mates y tácticas de 2 jugadas"
+        }
+      },
+      "plan3": {
+        "summary": "Entrenamiento corto enfocado en tu punto débil.",
+        "phases": {
+          "p1": "Bloque enfocado en tu temática prioritaria"
+        }
+      },
+      "plan5": {
+        "summary": "Práctica variada combinada con refuerzo de debilidades.",
+        "phases": {
+          "p1": "Calentamiento variado",
+          "p2": "Refuerzo de tus debilidades"
+        }
+      },
+      "plan10": {
+        "summary": "Rutina completa: calienta, ataca tus debilidades y remata con velocidad.",
+        "phases": {
+          "p1": "Calentamiento",
+          "p2": "Intensidad · tus debilidades",
+          "p3": "Velocidad · mate en 1",
+          "p4": "Desafío"
+        }
+      },
+      "plan20": {
+        "summary": "Sesión intensa con cálculo a ciegas y finales.",
+        "phases": {
+          "p1": "Calentamiento",
+          "p2": "Intensidad · debilidades",
+          "p3": "Velocidad · mate en 1",
+          "p4": "Pico de desafío",
+          "p5": "Cálculo a ciegas",
+          "p6": "Enfriamiento · finales"
+        }
+      },
+      "plan30": {
+        "summary": "Entrenamiento profundo de resistencia y cálculo.",
+        "phases": {
+          "p1": "Calentamiento",
+          "p2": "Intensidad · debilidades",
+          "p3": "Velocidad",
+          "p4": "Pico de desafío",
+          "p5": "Cálculo a ciegas",
+          "p6": "Enfriamiento · finales de peones"
+        }
+      }
+    }
+  },
+  "ONBOARDING": {
+    "skip": "Saltar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "start": "Empezar",
+    "slides": {
+      "welcome": {
+        "title": "Bienvenido a ChessColate",
+        "description": "Mejora tu ajedrez entrenando táctica con rutinas diseñadas para tu nivel."
+      },
+      "training": {
+        "title": "Entrena por ritmos",
+        "description": "Elige Bullet, Blitz, Rápida o Clásica. Cada rutina combina calentamiento, debilidades, velocidad y desafío."
+      },
+      "community": {
+        "title": "Rutinas de la comunidad",
+        "description": "Explora rutinas públicas, crea las tuyas y comparte tu progreso con otros jugadores."
+      },
+      "challenges": {
+        "title": "Ponte a prueba",
+        "description": "Mide tu nivel con retos como el modo infinito y el Reto 333. ¡A entrenar!"
+      }
     }
   },
   "CUSTOM_TRAINING": {

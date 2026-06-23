@@ -85,7 +85,9 @@ export class LanguageService {
    */
   async initializeLanguage(): Promise<void> {
     const storedLang = this.getStoredLang();
-    await this.setLanguage(storedLang ?? 'en');
+    // Invitados sin idioma guardado: detectar el idioma del dispositivo.
+    // Esto queda persistido en localStorage como variable de sesión.
+    await this.setLanguage(storedLang ?? this.detectBrowserLanguage());
   }
 
   /**

@@ -2,6 +2,8 @@ import {
   Component,
   CUSTOM_ELEMENTS_SCHEMA,
   ChangeDetectorRef,
+  ElementRef,
+  ViewChild,
   inject,
   OnInit,
   OnDestroy,
@@ -17,14 +19,30 @@ import { PlanService } from '@services/plan.service';
 import { ProfileService } from '@services/profile.service';
 
 import { addIcons } from 'ionicons';
-import { timerOutline } from 'ionicons/icons';
+import {
+  timerOutline,
+  flashOutline,
+  flameOutline,
+  speedometerOutline,
+  hourglassOutline,
+} from 'ionicons/icons';
 import { Block, Plan, PlanTypes } from '@cpark/models';
 import { Router } from '@angular/router';
-import { TranslocoService } from '@jsverse/transloco';
+import { IonIcon } from '@ionic/angular/standalone';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import {
+  CATEGORY_ICON,
+  TRAINING_PLAN_PRESETS,
+  TrainingPlanPreset,
+} from './training-plans.config';
+
+interface SwiperContainer extends HTMLElement {
+  swiper?: { updateAutoHeight: (speed?: number) => void };
+}
 
 @Component({
   selector: 'app-training-menu',
-  imports: [CommonModule, IonRippleEffect],
+  imports: [CommonModule, IonRippleEffect, IonIcon, TranslocoPipe],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './training-menu.component.html',
   styleUrl: './training-menu.component.scss',
@@ -38,8 +56,27 @@ export class TrainingMenuComponent implements OnInit, OnDestroy {
   private translocoService = inject(TranslocoService);
   private destroy$ = new Subject<void>();
 
+  @ViewChild('swiperContainer') swiperContainer?: ElementRef<SwiperContainer>;
+
+  readonly presets: TrainingPlanPreset[] = TRAINING_PLAN_PRESETS;
+
+  categoryIconFor(preset: TrainingPlanPreset): string {
+    return CATEGORY_ICON[preset.category];
+  }
+
+  /** Recalcula la altura del slider al expandir/colapsar el acordeón (mobile). */
+  onAccordionToggle(): void {
+    setTimeout(() => this.swiperContainer?.nativeElement?.swiper?.updateAutoHeight(250), 0);
+  }
+
   constructor(private loadingController: LoadingController) {
-    addIcons({ timerOutline });
+    addIcons({
+      timerOutline,
+      flashOutline,
+      flameOutline,
+      speedometerOutline,
+      hourglassOutline,
+    });
   }
 
   ngOnInit(): void {

@@ -171,6 +171,89 @@
       "loginToStart": "Log in to register your progress",
       "countPlansEnded": "plans completed in the last year",
       "loadingPuzzles": "Loading puzzles..."
+    },
+    "categories": {
+      "bullet": "Bullet",
+      "blitz": "Blitz",
+      "rapid": "Rapid",
+      "classical": "Classical"
+    },
+    "viewBlocks": "What you train",
+    "plans": {
+      "plan1": {
+        "summary": "Lightning session to sharpen your tactical eye.",
+        "phases": {
+          "p1": "Quick warmup · 2-move mates and tactics"
+        }
+      },
+      "plan3": {
+        "summary": "Short workout focused on your weak spot.",
+        "phases": {
+          "p1": "Block focused on your priority theme"
+        }
+      },
+      "plan5": {
+        "summary": "Varied practice combined with weakness reinforcement.",
+        "phases": {
+          "p1": "Varied warmup",
+          "p2": "Reinforce your weaknesses"
+        }
+      },
+      "plan10": {
+        "summary": "Full routine: warm up, target weaknesses, finish with speed.",
+        "phases": {
+          "p1": "Warmup",
+          "p2": "Intensity · your weaknesses",
+          "p3": "Speed · mate in 1",
+          "p4": "Challenge"
+        }
+      },
+      "plan20": {
+        "summary": "Intense session with blindfold calculation and endgames.",
+        "phases": {
+          "p1": "Warmup",
+          "p2": "Intensity · weaknesses",
+          "p3": "Speed · mate in 1",
+          "p4": "Peak challenge",
+          "p5": "Blindfold calculation",
+          "p6": "Cooldown · endgames"
+        }
+      },
+      "plan30": {
+        "summary": "Deep endurance and calculation training.",
+        "phases": {
+          "p1": "Warmup",
+          "p2": "Intensity · weaknesses",
+          "p3": "Speed",
+          "p4": "Peak challenge",
+          "p5": "Blindfold calculation",
+          "p6": "Cooldown · pawn endgames"
+        }
+      }
+    }
+  },
+  "ONBOARDING": {
+    "skip": "Skip",
+    "back": "Back",
+    "next": "Next",
+    "start": "Get started",
+    "slides": {
+      "welcome": {
+        "title": "Welcome to ChessColate",
+        "description": "Improve your chess by training tactics with routines designed for your level."
+      },
+      "training": {
+        "title": "Train by time control",
+        "description": "Pick Bullet, Blitz, Rapid or Classical. Each routine blends warmup, weaknesses, speed and challenge."
+      },
+      "community": {
+        "title": "Community routines",
+        "description": "Explore public routines, build your own, and share your progress with other players."
+      },
+      "challenges": {
+        "title": "Put yourself to the test",
+        "description": "Measure your level with challenges like infinite mode and the 333 Challenge. Let's train!"
+      }
     }
   },
   "CUSTOM_TRAINING": {
