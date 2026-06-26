@@ -1,0 +1,19 @@
+:host {
+  display: block;
+}
+
+// Solo en desktop el host llena la celda del grid para que las tarjetas ocupen
+// toda la altura de la fila (sin hueco bajo el menú). En mobile el alto es
+// natural para no estirar el slider ni empujar los botones fuera de vista.
+@media (min-width: 1024px) {
+  :host {
+    height: 100%;
+  }
+}
+
+// El contenido del popover ya trae su propio fondo (bg-base-100 + tema),
+// así que dejamos transparente el contenedor nativo de Ionic.
+ion-popover {
+  --background: transparent;
+  --box-shadow: none;
+}

@@ -179,28 +179,37 @@
       "classical": "Clásica"
     },
     "viewBlocks": "Qué entrenas",
+    "subtitle": "Elige un modo y empieza a resolver.",
+    "routineOf": "Rutina de {{minutes}} min",
+    "intensityPerBlock": "Intensidad por bloque",
+    "elo": "ELO",
+    "allBlocks": "Todos los bloques",
     "plans": {
       "plan1": {
-        "summary": "Sesión relámpago para afinar el ojo táctico.",
+        "lead": "Sesión relámpago",
+        "summary": "para afinar el ojo táctico.",
         "phases": {
           "p1": "Calentamiento exprés · mates y tácticas de 2 jugadas"
         }
       },
       "plan3": {
-        "summary": "Entrenamiento corto enfocado en tu punto débil.",
+        "lead": "Sesión corta",
+        "summary": "enfocada en tu punto débil.",
         "phases": {
           "p1": "Bloque enfocado en tu temática prioritaria"
         }
       },
       "plan5": {
-        "summary": "Práctica variada combinada con refuerzo de debilidades.",
+        "lead": "Práctica variada",
+        "summary": "con refuerzo de tus debilidades.",
         "phases": {
           "p1": "Calentamiento variado",
           "p2": "Refuerzo de tus debilidades"
         }
       },
       "plan10": {
-        "summary": "Rutina completa: calienta, ataca tus debilidades y remata con velocidad.",
+        "lead": "Rutina completa",
+        "summary": "para calentar, atacar debilidades y rematar con velocidad.",
         "phases": {
           "p1": "Calentamiento",
           "p2": "Intensidad · tus debilidades",
@@ -209,7 +218,8 @@
         }
       },
       "plan20": {
-        "summary": "Sesión intensa con cálculo a ciegas y finales.",
+        "lead": "Sesión intensa",
+        "summary": "con cálculo a ciegas y finales.",
         "phases": {
           "p1": "Calentamiento",
           "p2": "Intensidad · debilidades",
@@ -220,7 +230,8 @@
         }
       },
       "plan30": {
-        "summary": "Entrenamiento profundo de resistencia y cálculo.",
+        "lead": "Entrenamiento profundo",
+        "summary": "de resistencia y cálculo.",
         "phases": {
           "p1": "Calentamiento",
           "p2": "Intensidad · debilidades",
@@ -390,6 +401,7 @@
   "CUSTOM_PLANS": {
     "listTitle": "Entrenamiento personalizado",
     "shortTitle": "Personalizado",
+    "cardSubtitle": "Crea tus propias rutinas",
     "empty": "Aún no has creado ninguna rutina personalizada.",
     "createFirst": "Crear mi primera rutina",
     "untitled": "Sin título",
@@ -406,6 +418,7 @@
   "PUBLIC_PLANS": {
     "title": "Entrenamiento público",
     "shortTitle": "Público",
+    "cardSubtitle": "Rutinas listas para jugar",
     "tabs": {
       "public": "Públicos",
       "myInteractions": "Mis interacciones"

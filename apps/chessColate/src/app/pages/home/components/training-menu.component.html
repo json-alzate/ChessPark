@@ -1,5 +1,5 @@
 <!-- Mobile: slider horizontal de tarjetas (se asoma la siguiente) -->
-<swiper-container #swiperContainer slides-per-view="1.25" space-between="10" free-mode="true" auto-height="true"
+<swiper-container slides-per-view="1.1" space-between="12" free-mode="true" auto-height="true"
     class="block px-2 lg:hidden">
     @for (preset of presets; track preset.plan) {
     <swiper-slide class="h-auto items-stretch">
@@ -8,8 +8,9 @@
     }
 </swiper-container>
 
-<!-- Desktop: grid 3x2 ocupando todo el ancho -->
-<div class="hidden w-full lg:grid lg:grid-cols-3 lg:gap-3">
+<!-- Desktop: grid 3x2; las filas iguales y a altura completa llenan la celda
+     (las tarjetas h-full crecen para que no quede hueco bajo el menú). -->
+<div class="hidden w-full lg:grid lg:h-full lg:grid-cols-3 lg:auto-rows-fr lg:gap-3">
     @for (preset of presets; track preset.plan) {
     <ng-container [ngTemplateOutlet]="cardTpl" [ngTemplateOutletContext]="{ $implicit: preset }"></ng-container>
     }
@@ -17,49 +18,103 @@
 
 <!-- Tarjeta de rutina (compartida mobile/desktop) -->
 <ng-template #cardTpl let-preset>
-    <div class="card bg-base-100 shadow-sm overflow-hidden h-full w-full">
-        <!-- Cabecera: inicia la rutina al pulsar -->
-        <button type="button"
-            class="ion-activatable ripple-parent card-body p-3 flex flex-row items-center justify-between gap-2 text-left w-full cursor-pointer hover:bg-base-200/40 transition-colors"
-            (click)="createPlan(preset.plan)">
+    <div class="card bg-base-100 border border-base-300 rounded-2xl shadow-sm w-full flex flex-col lg:h-full">
+
+        <!-- Área clickeable: inicia la rutina -->
+        <div class="ion-activatable ripple-parent relative flex-1 cursor-pointer overflow-hidden rounded-t-2xl p-4 hover:bg-base-200/30 transition-colors"
+            role="button" tabindex="0" (click)="createPlan(preset.plan)"
+            (keydown.enter)="createPlan(preset.plan)">
             <ion-ripple-effect></ion-ripple-effect>
-            <div class="flex items-center gap-3 min-w-0">
-                <ion-icon [name]="categoryIconFor(preset)" class="text-2xl text-primary shrink-0"></ion-icon>
-                <div class="min-w-0">
-                    <div class="font-semibold leading-tight">
-                        {{ ('TRAINING.categories.' + preset.category) | transloco }}
+
+            <!-- Cabecera: categoría + duración + ELO -->
+            <div class="flex items-start justify-between gap-2">
+                <div class="flex items-center gap-3 min-w-0">
+                    <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/15 shrink-0">
+                        <ion-icon [name]="categoryIconFor(preset)" class="text-xl text-primary"></ion-icon>
                     </div>
-                    <div class="flex items-center gap-1 text-xs text-base-content/70">
-                        {{ preset.minutes }} <ion-icon name="timer-outline"></ion-icon>
+                    <div class="min-w-0">
+                        <div class="font-bold leading-tight">
+                            {{ ('TRAINING.categories.' + preset.category) | transloco }}
+                        </div>
+                        <div class="text-xs text-base-content/50">
+                            {{ 'TRAINING.routineOf' | transloco: { minutes: preset.minutes } }}
+                        </div>
+                    </div>
+                </div>
+                <div class="text-right shrink-0" [class.opacity-50]="isEloProvisional(preset.plan)">
+                    <div class="text-xl font-extrabold leading-none text-primary">
+                        {{ getEloDisplayForPlan(preset.plan) }}
+                    </div>
+                    <div class="mt-0.5 text-[10px] font-bold uppercase tracking-wide text-secondary">
+                        {{ 'TRAINING.elo' | transloco }}
                     </div>
                 </div>
             </div>
-            <div class="text-sm font-medium shrink-0" [class.opacity-50]="isEloProvisional(preset.plan)">
-                {{ getEloDisplayForPlan(preset.plan) }}
-            </div>
-        </button>
 
-        <!-- Descripción de la rutina -->
-        <p class="px-3 pb-2 text-xs text-base-content/70">
-            {{ preset.summaryKey | transloco }}
-        </p>
+            <!-- Descripción con inicio resaltado (2 líneas fijas) -->
+            <p class="mt-3 mb-3 line-clamp-2 min-h-[2.4rem] text-sm font-semibold leading-snug text-base-content/80">
+                <span class="text-primary">{{ preset.leadKey | transloco }}</span>
+                {{ preset.summaryKey | transloco }}
+            </p>
 
-        <!-- Acordeón: qué entrenas (no crea la rutina) -->
-        <div class="collapse collapse-arrow border-t border-base-200 rounded-none">
-            <input type="checkbox" aria-label="toggle" (change)="onAccordionToggle()" />
-            <div class="collapse-title text-xs font-medium py-2 min-h-0">
-                {{ 'TRAINING.viewBlocks' | transloco }} ({{ preset.phaseKeys.length }})
+            <!-- Línea de intensidad por bloque -->
+            <div class="mb-1.5 text-[10px] uppercase tracking-wide text-base-content/50">
+                {{ 'TRAINING.intensityPerBlock' | transloco }}
             </div>
-            <div class="collapse-content text-xs">
-                <ul class="space-y-1">
-                    @for (key of preset.phaseKeys; track key) {
-                    <li class="flex items-start gap-2 text-base-content/70">
-                        <span class="text-primary leading-none">•</span>
-                        <span>{{ key | transloco }}</span>
-                    </li>
-                    }
-                </ul>
+            <svg viewBox="0 0 100 36" preserveAspectRatio="none"
+                class="block h-11 w-full overflow-visible text-base-content/20">
+                <line x1="0" y1="30" x2="100" y2="30" stroke="currentColor" stroke-width="1"
+                    vector-effect="non-scaling-stroke"></line>
+                @for (seg of intensitySegments(preset); track $index) {
+                <polyline [attr.points]="seg.points" fill="none" [attr.stroke]="seg.color" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></polyline>
+                }
+            </svg>
+        </div>
+
+        <!-- Lista de bloques: 2 slots fijos + slot del "+N" → mismo alto en todas -->
+        <div class="flex flex-col gap-1.5 px-4 pb-4">
+            @for (slot of blockSlots; track slot) {
+            @if (preset.blocks[slot]; as block) {
+            <div class="flex items-center gap-2 text-xs">
+                <span class="h-2.5 w-2.5 shrink-0 rounded-full" [style.background]="blockColor(slot)"></span>
+                <span class="min-w-0 flex-1 truncate text-base-content/80">{{ block.labelKey | transloco }}</span>
+                <span class="tabular-nums text-base-content/50">{{ formatDuration(block.seconds) }}</span>
             </div>
+            } @else {
+            <div class="h-4" aria-hidden="true"></div>
+            }
+            }
+
+            @if (hiddenBlocks(preset).length > 0) {
+            <button type="button" id="blocks-pop-{{ preset.plan }}"
+                class="self-start text-xs font-semibold text-primary" (click)="$event.stopPropagation()">
+                +{{ hiddenBlocks(preset).length }}
+            </button>
+            <ion-popover trigger="blocks-pop-{{ preset.plan }}" side="top" alignment="center"
+                [dismissOnSelect]="true" style="--background: transparent;">
+                <ng-template>
+                    <div data-theme="halloween"
+                        class="rounded-xl border border-base-300 bg-base-100 p-3 shadow-lg">
+                        <div class="px-1 pb-1.5 text-[10px] uppercase tracking-wide text-base-content/50">
+                            {{ 'TRAINING.allBlocks' | transloco }}
+                        </div>
+                        <div class="flex flex-col gap-1.5">
+                            @for (block of preset.blocks; track block.labelKey) {
+                            <div class="flex items-center gap-2 text-xs">
+                                <span class="h-2.5 w-2.5 shrink-0 rounded-full"
+                                    [style.background]="blockColor(blockIndex(preset, block))"></span>
+                                <span class="flex-1 text-base-content/80">{{ block.labelKey | transloco }}</span>
+                                <span class="tabular-nums text-base-content/50">{{ formatDuration(block.seconds) }}</span>
+                            </div>
+                            }
+                        </div>
+                    </div>
+                </ng-template>
+            </ion-popover>
+            } @else {
+            <div class="h-4" aria-hidden="true"></div>
+            }
         </div>
     </div>
 </ng-template>

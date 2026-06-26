@@ -179,28 +179,37 @@
       "classical": "Classical"
     },
     "viewBlocks": "What you train",
+    "subtitle": "Choose a mode and start solving.",
+    "routineOf": "{{minutes}} min routine",
+    "intensityPerBlock": "Intensity per block",
+    "elo": "ELO",
+    "allBlocks": "All blocks",
     "plans": {
       "plan1": {
-        "summary": "Lightning session to sharpen your tactical eye.",
+        "lead": "Lightning session",
+        "summary": "to sharpen your tactical eye.",
         "phases": {
           "p1": "Quick warmup · 2-move mates and tactics"
         }
       },
       "plan3": {
-        "summary": "Short workout focused on your weak spot.",
+        "lead": "Short session",
+        "summary": "focused on your weak spot.",
         "phases": {
           "p1": "Block focused on your priority theme"
         }
       },
       "plan5": {
-        "summary": "Varied practice combined with weakness reinforcement.",
+        "lead": "Varied practice",
+        "summary": "reinforcing your weaknesses.",
         "phases": {
           "p1": "Varied warmup",
           "p2": "Reinforce your weaknesses"
         }
       },
       "plan10": {
-        "summary": "Full routine: warm up, target weaknesses, finish with speed.",
+        "lead": "Full routine",
+        "summary": "to warm up, attack weaknesses and finish with speed.",
         "phases": {
           "p1": "Warmup",
           "p2": "Intensity · your weaknesses",
@@ -209,7 +218,8 @@
         }
       },
       "plan20": {
-        "summary": "Intense session with blindfold calculation and endgames.",
+        "lead": "Intense session",
+        "summary": "with blindfold calculation and endgames.",
         "phases": {
           "p1": "Warmup",
           "p2": "Intensity · weaknesses",
@@ -220,7 +230,8 @@
         }
       },
       "plan30": {
-        "summary": "Deep endurance and calculation training.",
+        "lead": "Deep training",
+        "summary": "of endurance and calculation.",
         "phases": {
           "p1": "Warmup",
           "p2": "Intensity · weaknesses",
@@ -390,6 +401,7 @@
   "CUSTOM_PLANS": {
     "listTitle": "Custom training",
     "shortTitle": "Custom",
+    "cardSubtitle": "Create your own routines",
     "empty": "You haven't created any custom routines yet.",
     "createFirst": "Create my first routine",
     "untitled": "Untitled",
@@ -406,6 +418,7 @@
   "PUBLIC_PLANS": {
     "title": "Public training",
     "shortTitle": "Public",
+    "cardSubtitle": "Routines ready to play",
     "tabs": {
       "public": "Public",
       "myInteractions": "My interactions"
