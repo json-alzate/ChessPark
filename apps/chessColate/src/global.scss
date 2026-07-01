@@ -42,6 +42,12 @@
   themes: all;
 }
 
+/* Variables globales de marca (chessColate) */
+:root {
+  /* Dorado de acento del ELO (según el diseño de referencia) */
+  --cc-elo: #e8a857;
+}
+
 /* Importar estilos de cm-chessboard */
 // cm-chessboard
 @import 'assets/cm-chessboard/assets/chessboard.scss';

@@ -180,26 +180,29 @@
     },
     "viewBlocks": "What you train",
     "subtitle": "Choose a mode and start solving.",
+    "recommended": "Recommended",
     "routineOf": "{{minutes}} min routine",
-    "intensityPerBlock": "Intensity per block",
     "elo": "ELO",
     "allBlocks": "All blocks",
     "plans": {
       "plan1": {
+        "title": "Bullet",
         "lead": "Lightning session",
         "summary": "to sharpen your tactical eye.",
         "phases": {
-          "p1": "Quick warmup · 2-move mates and tactics"
+          "p1": "Express mates & tactics"
         }
       },
       "plan3": {
+        "title": "Blitz",
         "lead": "Short session",
         "summary": "focused on your weak spot.",
         "phases": {
-          "p1": "Block focused on your priority theme"
+          "p1": "Your priority theme"
         }
       },
       "plan5": {
+        "title": "Blitz+",
         "lead": "Varied practice",
         "summary": "reinforcing your weaknesses.",
         "phases": {
@@ -208,6 +211,7 @@
         }
       },
       "plan10": {
+        "title": "Rapid",
         "lead": "Full routine",
         "summary": "to warm up, attack weaknesses and finish with speed.",
         "phases": {
@@ -218,20 +222,22 @@
         }
       },
       "plan20": {
+        "title": "Rapid+",
         "lead": "Intense session",
-        "summary": "with blindfold calculation and endgames.",
+        "summary": "that builds to the peak and closes with endgames.",
         "phases": {
           "p1": "Warmup",
           "p2": "Intensity · weaknesses",
           "p3": "Speed · mate in 1",
           "p4": "Peak challenge",
-          "p5": "Blindfold calculation",
+          "p5": "Challenge",
           "p6": "Cooldown · endgames"
         }
       },
       "plan30": {
+        "title": "Classical",
         "lead": "Deep training",
-        "summary": "of endurance and calculation.",
+        "summary": "of stamina, blindfold calculation and endgames.",
         "phases": {
           "p1": "Warmup",
           "p2": "Intensity · weaknesses",

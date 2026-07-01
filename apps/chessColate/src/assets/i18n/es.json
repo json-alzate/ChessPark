@@ -180,26 +180,29 @@
     },
     "viewBlocks": "Qué entrenas",
     "subtitle": "Elige un modo y empieza a resolver.",
+    "recommended": "Recomendado",
     "routineOf": "Rutina de {{minutes}} min",
-    "intensityPerBlock": "Intensidad por bloque",
     "elo": "ELO",
     "allBlocks": "Todos los bloques",
     "plans": {
       "plan1": {
+        "title": "Bullet",
         "lead": "Sesión relámpago",
         "summary": "para afinar el ojo táctico.",
         "phases": {
-          "p1": "Calentamiento exprés · mates y tácticas de 2 jugadas"
+          "p1": "Mates y tácticas exprés"
         }
       },
       "plan3": {
+        "title": "Blitz",
         "lead": "Sesión corta",
         "summary": "enfocada en tu punto débil.",
         "phases": {
-          "p1": "Bloque enfocado en tu temática prioritaria"
+          "p1": "Tu temática prioritaria"
         }
       },
       "plan5": {
+        "title": "Blitz+",
         "lead": "Práctica variada",
         "summary": "con refuerzo de tus debilidades.",
         "phases": {
@@ -208,6 +211,7 @@
         }
       },
       "plan10": {
+        "title": "Rápida",
         "lead": "Rutina completa",
         "summary": "para calentar, atacar debilidades y rematar con velocidad.",
         "phases": {
@@ -218,20 +222,22 @@
         }
       },
       "plan20": {
+        "title": "Rápida+",
         "lead": "Sesión intensa",
-        "summary": "con cálculo a ciegas y finales.",
+        "summary": "que sube hasta el pico y cierra con finales.",
         "phases": {
           "p1": "Calentamiento",
           "p2": "Intensidad · debilidades",
           "p3": "Velocidad · mate en 1",
           "p4": "Pico de desafío",
-          "p5": "Cálculo a ciegas",
+          "p5": "Desafío",
           "p6": "Enfriamiento · finales"
         }
       },
       "plan30": {
+        "title": "Clásica",
         "lead": "Entrenamiento profundo",
-        "summary": "de resistencia y cálculo.",
+        "summary": "de resistencia, cálculo a ciegas y finales.",
         "phases": {
           "p1": "Calentamiento",
           "p2": "Intensidad · debilidades",

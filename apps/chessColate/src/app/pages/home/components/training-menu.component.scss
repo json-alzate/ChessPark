@@ -10,10 +10,3 @@
     height: 100%;
   }
 }
-
-// El contenido del popover ya trae su propio fondo (bg-base-100 + tema),
-// así que dejamos transparente el contenedor nativo de Ionic.
-ion-popover {
-  --background: transparent;
-  --box-shadow: none;
-}

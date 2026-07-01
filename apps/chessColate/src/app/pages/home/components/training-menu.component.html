@@ -1,12 +1,24 @@
 <!-- Mobile: slider horizontal de tarjetas (se asoma la siguiente) -->
-<swiper-container slides-per-view="1.1" space-between="12" free-mode="true" auto-height="true"
-    class="block px-2 lg:hidden">
-    @for (preset of presets; track preset.plan) {
-    <swiper-slide class="h-auto items-stretch">
-        <ng-container [ngTemplateOutlet]="cardTpl" [ngTemplateOutletContext]="{ $implicit: preset }"></ng-container>
-    </swiper-slide>
-    }
-</swiper-container>
+<div class="lg:hidden">
+    <swiper-container slides-per-view="1.1" space-between="12" free-mode="true" auto-height="true"
+        [attr.initial-slide]="recommendedIndex" class="block px-2 pt-3"
+        (swiperslidechange)="onSlideChange($event)">
+        @for (preset of presets; track preset.plan) {
+        <swiper-slide class="h-auto items-stretch">
+            <ng-container [ngTemplateOutlet]="cardTpl" [ngTemplateOutletContext]="{ $implicit: preset }"></ng-container>
+        </swiper-slide>
+        }
+    </swiper-container>
+
+    <!-- Indicador del slider (dots): la píldora marca la tarjeta activa -->
+    <div class="flex items-center justify-center gap-1.5 pt-3 pb-1">
+        @for (preset of presets; track preset.plan; let i = $index) {
+        <span class="h-1.5 rounded-full transition-all duration-200"
+            [ngClass]="i === activeSlide ? 'bg-primary' : 'bg-base-content/20'"
+            [style.width.px]="i === activeSlide ? 18 : 6"></span>
+        }
+    </div>
+</div>
 
 <!-- Desktop: grid 3x2; las filas iguales y a altura completa llenan la celda
      (las tarjetas h-full crecen para que no quede hueco bajo el menú). -->
@@ -18,7 +30,15 @@
 
 <!-- Tarjeta de rutina (compartida mobile/desktop) -->
 <ng-template #cardTpl let-preset>
-    <div class="card bg-base-100 border border-base-300 rounded-2xl shadow-sm w-full flex flex-col lg:h-full">
+    <div class="card relative bg-base-100 border border-base-300 rounded-2xl shadow-sm w-full flex flex-col lg:h-full">
+
+        <!-- Distintivo de rutina recomendada -->
+        @if (isRecommended(preset)) {
+        <span
+            class="badge badge-sm badge-primary absolute -top-2 left-4 z-10 border-0 font-semibold shadow-sm">
+            {{ 'TRAINING.recommended' | transloco }}
+        </span>
+        }
 
         <!-- Área clickeable: inicia la rutina -->
         <div class="ion-activatable ripple-parent relative flex-1 cursor-pointer overflow-hidden rounded-t-2xl p-4 hover:bg-base-200/30 transition-colors"
@@ -34,7 +54,7 @@
                     </div>
                     <div class="min-w-0">
                         <div class="font-bold leading-tight">
-                            {{ ('TRAINING.categories.' + preset.category) | transloco }}
+                            {{ preset.titleKey | transloco }}
                         </div>
                         <div class="text-xs text-base-content/50">
                             {{ 'TRAINING.routineOf' | transloco: { minutes: preset.minutes } }}
@@ -45,76 +65,66 @@
                     <div class="text-xl font-extrabold leading-none text-primary">
                         {{ getEloDisplayForPlan(preset.plan) }}
                     </div>
-                    <div class="mt-0.5 text-[10px] font-bold uppercase tracking-wide text-secondary">
+                    <div class="mt-0.5 text-[10px] font-bold uppercase tracking-wide text-[var(--cc-elo)]">
                         {{ 'TRAINING.elo' | transloco }}
                     </div>
                 </div>
             </div>
 
             <!-- Descripción con inicio resaltado (2 líneas fijas) -->
-            <p class="mt-3 mb-3 line-clamp-2 min-h-[2.4rem] text-sm font-semibold leading-snug text-base-content/80">
+            <p class="mt-3 line-clamp-2 min-h-[2.4rem] text-sm font-semibold leading-snug text-base-content/80">
                 <span class="text-primary">{{ preset.leadKey | transloco }}</span>
                 {{ preset.summaryKey | transloco }}
             </p>
-
-            <!-- Línea de intensidad por bloque -->
-            <div class="mb-1.5 text-[10px] uppercase tracking-wide text-base-content/50">
-                {{ 'TRAINING.intensityPerBlock' | transloco }}
-            </div>
-            <svg viewBox="0 0 100 36" preserveAspectRatio="none"
-                class="block h-11 w-full overflow-visible text-base-content/20">
-                <line x1="0" y1="30" x2="100" y2="30" stroke="currentColor" stroke-width="1"
-                    vector-effect="non-scaling-stroke"></line>
-                @for (seg of intensitySegments(preset); track $index) {
-                <polyline [attr.points]="seg.points" fill="none" [attr.stroke]="seg.color" stroke-width="2.5"
-                    stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></polyline>
-                }
-            </svg>
         </div>
 
-        <!-- Lista de bloques: 2 slots fijos + slot del "+N" → mismo alto en todas -->
-        <div class="flex flex-col gap-1.5 px-4 pb-4">
-            @for (slot of blockSlots; track slot) {
-            @if (preset.blocks[slot]; as block) {
-            <div class="flex items-center gap-2 text-xs">
-                <span class="h-2.5 w-2.5 shrink-0 rounded-full" [style.background]="blockColor(slot)"></span>
-                <span class="min-w-0 flex-1 truncate text-base-content/80">{{ block.labelKey | transloco }}</span>
-                <span class="tabular-nums text-base-content/50">{{ formatDuration(block.seconds) }}</span>
+        <!-- Lista de bloques: 2 slots fijos + slot del "+N" → mismo alto -->
+        <div class="px-4 pb-4">
+            <div class="mb-1.5 text-[10px] uppercase tracking-wide text-base-content/50">
+                {{ 'TRAINING.viewBlocks' | transloco }}
             </div>
-            } @else {
-            <div class="h-4" aria-hidden="true"></div>
-            }
-            }
+            <div class="flex flex-col gap-1.5">
+                @for (slot of blockSlots; track slot) {
+                @if (preset.blocks[slot]; as block) {
+                <ng-container
+                    [ngTemplateOutlet]="blockRow" [ngTemplateOutletContext]="{ $implicit: block }"></ng-container>
+                } @else {
+                <div class="h-4" aria-hidden="true"></div>
+                }
+                }
 
-            @if (hiddenBlocks(preset).length > 0) {
-            <button type="button" id="blocks-pop-{{ preset.plan }}"
-                class="self-start text-xs font-semibold text-primary" (click)="$event.stopPropagation()">
-                +{{ hiddenBlocks(preset).length }}
-            </button>
-            <ion-popover trigger="blocks-pop-{{ preset.plan }}" side="top" alignment="center"
-                [dismissOnSelect]="true" style="--background: transparent;">
-                <ng-template>
-                    <div data-theme="halloween"
-                        class="rounded-xl border border-base-300 bg-base-100 p-3 shadow-lg">
+                @if (hiddenBlocks(preset).length > 0) {
+                <!-- Detalle completo en un dropdown de DaisyUI (toca de nuevo para cerrar) -->
+                <details class="dropdown dropdown-top self-start">
+                    <summary
+                        class="cursor-pointer list-none text-xs font-semibold text-primary [&::-webkit-details-marker]:hidden">
+                        +{{ hiddenBlocks(preset).length }}
+                    </summary>
+                    <div
+                        class="dropdown-content z-20 mb-1 w-64 rounded-xl border border-base-300 bg-base-100 p-3 shadow-lg">
                         <div class="px-1 pb-1.5 text-[10px] uppercase tracking-wide text-base-content/50">
                             {{ 'TRAINING.allBlocks' | transloco }}
                         </div>
                         <div class="flex flex-col gap-1.5">
                             @for (block of preset.blocks; track block.labelKey) {
-                            <div class="flex items-center gap-2 text-xs">
-                                <span class="h-2.5 w-2.5 shrink-0 rounded-full"
-                                    [style.background]="blockColor(blockIndex(preset, block))"></span>
-                                <span class="flex-1 text-base-content/80">{{ block.labelKey | transloco }}</span>
-                                <span class="tabular-nums text-base-content/50">{{ formatDuration(block.seconds) }}</span>
-                            </div>
+                            <ng-container [ngTemplateOutlet]="blockRow"
+                                [ngTemplateOutletContext]="{ $implicit: block }"></ng-container>
                             }
                         </div>
                     </div>
-                </ng-template>
-            </ion-popover>
-            } @else {
-            <div class="h-4" aria-hidden="true"></div>
-            }
+                </details>
+                } @else {
+                <div class="h-4" aria-hidden="true"></div>
+                }
+            </div>
         </div>
+    </div>
+</ng-template>
+
+<!-- Fila de bloque: nombre · duración -->
+<ng-template #blockRow let-block>
+    <div class="flex items-center gap-2 text-xs">
+        <span class="min-w-0 flex-1 truncate text-base-content/80">{{ block.labelKey | transloco }}</span>
+        <span class="shrink-0 tabular-nums text-base-content/50">{{ formatDuration(block.seconds) }}</span>
     </div>
 </ng-template>
