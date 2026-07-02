@@ -2,5 +2,32 @@
   "eslint.validate": [
     "json"
   ],
-  "nxConsole.generateAiAgentRules": true
+  "nxConsole.generateAiAgentRules": true,
+  "VsCodeTaskButtons.showCounter": false,
+  "VsCodeTaskButtons.tasks": [
+    {
+      "label": "$(play) Serve",
+      "task": "ChessColate: Serve",
+      "tooltip": "Levanta ChessColate en modo dev (nx serve)",
+      "color": "#4ade80"
+    },
+    {
+      "label": "$(package) Build",
+      "task": "ChessColate: Build",
+      "tooltip": "Compila ChessColate para producción",
+      "color": "#facc15"
+    },
+    {
+      "label": "$(device-mobile) Android",
+      "task": "ChessColate: Android Run",
+      "tooltip": "Build + sync + run en Android",
+      "color": "#34d399"
+    },
+    {
+      "label": "$(device-mobile) iOS",
+      "task": "ChessColate: iOS Run",
+      "tooltip": "Build + sync + run en iOS",
+      "color": "#60a5fa"
+    }
+  ]
 }
