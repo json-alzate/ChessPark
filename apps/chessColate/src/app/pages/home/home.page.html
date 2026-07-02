@@ -393,59 +393,31 @@
           @if (isNativePlatform) {
           <!-- NATIVO: tarjeta de donación -->
           <!-- Mobile -->
-          <div class="px-2 mt-4 mb-8 lg:hidden">
-            <div class="relative overflow-hidden rounded-2xl">
-              <div class="opacity-40 pointer-events-none blur-[1px]">
-                <div class="card bg-base-100 shadow-sm border border-base-200">
-                  <figure class="p-6 bg-base-200/30">
-                    <img src="assets/images/plan-icons/custom.png" alt="Woodpecker Method"
-                      class="h-28 md:h-36 object-contain" />
-                  </figure>
-                  <div class="card-body p-4 flex flex-row items-center justify-between w-full">
-                    <div class="text-left">
-                      <h4 class="font-bold text-base md:text-lg">{{ 'DONATION.homeCard.woodpeckerTitle' | transloco }}
-                      </h4>
-                      <div class="text-sm text-base-content/60">{{ 'DONATION.homeCard.comingSoon' | transloco }}</div>
-                    </div>
-                    <div class="badge badge-primary badge-outline text-xs md:text-sm">Pro</div>
-                  </div>
-                </div>
-              </div>
-              <div
-                class="absolute inset-0 flex items-center justify-center bg-base-100/60 backdrop-blur-sm z-10 pointer-events-auto">
-                <div class="card bg-base-200 shadow-xl max-w-sm mx-4 border border-base-300">
-                  <div class="card-body text-center p-5 md:p-6 space-y-3">
-                    <h3 class="text-lg md:text-xl font-bold flex items-center justify-center gap-1">
-                      <ion-icon name="heart" class="text-error"></ion-icon>
-                      {{ 'DONATION.homeCard.title' | transloco }}
-                    </h3>
-                    <p class="text-xs md:text-sm text-base-content/80 leading-snug"
-                      [innerHTML]="'DONATION.homeCard.description' | transloco"></p>
-                    <a [routerLink]="['/donation']" class="btn btn-primary w-full mt-2 shadow-sm">
-                      {{ 'DONATION.homeCard.button' | transloco }}
-                    </a>
-                  </div>
-                </div>
-              </div>
+          <a [routerLink]="['/donation']"
+            class="flex items-center gap-3 mx-2 mt-4 mb-8 p-4 bg-base-100 border border-base-200 rounded-2xl shadow-sm lg:hidden">
+            <div class="w-9 h-9 rounded-xl bg-error/10 flex items-center justify-center flex-shrink-0">
+              <ion-icon name="heart" class="text-error text-xl"></ion-icon>
             </div>
-          </div>
+            <div class="flex-1 min-w-0">
+              <div class="text-sm font-semibold leading-tight">{{ 'DONATION.homeCard.title' | transloco }}</div>
+              <div class="text-xs text-base-content/60 leading-snug line-clamp-2"
+                [innerHTML]="'DONATION.homeCard.description' | transloco"></div>
+            </div>
+            <ion-icon name="chevron-forward" class="text-base-content/40 text-lg flex-shrink-0"></ion-icon>
+          </a>
           <!-- Desktop -->
-          <div
-            class="hidden lg:absolute lg:inset-0 lg:top-2 lg:flex lg:flex-col items-center justify-center gap-3 px-5 py-4 bg-base-100 rounded-xl shadow-sm border border-base-200 text-center">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor"
-              class="w-8 h-8 shrink-0 text-error">
-              <path
-                d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z" />
-            </svg>
-            <div>
-              <p class="font-bold text-base leading-tight mb-1">{{ 'DONATION.homeCard.title' | transloco }}</p>
-              <p class="text-sm text-base-content/70 leading-snug line-clamp-2"
-                [innerHTML]="'DONATION.homeCard.description' | transloco"></p>
+          <a [routerLink]="['/donation']"
+            class="hidden lg:absolute lg:inset-0 lg:top-2 lg:flex items-center gap-3 px-5 bg-base-100 rounded-xl shadow-sm border border-base-200">
+            <div class="w-10 h-10 rounded-xl bg-error/10 flex items-center justify-center flex-shrink-0">
+              <ion-icon name="heart" class="text-error text-2xl"></ion-icon>
             </div>
-            <a [routerLink]="['/donation']" class="btn btn-sm btn-primary shadow-sm w-full">
-              {{ 'DONATION.homeCard.button' | transloco }}
-            </a>
-          </div>
+            <div class="flex-1 min-w-0">
+              <div class="text-sm font-semibold leading-tight">{{ 'DONATION.homeCard.title' | transloco }}</div>
+              <div class="text-xs text-base-content/60 leading-snug line-clamp-2"
+                [innerHTML]="'DONATION.homeCard.description' | transloco"></div>
+            </div>
+            <ion-icon name="chevron-forward" class="text-base-content/40 text-lg flex-shrink-0"></ion-icon>
+          </a>
 
           } @else {
           <!-- WEB: tarjeta próximamente en tiendas -->
