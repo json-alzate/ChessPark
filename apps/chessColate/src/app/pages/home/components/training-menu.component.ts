@@ -2,7 +2,11 @@ import {
   Component,
   CUSTOM_ELEMENTS_SCHEMA,
   ChangeDetectorRef,
+  ElementRef,
+  HostListener,
+  ViewChild,
   inject,
+  AfterViewInit,
   OnInit,
   OnDestroy,
 } from '@angular/core';
@@ -22,7 +26,6 @@ import { ProfileService } from '@services/profile.service';
 
 import { addIcons } from 'ionicons';
 import {
-  timerOutline,
   flashOutline,
   flameOutline,
   speedometerOutline,
@@ -38,6 +41,10 @@ import {
   TrainingPlanPreset,
 } from './training-plans.config';
 
+interface SwiperEl extends HTMLElement {
+  swiper?: { slideTo: (index: number, speed?: number, runCallbacks?: boolean) => void };
+}
+
 @Component({
   selector: 'app-training-menu',
   imports: [CommonModule, IonRippleEffect, IonIcon, TranslocoPipe],
@@ -45,7 +52,7 @@ import {
   templateUrl: './training-menu.component.html',
   styleUrl: './training-menu.component.scss',
 })
-export class TrainingMenuComponent implements OnInit, OnDestroy {
+export class TrainingMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   private blockService = inject(BlockService);
   private planService = inject(PlanService);
   private profileService = inject(ProfileService);
@@ -71,9 +78,13 @@ export class TrainingMenuComponent implements OnInit, OnDestroy {
   /** Índice de la tarjeta activa en el slider mobile (arranca en la recomendada). */
   activeSlide = this.recommendedIndex;
 
+  /** Plan cuyo detalle de bloques (+N) está abierto; null si ninguno. */
+  openBlocksPlan: number | null = null;
+
+  @ViewChild('swiperRef') swiperRef?: ElementRef<SwiperEl>;
+
   constructor(private loadingController: LoadingController) {
     addIcons({
-      timerOutline,
       flashOutline,
       flameOutline,
       speedometerOutline,
@@ -85,6 +96,18 @@ export class TrainingMenuComponent implements OnInit, OnDestroy {
     this.profileService.profile$
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => this.cdr.markForCheck());
+  }
+
+  ngAfterViewInit(): void {
+    // El binding de `initial-slide` llega tarde (Swiper ya inicializó en el
+    // slide 0), así que posicionamos la tarjeta recomendada por código.
+    const goToRecommended = () =>
+      this.swiperRef?.nativeElement?.swiper?.slideTo(this.recommendedIndex, 0);
+    if (this.swiperRef?.nativeElement?.swiper) {
+      goToRecommended();
+    } else {
+      setTimeout(goToRecommended);
+    }
   }
 
   ngOnDestroy(): void {
@@ -107,12 +130,30 @@ export class TrainingMenuComponent implements OnInit, OnDestroy {
     return CATEGORY_ICON[preset.category];
   }
 
-  isRecommended(preset: TrainingPlanPreset): boolean {
-    return preset.plan === this.recommendedPlan;
-  }
-
   hiddenBlocks(preset: TrainingPlanPreset): TrainingBlockPreset[] {
     return preset.blocks.slice(this.maxVisibleBlocks);
+  }
+
+  // ---- Detalle de bloques (+N) ----------------------------------------------
+
+  /** Abre/cierra el detalle de bloques sin iniciar la rutina. */
+  toggleBlocks(plan: number, event: Event): void {
+    event.stopPropagation();
+    this.openBlocksPlan = this.openBlocksPlan === plan ? null : plan;
+    this.cdr.markForCheck();
+  }
+
+  private closeBlocks(): void {
+    if (this.openBlocksPlan !== null) {
+      this.openBlocksPlan = null;
+      this.cdr.markForCheck();
+    }
+  }
+
+  /** Un clic en cualquier parte de la pantalla cierra el detalle abierto. */
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    this.closeBlocks();
   }
 
   /** Duración en formato m:ss. */
@@ -155,6 +196,12 @@ export class TrainingMenuComponent implements OnInit, OnDestroy {
   // ---- Creación de la rutina ------------------------------------------------
 
   async createPlan(planNumber: number) {
+    // Con un detalle de bloques abierto, un toque en la tarjeta solo lo cierra.
+    if (this.openBlocksPlan !== null) {
+      this.closeBlocks();
+      return;
+    }
+
     const planType = `plan${planNumber}` as PlanTypes;
 
     const loader = await this.loadingController.create({

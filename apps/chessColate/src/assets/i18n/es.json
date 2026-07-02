@@ -172,15 +172,8 @@
       "countPlansEnded": "planes terminados en el último año",
       "loadingPuzzles": "Cargando ejercicios del entrenamiento..."
     },
-    "categories": {
-      "bullet": "Bullet",
-      "blitz": "Blitz",
-      "rapid": "Rápida",
-      "classical": "Clásica"
-    },
     "viewBlocks": "Qué entrenas",
     "subtitle": "Elige un modo y empieza a resolver.",
-    "recommended": "Recomendado",
     "routineOf": "Rutina de {{minutes}} min",
     "elo": "ELO",
     "allBlocks": "Todos los bloques",

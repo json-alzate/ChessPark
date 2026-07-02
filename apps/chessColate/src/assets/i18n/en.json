@@ -172,15 +172,8 @@
       "countPlansEnded": "plans completed in the last year",
       "loadingPuzzles": "Loading puzzles..."
     },
-    "categories": {
-      "bullet": "Bullet",
-      "blitz": "Blitz",
-      "rapid": "Rapid",
-      "classical": "Classical"
-    },
     "viewBlocks": "What you train",
     "subtitle": "Choose a mode and start solving.",
-    "recommended": "Recommended",
     "routineOf": "{{minutes}} min routine",
     "elo": "ELO",
     "allBlocks": "All blocks",

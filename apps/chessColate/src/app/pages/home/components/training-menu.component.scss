@@ -2,6 +2,13 @@
   display: block;
 }
 
+/* Desvanece los bordes del slider: las tarjetas vecinas se asoman pero su
+   texto se difumina hacia el borde (sin texto cortado, efecto limpio). */
+.slider-fade {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+}
+
 // Solo en desktop el host llena la celda del grid para que las tarjetas ocupen
 // toda la altura de la fila (sin hueco bajo el menú). En mobile el alto es
 // natural para no estirar el slider ni empujar los botones fuera de vista.

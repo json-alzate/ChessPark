@@ -1,7 +1,7 @@
 <!-- Mobile: slider horizontal de tarjetas (se asoma la siguiente) -->
 <div class="lg:hidden">
-    <swiper-container slides-per-view="1.1" space-between="12" free-mode="true" auto-height="true"
-        [attr.initial-slide]="recommendedIndex" class="block px-2 pt-3"
+    <swiper-container #swiperRef slides-per-view="1.15" centered-slides="true" space-between="10" auto-height="true"
+        [attr.initial-slide]="recommendedIndex" class="slider-fade block"
         (swiperslidechange)="onSlideChange($event)">
         @for (preset of presets; track preset.plan) {
         <swiper-slide class="h-auto items-stretch">
@@ -30,15 +30,7 @@
 
 <!-- Tarjeta de rutina (compartida mobile/desktop) -->
 <ng-template #cardTpl let-preset>
-    <div class="card relative bg-base-100 border border-base-300 rounded-2xl shadow-sm w-full flex flex-col lg:h-full">
-
-        <!-- Distintivo de rutina recomendada -->
-        @if (isRecommended(preset)) {
-        <span
-            class="badge badge-sm badge-primary absolute -top-2 left-4 z-10 border-0 font-semibold shadow-sm">
-            {{ 'TRAINING.recommended' | transloco }}
-        </span>
-        }
+    <div class="card bg-base-100 border border-base-300 rounded-2xl shadow-sm w-full flex flex-col lg:h-full">
 
         <!-- Área clickeable: inicia la rutina -->
         <div class="ion-activatable ripple-parent relative flex-1 cursor-pointer overflow-hidden rounded-t-2xl p-4 hover:bg-base-200/30 transition-colors"
@@ -78,8 +70,9 @@
             </p>
         </div>
 
-        <!-- Lista de bloques: 2 slots fijos + slot del "+N" → mismo alto -->
-        <div class="px-4 pb-4">
+        <!-- Lista de bloques (también inicia la rutina); el "+N" abre el detalle -->
+        <div class="cursor-pointer rounded-b-2xl px-4 pb-4 transition-colors hover:bg-base-200/30"
+            (click)="createPlan(preset.plan)">
             <div class="mb-1.5 text-[10px] uppercase tracking-wide text-base-content/50">
                 {{ 'TRAINING.viewBlocks' | transloco }}
             </div>
@@ -94,14 +87,17 @@
                 }
 
                 @if (hiddenBlocks(preset).length > 0) {
-                <!-- Detalle completo en un dropdown de DaisyUI (toca de nuevo para cerrar) -->
-                <details class="dropdown dropdown-top self-start">
-                    <summary
-                        class="cursor-pointer list-none text-xs font-semibold text-primary [&::-webkit-details-marker]:hidden">
+                <!-- Detalle completo: popover controlado (cierra al tocar fuera) -->
+                <div class="relative self-start">
+                    <button type="button"
+                        class="-my-1 inline-flex items-center py-1 pr-6 text-xs font-semibold text-primary"
+                        [attr.aria-expanded]="openBlocksPlan === preset.plan"
+                        (click)="toggleBlocks(preset.plan, $event)">
                         +{{ hiddenBlocks(preset).length }}
-                    </summary>
-                    <div
-                        class="dropdown-content z-20 mb-1 w-64 rounded-xl border border-base-300 bg-base-100 p-3 shadow-lg">
+                    </button>
+                    @if (openBlocksPlan === preset.plan) {
+                    <div class="absolute bottom-full left-0 z-20 mb-1 w-64 rounded-xl border border-base-300 bg-base-100 p-3 shadow-lg"
+                        (click)="$event.stopPropagation()">
                         <div class="px-1 pb-1.5 text-[10px] uppercase tracking-wide text-base-content/50">
                             {{ 'TRAINING.allBlocks' | transloco }}
                         </div>
@@ -112,7 +108,8 @@
                             }
                         </div>
                     </div>
-                </details>
+                    }
+                </div>
                 } @else {
                 <div class="h-4" aria-hidden="true"></div>
                 }
