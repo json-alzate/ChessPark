@@ -338,44 +338,59 @@
         <!-- ===== CELDA 3: Tarjeta de Entrenamiento Continuo (desktop: row1 col2) ===== -->
         <div class="order-2 px-2 mt-4 lg:px-0 lg:mt-0 lg:mb-0 lg:col-start-2 lg:row-start-1 lg:flex lg:flex-col">
           @if (isLoadingPuzzle) {
-          <div class="card bg-base-100 shadow-sm overflow-hidden lg:flex-1">
-            <div class="card-body grid grid-cols-[55%_1fr] md:grid-cols-[3fr_2fr] gap-3 p-3 w-full max-w-full">
+          <!-- Skeleton hero: cabecera · tablero · estado · CTA (apilado) -->
+          <div class="card bg-base-100 border border-base-300 rounded-2xl shadow-sm overflow-hidden lg:flex-1">
+            <div class="card-body flex flex-col gap-4 p-4 w-full max-w-full lg:justify-center">
 
-              <!-- Lado izquierdo: Tablero -->
-              <div class="relative min-w-0">
-                <div class="skeleton w-full aspect-square rounded-md"></div>
-                <div class="flex items-center gap-2 pt-2">
-                  <div class="skeleton w-6 h-6 md:w-8 md:h-8 rounded-full shrink-0"></div>
-                  <div class="flex flex-col gap-1 w-full">
-                    <div class="skeleton h-3 md:h-4 w-3/4 max-w-[120px]"></div>
-                    <div class="skeleton h-2 md:h-3 w-5/6 max-w-[150px]"></div>
-                  </div>
+              <!-- Cabecera -->
+              <div class="flex items-start justify-between gap-2">
+                <div class="flex w-full flex-col gap-2">
+                  <div class="skeleton h-5 w-40 rounded-md"></div>
+                  <div class="skeleton h-3 w-28 rounded-md"></div>
                 </div>
+                <div class="skeleton h-6 w-20 rounded-full shrink-0"></div>
               </div>
 
-              <!-- Lado derecho: Textos y botones -->
-              <div class="flex flex-col text-left min-w-0">
-                <div class="my-auto">
-                  <div class="flex items-center justify-between mb-1 md:mb-2 w-full gap-1">
-                    <div class="skeleton h-4 md:h-6 w-16 md:w-20 rounded-md"></div>
-                    <div class="skeleton w-6 h-6 md:w-8 md:h-8 rounded-full"></div>
-                  </div>
-                  <div class="skeleton h-4 md:h-8 w-11/12 mb-1 md:mb-3 rounded-md mt-1 md:mt-2"></div>
-                  <div class="skeleton h-3 md:h-5 w-full mb-1 rounded-md"></div>
-                  <div class="skeleton h-3 md:h-5 w-4/5 mb-3 md:mb-8 rounded-md"></div>
-                  <div class="flex flex-col w-full gap-2 md:gap-3">
-                    <div class="skeleton h-8 md:h-12 w-full rounded-md shadow-sm"></div>
+              <!-- Tablero protagonista -->
+              <div class="skeleton mx-auto aspect-square w-full max-w-[440px] rounded-xl"></div>
+
+              <!-- Estado -->
+              <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2">
+                  <div class="skeleton h-8 w-8 rounded-full shrink-0"></div>
+                  <div class="flex flex-col gap-1">
+                    <div class="skeleton h-3 w-20 rounded-md"></div>
+                    <div class="skeleton h-2 w-24 rounded-md"></div>
                   </div>
                 </div>
+                <div class="skeleton h-8 w-14 rounded-md"></div>
               </div>
 
+              <div class="skeleton h-12 w-full rounded-xl shadow-sm"></div>
             </div>
           </div>
           } @else if (infinitePuzzle) {
-          <div class="card bg-base-100 shadow-sm overflow-hidden lg:flex-1">
-            <div class="card-body grid grid-cols-[55%_1fr] md:grid-cols-[3fr_2fr] gap-3 p-3 w-full max-w-full items-center">
-              <!-- Lado izquierdo: Tablero -->
-              <div class="relative min-w-0 self-center">
+          <div class="card bg-base-100 border border-base-300 rounded-2xl shadow-sm overflow-hidden lg:flex-1">
+            <div class="card-body flex flex-col gap-3 p-4 w-full max-w-full lg:justify-center lg:gap-4">
+
+              <!-- Cabecera: título + subtítulo · badge ilimitado -->
+              <div class="flex items-start justify-between gap-2">
+                <div class="min-w-0">
+                  <h3 class="text-lg md:text-xl font-extrabold leading-tight">
+                    {{ 'PUZZLES.general.continuousTraining' | transloco }}
+                  </h3>
+                  <p class="mt-0.5 text-xs md:text-sm text-base-content/60 leading-snug">
+                    {{ 'PUZZLES.general.resolveUnlimited' | transloco }}
+                  </p>
+                </div>
+                <span
+                  class="shrink-0 rounded-full bg-primary/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-primary">
+                  {{ 'COMMON.time.unlimited' | transloco }}
+                </span>
+              </div>
+
+              <!-- Tablero protagonista -->
+              <div class="relative mx-auto w-full max-w-[440px]">
                 <lib-board-puzzle [setPuzzle]="infinitePuzzle" [setForceStopTimer]="false" [showBoardControls]="false"
                   (puzzleCompleted)="onInfinitePuzzleCompleted('good')"
                   (puzzleFailed)="onInfinitePuzzleCompleted('bad')"
@@ -383,66 +398,60 @@
                 </lib-board-puzzle>
               </div>
 
-              <!-- Lado derecho: Textos y botones -->
-              <div class="flex flex-col text-left min-w-0 gap-12 lg:gap-8 xl:gap-[65px]">
-                <div class="flex items-center gap-2">
+              <!-- Fila de estado: turno · Elo + stats -->
+              <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2 min-w-0">
                   <img [src]="'assets/images/king-' + playerColor + '.svg'" [alt]="playerColor"
-                    class="h-6 w-6 md:h-8 md:w-8 lg:h-7 lg:w-7 xl:h-8 xl:w-8 shrink-0" />
+                    class="h-7 w-7 md:h-8 md:w-8 shrink-0" />
                   <div class="flex flex-col min-w-0">
-                    <span class="font-semibold text-xs md:text-base lg:text-sm xl:text-base leading-tight">{{ 'PUZZLES.help.yourTurn' |
-                      transloco }}</span>
-                    <span class="text-[10px] md:text-sm text-base-content/80 leading-tight whitespace-nowrap">
-                      @if (playerColor === 'white') { {{
-                      'PUZZLES.help.whiteToMove' | transloco }} } @else { {{
-                      'PUZZLES.help.blackToMove' | transloco }} }
+                    <span class="text-sm font-semibold leading-tight">{{ 'PUZZLES.help.yourTurn' | transloco }}</span>
+                    <span class="text-xs text-base-content/70 leading-tight whitespace-nowrap">
+                      @if (playerColor === 'white') { {{ 'PUZZLES.help.whiteToMove' | transloco }} }
+                      @else { {{ 'PUZZLES.help.blackToMove' | transloco }} }
                     </span>
                   </div>
                 </div>
-                <div class="flex flex-col gap-1">
-                  <div class="flex items-center justify-between">
-                    <span class="text-sm font-medium" [class.opacity-50]="infinityElo === '1500?'">{{ infinityElo
-                      }}</span>
-                    <button class="btn btn-circle btn-xs md:btn-sm btn-primary"
-                      (click)="isStatsModalOpen = true">
-                      <ion-icon name="stats-chart-outline" class="text-base"></ion-icon>
-                    </button>
+                <div class="flex items-center gap-2 shrink-0">
+                  <div class="text-right" [class.opacity-50]="infinityElo === '1500?'">
+                    <div class="text-lg font-extrabold leading-none text-primary">{{ infinityElo }}</div>
+                    <div class="mt-0.5 text-[10px] font-bold uppercase tracking-wide text-[var(--cc-elo)]">
+                      {{ 'TRAINING.elo' | transloco }}
+                    </div>
                   </div>
-                  <h3 class="text-sm md:text-2xl lg:text-lg xl:text-2xl font-bold leading-tight">
-                    {{ 'PUZZLES.general.continuousTraining' | transloco }}
-                  </h3>
-                  <p
-                    class="text-[10px] md:text-base lg:text-sm xl:text-base text-base-content/80 font-medium leading-tight line-clamp-4 md:line-clamp-none">
-                    {{ 'PUZZLES.general.resolveUnlimited' | transloco }}
-                  </p>
-                  <div class="flex flex-col w-full gap-2 mt-2">
-                    @if (isInfinitePuzzleSolved) {
-                    @if (infinitePuzzleProblemState === 'bad' ||
-                    infinitePuzzleProblemState === 'timeOut') {
-                    <div class="text-error font-bold text-center text-xs md:text-sm animate-pulse">{{
-                      'PUZZLE_SOLUTION.feedback.wrong' | transloco }}</div>
-                    <button class="btn btn-xs md:btn-md btn-outline btn-error w-full font-bold"
-                      (click)="showSolution()">
-                      <span>{{ 'PUZZLE_SOLUTION.actions.solution' | transloco }}</span>
-                      <ion-icon name="eye" class="hidden md:inline"></ion-icon>
-                    </button>
-                    } @else if (infinitePuzzleProblemState === 'good') {
-                    <div class="text-success font-bold text-center text-xs md:text-sm animate-bounce">{{
-                      'PUZZLE_SOLUTION.feedback.excellent' | transloco }}</div>
-                    }
-                    <button class="btn btn-xs md:btn-md btn-primary w-full shadow-md font-bold"
-                      (click)="startInfinityPlan()">
-                      <span>{{ 'COMMON.actions.continue' | transloco }}</span>
-                      <ion-icon name="arrow-forward" class="hidden md:inline"></ion-icon>
-                    </button>
-                    } @else {
-                    <button class="btn btn-xs md:btn-md btn-primary w-full shadow-md font-bold"
-                      (click)="startInfinityPlan()">
-                      <span>{{ 'PUZZLES.general.trainNow' | transloco }}</span>
-                      <ion-icon name="arrow-forward" class="hidden md:inline"></ion-icon>
-                    </button>
-                    }
-                  </div>
+                  <button class="btn btn-circle btn-xs md:btn-sm btn-ghost" (click)="isStatsModalOpen = true">
+                    <ion-icon name="stats-chart-outline" class="text-base"></ion-icon>
+                  </button>
                 </div>
+              </div>
+
+              <!-- Feedback (resuelto) + CTA -->
+              <div class="flex flex-col w-full gap-2">
+                @if (isInfinitePuzzleSolved) {
+                @if (infinitePuzzleProblemState === 'bad' ||
+                infinitePuzzleProblemState === 'timeOut') {
+                <div class="text-error font-bold text-center text-xs md:text-sm animate-pulse">{{
+                  'PUZZLE_SOLUTION.feedback.wrong' | transloco }}</div>
+                <button class="btn btn-sm md:btn-md btn-outline btn-error w-full font-bold"
+                  (click)="showSolution()">
+                  <span>{{ 'PUZZLE_SOLUTION.actions.solution' | transloco }}</span>
+                  <ion-icon name="eye" class="hidden md:inline"></ion-icon>
+                </button>
+                } @else if (infinitePuzzleProblemState === 'good') {
+                <div class="text-success font-bold text-center text-xs md:text-sm animate-bounce">{{
+                  'PUZZLE_SOLUTION.feedback.excellent' | transloco }}</div>
+                }
+                <button class="btn btn-md btn-primary w-full shadow-md font-bold"
+                  (click)="startInfinityPlan()">
+                  <span>{{ 'COMMON.actions.continue' | transloco }}</span>
+                  <ion-icon name="arrow-forward"></ion-icon>
+                </button>
+                } @else {
+                <button class="btn btn-md btn-primary w-full shadow-md font-bold"
+                  (click)="startInfinityPlan()">
+                  <span>{{ 'PUZZLES.general.trainNow' | transloco }}</span>
+                  <ion-icon name="arrow-forward"></ion-icon>
+                </button>
+                }
               </div>
             </div>
           </div>
