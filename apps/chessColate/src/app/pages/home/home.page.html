@@ -22,31 +22,59 @@
             <div class="skeleton h-7 w-44 mb-2 rounded-md"></div>
             <div class="skeleton h-4 w-60 max-w-[70vw] rounded-md"></div>
           </div>
-          <!-- Ancho en vw replicando slides-per-view="2.7" del swiper real → escala igual en cualquier viewport -->
-          <div class="ml-2 flex gap-[5px] overflow-hidden lg:hidden">
-            @for (i of [1,2,3,4]; track i) {
-            <div class="card bg-base-100 shrink-0 w-[36vw]">
-              <figure class="p-2">
-                <div class="skeleton w-full aspect-square rounded-md"></div>
-              </figure>
-              <div class="card-body p-2 flex flex-row justify-between items-center w-full">
-                <div class="skeleton h-4 w-10 rounded-sm"></div>
-                <div class="skeleton h-4 w-6 rounded-sm"></div>
+          <!-- Plantilla de tarjeta skeleton: misma estructura que la tarjeta real -->
+          <ng-template #skeletonCard>
+            <div class="p-4">
+              <!-- Cabecera: ícono + título + duración | ELO -->
+              <div class="flex items-start justify-between gap-2">
+                <div class="flex items-center gap-3">
+                  <div class="skeleton h-9 w-9 shrink-0 rounded-xl"></div>
+                  <div class="flex flex-col gap-1.5">
+                    <div class="skeleton h-4 w-20 rounded-md"></div>
+                    <div class="skeleton h-3 w-24 rounded-sm"></div>
+                  </div>
+                </div>
+                <div class="flex flex-col items-end gap-1.5">
+                  <div class="skeleton h-5 w-12 rounded-md"></div>
+                  <div class="skeleton h-2.5 w-6 rounded-sm"></div>
+                </div>
               </div>
+              <!-- Descripción (2 líneas) -->
+              <div class="mt-3 flex flex-col gap-1.5">
+                <div class="skeleton h-3.5 w-full rounded-sm"></div>
+                <div class="skeleton h-3.5 w-3/5 rounded-sm"></div>
+              </div>
+            </div>
+            <!-- Lista de bloques: título + 2 filas + "+N" -->
+            <div class="px-4 pb-4">
+              <div class="skeleton mb-2 h-2.5 w-20 rounded-sm"></div>
+              <div class="flex flex-col gap-2.5">
+                <div class="flex items-center justify-between gap-2">
+                  <div class="skeleton h-3 w-32 rounded-sm"></div>
+                  <div class="skeleton h-3 w-8 rounded-sm"></div>
+                </div>
+                <div class="flex items-center justify-between gap-2">
+                  <div class="skeleton h-3 w-28 rounded-sm"></div>
+                  <div class="skeleton h-3 w-8 rounded-sm"></div>
+                </div>
+                <div class="skeleton h-3 w-6 rounded-sm"></div>
+              </div>
+            </div>
+          </ng-template>
+
+          <!-- Skeleton slider mobile: tarjeta grande + asomo de la siguiente -->
+          <div class="flex gap-[10px] overflow-hidden px-4 lg:hidden">
+            @for (i of [1,2]; track i) {
+            <div class="card bg-base-100 border border-base-300 rounded-2xl shrink-0 w-[82vw] flex flex-col">
+              <ng-container [ngTemplateOutlet]="skeletonCard"></ng-container>
             </div>
             }
           </div>
           <!-- Skeleton desktop: grid 3x2 igual que training-menu -->
-          <div class="hidden lg:grid lg:grid-cols-3 lg:gap-3 lg:px-2 lg:pb-2">
+          <div class="hidden lg:grid lg:grid-cols-3 lg:gap-3">
             @for (i of [1,2,3,4,5,6]; track i) {
-            <div class="card bg-base-100 shadow-sm">
-              <figure class="p-4">
-                <div class="skeleton h-24 lg:h-36 aspect-square rounded-md"></div>
-              </figure>
-              <div class="card-body p-3 pt-0 flex flex-row justify-between items-center w-full">
-                <div class="skeleton h-3 w-12 rounded-sm"></div>
-                <div class="skeleton h-3 w-8 rounded-sm"></div>
-              </div>
+            <div class="card bg-base-100 border border-base-300 rounded-2xl flex flex-col">
+              <ng-container [ngTemplateOutlet]="skeletonCard"></ng-container>
             </div>
             }
           </div>
