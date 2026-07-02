@@ -165,175 +165,104 @@
           }
 
           <!-- Reto 333 — visible solo en desktop -->
-          <div class="hidden lg:block lg:mt-2 relative group">
+          <div class="hidden lg:block lg:mt-2">
             @if (isLoadingReto333) {
-            <div class="absolute -inset-0.5 bg-base-300 rounded-2xl blur opacity-25"></div>
-            <div class="card bg-base-100/90 shadow-xl overflow-hidden border border-base-content/10 relative">
-              <div class="flex flex-row items-stretch w-full min-h-[140px]">
-                <div class="w-[35%] bg-base-200 flex flex-col items-center justify-center p-4">
-                  <div class="skeleton h-10 w-16 mb-2 rounded-md"></div>
-                  <div class="skeleton h-3 w-12 rounded-sm text-center"></div>
-                </div>
-                <div class="w-[65%] p-4 flex flex-col justify-between gap-2">
-                  <div class="flex items-center justify-between mb-1">
-                    <div class="skeleton h-5 w-16 rounded-full"></div>
-                    <div class="skeleton h-5 w-20 rounded-full"></div>
-                  </div>
-                  <div class="skeleton h-4 w-3/4 rounded-sm"></div>
-                  <div class="skeleton h-3 w-full rounded-sm"></div>
-                  <div class="mt-2 flex items-center justify-end">
-                    <div class="skeleton h-4 w-28 rounded-md"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <ng-container [ngTemplateOutlet]="reto333Skeleton"></ng-container>
             } @else {
-            <div
-              class="card bg-base-100 shadow-sm overflow-hidden cursor-pointer hover:-translate-y-1 transition-all active:scale-[0.98]"
-              (click)="startReto333Plan()">
-              <div class="flex flex-row items-stretch w-full">
-                <div class="w-[35%] bg-base-200 flex flex-col items-center justify-center p-3 xl:p-4 relative overflow-hidden">
-                  <div class="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-r-sm"></div>
-                  <h2 class="text-4xl md:text-5xl lg:text-4xl xl:text-5xl font-black text-primary tracking-tighter z-10 italic">333</h2>
-                  <span
-                    class="text-[9px] md:text-xs text-base-content/40 font-bold uppercase tracking-widest mt-1 z-10 text-center">{{
-                    'RETO_333.survival' | transloco }}</span>
-                </div>
-                <div class="w-[65%] p-3 xl:p-4 flex flex-col justify-between">
-                  <div>
-                    <div class="flex items-center justify-between mb-2">
-                      <div class="badge badge-sm badge-outline font-semibold">{{ 'RETO_333.mateIn1' | transloco }}</div>
-                    </div>
-                    @if (reto333Stats) {
-                    <div class="grid grid-cols-2 gap-2 mt-3 mb-1">
-                      <div class="flex flex-col bg-base-200/50 p-2 rounded-xl border border-base-content/5">
-                        <span class="text-[9px] uppercase tracking-wider text-base-content/50 font-semibold mb-0.5">{{
-                          'RETO_333.streak' | transloco }}</span>
-                        <span class="font-bold text-sm md:text-base leading-none text-base-content">
-                          {{ reto333Stats.lastScore }}<span class="text-[10px] text-base-content/40 ml-0.5">/333</span>
-                        </span>
-                      </div>
-                      <div class="flex flex-col bg-base-200/50 p-2 rounded-xl border border-base-content/5">
-                        <span class="text-[9px] uppercase tracking-wider text-base-content/50 font-semibold mb-0.5">{{
-                          'RETO_333.time' | transloco }}</span>
-                        <span class="font-bold text-sm md:text-base leading-none text-base-content">
-                          {{ reto333Stats.timeString }}
-                        </span>
-                      </div>
-                    </div>
-                    @if (reto333Stats.completed) {
-                    <div
-                      class="px-2 py-1 mt-1 bg-success/10 border border-success/20 rounded-lg flex items-center justify-center gap-1.5 text-success">
-                      <ion-icon name="trophy"></ion-icon>
-                      <span class="text-[10px] md:text-xs font-bold uppercase tracking-widest">{{ 'RETO_333.crowned' |
-                        transloco }}</span>
-                    </div>
-                    }
-                    } @else {
-                    <div class="my-1">
-                      <h3 class="text-sm md:text-base font-bold leading-tight text-base-content">
-                        {{ 'RETO_333.title' | transloco }}
-                      </h3>
-                      <p class="text-[11px] md:text-sm text-base-content/60 leading-snug mt-1.5">
-                        {{ 'RETO_333.description' | transloco }}
-                      </p>
-                    </div>
-                    }
-                  </div>
-                  <button class="btn btn-primary btn-xs  mt-3 font-bold shadow-md whitespace-nowrap">
-                    {{ (reto333Stats ? 'RETO_333.tryAgain' : 'RETO_333.acceptChallenge') | transloco }}
-                  </button>
-                </div>
-              </div>
-            </div>
+            <ng-container [ngTemplateOutlet]="reto333Card"></ng-container>
             }
           </div>
 
           <!-- Reto 333 — visible solo en mobile -->
-          <div class="lg:hidden px-2 mt-4 relative group">
+          <div class="lg:hidden px-2 mt-4">
             @if (isLoadingReto333) {
-            <div class="absolute -inset-0.5 bg-base-300 rounded-2xl blur opacity-25"></div>
-            <div class="card bg-base-100/90 shadow-xl overflow-hidden border border-base-content/10 relative">
-              <div class="flex flex-row items-stretch w-full min-h-[140px]">
-                <div class="w-[35%] bg-base-200 flex flex-col items-center justify-center p-4">
-                  <div class="skeleton h-10 w-16 mb-2 rounded-md"></div>
-                  <div class="skeleton h-3 w-12 rounded-sm text-center"></div>
-                </div>
-                <div class="w-[65%] p-4 flex flex-col justify-between gap-2">
-                  <div class="flex items-center justify-between mb-1">
-                    <div class="skeleton h-5 w-16 rounded-full"></div>
-                    <div class="skeleton h-5 w-20 rounded-full"></div>
-                  </div>
-                  <div class="skeleton h-4 w-3/4 rounded-sm"></div>
-                  <div class="skeleton h-3 w-full rounded-sm"></div>
-                  <div class="mt-2 flex items-center justify-end">
-                    <div class="skeleton h-4 w-28 rounded-md"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <ng-container [ngTemplateOutlet]="reto333Skeleton"></ng-container>
             } @else {
-            <div
-              class="card bg-base-100 shadow-sm overflow-hidden cursor-pointer hover:-translate-y-1 transition-all active:scale-[0.98]"
-              (click)="startReto333Plan()">
-              <div class="flex flex-row items-stretch w-full">
-                <div class="w-[35%] bg-base-200 flex flex-col items-center justify-center p-4 relative overflow-hidden">
-                  <div class="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-r-sm"></div>
-                  <h2 class="text-4xl md:text-5xl font-black text-primary tracking-tighter z-10 italic">333</h2>
-                  <span
-                    class="text-[9px] md:text-xs text-base-content/40 font-bold uppercase tracking-widest mt-1 z-10 text-center">{{
-                    'RETO_333.survival' | transloco }}</span>
-                </div>
-                <div class="w-[65%] p-4 flex flex-col justify-between">
-                  <div>
-                    <div class="flex items-center justify-between mb-2">
-                      <div class="badge badge-sm badge-outline font-semibold">{{ 'RETO_333.mateIn1' | transloco }}</div>
-                    </div>
-                    @if (reto333Stats) {
-                    <div class="grid grid-cols-2 gap-2 mt-3 mb-1">
-                      <div class="flex flex-col bg-base-200/50 p-2 rounded-xl border border-base-content/5">
-                        <span class="text-[9px] uppercase tracking-wider text-base-content/50 font-semibold mb-0.5">{{
-                          'RETO_333.streak' | transloco }}</span>
-                        <span class="font-bold text-sm md:text-base leading-none text-base-content">
-                          {{ reto333Stats.lastScore }}<span class="text-[10px] text-base-content/40 ml-0.5">/333</span>
-                        </span>
-                      </div>
-                      <div class="flex flex-col bg-base-200/50 p-2 rounded-xl border border-base-content/5">
-                        <span class="text-[9px] uppercase tracking-wider text-base-content/50 font-semibold mb-0.5">{{
-                          'RETO_333.time' | transloco }}</span>
-                        <span class="font-bold text-sm md:text-base leading-none text-base-content">
-                          {{ reto333Stats.timeString }}
-                        </span>
-                      </div>
-                    </div>
-                    @if (reto333Stats.completed) {
-                    <div
-                      class="px-2 py-1 mt-1 bg-success/10 border border-success/20 rounded-lg flex items-center justify-center gap-1.5 text-success">
-                      <ion-icon name="trophy"></ion-icon>
-                      <span class="text-[10px] md:text-xs font-bold uppercase tracking-widest">{{ 'RETO_333.crowned' |
-                        transloco }}</span>
-                    </div>
-                    }
-                    } @else {
-                    <div class="my-1">
-                      <h3 class="text-sm md:text-base font-bold leading-tight text-base-content">
-                        {{ 'RETO_333.title' | transloco }}
-                      </h3>
-                      <p class="text-[11px] md:text-sm text-base-content/60 leading-snug mt-1.5">
-                        {{ 'RETO_333.description' | transloco }}
-                      </p>
-                    </div>
-                    }
-                  </div>
-                  <button class="btn btn-primary btn-xs w-full mt-3 font-bold shadow-md">
-                    {{ (reto333Stats ? 'RETO_333.tryAgain' : 'RETO_333.acceptChallenge') | transloco }}
-                  </button>
-                </div>
-              </div>
-            </div>
+            <ng-container [ngTemplateOutlet]="reto333Card"></ng-container>
             }
           </div>
         </div>
+
+        <!-- Reto 333 — skeleton (vertical, acorde al nuevo diseño) -->
+        <ng-template #reto333Skeleton>
+          <div class="card bg-base-100 border border-base-300 rounded-2xl shadow-sm overflow-hidden">
+            <div class="relative p-4 pl-6">
+              <div class="absolute left-0 top-3.5 bottom-3.5 w-1 bg-base-300 rounded-r-sm"></div>
+              <div class="flex items-center gap-2">
+                <div class="skeleton h-4 w-20 rounded-md"></div>
+                <div class="skeleton h-4 w-16 rounded-full"></div>
+              </div>
+              <div class="skeleton h-3 w-full rounded-sm mt-3"></div>
+              <div class="skeleton h-3 w-2/3 rounded-sm mt-1.5"></div>
+              <div class="skeleton h-1.5 w-full rounded-full mt-4"></div>
+              <div class="skeleton h-9 w-full rounded-xl mt-4"></div>
+            </div>
+          </div>
+        </ng-template>
+
+        <!-- Reto 333 — tarjeta (vertical: acento + progreso + CTA outline) -->
+        <ng-template #reto333Card>
+          <div
+            class="card bg-base-100 border border-base-300 rounded-2xl shadow-sm overflow-hidden cursor-pointer transition-all hover:-translate-y-0.5 active:scale-[0.98]"
+            (click)="startReto333Plan()">
+            <div class="relative p-4 pl-6">
+              <!-- Barra de acento lateral -->
+              <div class="absolute left-0 top-3.5 bottom-3.5 w-1 bg-primary rounded-r-sm"></div>
+
+              <!-- Título + etiqueta de modalidad -->
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="font-bold text-[15px] leading-none">{{ 'RETO_333.survival' | transloco }}</span>
+                <span class="rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-primary">
+                  {{ 'RETO_333.mateIn1' | transloco }}
+                </span>
+              </div>
+
+              <!-- Descripción -->
+              <p class="mt-1.5 text-xs leading-snug text-base-content/60">
+                {{ 'RETO_333.description' | transloco }}
+              </p>
+
+              @if (reto333Stats) {
+              <!-- Progreso de la última racha -->
+              <div class="mt-3.5">
+                <div class="flex items-baseline justify-between gap-2">
+                  <div class="leading-none">
+                    <span class="text-xl font-extrabold text-base-content">{{ reto333Stats.lastScore }}</span>
+                    <span class="text-[13px] font-semibold text-base-content/50"> / 333</span>
+                  </div>
+                  @if (reto333Stats.bestScore) {
+                  <span class="text-[11px] text-base-content/50">{{ 'RETO_333.record' | transloco }}:
+                    <b class="font-bold text-[var(--cc-elo)]">{{ reto333Stats.bestScore }}</b></span>
+                  }
+                </div>
+                <div class="mt-2 h-1.5 overflow-hidden rounded-full bg-base-300">
+                  <div class="h-full rounded-full bg-primary transition-all"
+                    [style.width.%]="(reto333Stats.lastScore / 333) * 100"></div>
+                </div>
+              </div>
+
+              <!-- Tiempo de la racha -->
+              <div class="mt-3 flex items-center gap-1.5 text-xs text-base-content/50">
+                <ion-icon name="time-outline" class="text-sm"></ion-icon>
+                <span>{{ 'RETO_333.time' | transloco }} · <b class="font-semibold text-base-content/80">{{ reto333Stats.timeString }}</b></span>
+              </div>
+
+              @if (reto333Stats.completed) {
+              <!-- Insignia de reto coronado -->
+              <div class="mt-3 flex items-center justify-center gap-1.5 rounded-lg border border-success/20 bg-success/10 px-2 py-1 text-success">
+                <ion-icon name="trophy" class="text-sm"></ion-icon>
+                <span class="text-[10px] font-bold uppercase tracking-widest">{{ 'RETO_333.crowned' | transloco }}</span>
+              </div>
+              }
+              }
+
+              <!-- CTA -->
+              <button class="btn btn-outline btn-primary btn-sm w-full mt-3.5 font-bold">
+                {{ (reto333Stats ? 'RETO_333.tryAgain' : 'RETO_333.acceptChallenge') | transloco }}
+              </button>
+            </div>
+          </div>
+        </ng-template>
 
         <!-- ===== CELDA 3: Tarjeta de Entrenamiento Continuo (desktop: row1 col2) ===== -->
         <div class="order-2 px-2 mt-4 lg:px-0 lg:mt-0 lg:mb-0 lg:col-start-2 lg:row-start-1 lg:flex lg:flex-col">

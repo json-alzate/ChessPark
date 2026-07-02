@@ -679,13 +679,28 @@ export class TrainingComponent implements OnInit, OnDestroy {
     const timeString = `${minutes}m ${seconds}s`;
     
     const completed = solvedCount >= 333;
-    
+
+    // Récord de mejor racha (persistente entre intentos)
+    let bestScore = solvedCount;
+    try {
+      const prevStr = localStorage.getItem('chesscolate_reto333_stats');
+      if (prevStr) {
+        const prev = JSON.parse(prevStr);
+        if (typeof prev?.bestScore === 'number') {
+          bestScore = Math.max(prev.bestScore, solvedCount);
+        }
+      }
+    } catch (e) {
+      console.error('Error leyendo el récord del reto 333:', e);
+    }
+
     // Save state custom locally
     const statsData = {
       maxElo: this.reto333EloLocal,
       lastTime: timePlayedSec,
       completed,
       lastScore: solvedCount,
+      bestScore,
       timeString
     };
     localStorage.setItem('chesscolate_reto333_stats', JSON.stringify(statsData));
