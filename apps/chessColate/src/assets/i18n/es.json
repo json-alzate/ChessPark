@@ -257,8 +257,8 @@
         "description": "Elige una rutina lista o crea la tuya, para tu nivel y el tiempo que tengas. Abres y ya estás resolviendo."
       },
       "solve": {
-        "title": "Pruébalo: da mate en una",
-        "description": "Sigue la flecha y mueve la pieza. Vas a sentir el clic.",
+        "title": "Pruébalo: resuelve el mate",
+        "description": "Sigue las flechas y juega la combinación. Vas a sentir el clic.",
         "solved": "¡Eso! Ese clic es lo que vas a entrenar cada día."
       },
       "habit": {

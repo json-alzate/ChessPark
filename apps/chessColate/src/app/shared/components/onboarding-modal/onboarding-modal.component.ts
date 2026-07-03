@@ -22,21 +22,21 @@ import { Puzzle } from '@cpark/models';
 export const ONBOARDING_SEEN_KEY = 'chessColate_onboarding_seen';
 
 /**
- * Mate en 1 real (Lichess vía CDN de la app, tema `mateIn1`/`backRankMate`),
- * quemado aquí para el momento interactivo del onboarding. El usuario juega de
- * blancas: la máquina hace la jugada inicial (las negras capturan la dama) y el
- * usuario da mate con la torre en f8. La flecha de pista guía de f2 a f8.
+ * Mate en 2 real (Lichess vía CDN de la app, tema `mateIn2`), quemado aquí para
+ * el momento interactivo del onboarding. El usuario juega de blancas y ejecuta
+ * una pequeña combinación: sacrifica la torre (Txf8+), el rey captura (Kxf8) y
+ * remata con Dd8#. Las flechas de pista guían cada jugada del usuario.
  */
 const ONBOARDING_MATE_PUZZLE: Puzzle = {
   uid: 'onboarding-mate-1',
-  fen: '4r2k/p1p3pp/8/8/4Q3/1P4P1/P4RK1/8 b - - 0 31',
-  moves: 'e8e4 f2f8',
-  rating: 700,
+  fen: '4Rrk1/3Q1ppp/8/8/8/6P1/q4r1P/6K1 b - - 1 30',
+  moves: 'f2h2 e8f8 g8f8 d7d8',
+  rating: 1100,
   ratingDeviation: 0,
   popularity: 0,
   randomNumberQuery: 0,
   nbPlays: 0,
-  themes: ['mateIn1', 'backRankMate'],
+  themes: ['mateIn2'],
   gameUrl: '',
   openingFamily: '',
   openingVariation: '',
@@ -91,9 +91,6 @@ export class OnboardingModalComponent {
   ];
 
   currentSlide = 0;
-
-  /** Flecha de pista discreta para el mate (torre f2 → f8). */
-  readonly hintArrow = { from: 'f2', to: 'f8' };
 
   /** Puzzle del slide interactivo. Se carga perezosamente al llegar a ese slide. */
   matePuzzle?: Puzzle;

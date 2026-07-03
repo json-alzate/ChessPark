@@ -257,8 +257,8 @@
         "description": "Pick a ready-made routine or create your own, for your level and the time you have. Open the app and you're already solving."
       },
       "solve": {
-        "title": "Try it: mate in one",
-        "description": "Follow the arrow and move the piece. Feel the click.",
+        "title": "Try it: solve the mate",
+        "description": "Follow the arrows and play the combination. Feel the click.",
         "solved": "That's it! That click is what you'll train every day."
       },
       "habit": {
