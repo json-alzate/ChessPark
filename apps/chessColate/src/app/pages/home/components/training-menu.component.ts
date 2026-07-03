@@ -15,7 +15,6 @@ import { Subject, takeUntil } from 'rxjs';
 
 import {
   IonRippleEffect,
-  IonIcon,
   LoadingController,
 } from '@ionic/angular/standalone';
 
@@ -24,18 +23,11 @@ import { BlockService } from '@services/block.service';
 import { PlanService } from '@services/plan.service';
 import { ProfileService } from '@services/profile.service';
 
-import { addIcons } from 'ionicons';
-import {
-  flashOutline,
-  flameOutline,
-  speedometerOutline,
-  hourglassOutline,
-} from 'ionicons/icons';
 import { Block, Plan, PlanTypes } from '@cpark/models';
 import { Router } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {
-  CATEGORY_ICON,
+  planImage,
   TRAINING_PLAN_PRESETS,
   TrainingBlockPreset,
   TrainingPlanPreset,
@@ -47,7 +39,7 @@ interface SwiperEl extends HTMLElement {
 
 @Component({
   selector: 'app-training-menu',
-  imports: [CommonModule, IonRippleEffect, IonIcon, TranslocoPipe],
+  imports: [CommonModule, IonRippleEffect, TranslocoPipe],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './training-menu.component.html',
   styleUrl: './training-menu.component.scss',
@@ -83,14 +75,7 @@ export class TrainingMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('swiperRef') swiperRef?: ElementRef<SwiperEl>;
 
-  constructor(private loadingController: LoadingController) {
-    addIcons({
-      flashOutline,
-      flameOutline,
-      speedometerOutline,
-      hourglassOutline,
-    });
-  }
+  constructor(private loadingController: LoadingController) {}
 
   ngOnInit(): void {
     this.profileService.profile$
@@ -126,8 +111,8 @@ export class TrainingMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // ---- Presentación de la tarjeta -------------------------------------------
 
-  categoryIconFor(preset: TrainingPlanPreset): string {
-    return CATEGORY_ICON[preset.category];
+  imageFor(preset: TrainingPlanPreset): string {
+    return planImage(`plan${preset.plan}` as PlanTypes);
   }
 
   hiddenBlocks(preset: TrainingPlanPreset): TrainingBlockPreset[] {

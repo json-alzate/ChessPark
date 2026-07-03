@@ -41,8 +41,9 @@
             <!-- Cabecera: categoría + duración + ELO -->
             <div class="flex items-start justify-between gap-2">
                 <div class="flex items-center gap-3 min-w-0">
-                    <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/15 shrink-0">
-                        <ion-icon [name]="categoryIconFor(preset)" class="text-xl text-primary"></ion-icon>
+                    <div class="flex h-10 w-10 items-center justify-center shrink-0">
+                        <img [src]="imageFor(preset)" [alt]="preset.titleKey | transloco"
+                            class="h-10 w-10 object-contain" />
                     </div>
                     <div class="min-w-0">
                         <div class="font-bold leading-tight">

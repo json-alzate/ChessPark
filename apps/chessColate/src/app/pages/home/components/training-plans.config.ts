@@ -12,6 +12,8 @@
  * las debilidades del usuario; aquí solo se comunica la estructura.
  */
 
+import { PlanTypes } from '@cpark/models';
+
 export type ChessTimeCategory = 'bullet' | 'blitz' | 'rapid' | 'classical';
 
 /** Icono Ionic por categoría (refuerza el lenguaje estándar, sin assets nuevos). */
@@ -21,6 +23,28 @@ export const CATEGORY_ICON: Record<ChessTimeCategory, string> = {
   rapid: 'speedometer-outline',
   classical: 'hourglass-outline',
 };
+
+/**
+ * Cada plan tiene su propio "animalito" (imagen) como identificador visual.
+ * Es el mejor diferenciador: una ilustración única por rutina.
+ */
+const PLAN_IMAGE_TYPES: ReadonlySet<string> = new Set([
+  'plan1',
+  'plan3',
+  'plan5',
+  'plan10',
+  'plan20',
+  'plan30',
+  'warmup',
+  'backToCalm',
+  'custom',
+]);
+
+/** Ruta del animalito para un tipo de plan; cae a `custom` si no tiene imagen. */
+export function planImage(planType: PlanTypes): string {
+  const name = PLAN_IMAGE_TYPES.has(planType) ? planType : 'custom';
+  return `assets/images/plan-icons/${name}.png`;
+}
 
 export interface TrainingBlockPreset {
   /** Clave i18n con el nombre del bloque. */
