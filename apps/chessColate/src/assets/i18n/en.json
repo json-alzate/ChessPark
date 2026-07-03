@@ -246,23 +246,24 @@
     "skip": "Skip",
     "back": "Back",
     "next": "Next",
-    "start": "Get started",
+    "start": "Start training",
     "slides": {
-      "welcome": {
-        "title": "Welcome to ChessColate",
-        "description": "Improve your chess by training tactics with routines designed for your level."
+      "tactics": {
+        "title": "Tactics raise your level the most",
+        "description": "At any level, solving tactics is what improves you most. The hard part is sitting down to train them consistently."
       },
-      "training": {
-        "title": "Train by time control",
-        "description": "Pick Bullet, Blitz, Rapid or Classical. Each routine blends warmup, weaknesses, speed and challenge."
+      "easy": {
+        "title": "ChessColate makes it easy",
+        "description": "Pick a ready-made routine or create your own, for your level and the time you have. Open the app and you're already solving."
       },
-      "community": {
-        "title": "Community routines",
-        "description": "Explore public routines, build your own, and share your progress with other players."
+      "solve": {
+        "title": "Try it: mate in one",
+        "description": "Follow the arrow and move the piece. Feel the click.",
+        "solved": "That's it! That click is what you'll train every day."
       },
-      "challenges": {
-        "title": "Put yourself to the test",
-        "description": "Measure your level with challenges like infinite mode and the 333 Challenge. Let's train!"
+      "habit": {
+        "title": "Build the habit, enjoy the ride",
+        "description": "Streaks, ELO and challenges make training every day feel natural. Your chess ritual starts here."
       }
     }
   },

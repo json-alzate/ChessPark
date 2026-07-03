@@ -4,3 +4,16 @@
     margin: 0 auto;
     display: block;
 }
+
+// Flecha de pista (hint) — discreta: trazo fino y translúcido para guiar sin
+// gritar. Color índigo, consistente con la flecha de "mejor jugada" de la app.
+:host ::ng-deep .cm-chessboard .arrow-hint .arrow-line {
+    stroke: #7974ff;
+    stroke-linecap: round;
+    opacity: 0.4;
+}
+
+:host ::ng-deep .cm-chessboard .arrow-hint .arrow-head {
+    fill: #7974ff;
+    fill-opacity: 0.55;
+}

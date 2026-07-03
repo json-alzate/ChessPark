@@ -246,23 +246,24 @@
     "skip": "Saltar",
     "back": "Atrás",
     "next": "Siguiente",
-    "start": "Empezar",
+    "start": "Empezar a entrenar",
     "slides": {
-      "welcome": {
-        "title": "Bienvenido a ChessColate",
-        "description": "Mejora tu ajedrez entrenando táctica con rutinas diseñadas para tu nivel."
+      "tactics": {
+        "title": "La táctica es lo que más sube tu nivel",
+        "description": "En cualquier nivel, resolver táctica es lo que más te hace mejorar. Lo difícil es sentarse a entrenarla con constancia."
       },
-      "training": {
-        "title": "Entrena por ritmos",
-        "description": "Elige Bullet, Blitz, Rápida o Clásica. Cada rutina combina calentamiento, debilidades, velocidad y desafío."
+      "easy": {
+        "title": "ChessColate te lo pone fácil",
+        "description": "Elige una rutina lista o crea la tuya, para tu nivel y el tiempo que tengas. Abres y ya estás resolviendo."
       },
-      "community": {
-        "title": "Rutinas de la comunidad",
-        "description": "Explora rutinas públicas, crea las tuyas y comparte tu progreso con otros jugadores."
+      "solve": {
+        "title": "Pruébalo: da mate en una",
+        "description": "Sigue la flecha y mueve la pieza. Vas a sentir el clic.",
+        "solved": "¡Eso! Ese clic es lo que vas a entrenar cada día."
       },
-      "challenges": {
-        "title": "Ponte a prueba",
-        "description": "Mide tu nivel con retos como el modo infinito y el Reto 333. ¡A entrenar!"
+      "habit": {
+        "title": "Crea el hábito, disfruta el proceso",
+        "description": "Rachas, ELO y retos hacen que entrenar cada día se sienta natural. Tu ritual de ajedrez empieza aquí."
       }
     }
   },
