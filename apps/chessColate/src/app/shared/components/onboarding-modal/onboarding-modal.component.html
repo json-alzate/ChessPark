@@ -9,58 +9,70 @@
       </button>
     </div>
 
-    <!-- Carrusel manual -->
+    <!-- Carrusel deslizable con Swiper (gestos nativos + botones/dots) -->
     <div class="flex-1 overflow-hidden">
-      <div
-        class="flex h-full transition-transform duration-300 ease-out"
-        [style.transform]="'translateX(-' + currentSlide * 100 + '%)'">
+      <swiper-container
+        #swiperRef
+        class="block h-full w-full"
+        slides-per-view="1"
+        speed="300"
+        (swiperslidechange)="onSlideChange($event)">
         @for (slide of slides; track slide.titleKey) {
+        <swiper-slide class="h-full">
 
-        @if (slide.interactive) {
-        <!-- Slide interactivo: mate en 1 real con flecha de pista discreta -->
-        <div class="flex h-full w-full shrink-0 flex-col items-center justify-center gap-4 px-6 text-center">
-          <h2 class="max-w-sm text-2xl font-extrabold leading-tight tracking-tight">
-            {{ slide.titleKey | transloco }}
-          </h2>
-          <div class="w-full max-w-[300px]">
-            @if (matePuzzle) {
-            <lib-board-puzzle
-              [setPuzzle]="matePuzzle"
-              [setForceStopTimer]="false"
-              [showBoardControls]="false"
-              [setShowMoveHint]="true"
-              (puzzleCompleted)="onPuzzleSolved()"
-              (puzzleFailed)="onPuzzleFailed()">
-            </lib-board-puzzle>
+          @if (slide.interactive) {
+          <!-- Slide interactivo: mate en 2 real con flechas de pista -->
+          <div class="flex h-full w-full flex-col items-center justify-center gap-4 px-6 text-center">
+            <h2 class="max-w-sm text-2xl font-extrabold leading-tight tracking-tight">
+              {{ slide.titleKey | transloco }}
+            </h2>
+            <!-- swiper-no-swiping: sobre el tablero el arrastre mueve piezas, no desliza -->
+            <div class="swiper-no-swiping w-full max-w-[300px]">
+              @if (matePuzzle) {
+              <lib-board-puzzle
+                [setPuzzle]="matePuzzle"
+                [setForceStopTimer]="false"
+                [showBoardControls]="false"
+                [setShowMoveHint]="true"
+                (puzzleCompleted)="onPuzzleSolved()"
+                (puzzleFailed)="onPuzzleFailed()">
+              </lib-board-puzzle>
+              }
+            </div>
+            @if (puzzleSolved) {
+            <p class="flex max-w-sm items-center justify-center gap-1.5 text-base font-bold leading-relaxed text-success">
+              {{ 'ONBOARDING.slides.solve.solved' | transloco }}
+            </p>
+            } @else {
+            <p class="max-w-sm text-base leading-relaxed text-base-content/60">
+              {{ slide.descKey | transloco }}
+            </p>
             }
           </div>
-          @if (puzzleSolved) {
-          <p class="flex max-w-sm items-center justify-center gap-1.5 text-base font-bold leading-relaxed text-success">
-            {{ 'ONBOARDING.slides.solve.solved' | transloco }}
-          </p>
           } @else {
-          <p class="max-w-sm text-base leading-relaxed text-base-content/60">
-            {{ slide.descKey | transloco }}
-          </p>
-          }
-        </div>
-        } @else {
-        <!-- Slide de texto: badge de ícono acorde a las tarjetas de la app -->
-        <div class="flex h-full w-full shrink-0 flex-col items-center justify-center gap-6 px-8 text-center">
-          <div class="flex h-24 w-24 items-center justify-center rounded-3xl bg-primary/15 ring-1 ring-primary/10">
-            <ion-icon [name]="slide.icon" class="text-5xl text-primary"></ion-icon>
+          <!-- Slide de texto: logo de ChessColate o badge de ícono -->
+          <div class="flex h-full w-full flex-col items-center justify-center gap-6 px-8 text-center">
+            @if (slide.image) {
+            <div class="flex h-24 w-24 items-center justify-center rounded-3xl bg-primary/10 ring-1 ring-primary/10">
+              <img [src]="slide.image" alt="ChessColate" class="h-16 w-16 object-contain" draggable="false" />
+            </div>
+            } @else {
+            <div class="flex h-24 w-24 items-center justify-center rounded-3xl bg-primary/15 ring-1 ring-primary/10">
+              <ion-icon [name]="slide.icon" class="text-5xl text-primary"></ion-icon>
+            </div>
+            }
+            <h2 class="max-w-sm text-2xl font-extrabold leading-tight tracking-tight">
+              {{ slide.titleKey | transloco }}
+            </h2>
+            <p class="max-w-sm text-base leading-relaxed text-base-content/60">
+              {{ slide.descKey | transloco }}
+            </p>
           </div>
-          <h2 class="max-w-sm text-2xl font-extrabold leading-tight tracking-tight">
-            {{ slide.titleKey | transloco }}
-          </h2>
-          <p class="max-w-sm text-base leading-relaxed text-base-content/60">
-            {{ slide.descKey | transloco }}
-          </p>
-        </div>
-        }
+          }
 
+        </swiper-slide>
         }
-      </div>
+      </swiper-container>
     </div>
 
     <!-- Indicadores (dots) -->

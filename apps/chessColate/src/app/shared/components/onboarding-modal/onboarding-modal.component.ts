@@ -1,4 +1,10 @@
-import { Component, inject } from '@angular/core';
+import {
+  Component,
+  CUSTOM_ELEMENTS_SCHEMA,
+  ElementRef,
+  ViewChild,
+  inject,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   IonContent,
@@ -12,7 +18,6 @@ import {
   arrowForward,
   arrowBack,
   trendingUpOutline,
-  listOutline,
   flameOutline,
 } from 'ionicons/icons';
 import { BoardPuzzleComponent } from '@chesspark/board';
@@ -22,21 +27,23 @@ import { Puzzle } from '@cpark/models';
 export const ONBOARDING_SEEN_KEY = 'chessColate_onboarding_seen';
 
 /**
- * Mate en 2 real (Lichess vía CDN de la app, tema `mateIn2`), quemado aquí para
- * el momento interactivo del onboarding. El usuario juega de blancas y ejecuta
- * una pequeña combinación: sacrifica la torre (Txf8+), el rey captura (Kxf8) y
- * remata con Dd8#. Las flechas de pista guían cada jugada del usuario.
+ * Mate en 2 real (Lichess vía CDN de la app, temas `mateIn2`/`sacrifice`),
+ * quemado aquí para el momento interactivo del onboarding. El usuario juega de
+ * blancas y ejecuta una combinación con sacrificio de dama: Dxd8+ (la dama baja
+ * toda la columna), el alfil la captura (Axd8) y remata con la torre Te8#. Las
+ * dos jugadas del usuario son deslizamientos de columna completa, así las
+ * flechas de pista se ven grandes y claras.
  */
 const ONBOARDING_MATE_PUZZLE: Puzzle = {
-  uid: 'onboarding-mate-1',
-  fen: '4Rrk1/3Q1ppp/8/8/8/6P1/q4r1P/6K1 b - - 1 30',
-  moves: 'f2h2 e8f8 g8f8 d7d8',
-  rating: 1100,
+  uid: 'onboarding-mate-2',
+  fen: '3rk2r/ppN1bppp/5p2/8/8/8/PqP2PPP/R2QR1K1 b k - 2 17',
+  moves: 'e8f8 d1d8 e7d8 e1e8',
+  rating: 1400,
   ratingDeviation: 0,
   popularity: 0,
   randomNumberQuery: 0,
   nbPlays: 0,
-  themes: ['mateIn2'],
+  themes: ['mateIn2', 'sacrifice'],
   gameUrl: '',
   openingFamily: '',
   openingVariation: '',
@@ -46,8 +53,21 @@ interface OnboardingSlide {
   icon: string;
   titleKey: string;
   descKey: string;
-  /** Slide con el mate en 1 jugable. */
+  /** Si se define, se muestra esta imagen (p. ej. el logo) en vez del ícono. */
+  image?: string;
+  /** Slide con el mate en 2 jugable. */
   interactive?: boolean;
+}
+
+/** Instancia de Swiper expuesta por el custom element `<swiper-container>`. */
+interface SwiperInstance {
+  activeIndex: number;
+  slideTo: (index: number, speed?: number) => void;
+  slideNext: (speed?: number) => void;
+  slidePrev: (speed?: number) => void;
+}
+interface SwiperEl extends HTMLElement {
+  swiper?: SwiperInstance;
 }
 
 @Component({
@@ -60,6 +80,7 @@ interface OnboardingSlide {
     IonIcon,
     BoardPuzzleComponent,
   ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './onboarding-modal.component.html',
   styleUrls: ['./onboarding-modal.component.scss'],
 })
@@ -73,7 +94,8 @@ export class OnboardingModalComponent {
       descKey: 'ONBOARDING.slides.tactics.description',
     },
     {
-      icon: 'list-outline',
+      icon: '',
+      image: 'assets/images/home_icon.png',
       titleKey: 'ONBOARDING.slides.easy.title',
       descKey: 'ONBOARDING.slides.easy.description',
     },
@@ -98,19 +120,31 @@ export class OnboardingModalComponent {
   /** El usuario ya dio mate en el slide interactivo. */
   puzzleSolved = false;
 
+  @ViewChild('swiperRef') swiperRef?: ElementRef<SwiperEl>;
+
   constructor() {
     addIcons({
       closeOutline,
       arrowForward,
       arrowBack,
       trendingUpOutline,
-      listOutline,
       flameOutline,
     });
   }
 
+  private get swiper(): SwiperInstance | undefined {
+    return this.swiperRef?.nativeElement?.swiper;
+  }
+
   get isLastSlide(): boolean {
     return this.currentSlide === this.slides.length - 1;
+  }
+
+  /** Mantiene sincronizados dots, botones y carga del puzzle con Swiper. */
+  onSlideChange(event: Event): void {
+    const [swiper] = (event as CustomEvent).detail;
+    this.currentSlide = swiper.activeIndex;
+    this.loadPuzzleIfNeeded();
   }
 
   next(): void {
@@ -118,19 +152,15 @@ export class OnboardingModalComponent {
       this.complete();
       return;
     }
-    this.currentSlide++;
-    this.loadPuzzleIfNeeded();
+    this.swiper?.slideNext();
   }
 
   prev(): void {
-    if (this.currentSlide > 0) {
-      this.currentSlide--;
-    }
+    this.swiper?.slidePrev();
   }
 
   goTo(index: number): void {
-    this.currentSlide = index;
-    this.loadPuzzleIfNeeded();
+    this.swiper?.slideTo(index);
   }
 
   /** Marca el mate como resuelto (feedback de celebración). */

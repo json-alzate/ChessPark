@@ -24,9 +24,9 @@
       }
     },
     {
-      "label": "ChessColate: Android Run",
+      "label": "ChessColate: Android Studio",
       "type": "shell",
-      "command": "npm run android:run",
+      "command": "npm run android:studio",
       "problemMatcher": [],
       "presentation": {
         "reveal": "always",

@@ -19,8 +19,8 @@
     },
     {
       "label": "$(device-mobile) Android",
-      "task": "ChessColate: Android Run",
-      "tooltip": "Build + sync + run en Android",
+      "task": "ChessColate: Android Studio",
+      "tooltip": "Build + sync y abre el proyecto en Android Studio",
       "color": "#34d399"
     },
     {

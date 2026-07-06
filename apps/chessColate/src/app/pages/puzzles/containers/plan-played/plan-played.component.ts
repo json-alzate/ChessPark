@@ -91,6 +91,9 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
   showMoreButtons: { [blockIndex: number]: boolean } = {};
   userPuzzlesToShowInBoards: { [blockIndex: number]: UserPuzzle[] } = {};
   eloTotal: number = 0;
+  // Puntos que subió (+) o bajó (-) el ELO total en esta rutina.
+  // null cuando el plan no guardó el ELO inicial (planes antiguos del historial).
+  eloDelta: number | null = null;
   isLiked: boolean = false;
   isLoadingLike: boolean = false;
   isLoadingToPlay: boolean = false;
@@ -296,6 +299,12 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
         }
       }
     }
+
+    // Puntos que subió o bajó el ELO total durante esta rutina
+    this.eloDelta =
+      this.plan.initialTotalElo !== undefined
+        ? this.eloTotal - this.plan.initialTotalElo
+        : null;
   }
 
   /**

@@ -216,7 +216,9 @@ export class TrainingComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Guarda el ELO máximo inicial del plan antes de empezar a jugar
+   * Guarda el ELO máximo inicial del plan antes de empezar a jugar.
+   * También guarda el ELO total real de arranque (initialTotalElo) para poder
+   * mostrar al final cuántos puntos subió o bajó la rutina.
    */
   private async saveInitialMaxElo() {
     if (!this.plan) return;
@@ -229,10 +231,18 @@ export class TrainingComponent implements OnInit, OnDestroy {
       const planElos = await this.plansElosService.getOnePlanElo(
         this.plan.uidCustomPlan
       );
-      const initialMax = planElos?.maxTotal ?? planElos?.total ?? 1500;
-      this.plan = { ...this.plan, initialMaxElo: initialMax };
+      const initialTotal = planElos?.total ?? 1500;
+      const initialMax = planElos?.maxTotal ?? initialTotal;
+      this.plan = {
+        ...this.plan,
+        initialMaxElo: initialMax,
+        initialTotalElo: initialTotal,
+      };
       this.planFacade.updatePlan(this.plan);
     } else if (this.plan.planType !== 'custom') {
+      const initialTotal = this.profileService.getEloTotalByPlanType(
+        this.plan.planType
+      );
       const profile = this.profileService.getProfile;
       const elos = profile?.elos;
       if (elos) {
@@ -241,14 +251,19 @@ export class TrainingComponent implements OnInit, OnDestroy {
         const maxTotal = elos[maxTotalKey];
         const initialMax =
           (typeof maxTotal === 'number' ? maxTotal : undefined) ??
-          this.profileService.getEloTotalByPlanType(this.plan.planType);
-        this.plan = { ...this.plan, initialMaxElo: initialMax };
+          initialTotal;
+        this.plan = {
+          ...this.plan,
+          initialMaxElo: initialMax,
+          initialTotalElo: initialTotal,
+        };
         this.planFacade.updatePlan(this.plan);
       } else {
-        const initialMax = this.profileService.getEloTotalByPlanType(
-          this.plan.planType
-        );
-        this.plan = { ...this.plan, initialMaxElo: initialMax };
+        this.plan = {
+          ...this.plan,
+          initialMaxElo: initialTotal,
+          initialTotalElo: initialTotal,
+        };
         this.planFacade.updatePlan(this.plan);
       }
     }
