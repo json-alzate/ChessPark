@@ -13,6 +13,7 @@
     "android:build": "CI=true nx build chessColate && cd apps/chessColate && npx cap sync android",
     "android:sync": "CI=true nx build chessColate && cd apps/chessColate && npx cap sync android",
     "android:open": "cd apps/chessColate && npx cap open android",
+    "android:studio": "npm run android:sync && npm run android:open",
     "android:run": "cd apps/chessColate && npx cap run android",
     "ios:build": "CI=true nx build chessColate && cd apps/chessColate && npx cap sync ios",
     "ios:sync": "CI=true nx build chessColate && cd apps/chessColate && npx cap sync ios",

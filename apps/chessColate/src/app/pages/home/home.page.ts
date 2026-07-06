@@ -11,7 +11,7 @@ import {
   ViewWillLeave,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { arrowForward, statsChartOutline, eye, close, flash, heart, trophy, logoGooglePlaystore, logoApple } from 'ionicons/icons';
+import { arrowForward, statsChartOutline, eye, close, flash, heart, trophy, logoGooglePlaystore, logoApple, optionsOutline, globeOutline, chevronForwardOutline } from 'ionicons/icons';
 import { Subscription } from 'rxjs';
 import { Store, select } from '@ngrx/store';
 import { AuthState, getIsInitialized } from '@cpark/state';
@@ -33,6 +33,7 @@ import { AppService } from '@services/app.service';
 // Components
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 import { TrainingMenuComponent } from './components/training-menu.component';
+import { OnboardingModalComponent, ONBOARDING_SEEN_KEY } from '@shared/components/onboarding-modal/onboarding-modal.component';
 import { BoardPuzzleComponent, BoardPuzzleSolutionComponent } from '@chesspark/board';
 import { PlanChartComponent } from '../puzzles/components/plan-chart/plan-chart.component';
 import { Capacitor } from '@capacitor/core';
@@ -100,7 +101,7 @@ export class HomePage implements OnInit, ViewWillEnter, ViewWillLeave {
   private initSubscription?: Subscription;
 
   constructor(private blockService: BlockService) {
-    addIcons({ arrowForward, statsChartOutline, eye, close, flash, heart, trophy, logoGooglePlaystore, logoApple });
+    addIcons({ arrowForward, statsChartOutline, eye, close, flash, heart, trophy, logoGooglePlaystore, logoApple, optionsOutline, globeOutline, chevronForwardOutline });
   }
 
   async showSolution() {
@@ -123,6 +124,22 @@ export class HomePage implements OnInit, ViewWillEnter, ViewWillLeave {
 
   async ngOnInit() { }
 
+  /** Muestra el onboarding con slides la primera vez que se entra al home. */
+  private async maybeShowOnboarding() {
+    let seen = false;
+    try {
+      seen = !!localStorage.getItem(ONBOARDING_SEEN_KEY);
+    } catch {
+      seen = true; // sin localStorage no insistimos
+    }
+    if (seen) return;
+
+    const modal = await this.modalController.create({
+      component: OnboardingModalComponent,
+    });
+    await modal.present();
+  }
+
   reto333Stats: any = null;
   isLoadingReto333 = true;
 
@@ -136,6 +153,7 @@ export class HomePage implements OnInit, ViewWillEnter, ViewWillLeave {
       if (initialized && !this.puzzleLoadStarted) {
         this.puzzleLoadStarted = true;
         this.loadInfinitePuzzle();
+        this.maybeShowOnboarding();
       }
     });
 

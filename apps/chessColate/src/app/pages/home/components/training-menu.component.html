@@ -1,48 +1,129 @@
-<!-- Mobile: swiper carousel -->
-<swiper-container slides-per-view="2.7" space-between="5" free-mode="true" class="ml-2 lg:hidden">
-    @for (plan of [1,3,5,10,20,30]; track plan) {
-    <swiper-slide (click)="createPlan(plan)">
+<!-- Mobile: slider horizontal de tarjetas (se asoma la siguiente) -->
+<div class="lg:hidden">
+    <swiper-container #swiperRef slides-per-view="1.15" centered-slides="true" space-between="10" auto-height="true"
+        [attr.initial-slide]="recommendedIndex" class="slider-fade block"
+        (swiperslidechange)="onSlideChange($event)">
+        @for (preset of presets; track preset.plan) {
+        <swiper-slide class="h-auto items-stretch">
+            <ng-container [ngTemplateOutlet]="cardTpl" [ngTemplateOutletContext]="{ $implicit: preset }"></ng-container>
+        </swiper-slide>
+        }
+    </swiper-container>
 
-        <div class="ion-activatable  ripple-parent rectangle">
+    <!-- Indicador del slider (dots): la píldora marca la tarjeta activa -->
+    <div class="flex items-center justify-center gap-1.5 pt-3 pb-1">
+        @for (preset of presets; track preset.plan; let i = $index) {
+        <span class="h-1.5 rounded-full transition-all duration-200"
+            [ngClass]="i === activeSlide ? 'bg-primary' : 'bg-base-content/20'"
+            [style.width.px]="i === activeSlide ? 18 : 6"></span>
+        }
+    </div>
+</div>
+
+<!-- Desktop: grid 3x2; las filas iguales y a altura completa llenan la celda
+     (las tarjetas h-full crecen para que no quede hueco bajo el menú). -->
+<div class="hidden w-full lg:grid lg:h-full lg:grid-cols-3 lg:auto-rows-fr lg:gap-3">
+    @for (preset of presets; track preset.plan) {
+    <ng-container [ngTemplateOutlet]="cardTpl" [ngTemplateOutletContext]="{ $implicit: preset }"></ng-container>
+    }
+</div>
+
+<!-- Tarjeta de rutina (compartida mobile/desktop) -->
+<ng-template #cardTpl let-preset>
+    <div class="card bg-base-100 border border-base-300 rounded-2xl shadow-sm w-full flex flex-col lg:h-full">
+
+        <!-- Área clickeable: inicia la rutina -->
+        <div class="ion-activatable ripple-parent relative flex-1 cursor-pointer overflow-hidden rounded-t-2xl p-4 hover:bg-base-200/30 transition-colors"
+            role="button" tabindex="0" (click)="createPlan(preset.plan)"
+            (keydown.enter)="createPlan(preset.plan)">
             <ion-ripple-effect></ion-ripple-effect>
-            <div class="card bg-base-100">
-                <figure class="p-2">
-                    <img src="assets/images/plan-icons/plan{{plan}}.png" alt="plan{{plan}}" />
-                </figure>
-                <div class="card-body p-2 flex flex-row justify-between  w-full">
-                    <div class="text-sm text-left" [class.text-base-content/50]="isEloProvisional(plan)">
-                        {{ getEloDisplayForPlan(plan) }}
+
+            <!-- Cabecera: categoría + duración + ELO -->
+            <div class="flex items-start justify-between gap-2">
+                <div class="flex items-center gap-3 min-w-0">
+                    <div class="flex h-10 w-10 items-center justify-center shrink-0">
+                        <img [src]="imageFor(preset)" [alt]="preset.titleKey | transloco"
+                            class="h-10 w-10 object-contain" />
                     </div>
-                    <div class="card-actions">
-                        <div class="flex  gap-1">
-                            {{plan}} <ion-icon name="timer-outline"></ion-icon>
+                    <div class="min-w-0">
+                        <div class="font-bold leading-tight">
+                            {{ preset.titleKey | transloco }}
+                        </div>
+                        <div class="text-xs text-base-content/50">
+                            {{ 'TRAINING.routineOf' | transloco: { minutes: preset.minutes } }}
                         </div>
                     </div>
                 </div>
+                <div class="text-right shrink-0" [class.opacity-50]="isEloProvisional(preset.plan)">
+                    <div class="text-xl font-extrabold leading-none text-primary">
+                        {{ getEloDisplayForPlan(preset.plan) }}
+                    </div>
+                    <div class="mt-0.5 text-[10px] font-bold uppercase tracking-wide text-[var(--cc-elo)]">
+                        {{ 'TRAINING.elo' | transloco }}
+                    </div>
+                </div>
             </div>
+
+            <!-- Descripción con inicio resaltado (2 líneas en mobile, completa en desktop) -->
+            <p class="mt-3 line-clamp-2 min-h-[2.4rem] text-sm font-semibold leading-snug text-base-content/80 lg:line-clamp-none">
+                <span class="text-primary">{{ preset.leadKey | transloco }}</span>
+                {{ preset.summaryKey | transloco }}
+            </p>
         </div>
 
-    </swiper-slide>
-    }
-</swiper-container>
-
-<!-- Desktop: 3x2 grid -->
-<div class="hidden lg:grid lg:grid-cols-3 lg:gap-3">
-    @for (plan of [1,3,5,10,20,30]; track plan) {
-    <div
-        class="card bg-base-100 shadow-sm cursor-pointer hover:shadow-md hover:-translate-y-0.5 transition-all active:scale-[0.98]"
-        (click)="createPlan(plan)">
-        <figure class="p-4 lg:p-3 xl:p-4">
-            <img src="assets/images/plan-icons/plan{{plan}}.png" alt="plan{{plan}}" class="h-24 lg:h-28 xl:h-36 w-auto object-contain" />
-        </figure>
-        <div class="card-body p-3 pt-0 flex flex-row justify-between items-center w-full">
-            <div class="text-sm font-medium" [class.opacity-50]="isEloProvisional(plan)">
-                {{ getEloDisplayForPlan(plan) }}
+        <!-- Lista de bloques (también inicia la rutina); el "+N" abre el detalle -->
+        <div class="cursor-pointer rounded-b-2xl px-4 pb-4 transition-colors hover:bg-base-200/30"
+            (click)="createPlan(preset.plan)">
+            <div class="mb-1.5 text-[10px] uppercase tracking-wide text-base-content/50">
+                {{ 'TRAINING.viewBlocks' | transloco }}
             </div>
-            <div class="flex items-center gap-1 text-sm text-base-content/70">
-                {{ plan }} <ion-icon name="timer-outline"></ion-icon>
+            <div class="flex flex-col gap-1.5">
+                @for (slot of blockSlots; track slot) {
+                @if (preset.blocks[slot]; as block) {
+                <ng-container
+                    [ngTemplateOutlet]="blockRow" [ngTemplateOutletContext]="{ $implicit: block }"></ng-container>
+                } @else {
+                <div class="h-4" aria-hidden="true"></div>
+                }
+                }
+
+                <!-- Slot del "+N": altura fija en todas las tarjetas → mismo alto -->
+                <div class="flex h-6 items-center">
+                    @if (hiddenBlocks(preset).length > 0) {
+                    <!-- Detalle completo: popover controlado (cierra al tocar fuera) -->
+                    <div class="relative">
+                        <button type="button"
+                            class="inline-flex items-center py-1 pr-6 text-xs font-semibold text-primary"
+                            [attr.aria-expanded]="openBlocksPlan === preset.plan"
+                            (click)="toggleBlocks(preset.plan, $event)">
+                            +{{ hiddenBlocks(preset).length }}
+                        </button>
+                        @if (openBlocksPlan === preset.plan) {
+                        <div class="absolute bottom-full left-0 z-20 mb-1 w-64 rounded-xl border border-base-300 bg-base-100 p-3 shadow-lg"
+                            (click)="$event.stopPropagation()">
+                            <div class="px-1 pb-1.5 text-[10px] uppercase tracking-wide text-base-content/50">
+                                {{ 'TRAINING.allBlocks' | transloco }}
+                            </div>
+                            <div class="flex flex-col gap-1.5">
+                                @for (block of preset.blocks; track block.labelKey) {
+                                <ng-container [ngTemplateOutlet]="blockRow"
+                                    [ngTemplateOutletContext]="{ $implicit: block }"></ng-container>
+                                }
+                            </div>
+                        </div>
+                        }
+                    </div>
+                    }
+                </div>
             </div>
         </div>
     </div>
-    }
-</div>
+</ng-template>
+
+<!-- Fila de bloque: nombre · duración -->
+<ng-template #blockRow let-block>
+    <div class="flex items-center gap-2 text-xs">
+        <span class="min-w-0 flex-1 truncate text-base-content/80">{{ block.labelKey | transloco }}</span>
+        <span class="shrink-0 tabular-nums text-base-content/50">{{ formatDuration(block.seconds) }}</span>
+    </div>
+</ng-template>

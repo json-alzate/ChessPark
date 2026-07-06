@@ -35,9 +35,21 @@
                 <div>
                   <h6 class="text-sm text-base-content/70">{{ 'PLAN_PLAYED.totalElo' | transloco }}:</h6>
                   <div class="flex items-center gap-3">
-                    <h1 class="text-4xl font-bold">
-                      {{ isAuthenticated ? eloTotal : exampleEloTotal }}
-                    </h1>
+                    <div class="flex items-baseline gap-1.5">
+                      <h1 class="text-4xl font-bold">
+                        {{ isAuthenticated ? eloTotal : exampleEloTotal }}
+                      </h1>
+                      @if (isAuthenticated && eloDelta !== null) {
+                      <span
+                        class="text-2xl font-bold"
+                        [class.text-success]="eloDelta > 0"
+                        [class.text-error]="eloDelta < 0"
+                        [class.opacity-60]="eloDelta === 0"
+                      >
+                        {{ eloDelta > 0 ? '+' : '' }}{{ eloDelta }}
+                      </span>
+                      }
+                    </div>
                     @if (isNewRecord) {
                     <div
                       class="badge badge-warning gap-1 shadow-sm cursor-pointer"
@@ -50,16 +62,11 @@
                     }
                   </div>
                 </div>
-                <div class="avatar">
-                  <div class="w-16 rounded">
-                    <img
-                      [src]="
-                        '/assets/images/plan-icons/' + plan.planType + '.png'
-                      "
-                      [alt]="plan.planType"
-                    />
-                  </div>
-                </div>
+                <img
+                  [src]="planImageSrc"
+                  [alt]="plan.planType"
+                  class="h-16 w-16 shrink-0 object-contain"
+                />
               </div>
 
               <!-- Mini Overlay Si no está logueado -->
@@ -268,12 +275,28 @@
           </div>
         </div>
 
-        <!-- Carrusel de rutinas -->
+        <!-- Menú de rutinas (minimalista): solo icono + duración -->
         <div class="mt-6">
           <h2 class="text-2xl font-bold mb-4">
             {{ 'PLAN_PLAYED.selectRoutine' | transloco }}
           </h2>
-          <app-training-menu></app-training-menu>
+          <div class="grid grid-cols-3 gap-3 sm:grid-cols-6">
+            @for (routine of quickRoutines; track routine.plan) {
+            <button
+              type="button"
+              class="card flex flex-col items-center gap-2 rounded-2xl border border-base-300 bg-base-100 p-4 transition-colors hover:bg-base-200/40 disabled:opacity-50"
+              [disabled]="isLoadingToPlay"
+              (click)="startRoutine(routine.plan)"
+            >
+              <img
+                [src]="routine.image"
+                [alt]="routine.minutes + ' min'"
+                class="h-12 w-12 object-contain"
+              />
+              <span class="text-sm font-bold">{{ routine.minutes }} min</span>
+            </button>
+            }
+          </div>
         </div>
       </div>
       } @else {

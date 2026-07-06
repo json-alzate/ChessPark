@@ -1,0 +1,23 @@
+:host {
+  display: block;
+}
+
+/* Suaviza los bordes del slider: el texto de las tarjetas vecinas se difumina
+   hacia el borde (sin verse cortado), pero SIN llegar a transparente total.
+   Como el fondo y las tarjetas son oscuros, desvanecer a 0 hacía que las
+   tarjetas de los lados se fundieran con el fondo y no se notara que hay más
+   slides. Dejar un piso de opacidad (~0.55) mantiene visible el borde/silueta
+   de la tarjeta vecina, señalando que se puede deslizar. */
+.slider-fade {
+  -webkit-mask-image: linear-gradient(to right, rgba(0, 0, 0, 0.55), #000 9%, #000 91%, rgba(0, 0, 0, 0.55));
+  mask-image: linear-gradient(to right, rgba(0, 0, 0, 0.55), #000 9%, #000 91%, rgba(0, 0, 0, 0.55));
+}
+
+// Solo en desktop el host llena la celda del grid para que las tarjetas ocupen
+// toda la altura de la fila (sin hueco bajo el menú). En mobile el alto es
+// natural para no estirar el slider ni empujar los botones fuera de vista.
+@media (min-width: 1024px) {
+  :host {
+    height: 100%;
+  }
+}

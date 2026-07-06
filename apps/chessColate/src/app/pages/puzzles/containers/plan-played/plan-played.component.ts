@@ -10,7 +10,7 @@ import {
 
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
-import { Plan, Puzzle, UserPuzzle, Block } from '@cpark/models';
+import { Plan, Puzzle, UserPuzzle, Block, PlanTypes } from '@cpark/models';
 import { PlanFacadeService, PublicPlansFacadeService } from '@cpark/state';
 
 import { AppService } from '@services/app.service';
@@ -27,7 +27,7 @@ import { FenBoardComponent } from '@chesspark/board';
 import { PlanChartComponent } from '@pages/puzzles/components/plan-chart/plan-chart.component';
 import { LoginComponent } from '@shared/components/login/login.component';
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
-import { TrainingMenuComponent } from '@pages/home/components/training-menu.component';
+import { planImage } from '@pages/home/components/training-plans.config';
 import { ConfettiService } from '@chesspark/common-utils';
 
 import { addIcons } from 'ionicons';
@@ -53,7 +53,6 @@ import { takeUntil } from 'rxjs/operators';
     IonContent,
     IonIcon,
     NavbarComponent,
-    TrainingMenuComponent,
   ],
   templateUrl: './plan-played.component.html',
   styleUrl: './plan-played.component.scss',
@@ -75,11 +74,26 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
   private confettiService = inject(ConfettiService);
   private translocoService = inject(TranslocoService);
 
+  /**
+   * Menú minimalista de rutinas: animalito + duración (minutos).
+   * La imagen sale de la misma fuente que home/avatar (plan{N} = N minutos).
+   */
+  readonly quickRoutines: { plan: number; image: string; minutes: number }[] = [
+    1, 3, 5, 10, 20, 30,
+  ].map((plan) => ({
+    plan,
+    minutes: plan,
+    image: planImage(`plan${plan}` as PlanTypes),
+  }));
+
   plan: Plan | null = null;
   puzzlesPerPage = 4;
   showMoreButtons: { [blockIndex: number]: boolean } = {};
   userPuzzlesToShowInBoards: { [blockIndex: number]: UserPuzzle[] } = {};
   eloTotal: number = 0;
+  // Puntos que subió (+) o bajó (-) el ELO total en esta rutina.
+  // null cuando el plan no guardó el ELO inicial (planes antiguos del historial).
+  eloDelta: number | null = null;
   isLiked: boolean = false;
   isLoadingLike: boolean = false;
   isLoadingToPlay: boolean = false;
@@ -198,6 +212,11 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
       });
   }
 
+  /** Animalito (imagen) del plan, para el avatar del resumen. */
+  get planImageSrc(): string {
+    return this.plan ? planImage(this.plan.planType) : planImage('custom');
+  }
+
   get isPublicPlan(): boolean {
     return this.plan?.isPublic === true;
   }
@@ -280,6 +299,12 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
         }
       }
     }
+
+    // Puntos que subió o bajó el ELO total durante esta rutina
+    this.eloDelta =
+      this.plan.initialTotalElo !== undefined
+        ? this.eloTotal - this.plan.initialTotalElo
+        : null;
   }
 
   /**
@@ -437,6 +462,51 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
     } catch (error) {
       await loader.dismiss();
       console.error('Error al repetir el plan:', error);
+      this.isLoadingToPlay = false;
+    }
+  }
+
+  /** Crea y arranca una rutina por defecto (plan{N}) desde el menú minimalista. */
+  async startRoutine(planNumber: number) {
+    if (this.isLoadingToPlay) return;
+
+    this.isLoadingToPlay = true;
+    const loader = await this.loadingController.create({
+      message: this.translocoService.translate('PUZZLES.loader.creatingRoutine'),
+    });
+    await loader.present();
+
+    try {
+      const planType = `plan${planNumber}` as PlanTypes;
+      const blocks: Block[] = await this.blockService.generateBlocksForPlan(
+        planType
+      );
+
+      const total = blocks.length;
+      let loaded = 0;
+
+      const puzzlePromises = blocks.map(async (block) => {
+        const puzzles = await this.blockService.getPuzzlesForBlock(block);
+        block.puzzles = puzzles;
+        loaded++;
+
+        loader.message = this.translocoService.translate(
+          'PUZZLES.loader.loadingPuzzlesProgress',
+          { loaded, total }
+        );
+
+        return block;
+      });
+
+      await Promise.all(puzzlePromises);
+      await this.planService.newPlan(blocks, planType);
+
+      await loader.dismiss();
+      this.isLoadingToPlay = false;
+      this.router.navigate(['/puzzles/training']);
+    } catch (error) {
+      await loader.dismiss();
+      console.error('Error al crear la rutina:', error);
       this.isLoadingToPlay = false;
     }
   }

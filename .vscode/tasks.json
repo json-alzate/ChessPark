@@ -1,0 +1,49 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "ChessColate: Serve",
+      "type": "shell",
+      "command": "npx nx serve chessColate",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "chessColate"
+      }
+    },
+    {
+      "label": "ChessColate: Build",
+      "type": "shell",
+      "command": "npm run build:chessColate",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "chessColate"
+      }
+    },
+    {
+      "label": "ChessColate: Android Studio",
+      "type": "shell",
+      "command": "npm run android:studio",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "chessColate"
+      }
+    },
+    {
+      "label": "ChessColate: iOS Run",
+      "type": "shell",
+      "command": "npm run ios:run",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "chessColate"
+      }
+    }
+  ]
+}

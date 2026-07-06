@@ -123,6 +123,7 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
 
   timeUsed = 0;
   goshPuzzleTime = 0;
+  private showMoveHint = false;
   board!: Chessboard;
   chessInstance = new Chess();
   isViewInitialized = false;
@@ -170,6 +171,17 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
     if (data) {
       this.stopTimer();
     }
+  }
+
+  /**
+   * Muestra una flecha de pista (hint) discreta con la jugada que el usuario
+   * debe hacer, cada vez que el turno vuelve a él. La jugada se deriva de la
+   * solución del puzzle, por lo que guía combinaciones completas (mate en 2,
+   * 3…), no solo un movimiento. Pensada para guiar (p. ej. el onboarding). Se
+   * limpia al tocar el tablero, como cualquier otra flecha.
+   */
+  @Input() set setShowMoveHint(value: boolean) {
+    this.showMoveHint = !!value;
   }
 
   @Input() showBoardControls = true;
@@ -773,6 +785,26 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
         4
       );
       this.showLastMove(from, to);
+      this.drawMoveHint();
+    }
+  }
+
+  /**
+   * Dibuja la flecha de pista con la próxima jugada del usuario (derivada de la
+   * solución). Se llama tras cada respuesta de la máquina, cuando el turno
+   * vuelve al usuario. La flecha se estiliza discreta en el SCSS.
+   */
+  private drawMoveHint() {
+    if (!this.showMoveHint || !this.board) {
+      return;
+    }
+    const nextUserMove = this.arrayMovesSolution[this.currentMoveNumber];
+    if (nextUserMove && nextUserMove.length >= 4) {
+      this.board.addArrow(
+        { id: 'hintArrow', class: 'arrow-hint', headSize: 6, slice: 'arrowPointy' },
+        nextUserMove.slice(0, 2),
+        nextUserMove.slice(2, 4)
+      );
     }
   }
 

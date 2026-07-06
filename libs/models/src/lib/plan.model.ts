@@ -25,4 +25,5 @@ export interface Plan {
   uidCustomPlan?: string; // en caso de que el plan sea creado por el usuario , se utiliza para obtener los elos
   isPublic?: boolean; // si el plan es visible para otros usuarios
   initialMaxElo?: number; // ELO máximo que tenía el plan antes de empezar a jugar (para comparar al final)
+  initialTotalElo?: number; // ELO total real al empezar la rutina (para mostrar cuánto subió/bajó al terminar)
 }

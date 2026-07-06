@@ -171,6 +171,100 @@
       "loginToStart": "Inicia sesión para registrar tu progreso",
       "countPlansEnded": "planes terminados en el último año",
       "loadingPuzzles": "Cargando ejercicios del entrenamiento..."
+    },
+    "viewBlocks": "Qué entrenas",
+    "subtitle": "Elige un modo y empieza a resolver.",
+    "routineOf": "Rutina de {{minutes}} min",
+    "elo": "ELO",
+    "allBlocks": "Todos los bloques",
+    "plans": {
+      "plan1": {
+        "title": "Bullet",
+        "lead": "Sesión relámpago",
+        "summary": "para afinar el ojo táctico.",
+        "phases": {
+          "p1": "Mates y tácticas exprés"
+        }
+      },
+      "plan3": {
+        "title": "Blitz",
+        "lead": "Sesión corta",
+        "summary": "enfocada en tu punto débil.",
+        "phases": {
+          "p1": "Tu temática prioritaria"
+        }
+      },
+      "plan5": {
+        "title": "Blitz+",
+        "lead": "Práctica variada",
+        "summary": "con refuerzo de tus debilidades.",
+        "phases": {
+          "p1": "Calentamiento variado",
+          "p2": "Refuerzo de tus debilidades"
+        }
+      },
+      "plan10": {
+        "title": "Rápida",
+        "lead": "Rutina completa",
+        "summary": "para calentar, atacar debilidades y rematar con velocidad.",
+        "phases": {
+          "p1": "Calentamiento",
+          "p2": "Intensidad · tus debilidades",
+          "p3": "Velocidad · mate en 1",
+          "p4": "Desafío"
+        }
+      },
+      "plan20": {
+        "title": "Rápida+",
+        "lead": "Sesión intensa",
+        "summary": "que sube hasta el pico y cierra con finales.",
+        "phases": {
+          "p1": "Calentamiento",
+          "p2": "Intensidad · debilidades",
+          "p3": "Velocidad · mate en 1",
+          "p4": "Pico de desafío",
+          "p5": "Desafío",
+          "p6": "Enfriamiento · finales"
+        }
+      },
+      "plan30": {
+        "title": "Clásica",
+        "lead": "Entrenamiento profundo",
+        "summary": "de resistencia, cálculo a ciegas y finales.",
+        "phases": {
+          "p1": "Calentamiento",
+          "p2": "Intensidad · debilidades",
+          "p3": "Velocidad",
+          "p4": "Pico de desafío",
+          "p5": "Cálculo a ciegas",
+          "p6": "Enfriamiento · finales de peones"
+        }
+      }
+    }
+  },
+  "ONBOARDING": {
+    "skip": "Saltar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "start": "Empezar a entrenar",
+    "slides": {
+      "tactics": {
+        "title": "La táctica es tu mayor palanca de mejora",
+        "description": "No es lo único que importa en ajedrez, pero en cualquier nivel es lo que más acelera tu progreso. Lo difícil es entrenarla con constancia."
+      },
+      "easy": {
+        "title": "ChessColate te lo pone fácil",
+        "description": "Elige una rutina lista o crea la tuya, para tu nivel y el tiempo que tengas. Abres y ya estás resolviendo."
+      },
+      "solve": {
+        "title": "Pruébalo: resuelve el mate",
+        "description": "Sigue las flechas y juega la combinación. Vas a sentir el clic.",
+        "solved": "¡Eso! Ese clic es lo que vas a entrenar cada día."
+      },
+      "habit": {
+        "title": "Crea el hábito, disfruta el proceso",
+        "description": "Rachas, ELO y retos hacen que entrenar cada día se sienta natural. Tu ritual de ajedrez empieza aquí."
+      }
     }
   },
   "CUSTOM_TRAINING": {
@@ -307,6 +401,7 @@
   "CUSTOM_PLANS": {
     "listTitle": "Entrenamiento personalizado",
     "shortTitle": "Personalizado",
+    "cardSubtitle": "Crea tus propias rutinas",
     "empty": "Aún no has creado ninguna rutina personalizada.",
     "createFirst": "Crear mi primera rutina",
     "untitled": "Sin título",
@@ -323,6 +418,7 @@
   "PUBLIC_PLANS": {
     "title": "Entrenamiento público",
     "shortTitle": "Público",
+    "cardSubtitle": "Rutinas listas para jugar",
     "tabs": {
       "public": "Públicos",
       "myInteractions": "Mis interacciones"
@@ -539,6 +635,7 @@
     "survival": "Survival",
     "mateIn1": "Mate en 1",
     "streak": "Racha",
+    "record": "Récord",
     "time": "Tiempo",
     "crowned": "¡Reto Coronado!",
     "title": "El Desafío Definitivo",
