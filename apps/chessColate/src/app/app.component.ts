@@ -1,7 +1,8 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { initializeApp } from 'firebase/app';
 import { Subscription } from 'rxjs';
+import { FirebaseCrashlytics } from '@capacitor-firebase/crashlytics';
 
 // Ionic imports
 import { addIcons } from 'ionicons';
@@ -39,6 +40,8 @@ import { AuthService } from '@services/auth.service';
 import { ProfileService } from '@services/profile.service';
 import { FirestoreService } from '@services/firestore.service';
 import { PwaService } from '@services/pwa.service';
+import { AnalyticsService } from '@services/analytics.service';
+import { screenNameFromUrl } from '@services/analytics-events.util';
 import { RevenueCatService, LogLevel } from '@chesspark/revenuecat';
 import { Capacitor } from '@capacitor/core';
 import { SplashScreen } from '@capacitor/splash-screen';
@@ -47,7 +50,7 @@ import { SplashScreen } from '@capacitor/splash-screen';
 import { Profile } from '@cpark/models';
 
 // RxJS
-import { switchMap } from 'rxjs/operators';
+import { switchMap, filter } from 'rxjs/operators';
 
 // Environment
 import { environment } from '@environments/environment';
@@ -97,6 +100,7 @@ export class AppComponent implements OnInit, OnDestroy {
   firestoreService = inject(FirestoreService);
   pwaService = inject(PwaService);
   revenueCat = inject(RevenueCatService);
+  analyticsService = inject(AnalyticsService);
   modalController = inject(ModalController);
   menuController = inject(MenuController);
   // Datos del usuario
@@ -195,6 +199,7 @@ export class AppComponent implements OnInit, OnDestroy {
   ];
 
   private profileSubscription?: Subscription;
+  private routerSubscription?: Subscription;
 
   constructor() {
     addIcons({
@@ -218,6 +223,12 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // Screen tracking: registrar cada cambio de ruta como screen_view.
+    // GA4 no capta la navegación SPA dentro de una sola Activity/ViewController.
+    this.routerSubscription = this.router.events
+      .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
+      .subscribe((e) => this.analyticsService.logScreenView(screenNameFromUrl(e.urlAfterRedirects)));
+
     // Suscribirse al perfil del usuario
     this.profileSubscription = this.profileService.profile$.subscribe(
       (profile) => {
@@ -239,6 +250,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.profileSubscription?.unsubscribe();
+    this.routerSubscription?.unsubscribe();
   }
 
   async initApp() {
@@ -254,6 +266,17 @@ export class AppComponent implements OnInit, OnDestroy {
   async initFirebase() {
     // Inicializar Firebase
     initializeApp(environment.firebase);
+
+    // Observabilidad: habilitar Analytics/Crashlytics tras inicializar Firebase.
+    // Analytics web necesita el firebase app ya inicializado.
+    await this.analyticsService.setEnabled(environment.analyticsEnabled);
+    if (Capacitor.isNativePlatform()) {
+      try {
+        await FirebaseCrashlytics.setEnabled({ enabled: environment.crashlyticsEnabled });
+      } catch (error) {
+        console.warn('[Crashlytics] setEnabled falló:', error);
+      }
+    }
 
     // Inicializar el servicio de autenticación
     await this.authService.init();
@@ -277,9 +300,19 @@ export class AppComponent implements OnInit, OnDestroy {
             await this.profileService.checkProfile(dataAuth);
             // Reconfigurar RevenueCat con el nuevo user ID
             await this.configureRevenueCatUser(dataAuth.uid);
+            // Correlacionar analítica/crashes con el usuario (UID, nunca email)
+            await this.analyticsService.setUserId(dataAuth.uid);
+            if (Capacitor.isNativePlatform()) {
+              try { await FirebaseCrashlytics.setUserId({ userId: dataAuth.uid }); } catch { /* no-op */ }
+            }
           } else {
             // Usuario no autenticado - limpiar perfil
             await this.profileService.clearProfile();
+            // Desasociar la analítica del usuario anterior
+            await this.analyticsService.setUserId(null);
+            if (Capacitor.isNativePlatform()) {
+              try { await FirebaseCrashlytics.setUserId({ userId: '' }); } catch { /* no-op */ }
+            }
           }
 
           // Marcar como inicializado después de procesar el perfil

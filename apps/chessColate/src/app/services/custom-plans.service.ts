@@ -4,6 +4,7 @@ import { firstValueFrom } from 'rxjs';
 import { Plan } from '@cpark/models';
 
 import { FirestoreService } from '@services/firestore.service';
+import { AnalyticsService } from '@services/analytics.service';
 import { CustomPlansFacadeService } from '@cpark/state';
 
 @Injectable({
@@ -12,6 +13,7 @@ import { CustomPlansFacadeService } from '@cpark/state';
 export class CustomPlansService {
   private firestoreService = inject(FirestoreService);
   private customPlansFacade = inject(CustomPlansFacadeService);
+  private analyticsService = inject(AnalyticsService);
 
   /**
    * Obtiene un plan personalizado por uid.
@@ -42,6 +44,11 @@ export class CustomPlansService {
     this.customPlansFacade.addOneCustomPlan(plan);
     // Sincronizar con public-plans si es público
     await this.firestoreService.syncPlanToPublic(plan);
+    void this.analyticsService.logEvent('custom_plan_created', {
+      plan_uid: plan.uid,
+      is_public: !!plan.isPublic,
+      blocks_count: plan.blocks?.length ?? 0,
+    });
   }
 
   /**
@@ -53,5 +60,9 @@ export class CustomPlansService {
     this.customPlansFacade.updateCustomPlanInState(plan);
     // Sincronizar con public-plans (maneja isPublic true/false)
     await this.firestoreService.syncPlanToPublic(plan);
+    void this.analyticsService.logEvent('custom_plan_updated', {
+      plan_uid: plan.uid,
+      is_public: !!plan.isPublic,
+    });
   }
 }

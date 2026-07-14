@@ -22,6 +22,7 @@ import { TranslocoPipe } from '@jsverse/transloco';
 
 import { BoardComponent } from '@chesspark/board';
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
+import { AnalyticsService } from '@services/analytics.service';
 
 addIcons({ homeOutline, refreshOutline, playOutline, settingsOutline, closeOutline, trophy });
 
@@ -84,7 +85,8 @@ export class KnightTourPage implements OnInit, OnDestroy {
 
   constructor(
     private router: Router,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private analyticsService: AnalyticsService
   ) {}
 
   ngOnInit() {
@@ -166,6 +168,10 @@ export class KnightTourPage implements OnInit, OnDestroy {
 
     // Iniciar contador de tiempo
     this.startTimer();
+
+    void this.analyticsService.logEvent('knight_tour_started', {
+      start_position: this.startPosition,
+    });
   }
 
   /**
@@ -280,6 +286,12 @@ export class KnightTourPage implements OnInit, OnDestroy {
       this.isGameOver = true;
       this.isPlaying = false;
       this.stopTimer();
+      void this.analyticsService.logEvent('knight_tour_completed', {
+        completed: false,
+        time_seconds: this.elapsedTime,
+        visited_count: this.visitedSquares.length,
+        start_position: this.startPosition,
+      });
       this.showGameOverAlert();
     }
   }
@@ -674,6 +686,13 @@ export class KnightTourPage implements OnInit, OnDestroy {
     this.isPlaying = false;
     this.isGameOver = false;
     this.stopTimer();
+
+    void this.analyticsService.logEvent('knight_tour_completed', {
+      completed: true,
+      time_seconds: this.elapsedTime,
+      visited_count: this.visitedSquares.length,
+      start_position: this.startPosition,
+    });
   }
 
   /**

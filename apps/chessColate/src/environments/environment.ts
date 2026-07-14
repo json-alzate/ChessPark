@@ -31,7 +31,10 @@ export const environment = {
   version: '2.0.2',
   revenueCatApiKeyAndroid: keys.revenueCat.androidApiKey,
   revenueCatApiKeyIos: keys.revenueCat.iosApiKey,
-  revenueCatApiKeyWeb: keys.revenueCat.webApiKey
+  revenueCatApiKeyWeb: keys.revenueCat.webApiKey,
+  // Observabilidad: desactivada en dev para no contaminar métricas
+  analyticsEnabled: false,
+  crashlyticsEnabled: false
 };
 
 /*

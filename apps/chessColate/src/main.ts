@@ -1,5 +1,5 @@
 import { bootstrapApplication } from '@angular/platform-browser';
-import { provideAppInitializer, inject, isDevMode } from '@angular/core';
+import { provideAppInitializer, inject, isDevMode, ErrorHandler } from '@angular/core';
 import { provideServiceWorker } from '@angular/service-worker';
 import {
   RouteReuseStrategy,
@@ -39,6 +39,7 @@ import { ProfileService } from './app/services/profile.service';
 import { FirestoreService } from './app/services/firestore.service';
 import { LanguageService } from './app/services/language.service';
 import { AppService } from './app/services/app.service';
+import { CrashlyticsErrorHandler } from './app/services/crashlytics-error-handler';
 import { PuzzlesProvider } from '@chesspark/puzzles-provider';
 
 import { register } from 'swiper/element/bundle';
@@ -68,6 +69,8 @@ async function initializeApp(): Promise<void> {
 bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    // ErrorHandler global → reporta errores JS a Crashlytics (no-op en web)
+    { provide: ErrorHandler, useClass: CrashlyticsErrorHandler },
     provideIonicAngular(),
     provideRouter(routes, withPreloading(PreloadAllModules)),
     provideHttpClient(),

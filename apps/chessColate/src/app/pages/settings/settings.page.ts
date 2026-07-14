@@ -17,6 +17,7 @@ import { Subscription } from 'rxjs';
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 import { ProfileService } from '@services/profile.service';
 import { LanguageService, SupportedLang } from '@services/language.service';
+import { AnalyticsService } from '@services/analytics.service';
 
 addIcons({
   languageOutline,
@@ -43,6 +44,7 @@ export class SettingsPage implements OnInit, OnDestroy {
   private languageService = inject(LanguageService);
   private profileService = inject(ProfileService);
   private router = inject(Router);
+  private analyticsService = inject(AnalyticsService);
 
   currentLang: SupportedLang = this.languageService.getCurrentLang();
   isAuthenticated = false;
@@ -79,8 +81,11 @@ export class SettingsPage implements OnInit, OnDestroy {
     if (lang === this.currentLang) {
       return;
     }
+    const from = this.currentLang;
     await this.languageService.setLanguage(lang);
     this.currentLang = lang;
+
+    void this.analyticsService.logEvent('language_changed', { from, to: lang });
 
     if (this.isAuthenticated) {
       this.profileService.requestUpdateProfile({ lang });

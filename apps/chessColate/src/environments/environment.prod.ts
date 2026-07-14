@@ -8,5 +8,8 @@ export const environment = {
   version: '2.0.3',
   revenueCatApiKeyAndroid: keys.revenueCat.androidApiKey,
   revenueCatApiKeyIos: keys.revenueCat.iosApiKey,
-  revenueCatApiKeyWeb: keys.revenueCat.webApiKey
+  revenueCatApiKeyWeb: keys.revenueCat.webApiKey,
+  // Observabilidad: activada en producción
+  analyticsEnabled: true,
+  crashlyticsEnabled: true
 };
