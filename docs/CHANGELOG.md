@@ -15,6 +15,27 @@ y el versionado sigue [SemVer](https://semver.org/lang/es/) para `versionName`.
 
 ---
 
+## [2.0.5] — 2026-07-14 · `versionCode 22`
+
+### Añadido
+- **Observabilidad (Firebase Analytics + Crashlytics)**: la app registra ahora los
+  errores/crashes de producción y las métricas de uso, todo detrás de una fachada
+  única (`AnalyticsService`) y un `ErrorHandler` global. Disponible en **Android y Web**
+  (iOS pendiente).
+- **Seguimiento de pantallas** (`screen_view`) con nombres legibles, y asociación de
+  eventos y errores al usuario (UID de Firebase) tras iniciar sesión.
+- **Eventos de negocio**: inicio de rutinas (por defecto, infinity, Reto 333,
+  personalizadas y públicas), puzzles iniciados y resueltos/fallados, fin del Reto 333,
+  coordenadas, recorrido del caballo, visor de Ajedrez 960, creación/edición de rutinas,
+  guardado de rutinas públicas, cambio de idioma y donaciones completadas.
+
+### Notas
+- Analytics y Crashlytics se activan **solo en producción** (flags por entorno).
+- Pendiente tras este release: activar **iOS** y registrar las **dimensiones
+  personalizadas** en GA4 — ver [PENDIENTES.md](PENDIENTES.md).
+
+---
+
 ## [2.0.4] — 2026-07-06 · `versionCode 21`
 
 ### Añadido

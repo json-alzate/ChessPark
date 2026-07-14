@@ -14,6 +14,7 @@ import { TranslocoPipe } from '@jsverse/transloco';
 
 import { Chess960Board } from '@chesspark/board';
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
+import { AnalyticsService } from '@services/analytics.service';
 
 addIcons({ homeOutline, refreshOutline, shuffleOutline });
 
@@ -45,7 +46,11 @@ export class Chess960Page implements OnInit {
     'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
   isLoading = true;
 
-  constructor(private router: Router, private http: HttpClient) {}
+  constructor(
+    private router: Router,
+    private http: HttpClient,
+    private analyticsService: AnalyticsService
+  ) {}
 
   ngOnInit() {
     this.loadPositions();
@@ -78,11 +83,19 @@ export class Chess960Page implements OnInit {
     if (this.currentPositionId < 0) this.currentPositionId = 0;
     if (this.currentPositionId > 959) this.currentPositionId = 959;
     this.loadPosition(this.currentPositionId);
+    void this.analyticsService.logEvent('chess960_position_changed', {
+      position_id: this.currentPositionId,
+      source: 'manual',
+    });
   }
 
   randomizePosition() {
     const randomId = Math.floor(Math.random() * 960);
     this.loadPosition(randomId);
+    void this.analyticsService.logEvent('chess960_position_changed', {
+      position_id: randomId,
+      source: 'random',
+    });
   }
 
   goToHome() {

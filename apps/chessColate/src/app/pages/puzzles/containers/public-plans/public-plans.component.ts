@@ -21,6 +21,8 @@ import { PublicPlansService } from '@services/public-plans.service';
 import { PlanService } from '@services/plan.service';
 import { ProfileService } from '@services/profile.service';
 import { FirestoreService } from '@services/firestore.service';
+import { AnalyticsService } from '@services/analytics.service';
+import { minutesFromBlocks } from '@services/analytics-events.util';
 import {
     PublicPlansFacadeService,
     getProfile,
@@ -60,6 +62,7 @@ export class PublicPlansComponent implements OnInit, OnDestroy {
     private router = inject(Router);
     private loadingController = inject(LoadingController);
     private translocoService = inject(TranslocoService);
+    private analyticsService = inject(AnalyticsService);
     private store = inject(Store<AppState>);
     private destroy$ = new Subject<void>();
 
@@ -267,6 +270,15 @@ export class PublicPlansComponent implements OnInit, OnDestroy {
             // Limpiar el plan anterior antes de establecer uno nuevo
             this.planFacade.clearPlan();
             this.planFacade.setPlan(planToPlay);
+            void this.analyticsService.logEvent('routine_started', {
+                routine_kind: 'public',
+                routine_minutes: minutesFromBlocks(plan.blocks),
+                routine_category: '',
+                routine_name: plan.title ?? 'Pública',
+                routine_uid: plan.uid,
+                author_uid: plan.uidUser ?? '',
+                blocks_count: plan.blocks?.length ?? 0,
+            });
             this.router.navigate(['/puzzles/training']);
         } catch (error) {
             await loader.dismiss();
@@ -285,6 +297,10 @@ export class PublicPlansComponent implements OnInit, OnDestroy {
         const profile = this.profileService.getProfile;
         if (!profile?.uid) return;
         this.publicPlansFacade.togglePlanSaved(profile.uid, plan.uid, saved);
+        void this.analyticsService.logEvent('public_plan_saved', {
+            plan_uid: plan.uid,
+            saved,
+        });
     }
 
     getCurrentInteractionPlans(): PublicPlan[] {

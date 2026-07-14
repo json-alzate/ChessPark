@@ -8,6 +8,8 @@ import { FirestoreService } from '@services/firestore.service';
 import { BlockService } from '@services/block.service';
 import { ProfileService } from '@services/profile.service';
 import { PlansElosService } from '@services/plans-elos.service';
+import { AnalyticsService } from '@services/analytics.service';
+import { routineMetaFromPlanType, minutesFromBlocks } from '@services/analytics-events.util';
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +22,7 @@ export class PlanService {
   private plansElosService = inject(PlansElosService);
   private uidGenerator = inject(UidGeneratorService);
   private planFacade = inject(PlanFacadeService);
+  private analyticsService = inject(AnalyticsService);
 
   /**
    * Prepara un plan personalizado para jugar: resuelve temas (all/weakness), carga puzzles
@@ -59,6 +62,15 @@ export class PlanService {
       onProgress?.(i + 1, total);
     }
 
+    void this.analyticsService.logEvent('routine_started', {
+      routine_kind: 'custom',
+      routine_minutes: minutesFromBlocks(blockUpdatedToAdd),
+      routine_category: '',
+      routine_name: plan.title ?? 'Personalizada',
+      routine_uid: plan.uid,
+      blocks_count: blockUpdatedToAdd.length,
+    });
+
     return {
       ...plan,
       uid: this.uidGenerator.generateSimpleUid(),
@@ -86,6 +98,14 @@ export class PlanService {
           createdAt: new Date().getTime(),
         };
         this.planFacade.setPlan(plan);
+        const meta = routineMetaFromPlanType(planType);
+        void this.analyticsService.logEvent('routine_started', {
+          routine_kind: meta.kind,
+          routine_minutes: meta.minutes,
+          routine_category: meta.category,
+          routine_name: meta.name,
+          blocks_count: blocks.length,
+        });
         resolve(plan);
       } catch (error) {
         const message =

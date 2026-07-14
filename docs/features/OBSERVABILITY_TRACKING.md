@@ -104,20 +104,33 @@ Tras login, llamar `analytics.setUserId(uid)` y `FirebaseCrashlytics.setUserId(u
 
 ---
 
-## Eventos a instrumentar (catálogo inicial)
+## Catálogo de eventos (implementado)
 
-Mantener nombres en `snake_case` y un catálogo versionado para evitar eventos duplicados/inconsistentes.
+Nombres en `snake_case`. La **entrada a cada pantalla** la cubre automáticamente `screen_view` (con `screen_name` legible); los eventos de abajo son **acciones semánticas** para funnels/segmentación. Toda la lógica de metadatos (`routine_*`, `screen_name`) vive en `apps/chessColate/src/app/services/analytics-events.util.ts`.
 
-| Evento | Cuándo | Params sugeridos | Ubicación aprox. |
-|--------|--------|------------------|------------------|
-| `screen_view` | automático por Router | `screen_name` | `app.component.ts` |
-| `puzzle_started` | el usuario empieza un puzzle | `theme`, `rating` | `training.component.ts` |
-| `puzzle_solved` | resuelve correctamente | `theme`, `rating`, `time_seconds` | `training.component.ts` |
-| `puzzle_failed` | falla el puzzle | `theme`, `rating` | `training.component.ts` |
-| `plan_selected` | elige un plan de entrenamiento | `plan_id` | home / planes |
-| `language_changed` | cambia idioma | `from`, `to` | `settings.page.ts` |
-| `donation_opened` | abre flujo de donación | `source` | home |
-| `purchase_started` / `purchase_completed` | RevenueCat | `product_id`, `price` | servicio de compras |
+| Evento | Cuándo | Params | Ubicación |
+|--------|--------|--------|-----------|
+| `screen_view` | cada cambio de ruta (auto) | `screen_name` (legible: "Coordenadas", "Entrenamiento"…) | `app.component.ts` |
+| `routine_started` | inicia una rutina (por defecto / infinity / reto333 / custom / pública) | `routine_kind` (`default`/`infinity`/`reto333`/`custom`/`public`), `routine_minutes`, `routine_category` (`bullet`/`blitz`/`rapid`/`classical`), `routine_name`, `routine_uid`*, `author_uid`*, `blocks_count` | `plan.service.ts`, `public-plans.component.ts` |
+| `puzzle_started` | empieza un puzzle | `routine_kind`, `routine_minutes`, `theme`, `puzzle_elo` | `training.component.ts` |
+| `puzzle_completed` | resuelve / falla / se acaba el tiempo | `result` (`good`/`bad`/`timeout`), `puzzle_elo`, `user_elo`, `resolved_time`, `first_theme`, `routine_kind`, `routine_minutes` | `training.component.ts` |
+| `reto333_finished` | termina el Reto 333 | `solved_count`, `time_seconds`, `elo`, `completed`, `best_score` | `training.component.ts` |
+| `coordinates_started` | empieza una partida de coordenadas | `board_orientation`, `infinite_mode`, `show_pieces`, `show_coordinates` | `coordinates.page.ts` |
+| `coordinates_completed` | termina la partida de coordenadas | `score`, `correct_answers`, `incorrect_answers`, `accuracy`, `color`, `infinite_mode`, `is_new_record`, `record_type` | `coordinates.page.ts` |
+| `knight_tour_started` | empieza el recorrido del caballo | `start_position` | `knight-tour.page.ts` |
+| `knight_tour_completed` | completa o se queda sin movimientos | `completed`, `time_seconds`, `visited_count`, `start_position` | `knight-tour.page.ts` |
+| `chess960_position_changed` | cambia/aleatoriza posición en el visor 960 | `position_id`, `source` (`manual`/`random`) | `chess960.page.ts` |
+| `custom_plan_created` | crea una rutina personalizada | `plan_uid`, `is_public`, `blocks_count` | `custom-plans.service.ts` |
+| `custom_plan_updated` | edita una rutina personalizada | `plan_uid`, `is_public` | `custom-plans.service.ts` |
+| `public_plan_saved` | guarda/quita de guardados una rutina pública | `plan_uid`, `saved` | `public-plans.component.ts` |
+| `language_changed` | cambia el idioma | `from`, `to` | `settings.page.ts` |
+| `donation_completed` | completa una donación (RevenueCat OK) | `value`, `currency`, `item_id` | `donation.page.ts` |
+
+\* `routine_uid`/`author_uid` solo en rutinas custom/públicas.
+
+Además, el `CrashlyticsErrorHandler` reporta los errores JS no capturados como **non-fatals** a Crashlytics (nativo; no-op en web).
+
+> Para que los params custom aparezcan en los **informes estándar** de GA4 (no solo en Realtime/DebugView), hay que registrarlos como **dimensiones personalizadas** en GA4 → Admin → Definiciones personalizadas.
 
 ---
 
@@ -131,14 +144,14 @@ Mantener nombres en `snake_case` y un catálogo versionado para evitar eventos d
 
 ## Criterios de aceptación
 
-- [ ] Crash forzado de prueba aparece en Firebase Crashlytics con stacktrace legible.
-- [ ] Navegar entre pantallas genera `screen_view` visibles en **DebugView**.
-- [ ] Al menos 3 eventos de negocio (`puzzle_solved`, `language_changed`, uno de compra) se registran correctamente.
-- [ ] Toda la instrumentación pasa por `AnalyticsService` / `ErrorHandler` (cero llamadas directas al plugin desde componentes).
-- [ ] Errores y eventos se correlacionan con el UID del usuario tras login.
+- [x] Navegar entre pantallas genera `screen_view` (con `screen_name` legible) visibles en **DebugView**.
+- [x] Los eventos de negocio (`routine_started`, `puzzle_completed`, `language_changed`, `donation_completed`, etc.) se registran correctamente.
+- [x] Toda la instrumentación pasa por `AnalyticsService` / `ErrorHandler` (cero llamadas directas al plugin desde componentes).
+- [x] Errores y eventos se correlacionan con el UID del usuario tras login.
+- [ ] Crash forzado de prueba aparece en Firebase Crashlytics con stacktrace legible (verificar en dispositivo Android).
 
 ---
 
 ## Estado
 
-**Pendiente de desarrollo.** Documento de diseño para implementación futura.
+**Implementado en Android + Web.** iOS y follow-ups (registrar dimensiones personalizadas en GA4, Consent Mode, symbolication) quedan en [../PENDIENTES.md](../PENDIENTES.md) (sección 1).

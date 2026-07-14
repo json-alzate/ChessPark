@@ -31,6 +31,8 @@ import { PlanFacadeService } from '@cpark/state';
 import { PlansElosService } from '@services/plans-elos.service';
 import { PlanStorageService } from '@services/plan-storage.service';
 import { PlanService } from '@services/plan.service';
+import { AnalyticsService } from '@services/analytics.service';
+import { routineMetaFromPlanType } from '@services/analytics-events.util';
 import { UidGeneratorService } from '@chesspark/common-utils';
 import { addIcons } from 'ionicons';
 import {
@@ -87,6 +89,7 @@ export class TrainingComponent implements OnInit, OnDestroy {
   private planService = inject(PlanService);
   private loadingController = inject(LoadingController);
   private infinityPoolService = inject(InfinityPuzzlePoolService);
+  private analyticsService = inject(AnalyticsService);
 
   // Subject para gestionar suscripciones
   private destroy$ = new Subject<void>();
@@ -475,6 +478,14 @@ export class TrainingComponent implements OnInit, OnDestroy {
       puzzle.goshPuzzleTime && puzzle.goshPuzzleTime > 0
     );
 
+    const startMeta = routineMetaFromPlanType(this.plan.planType);
+    void this.analyticsService.logEvent('puzzle_started', {
+      routine_kind: startMeta.kind,
+      routine_minutes: startMeta.minutes,
+      theme: currentBlock.theme ?? '',
+      puzzle_elo: puzzle.rating ?? 0,
+    });
+
     // Pre-fetch del siguiente puzzle del pool en background (para que esté listo sin espera)
     if (this.plan.planType === 'infinity') {
       const nextIdx = this.countPuzzlesPlayedBlock + 1;
@@ -556,6 +567,17 @@ export class TrainingComponent implements OnInit, OnDestroy {
       firstMoveSquaresHighlight: puzzleCompleted.firstMoveSquaresHighlight,
       rawPuzzle: puzzleCompleted,
     };
+
+    const completedMeta = routineMetaFromPlanType(this.plan.planType);
+    void this.analyticsService.logEvent('puzzle_completed', {
+      result: puzzleStatus === 'timeOut' ? 'timeout' : puzzleStatus,
+      puzzle_elo: puzzleCompleted.rating ?? 0,
+      user_elo: this.profileService.getProfile?.elo ?? 0,
+      resolved_time: puzzleCompleted.timeUsed ?? 0,
+      first_theme: puzzleCompleted.themes?.[0] ?? '',
+      routine_kind: completedMeta.kind,
+      routine_minutes: completedMeta.minutes,
+    });
 
     // Crear una copia del bloque actual
     const existingPuzzlesPlayed = currentBlock.puzzlesPlayed ?? [];
@@ -727,6 +749,14 @@ export class TrainingComponent implements OnInit, OnDestroy {
       completed
     };
     this.showReto333DaisyModal = true;
+
+    void this.analyticsService.logEvent('reto333_finished', {
+      solved_count: solvedCount,
+      time_seconds: timePlayedSec,
+      elo: this.reto333EloLocal,
+      completed,
+      best_score: bestScore,
+    });
   }
 
   closeReto333Modal() {

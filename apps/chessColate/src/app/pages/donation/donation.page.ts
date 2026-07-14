@@ -16,6 +16,7 @@ import { Package, PurchasesError, PURCHASES_ERROR_CODE } from '@chesspark/revenu
 import { Capacitor } from '@capacitor/core';
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 import { ProfileService } from '@services/profile.service';
+import { AnalyticsService } from '@services/analytics.service';
 import { LoginComponent } from '@shared/components/login/login.component';
 import { Subscription } from 'rxjs';
 
@@ -50,6 +51,7 @@ export class DonationPage implements OnInit, OnDestroy {
   private modalController = inject(ModalController);
   private profileService = inject(ProfileService);
   private router = inject(Router);
+  private analyticsService = inject(AnalyticsService);
 
   isAuthenticated = false;
   private profileSub?: Subscription;
@@ -173,6 +175,11 @@ export class DonationPage implements OnInit, OnDestroy {
       // Verificar si la compra fue exitosa
       if (purchaseResult.customerInfo) {
         this.showToast('¡Gracias por tu donación!', 'success');
+        void this.analyticsService.logEvent('donation_completed', {
+          value: option.amount,
+          currency: packageToPurchase.product?.currencyCode ?? '',
+          item_id: packageToPurchase.identifier,
+        });
       }
     } catch (error: unknown) {
       await loading.dismiss();

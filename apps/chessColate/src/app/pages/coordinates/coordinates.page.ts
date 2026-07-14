@@ -16,6 +16,7 @@ import {
   StorageService,
   CoordinatesPuzzle,
 } from '@services/storage.service';
+import { AnalyticsService } from '@services/analytics.service';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { ConfettiService, RandomFENService, SoundsService } from '@chesspark/common-utils';
@@ -135,7 +136,8 @@ export class CoordinatesPage {
     private confettiService: ConfettiService,
     private randomFENService: RandomFENService,
     private soundsService: SoundsService,
-    private router: Router
+    private router: Router,
+    private analyticsService: AnalyticsService
   ) {
     this.loadUserStats();
     this.loadBestScores();
@@ -369,7 +371,14 @@ export class CoordinatesPage {
     }
 
     this.isPlaying = true;
-    
+
+    void this.analyticsService.logEvent('coordinates_started', {
+      board_orientation: this.boardOrientation,
+      infinite_mode: this.gameSettings.infiniteMode,
+      show_pieces: this.gameSettings.showPieces,
+      show_coordinates: this.gameSettings.showCoordinates,
+    });
+
     // Solo iniciar el intervalo si no es modo infinito
     if (!this.gameSettings.infiniteMode) {
       this.initInterval();
@@ -436,6 +445,17 @@ export class CoordinatesPage {
     // Recargar estadísticas
     this.loadUserStats();
     this.loadBestScores(); // Recargar mejores puntajes después de cada juego
+
+    void this.analyticsService.logEvent('coordinates_completed', {
+      score: this.score,
+      correct_answers: this.currentGameStats.correctAnswers,
+      incorrect_answers: this.currentGameStats.incorrectAnswers,
+      accuracy: this.currentGameStats.accuracy,
+      color: this.boardComponent ? this.boardComponent.getOrientation() : 'w',
+      infinite_mode: this.gameSettings.infiniteMode,
+      is_new_record: this.isNewRecord,
+      record_type: this.recordType ?? 'none',
+    });
   }
 
   /**
