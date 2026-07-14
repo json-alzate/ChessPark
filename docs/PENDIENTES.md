@@ -9,7 +9,7 @@ Estados: 🔴 pendiente · 🟡 en progreso · 🟢 hecho (se deja un tiempo com
 
 ## 1. Observabilidad (Analytics + Crashlytics)
 
-Feature base: [features/OBSERVABILITY_TRACKING.md](./features/OBSERVABILITY_TRACKING.md).
+Diseño: [implementado/OBSERVABILITY_TRACKING.md](./implementado/OBSERVABILITY_TRACKING.md) · Referencia de cómo quedó: [implementado/OBSERVABILITY_REFERENCIA.md](./implementado/OBSERVABILITY_REFERENCIA.md).
 Implementación Android + Web: **hecha**. Lo que queda:
 
 ### 1.1 iOS — activar Analytics + Crashlytics 🔴 (prioridad alta)

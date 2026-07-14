@@ -1,5 +1,10 @@
 # Observability & Tracking — Feature Document
 
+> ✅ **Implementado (Android + Web) en la v2.0.5.** Este documento es el **diseño original**.
+> Para saber **cómo quedó funcionando** (arquitectura, archivos, catálogo, cómo extenderlo y verificarlo),
+> ver **[OBSERVABILITY_REFERENCIA.md](./OBSERVABILITY_REFERENCIA.md)**. Lo pendiente (iOS, etc.) está en
+> [../PENDIENTES.md](../PENDIENTES.md).
+
 ## Concepto
 
 Instrumentar la app para tener **visibilidad de lo que les pasa a los usuarios reales en producción**. Cubre dos necesidades distintas que se resuelven con herramientas complementarias:
