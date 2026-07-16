@@ -1,0 +1,13 @@
+<!--
+  Icono pequeño de las notificaciones de recordatorio (peón).
+  Android lo tiñe: solo cuenta la silueta, el color se ignora.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M12,2c-2.21,0 -4,1.79 -4,4c0,1.2 0.53,2.27 1.36,3c-0.83,0.73 -1.36,1.8 -1.36,3c0,1.48 0.81,2.77 2,3.46L9,19H6v3h12v-3h-3l-0.99,-3.54c1.19,-0.69 2,-1.98 2,-3.46c0,-1.2 -0.53,-2.27 -1.36,-3C15.47,8.27 16,7.2 16,6C16,3.79 14.21,2 12,2z" />
+</vector>

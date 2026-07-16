@@ -12,6 +12,8 @@ dependencies {
     implementation project(':capacitor-firebase-analytics')
     implementation project(':capacitor-firebase-authentication')
     implementation project(':capacitor-firebase-crashlytics')
+    implementation project(':capacitor-app')
+    implementation project(':capacitor-local-notifications')
     implementation project(':revenuecat-purchases-capacitor')
     implementation project(':capacitor-splash-screen')
 

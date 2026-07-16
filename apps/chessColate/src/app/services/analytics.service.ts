@@ -21,7 +21,13 @@ export type AnalyticsEventName =
   | 'custom_plan_updated'
   | 'public_plan_saved'
   | 'language_changed'
-  | 'donation_completed';
+  | 'donation_completed'
+  | 'training_reminder_prompt_shown'
+  | 'training_reminder_enabled'
+  | 'training_reminder_disabled'
+  | 'training_reminder_scheduled'
+  | 'training_reminder_time_changed'
+  | 'training_reminder_tapped';
 
 /** Valores primitivos admitidos por GA4 como parámetros de evento. */
 export type AnalyticsParams = Record<string, string | number | boolean>;

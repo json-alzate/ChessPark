@@ -10,6 +10,7 @@ import { ProfileService } from '@services/profile.service';
 import { PlansElosService } from '@services/plans-elos.service';
 import { AnalyticsService } from '@services/analytics.service';
 import { routineMetaFromPlanType, minutesFromBlocks } from '@services/analytics-events.util';
+import { TrainingReminderService } from '@services/training-reminder.service';
 
 @Injectable({
   providedIn: 'root'
@@ -23,6 +24,7 @@ export class PlanService {
   private uidGenerator = inject(UidGeneratorService);
   private planFacade = inject(PlanFacadeService);
   private analyticsService = inject(AnalyticsService);
+  private trainingReminderService = inject(TrainingReminderService);
 
   /**
    * Prepara un plan personalizado para jugar: resuelve temas (all/weakness), carga puzzles
@@ -71,6 +73,9 @@ export class PlanService {
       blocks_count: blockUpdatedToAdd.length,
     });
 
+    // No molestar con el recordatorio en mitad de la sesión que empieza
+    this.trainingReminderService.onSessionStarted();
+
     return {
       ...plan,
       uid: this.uidGenerator.generateSimpleUid(),
@@ -106,6 +111,8 @@ export class PlanService {
           routine_name: meta.name,
           blocks_count: blocks.length,
         });
+        // No molestar con el recordatorio en mitad de la sesión que empieza
+        this.trainingReminderService.onSessionStarted();
         resolve(plan);
       } catch (error) {
         const message =

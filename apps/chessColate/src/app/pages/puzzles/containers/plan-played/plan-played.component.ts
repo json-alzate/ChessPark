@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
+import { Capacitor } from '@capacitor/core';
 
 import {
   ModalController,
@@ -20,6 +21,8 @@ import { FirestoreService } from '@services/firestore.service';
 import { BlockService } from '@services/block.service';
 import { PlanService } from '@services/plan.service';
 import { PlanStorageService } from '@services/plan-storage.service';
+import { AnalyticsService } from '@services/analytics.service';
+import { TrainingReminderService } from '@services/training-reminder.service';
 import { LoadingController } from '@ionic/angular/standalone';
 
 import { BoardPuzzleSolutionComponent } from '@chesspark/board';
@@ -27,6 +30,7 @@ import { FenBoardComponent } from '@chesspark/board';
 import { PlanChartComponent } from '@pages/puzzles/components/plan-chart/plan-chart.component';
 import { LoginComponent } from '@shared/components/login/login.component';
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
+import { ReminderPermissionModalComponent } from '@shared/components/reminder-permission-modal/reminder-permission-modal.component';
 import { planImage } from '@pages/home/components/training-plans.config';
 import { ConfettiService } from '@chesspark/common-utils';
 
@@ -73,6 +77,8 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
   private loadingController = inject(LoadingController);
   private confettiService = inject(ConfettiService);
   private translocoService = inject(TranslocoService);
+  private analyticsService = inject(AnalyticsService);
+  private trainingReminderService = inject(TrainingReminderService);
 
   /**
    * Menú minimalista de rutinas: animalito + duración (minutos).
@@ -104,6 +110,8 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
   isLoadingPlan: boolean = false;
   isFromHistory: boolean = false;
   private hasHadPlan: boolean = false; // Flag para saber si alguna vez tuvimos un plan
+  // Evita evaluar/mostrar el prompt del recordatorio más de una vez por visita
+  private reminderPromptChecked: boolean = false;
   private destroy$ = new Subject<void>();
 
   constructor() {
@@ -183,6 +191,9 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
             if (this.isPublicPlan && this.canLike) {
               await this.checkLikeStatus();
             }
+
+            // Momento oportuno (peak-end) para proponer el recordatorio
+            void this.maybeShowReminderPrompt();
           }
           // Si el plan no está terminado, ignorarlo (es un plan nuevo que se está creando)
         } else if (!plan && !this.isLoadingPlan && !this.hasHadPlan) {
@@ -210,6 +221,55 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
           return;
         }
       });
+  }
+
+  /**
+   * Propone activar el recordatorio de entrenamiento en el momento emocional
+   * correcto (acaba de completar una sesión): solo en nativo, una sola vez,
+   * con al menos 2 sesiones registradas y con el permiso aún sin decidir.
+   */
+  private async maybeShowReminderPrompt(): Promise<void> {
+    if (this.reminderPromptChecked || this.isFromHistory) {
+      return;
+    }
+    this.reminderPromptChecked = true;
+
+    if (!Capacitor.isNativePlatform()) {
+      return;
+    }
+    const state = this.trainingReminderService.getState();
+    if (state.enabled || state.contextPromptShownAt !== null) {
+      return;
+    }
+    if (this.trainingReminderService.getEventsCount() < 2) {
+      return;
+    }
+    const permission =
+      await this.trainingReminderService.checkPermissionStatus();
+    if (permission !== 'prompt' && permission !== 'prompt-with-rationale') {
+      return;
+    }
+
+    // Pequeño retardo para no competir con la animación de resultados
+    setTimeout(() => void this.showReminderPrompt(), 800);
+  }
+
+  private async showReminderPrompt(): Promise<void> {
+    this.trainingReminderService.markContextPromptShown();
+    void this.analyticsService.logEvent('training_reminder_prompt_shown', {
+      source: 'plan_played',
+    });
+
+    const modal = await this.modalController.create({
+      component: ReminderPermissionModalComponent,
+      breakpoints: [0, 0.6],
+      initialBreakpoint: 0.6,
+    });
+    await modal.present();
+    const { role } = await modal.onWillDismiss();
+    if (role === 'accept') {
+      await this.trainingReminderService.enable('prompt');
+    }
   }
 
   /** Animalito (imagen) del plan, para el avatar del resumen. */

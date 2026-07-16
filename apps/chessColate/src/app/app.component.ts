@@ -42,6 +42,7 @@ import { FirestoreService } from '@services/firestore.service';
 import { PwaService } from '@services/pwa.service';
 import { AnalyticsService } from '@services/analytics.service';
 import { screenNameFromUrl } from '@services/analytics-events.util';
+import { TrainingReminderService } from '@services/training-reminder.service';
 import { RevenueCatService, LogLevel } from '@chesspark/revenuecat';
 import { Capacitor } from '@capacitor/core';
 import { SplashScreen } from '@capacitor/splash-screen';
@@ -101,6 +102,7 @@ export class AppComponent implements OnInit, OnDestroy {
   pwaService = inject(PwaService);
   revenueCat = inject(RevenueCatService);
   analyticsService = inject(AnalyticsService);
+  trainingReminderService = inject(TrainingReminderService);
   modalController = inject(ModalController);
   menuController = inject(MenuController);
   // Datos del usuario
@@ -256,6 +258,11 @@ export class AppComponent implements OnInit, OnDestroy {
   async initApp() {
     // Inicializar Firebase
     await this.initFirebase();
+
+    // Recordatorio de entrenamiento: listeners de tap/resume y reprogramación.
+    // Temprano para capturar el tap de una notificación en arranque en frío.
+    // (no-op en web)
+    await this.trainingReminderService.init();
 
     // Hide splash screen after initialization
     if (Capacitor.isNativePlatform()) {

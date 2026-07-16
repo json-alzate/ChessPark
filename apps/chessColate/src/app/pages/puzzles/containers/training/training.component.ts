@@ -33,6 +33,7 @@ import { PlanStorageService } from '@services/plan-storage.service';
 import { PlanService } from '@services/plan.service';
 import { AnalyticsService } from '@services/analytics.service';
 import { routineMetaFromPlanType } from '@services/analytics-events.util';
+import { TrainingReminderService } from '@services/training-reminder.service';
 import { UidGeneratorService } from '@chesspark/common-utils';
 import { addIcons } from 'ionicons';
 import {
@@ -90,6 +91,7 @@ export class TrainingComponent implements OnInit, OnDestroy {
   private loadingController = inject(LoadingController);
   private infinityPoolService = inject(InfinityPuzzlePoolService);
   private analyticsService = inject(AnalyticsService);
+  private trainingReminderService = inject(TrainingReminderService);
 
   // Subject para gestionar suscripciones
   private destroy$ = new Subject<void>();
@@ -704,6 +706,9 @@ export class TrainingComponent implements OnInit, OnDestroy {
     this.planFacade.updatePlan(this.plan);
     this.planStorageService.savePlan(this.plan);
 
+    // Registrar la hora de la sesión y reprogramar el recordatorio
+    this.trainingReminderService.onSessionCompleted(this.plan);
+
     const currentBlock = this.plan.blocks?.[0];
     const puzzlesPlayed = currentBlock?.puzzlesPlayed || [];
     const solvedCount = puzzlesPlayed.filter(p => p.resolved).length;
@@ -872,6 +877,9 @@ export class TrainingComponent implements OnInit, OnDestroy {
 
     // Guardar el plan en localStorage
     this.planStorageService.savePlan(this.plan);
+
+    // Registrar la hora de la sesión y reprogramar el recordatorio
+    this.trainingReminderService.onSessionCompleted(this.plan);
 
     // Incrementar contador de veces jugado para planes custom
     if (
