@@ -112,8 +112,7 @@
       "continueTraining": "Continuar Entrenamiento",
       "continuousTraining": "Entrenamiento continuo",
       "resolveUnlimited": "Resuelve problemas ilimitados",
-      "trainNow": "Entrenar ahora",
-      "anyTheme": "¡No sabes qué esperar!"
+      "trainNow": "Entrenar ahora"
     },
     "loader": {
       "creatingRoutine": "Creando rutina...",
@@ -125,6 +124,9 @@
       "white": "Blancas",
       "black": "Negras",
       "anyColor": "Cualquier color"
+    },
+    "elo": {
+      "yours": "Tu ELO"
     },
     "with": " con ",
     "modes": {

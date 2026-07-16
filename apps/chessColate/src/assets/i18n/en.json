@@ -112,8 +112,7 @@
       "continueTraining": "Continue training",
       "continuousTraining": "Continuous training",
       "resolveUnlimited": "Solve unlimited puzzles",
-      "trainNow": "Train now",
-      "anyTheme": "You never know what to expect!"
+      "trainNow": "Train now"
     },
     "loader": {
       "creatingRoutine": "Creating routine...",
@@ -125,6 +124,9 @@
       "white": "White",
       "black": "Black",
       "anyColor": "Any color"
+    },
+    "elo": {
+      "yours": "Your rating"
     },
     "with": " with ",
     "modes": {
