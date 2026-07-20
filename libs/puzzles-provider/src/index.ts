@@ -29,6 +29,7 @@ export {
   getEloRange,
   buildPuzzleUrl,
   shuffleArray,
+  dedupeByUid,
   filterByColor,
   normalizeElo,
   generateEloSequence,

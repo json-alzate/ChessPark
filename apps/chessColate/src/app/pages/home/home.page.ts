@@ -232,14 +232,11 @@ export class HomePage implements OnInit, ViewWillEnter, ViewWillLeave {
         'infinity'
       );
 
-      // El primer puzzle se toma del pool; el training carga el resto de a 1 al ir avanzando
-      const firstPuzzle = await this.infinityPoolService.popOnePuzzle();
-      if (firstPuzzle) {
-        blocks[0].puzzles = [firstPuzzle];
-      } else {
-        const puzzles = await this.blockService.getPuzzlesForBlock(blocks[0]);
-        blocks[0].puzzles = puzzles;
-      }
+      // El primer puzzle se toma del pool; el training carga el resto de a 1 al ir
+      // avanzando. Nunca un lote: getPuzzlesForBlock traería 50 puzzles de un solo
+      // tema y la sesión entera quedaría encerrada en él.
+      const firstPuzzle = await this.infinityPoolService.getNextPuzzle();
+      blocks[0].puzzles = firstPuzzle ? [firstPuzzle] : [];
 
       await this.planService.newPlan(blocks, 'infinity');
 

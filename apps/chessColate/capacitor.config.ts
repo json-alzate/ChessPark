@@ -28,8 +28,11 @@ const config: CapacitorConfig = {
         '798600509062-1hrnp7meoueqo1v0lipqdnrqpjln44nv.apps.googleusercontent.com',
       forceCodeForRefreshToken: true,
     },
-    PushNotifications: {
-      presentationOptions: ['badge', 'sound', 'alert'],
+    LocalNotifications: {
+      // Debe existir en res/drawable (no mipmap): el plugin resuelve el nombre
+      // contra "drawable" y si no lo encuentra cae al icono genérico del SO.
+      smallIcon: 'ic_stat_reminder',
+      iconColor: '#f28c18',
     },
   },
 };

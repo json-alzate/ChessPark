@@ -730,12 +730,16 @@ export class BlockService {
             {
               time: -1,
               puzzlesCount: 0,
-              theme: this.getRandomTheme(),
+              // Los puzzles vienen del pool (InfinityPuzzlePoolService), que es
+              // mixto en tema y en color: el bloque no filtra ninguno de los dos.
+              // 'random' hace que la etiqueta se derive del FEN de cada puzzle.
+              theme: '',
               elo: this.profileService.getEloTotalByPlanType('infinity'),
-              color: Math.random() > 0.5 ? 'white' : 'black',
+              color: 'random',
               puzzlesPlayed: [],
               nextPuzzleImmediately: true,
               showPuzzleSolution: true,
+              showPuzzleElo: true,
             },
           ];
           resolve(blockInfinity);

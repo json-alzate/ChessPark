@@ -33,6 +33,7 @@ import { PlanStorageService } from '@services/plan-storage.service';
 import { PlanService } from '@services/plan.service';
 import { AnalyticsService } from '@services/analytics.service';
 import { routineMetaFromPlanType } from '@services/analytics-events.util';
+import { TrainingReminderService } from '@services/training-reminder.service';
 import { UidGeneratorService } from '@chesspark/common-utils';
 import { addIcons } from 'ionicons';
 import {
@@ -57,6 +58,7 @@ import {
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 
 import { BlockPresentationComponent } from '../../components/block-presentation/block-presentation.component';
+import { resolvePlayerColor } from './player-color.util';
 import {
   SoundsService,
   SecondsToMinutesSecondsPipe,
@@ -90,6 +92,7 @@ export class TrainingComponent implements OnInit, OnDestroy {
   private loadingController = inject(LoadingController);
   private infinityPoolService = inject(InfinityPuzzlePoolService);
   private analyticsService = inject(AnalyticsService);
+  private trainingReminderService = inject(TrainingReminderService);
 
   // Subject para gestionar suscripciones
   private destroy$ = new Subject<void>();
@@ -123,18 +126,31 @@ export class TrainingComponent implements OnInit, OnDestroy {
 
   /** Color con el que juega el usuario en el puzzle actual (blancas o negras) */
   get playerColor(): 'white' | 'black' {
-    const block = this.plan?.blocks?.[this.currentIndexBlock];
-    const puzzle = this.puzzleToPlay;
-    if (!block) return 'white';
-    if (block.color === 'white') return 'white';
-    if (block.color === 'black') return 'black';
-    // random: el FEN indica el turno del oponente (quien acaba de mover); invertimos para obtener el color del jugador
-    if (puzzle?.fen) {
-      const parts = puzzle.fen.trim().split(/\s+/);
-      const turn = parts[1]?.toLowerCase();
-      return turn === 'b' ? 'white' : 'black';
-    }
-    return 'white';
+    return resolvePlayerColor(
+      this.plan?.blocks?.[this.currentIndexBlock]?.color,
+      this.puzzleToPlay?.fen
+    );
+  }
+
+  /**
+   * Puntos que sumó o restó cada puzzle ya resuelto en la sesión, en orden.
+   * Alimenta las píldoras de progreso; se recorta a los más recientes para no
+   * desbordar el panel.
+   */
+  eloChanges: number[] = [];
+  private readonly MAX_ELO_CHANGES_SHOWN = 12;
+
+  /** Elo del usuario en el plan actual, para mostrarlo mientras entrena. */
+  get userElo(): number {
+    return this.profileService.getEloTotalByPlanType(this.plan.planType);
+  }
+
+  /**
+   * Sin sesión el elo no se guarda en ninguna parte: requestUpdateProfile no
+   * hace nada sin perfil, así que mostrar progreso sería mentirle al invitado.
+   */
+  get canTrackElo(): boolean {
+    return !!this.profileService.getProfile?.uid;
   }
 
   constructor(
@@ -439,20 +455,18 @@ export class TrainingComponent implements OnInit, OnDestroy {
         });
     }
 
-    // Para infinity: el siguiente puzzle se obtiene del pool en el momento que se necesita
+    // Para infinity: el siguiente puzzle se pide de a uno, en el momento que se
+    // necesita. getNextPuzzle() ya resuelve sus propios respaldos (caché de
+    // archivos o CDN) y nunca devuelve un lote: precargar uno haría que
+    // puzzles[countPuzzlesPlayedBlock] quedara siempre definido y la sesión no
+    // volviera a consultar el pool, encerrándose en un único tema.
     currentBlock.puzzles ??= [];
     let puzzleSource = currentBlock.puzzles[this.countPuzzlesPlayedBlock];
     if (!puzzleSource && this.plan.planType === 'infinity') {
-      const nextPuzzle = await this.infinityPoolService.popOnePuzzle();
+      const nextPuzzle = await this.infinityPoolService.getNextPuzzle();
       if (nextPuzzle) {
         currentBlock.puzzles.push(nextPuzzle);
         puzzleSource = nextPuzzle;
-      } else {
-        const fallback = await this.blockService.getPuzzlesForBlock(currentBlock);
-        if (fallback.length > 0) {
-          currentBlock.puzzles.push(...fallback);
-          puzzleSource = currentBlock.puzzles[this.countPuzzlesPlayedBlock];
-        }
       }
     }
 
@@ -482,21 +496,12 @@ export class TrainingComponent implements OnInit, OnDestroy {
     void this.analyticsService.logEvent('puzzle_started', {
       routine_kind: startMeta.kind,
       routine_minutes: startMeta.minutes,
-      theme: currentBlock.theme ?? '',
+      // El tema del bloque cuando lo hay (el resto de planes filtra por él, así
+      // que describe al puzzle). Infinity no tiene tema de bloque: ahí se reporta
+      // el del puzzle servido en vez de un tema inventado.
+      theme: currentBlock.theme || puzzle.themes?.[0] || '',
       puzzle_elo: puzzle.rating ?? 0,
     });
-
-    // Pre-fetch del siguiente puzzle del pool en background (para que esté listo sin espera)
-    if (this.plan.planType === 'infinity') {
-      const nextIdx = this.countPuzzlesPlayedBlock + 1;
-      if (!currentBlock.puzzles[nextIdx]) {
-        this.infinityPoolService.popOnePuzzle().then(next => {
-          if (next) {
-            currentBlock.puzzles!.push(next);
-          }
-        });
-      }
-    }
   }
 
   initTimeToEndBlock(timeBlock: number) {
@@ -615,12 +620,15 @@ export class TrainingComponent implements OnInit, OnDestroy {
       );
     } else if (!['custom', 'reto333'].includes(this.plan.planType)) {
       // Para planes por defecto, actualizar los elos del perfil
-      this.profileService.calculateEloPuzzlePlan(
+      const recordInfo = this.profileService.calculateEloPuzzlePlan(
         puzzleCompleted.rating,
         puzzleStatus === 'good' ? 1 : 0,
         this.plan.planType,
         puzzleCompleted.themes,
         puzzleCompleted.openingFamily
+      );
+      this.eloChanges = [...this.eloChanges, recordInfo.totalEloChange].slice(
+        -this.MAX_ELO_CHANGES_SHOWN
       );
     }
 
@@ -703,6 +711,9 @@ export class TrainingComponent implements OnInit, OnDestroy {
     // Save state
     this.planFacade.updatePlan(this.plan);
     this.planStorageService.savePlan(this.plan);
+
+    // Registrar la hora de la sesión y reprogramar el recordatorio
+    this.trainingReminderService.onSessionCompleted(this.plan);
 
     const currentBlock = this.plan.blocks?.[0];
     const puzzlesPlayed = currentBlock?.puzzlesPlayed || [];
@@ -873,6 +884,9 @@ export class TrainingComponent implements OnInit, OnDestroy {
     // Guardar el plan en localStorage
     this.planStorageService.savePlan(this.plan);
 
+    // Registrar la hora de la sesión y reprogramar el recordatorio
+    this.trainingReminderService.onSessionCompleted(this.plan);
+
     // Incrementar contador de veces jugado para planes custom
     if (
       this.plan.planType === 'custom' &&
@@ -900,6 +914,7 @@ export class TrainingComponent implements OnInit, OnDestroy {
     this.timeLeftBlock = 0;
     this.countPuzzlesPlayedBlock = 0;
     this.totalPuzzlesInBlock = 0;
+    this.eloChanges = [];
     this.isInitialized = false;
 
     // Navegar a la pantalla de plan jugado
@@ -923,6 +938,7 @@ export class TrainingComponent implements OnInit, OnDestroy {
     this.timeLeftBlock = 0;
     this.countPuzzlesPlayedBlock = 0;
     this.totalPuzzlesInBlock = 0;
+    this.eloChanges = [];
 
     // Reto 333 cleanup
     this.reto333StartTime = null;

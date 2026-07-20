@@ -112,8 +112,7 @@
       "continueTraining": "Continue training",
       "continuousTraining": "Continuous training",
       "resolveUnlimited": "Solve unlimited puzzles",
-      "trainNow": "Train now",
-      "anyTheme": "You never know what to expect!"
+      "trainNow": "Train now"
     },
     "loader": {
       "creatingRoutine": "Creating routine...",
@@ -125,6 +124,9 @@
       "white": "White",
       "black": "Black",
       "anyColor": "Any color"
+    },
+    "elo": {
+      "yours": "Your rating"
     },
     "with": " with ",
     "modes": {
@@ -523,7 +525,33 @@
   "SETTINGS": {
     "title": "Settings",
     "language": "Language",
-    "appearance": "Appearance"
+    "appearance": "Appearance",
+    "notifications": "Notifications"
+  },
+  "TRAINING_REMINDER": {
+    "toggleTitle": "Training reminder",
+    "toggleDesc": "One nudge a day at your usual time, only if you haven't trained yet",
+    "timeLabel": "Reminder time",
+    "suggestedHint": "Suggested from your recent sessions",
+    "defaultHint": "Default time; it will adapt to your sessions",
+    "overriddenHint": "Custom",
+    "useSuggested": "Use suggested time ({{time}})",
+    "permissionDenied": "Notifications are disabled at the system level. Enable them in your device settings.",
+    "channelName": "Training reminders",
+    "prompt": {
+      "title": "Train at your usual time?",
+      "message": "You usually train around {{time}}. We'll remind you at that time so you keep the rhythm — only if you haven't trained that day.",
+      "messageGeneric": "We'll remind you at {{time}} so you keep the rhythm — only if you haven't trained that day. Over time we'll adjust it to your usual hour.",
+      "accept": "Remind me",
+      "later": "Not now"
+    },
+    "notifications": {
+      "title": "Today's training",
+      "generic1": "Ready for today's move? ♟️",
+      "generic2": "It's your training time. Let's go find a mate. ♟️",
+      "generic3": "3 quick puzzles and you're done. Shall we? ⚡",
+      "streak": "Don't lose your {{days}}-day streak 🔥"
+    }
   },
   "PUZZLE_SOLUTION": {
     "game": {

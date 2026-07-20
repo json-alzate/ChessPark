@@ -77,6 +77,20 @@ export function shuffleArray<T>(array: T[]): T[] {
 }
 
 /**
+ * Elimina puzzles repetidos por uid, conservando el primero de cada uno.
+ * Los temas se solapan (mate/mateIn1), así que un mismo puzzle puede llegar
+ * en los archivos de dos temas distintos.
+ */
+export function dedupeByUid(puzzles: Puzzle[]): Puzzle[] {
+  const seen = new Set<string>();
+  return puzzles.filter((puzzle) => {
+    if (seen.has(puzzle.uid)) return false;
+    seen.add(puzzle.uid);
+    return true;
+  });
+}
+
+/**
  * Filtra puzzles por color
  */
 export function filterByColor(puzzles: Puzzle[], color: 'w' | 'b' | 'N/A'): Puzzle[] {

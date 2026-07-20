@@ -91,11 +91,7 @@
               } }
             </div>
             @if (($any(plan)?.blocks?.[currentIndexBlock])) {
-              @if (plan.planType === 'infinity') {
-              <span class="text-sm text-base-content/50 italic">{{
-                'PUZZLES.general.anyTheme' | transloco
-              }}</span>
-              } @else {
+              @if (plan.planType !== 'infinity') {
                 @if (plan.blocks[currentIndexBlock].theme) {
                 <span class="text-sm text-base-content/70">{{
                   appService.getNameThemePuzzleByValue(
@@ -173,6 +169,32 @@
             </span>
           </div>
         </div>
+        <!-- Progreso de la sesión: elo del usuario y lo que sumó o restó cada
+             puzzle. La píldora sin número es el puzzle que se está jugando.
+             Solo con sesión: sin ella el elo no se guarda y no avanzaría. -->
+        @if ($any(plan)?.planType === 'infinity' && canTrackElo) {
+        <div class="flex flex-col gap-2">
+          <div class="flex items-baseline gap-2">
+            <span class="text-sm text-base-content/60">{{
+              'PUZZLES.elo.yours' | transloco
+            }}</span>
+            <span class="font-mono font-semibold text-xl">{{ userElo }}</span>
+          </div>
+          <div class="flex flex-wrap items-center gap-1.5">
+            @for (change of eloChanges; track $index) {
+            <span
+              class="badge border-0 font-mono font-semibold"
+              [class.badge-success]="change > 0"
+              [class.badge-error]="change < 0"
+              [class.badge-ghost]="change === 0"
+              >{{ change > 0 ? '+' : '' }}{{ change }}</span
+            >
+            } @if (puzzleToPlay) {
+            <span class="badge badge-warning border-0 w-9"></span>
+            }
+          </div>
+        </div>
+        }
         @if (isGoshHelperShow) {
         <ion-note
           class="flex items-start gap-2 text-base-content/80 text-sm bg-warning/10 p-3 rounded-lg border border-warning/20"

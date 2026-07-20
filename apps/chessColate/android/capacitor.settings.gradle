@@ -11,6 +11,12 @@ project(':capacitor-firebase-authentication').projectDir = new File('../../../no
 include ':capacitor-firebase-crashlytics'
 project(':capacitor-firebase-crashlytics').projectDir = new File('../../../node_modules/@capacitor-firebase/crashlytics/android')
 
+include ':capacitor-app'
+project(':capacitor-app').projectDir = new File('../../../node_modules/@capacitor/app/android')
+
+include ':capacitor-local-notifications'
+project(':capacitor-local-notifications').projectDir = new File('../../../node_modules/@capacitor/local-notifications/android')
+
 include ':revenuecat-purchases-capacitor'
 project(':revenuecat-purchases-capacitor').projectDir = new File('../../../node_modules/@revenuecat/purchases-capacitor/android')
 

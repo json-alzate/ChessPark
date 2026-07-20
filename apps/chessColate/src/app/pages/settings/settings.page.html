@@ -42,6 +42,59 @@
         </ul>
       </section>
 
+      <!-- Notificaciones (solo nativo: en web no hay notificaciones locales) -->
+      @if (isNativePlatform) {
+        <section class="mb-8">
+          <div class="flex items-center gap-2 mb-3 opacity-80">
+            <ion-icon name="notifications-outline" class="text-xl"></ion-icon>
+            <h2 class="text-lg font-bold">{{ 'SETTINGS.notifications' | transloco }}</h2>
+          </div>
+
+          <div class="bg-base-200/40 border border-base-content/10 w-full rounded-box p-4 flex flex-col gap-4">
+            <label class="flex items-center justify-between gap-4 cursor-pointer">
+              <div>
+                <div class="text-base">{{ 'TRAINING_REMINDER.toggleTitle' | transloco }}</div>
+                <div class="text-xs opacity-60">{{ 'TRAINING_REMINDER.toggleDesc' | transloco }}</div>
+              </div>
+              <input
+                type="checkbox"
+                class="toggle toggle-primary"
+                [checked]="reminderState.enabled"
+                (change)="onReminderToggle($event)" />
+            </label>
+
+            @if (reminderState.enabled && !reminderState.permissionGranted) {
+              <div role="alert" class="alert alert-warning text-sm py-2">
+                <span>{{ 'TRAINING_REMINDER.permissionDenied' | transloco }}</span>
+              </div>
+            }
+
+            @if (reminderState.enabled && reminderState.permissionGranted) {
+              <div class="flex items-center justify-between gap-4">
+                <div class="text-base">{{ 'TRAINING_REMINDER.timeLabel' | transloco }}</div>
+                <input
+                  type="time"
+                  class="input input-bordered input-sm w-32"
+                  [value]="reminderTimeValue"
+                  (change)="onReminderTimeChange($event)" />
+              </div>
+              <div class="text-xs opacity-60 flex items-center justify-between gap-2 flex-wrap">
+                @if (reminderState.overriddenByUser) {
+                  <span>{{ 'TRAINING_REMINDER.overriddenHint' | transloco }}</span>
+                  <button class="link link-primary" (click)="useSuggestedTime()">
+                    {{ 'TRAINING_REMINDER.useSuggested' | transloco: { time: suggestedTimeLabel } }}
+                  </button>
+                } @else if (suggestedIsConfident) {
+                  <span>{{ 'TRAINING_REMINDER.suggestedHint' | transloco }}</span>
+                } @else {
+                  <span>{{ 'TRAINING_REMINDER.defaultHint' | transloco }}</span>
+                }
+              </div>
+            }
+          </div>
+        </section>
+      }
+
       <!-- Apariencia (próximamente: estilo de piezas y color de tablero) -->
       <!--
         Estos ajustes se implementarán más adelante. El modelo Profile ya tiene

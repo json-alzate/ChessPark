@@ -1,0 +1,28 @@
+<div
+  class="min-h-full bg-base-100 p-6 pt-8 flex flex-col items-center text-center gap-4"
+  data-theme="halloween"
+>
+  <div class="bg-primary/15 rounded-full p-4">
+    <ion-icon
+      name="notifications-outline"
+      class="text-4xl text-primary"
+    ></ion-icon>
+  </div>
+
+  <h2 class="text-xl font-bold">
+    {{ 'TRAINING_REMINDER.prompt.title' | transloco }}
+  </h2>
+
+  <p class="text-base-content/70">
+    {{ messageKey | transloco: { time: timeLabel } }}
+  </p>
+
+  <div class="flex flex-col gap-2 w-full mt-2 max-w-xs">
+    <button class="btn btn-primary w-full" (click)="accept()">
+      {{ 'TRAINING_REMINDER.prompt.accept' | transloco }}
+    </button>
+    <button class="btn btn-ghost w-full" (click)="later()">
+      {{ 'TRAINING_REMINDER.prompt.later' | transloco }}
+    </button>
+  </div>
+</div>

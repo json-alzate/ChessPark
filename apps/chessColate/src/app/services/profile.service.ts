@@ -35,6 +35,10 @@ export interface DefaultPlanRecordInfo {
   isNewOpeningRecord: boolean;
   newThemeRecords: string[];
   newOpeningRecord?: string;
+  /** Elo total del plan después de este puzzle */
+  newTotalElo: number;
+  /** Puntos que sumó o restó este puzzle (negativo si bajó) */
+  totalEloChange: number;
 }
 
 @Injectable({
@@ -235,7 +239,9 @@ export class ProfileService implements IProfileService {
       isNewThemeRecord: false,
       isNewOpeningRecord: false,
       newThemeRecords: [],
-      newOpeningRecord: undefined
+      newOpeningRecord: undefined,
+      newTotalElo: 0,
+      totalEloChange: 0
     };
 
     if (this.profile?.elos) {
@@ -295,6 +301,8 @@ export class ProfileService implements IProfileService {
       ? ((this.profile.elos as Record<string, any>)[totalKey] as number)
       : 1500;
     const newTotalElo = this.eloCalculator.calculateElo(currentTotalElo, puzzleElo, result).newElo;
+    recordInfo.newTotalElo = newTotalElo;
+    recordInfo.totalEloChange = newTotalElo - currentTotalElo;
 
     // Verificar si es nuevo récord total
     if (newTotalElo > elos[maxTotalKey]) {

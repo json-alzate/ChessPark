@@ -112,8 +112,7 @@
       "continueTraining": "Continuar Entrenamiento",
       "continuousTraining": "Entrenamiento continuo",
       "resolveUnlimited": "Resuelve problemas ilimitados",
-      "trainNow": "Entrenar ahora",
-      "anyTheme": "¡No sabes qué esperar!"
+      "trainNow": "Entrenar ahora"
     },
     "loader": {
       "creatingRoutine": "Creando rutina...",
@@ -125,6 +124,9 @@
       "white": "Blancas",
       "black": "Negras",
       "anyColor": "Cualquier color"
+    },
+    "elo": {
+      "yours": "Tu ELO"
     },
     "with": " con ",
     "modes": {
@@ -523,7 +525,33 @@
   "SETTINGS": {
     "title": "Ajustes",
     "language": "Idioma",
-    "appearance": "Apariencia"
+    "appearance": "Apariencia",
+    "notifications": "Notificaciones"
+  },
+  "TRAINING_REMINDER": {
+    "toggleTitle": "Recordatorio de entrenamiento",
+    "toggleDesc": "Un aviso al día a tu hora habitual, solo si aún no has entrenado",
+    "timeLabel": "Hora del recordatorio",
+    "suggestedHint": "Sugerida según tus últimas sesiones",
+    "defaultHint": "Hora por defecto; se ajustará a tus sesiones",
+    "overriddenHint": "Personalizada",
+    "useSuggested": "Usar hora sugerida ({{time}})",
+    "permissionDenied": "Las notificaciones están desactivadas en el sistema. Actívalas en los ajustes de tu dispositivo.",
+    "channelName": "Recordatorios de entrenamiento",
+    "prompt": {
+      "title": "¿Entrenamos a tu hora?",
+      "message": "Sueles entrenar a eso de las {{time}}. Te avisamos a esa hora para que no pierdas el ritmo — solo si aún no has entrenado ese día.",
+      "messageGeneric": "Te avisamos a las {{time}} para que no pierdas el ritmo — solo si aún no has entrenado ese día. Con el tiempo ajustamos el aviso a tu hora habitual.",
+      "accept": "Avisarme",
+      "later": "Ahora no"
+    },
+    "notifications": {
+      "title": "Tu entrenamiento de hoy",
+      "generic1": "¿Listo para tu jugada del día? ♟️",
+      "generic2": "Es tu hora de entrenar. Vamos por un mate. ♟️",
+      "generic3": "3 puzzles rápidos y listo. ¿Empezamos? ⚡",
+      "streak": "No pierdas tu racha de {{days}} días 🔥"
+    }
   },
   "PUZZLE_SOLUTION": {
     "game": {
