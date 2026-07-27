@@ -17,6 +17,8 @@ import {
   closeOutline,
   checkmarkDoneOutline,
   notificationsOffOutline,
+  notificationsOutline,
+  chevronForwardOutline,
   checkmarkOutline,
   createOutline,
   globeOutline,
@@ -178,6 +180,8 @@ export class AppComponent implements OnInit, OnDestroy {
       enabled: true,
       divider: true,
     },
+    // Los recordatorios se acceden desde Ajustes (fila bajo Idioma), no desde
+    // el menú lateral, para no cargar la navegación principal.
     {
       title: 'APP.components.donate',
       icon: 'heart-outline',
@@ -215,6 +219,8 @@ export class AppComponent implements OnInit, OnDestroy {
       'close-outline': closeOutline,
       'checkmark-done-outline': checkmarkDoneOutline,
       'notifications-off-outline': notificationsOffOutline,
+      'notifications-outline': notificationsOutline,
+      'chevron-forward-outline': chevronForwardOutline,
       'checkmark-outline': checkmarkOutline,
       'create-outline': createOutline,
       'globe-outline': globeOutline,
@@ -498,6 +504,13 @@ export class AppComponent implements OnInit, OnDestroy {
    */
   closeNotificationsMenu() {
     this.menuController.close('notifications-menu');
+  }
+
+  /** Abre la pantalla de Recordatorios desde el panel de notificaciones. */
+  goToReminders() {
+    this.router.navigate(['/reminders']).then(() => {
+      this.menuController.close('notifications-menu');
+    });
   }
 
   async installPwa() {

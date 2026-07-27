@@ -1,0 +1,171 @@
+<ion-content [fullscreen]="true">
+  <div class="min-h-screen bg-base-100" data-theme="halloween">
+    <app-navbar></app-navbar>
+
+    <div class="container mx-auto px-4 py-8 max-w-lg pb-16">
+      <!-- Header -->
+      <div class="mb-8">
+        <div class="breadcrumbs text-sm mb-1">
+          <ul>
+            <li>
+              <a (click)="goToHome()" class="cursor-pointer gap-1">
+                <ion-icon name="home-outline" class="h-4 w-4"></ion-icon>
+                <span>{{ 'MENU.navigation.home' | transloco }}</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <h2 class="text-2xl font-bold">{{ 'TRAINING_REMINDER.pageTitle' | transloco }}</h2>
+      </div>
+
+      @if (!isNativePlatform) {
+        <div role="alert" class="alert text-sm">
+          <span>{{ 'TRAINING_REMINDER.webOnlyNotice' | transloco }}</span>
+        </div>
+      } @else {
+
+        <!-- Recordatorio automático -->
+        <section class="mb-8">
+          <div class="flex items-center gap-2 mb-3 opacity-80">
+            <ion-icon name="notifications-outline" class="text-xl"></ion-icon>
+            <h3 class="text-lg font-bold">{{ 'TRAINING_REMINDER.automaticTitle' | transloco }}</h3>
+          </div>
+
+          <div class="bg-base-200/40 border border-base-content/10 w-full rounded-box p-4 flex flex-col gap-4">
+            <label class="flex items-center justify-between gap-4 cursor-pointer">
+              <div>
+                <div class="text-base">{{ 'TRAINING_REMINDER.toggleTitle' | transloco }}</div>
+                <div class="text-xs opacity-60">{{ 'TRAINING_REMINDER.toggleDesc' | transloco }}</div>
+              </div>
+              <input
+                type="checkbox"
+                class="toggle toggle-primary"
+                [checked]="reminderState.enabled"
+                (change)="onReminderToggle($event)" />
+            </label>
+
+            @if (reminderState.enabled && !reminderState.permissionGranted) {
+              <div role="alert" class="alert alert-warning text-sm py-2">
+                <span>{{ 'TRAINING_REMINDER.permissionDenied' | transloco }}</span>
+              </div>
+            }
+
+            @if (reminderState.enabled && reminderState.permissionGranted) {
+              <div class="flex items-center justify-between gap-4">
+                <div class="text-base">{{ 'TRAINING_REMINDER.timeLabel' | transloco }}</div>
+                <input
+                  type="time"
+                  class="input input-bordered input-sm w-32"
+                  [value]="reminderTimeValue"
+                  (change)="onReminderTimeChange($event)" />
+              </div>
+              <div class="text-xs opacity-60 flex items-center justify-between gap-2 flex-wrap">
+                @if (reminderState.overriddenByUser) {
+                  <span>{{ 'TRAINING_REMINDER.overriddenHint' | transloco }}</span>
+                  <button class="link link-primary" (click)="useSuggestedTime()">
+                    {{ 'TRAINING_REMINDER.useSuggested' | transloco: { time: suggestedTimeLabel } }}
+                  </button>
+                } @else if (suggestedIsConfident) {
+                  <span>{{ 'TRAINING_REMINDER.suggestedHint' | transloco }}</span>
+                } @else {
+                  <span>{{ 'TRAINING_REMINDER.defaultHint' | transloco }}</span>
+                }
+              </div>
+            }
+          </div>
+        </section>
+
+        <!-- Recordatorios manuales -->
+        <section class="mb-8">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2 opacity-80">
+              <ion-icon name="time-outline" class="text-xl"></ion-icon>
+              <h3 class="text-lg font-bold">{{ 'TRAINING_REMINDER.manualTitle' | transloco }}</h3>
+            </div>
+            <button
+              class="btn btn-sm btn-primary"
+              [disabled]="!canAddManual"
+              (click)="openManualModal()">
+              <ion-icon name="add-outline"></ion-icon>
+              {{ 'TRAINING_REMINDER.manual.add' | transloco }}
+            </button>
+          </div>
+
+          @if (manualReminders.length === 0) {
+            <p class="text-sm opacity-60">{{ 'TRAINING_REMINDER.manual.empty' | transloco }}</p>
+          } @else {
+            <ul class="flex flex-col gap-2">
+              @for (reminder of manualReminders; track reminder.id) {
+                <li class="bg-base-200/40 border border-base-content/10 rounded-box p-3 flex items-center gap-3">
+                  <div class="flex-1 min-w-0">
+                    <div class="font-semibold">
+                      {{ reminderTime(reminder) }}
+                      @if (reminder.label) {
+                        <span class="font-normal opacity-80">· {{ reminder.label }}</span>
+                      }
+                    </div>
+                    <div class="text-xs opacity-60">{{ weekdaysSummary(reminder) }}</div>
+                  </div>
+                  <input
+                    type="checkbox"
+                    class="toggle toggle-sm toggle-primary"
+                    [checked]="reminder.enabled"
+                    (change)="toggleManual(reminder, $event)" />
+                  <button class="btn btn-ghost btn-sm btn-circle" (click)="openManualModal(reminder)">
+                    <ion-icon name="create-outline"></ion-icon>
+                  </button>
+                  <button class="btn btn-ghost btn-sm btn-circle text-error" (click)="confirmDeleteManual(reminder)">
+                    <ion-icon name="trash-outline"></ion-icon>
+                  </button>
+                </li>
+              }
+            </ul>
+          }
+        </section>
+
+        <!-- Próximas notificaciones -->
+        <section class="mb-8">
+          <div class="flex items-center gap-2 mb-3 opacity-80">
+            <ion-icon name="notifications-outline" class="text-xl"></ion-icon>
+            <h3 class="text-lg font-bold">{{ 'TRAINING_REMINDER.upcomingTitle' | transloco }}</h3>
+          </div>
+
+          @if (upcoming.length === 0) {
+            <p class="text-sm opacity-60">{{ 'TRAINING_REMINDER.upcomingEmpty' | transloco }}</p>
+          } @else {
+            <ul class="flex flex-col gap-1">
+              @for (item of upcoming; track $index) {
+                <li class="flex items-center justify-between gap-3 py-2 border-b border-base-content/10 last:border-0">
+                  <div class="flex items-center gap-2 min-w-0">
+                    <span
+                      class="badge badge-sm"
+                      [class.badge-primary]="item.kind === 'automatic'"
+                      [class.badge-ghost]="item.kind === 'manual'">
+                      {{ (item.kind === 'automatic' ? 'TRAINING_REMINDER.badgeAutomatic' : 'TRAINING_REMINDER.badgeManual') | transloco }}
+                    </span>
+                    @if (item.label) {
+                      <span class="text-sm truncate opacity-80">{{ item.label }}</span>
+                    }
+                  </div>
+                  <span class="text-sm whitespace-nowrap">{{ formatUpcoming(item.date) }}</span>
+                </li>
+              }
+            </ul>
+          }
+        </section>
+
+        <!-- Probar -->
+        <section class="mb-4">
+          <button class="btn btn-outline btn-block" (click)="sendTest()">
+            <ion-icon name="flash-outline"></ion-icon>
+            {{ 'TRAINING_REMINDER.test.button' | transloco }}
+          </button>
+          @if (testFeedbackKey) {
+            <p class="text-sm text-center mt-2 opacity-80">{{ testFeedbackKey | transloco }}</p>
+          }
+        </section>
+
+      }
+    </div>
+  </div>
+</ion-content>

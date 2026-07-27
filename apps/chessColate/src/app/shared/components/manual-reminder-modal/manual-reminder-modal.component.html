@@ -1,0 +1,59 @@
+<div class="min-h-full bg-base-100 p-6" data-theme="halloween">
+  <div class="flex items-center justify-between mb-6">
+    <h2 class="text-xl font-bold">
+      {{ (isEdit ? 'TRAINING_REMINDER.manual.editTitle' : 'TRAINING_REMINDER.manual.newTitle') | transloco }}
+    </h2>
+    <button class="btn btn-ghost btn-sm btn-circle" (click)="cancel()">
+      <ion-icon name="close-outline" class="text-xl"></ion-icon>
+    </button>
+  </div>
+
+  <!-- Hora -->
+  <label class="form-control w-full mb-5">
+    <span class="label-text mb-1 block">{{ 'TRAINING_REMINDER.manual.timeLabel' | transloco }}</span>
+    <input
+      type="time"
+      class="input input-bordered w-40"
+      [value]="time"
+      (change)="time = $any($event.target).value" />
+  </label>
+
+  <!-- Días -->
+  <div class="mb-5">
+    <span class="label-text mb-2 block">{{ 'TRAINING_REMINDER.manual.daysLabel' | transloco }}</span>
+    <div class="flex flex-wrap gap-2">
+      @for (chip of weekdays; track chip.weekday) {
+        <button
+          type="button"
+          class="btn btn-sm"
+          [class.btn-primary]="chip.selected"
+          [class.btn-outline]="!chip.selected"
+          (click)="toggleWeekday(chip)">
+          {{ chip.labelKey | transloco }}
+        </button>
+      }
+    </div>
+    <p class="text-xs opacity-60 mt-2">{{ 'TRAINING_REMINDER.manual.daysHint' | transloco }}</p>
+  </div>
+
+  <!-- Etiqueta -->
+  <label class="form-control w-full mb-6">
+    <span class="label-text mb-1 block">{{ 'TRAINING_REMINDER.manual.labelLabel' | transloco }}</span>
+    <input
+      type="text"
+      class="input input-bordered w-full"
+      maxlength="60"
+      [value]="label"
+      (input)="label = $any($event.target).value"
+      [attr.placeholder]="'TRAINING_REMINDER.manual.labelPlaceholder' | transloco" />
+  </label>
+
+  <div class="flex gap-2">
+    <button class="btn btn-ghost flex-1" (click)="cancel()">
+      {{ 'COMMON.actions.cancel' | transloco }}
+    </button>
+    <button class="btn btn-primary flex-1" [disabled]="saving" (click)="save()">
+      {{ 'COMMON.actions.save' | transloco }}
+    </button>
+  </div>
+</div>

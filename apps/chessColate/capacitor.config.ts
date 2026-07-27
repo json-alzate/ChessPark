@@ -29,9 +29,13 @@ const config: CapacitorConfig = {
       forceCodeForRefreshToken: true,
     },
     LocalNotifications: {
-      // Debe existir en res/drawable (no mipmap): el plugin resuelve el nombre
-      // contra "drawable" y si no lo encuentra cae al icono genérico del SO.
+      // Ambos iconos se resuelven contra res/drawable (no mipmap).
+      // smallIcon: silueta monocroma para la barra de estado (Android la tiñe).
       smallIcon: 'ic_stat_reminder',
+      // largeIcon: el icono real de la app a color, en el cuerpo de la
+      // notificación. Es una copia de mipmap-xxxhdpi/ic_launcher.png en
+      // res/drawable-nodpi/ (el plugin no lee de mipmap).
+      largeIcon: 'ic_notification_large',
       iconColor: '#f28c18',
     },
   },

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 
 import {
   DEFAULT_TRAINING_REMINDER_STATE,
+  ManualReminder,
   MAX_STORED_EVENTS,
   TrainingEvent,
   TrainingReminderState,
@@ -18,6 +19,7 @@ import {
 export class TrainingReminderStorageService {
   private readonly STATE_KEY = 'chessColate_training_reminder_state';
   private readonly EVENTS_KEY = 'chessColate_training_events';
+  private readonly MANUAL_KEY = 'chessColate_manual_reminders';
 
   getState(): TrainingReminderState {
     try {
@@ -66,6 +68,28 @@ export class TrainingReminderStorageService {
       localStorage.setItem(this.EVENTS_KEY, JSON.stringify(events));
     } catch (error) {
       console.error('Error al guardar el evento de entrenamiento:', error);
+    }
+  }
+
+  getManualReminders(): ManualReminder[] {
+    try {
+      const json = localStorage.getItem(this.MANUAL_KEY);
+      if (!json) {
+        return [];
+      }
+      const reminders = JSON.parse(json);
+      return Array.isArray(reminders) ? reminders : [];
+    } catch (error) {
+      console.error('Error al leer los recordatorios manuales:', error);
+      return [];
+    }
+  }
+
+  saveManualReminders(reminders: ManualReminder[]): void {
+    try {
+      localStorage.setItem(this.MANUAL_KEY, JSON.stringify(reminders));
+    } catch (error) {
+      console.error('Error al guardar los recordatorios manuales:', error);
     }
   }
 }
