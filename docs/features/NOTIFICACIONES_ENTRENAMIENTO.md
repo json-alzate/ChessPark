@@ -1,5 +1,7 @@
 # Notificaciones de Entrenamiento — Feature Document
 
+> **Estado: implementado (y extendido con recordatorios manuales).** Este documento es la spec de planificación original. Para el flujo real tal como quedó implementado —diagramas de cuándo se disparan las notificaciones, recordatorios manuales por día de la semana, pantalla `/reminders`, IDs, permisos y limitaciones— ver [`docs/implementado/RECORDATORIOS_ENTRENAMIENTO_FLOW.md`](../implementado/RECORDATORIOS_ENTRENAMIENTO_FLOW.md).
+
 ## Concepto
 
 Recordatorios locales (sin servidor) que invitan al usuario a volver a entrenar. La clave no es "mandar una notificación al día porque sí", sino **aprender a qué hora suele entrenar cada usuario y avisarle justo en ese momento**.

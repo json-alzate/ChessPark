@@ -244,9 +244,14 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
     if (this.trainingReminderService.getEventsCount() < 2) {
       return;
     }
+    // Solo se descarta si el permiso está denegado en firme (no podría llegar
+    // la notificación). Si está 'granted' (p. ej. Android <= 12, que lo concede
+    // solo) o 'prompt', igual se ofrece: al aceptar, enable() pide el permiso
+    // únicamente si hace falta. Antes se exigía 'prompt', y eso bloqueaba el
+    // modal para siempre en dispositivos con el permiso ya concedido.
     const permission =
       await this.trainingReminderService.checkPermissionStatus();
-    if (permission !== 'prompt' && permission !== 'prompt-with-rationale') {
+    if (permission === 'denied') {
       return;
     }
 

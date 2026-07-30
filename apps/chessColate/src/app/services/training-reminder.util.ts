@@ -14,6 +14,48 @@ export interface TrainingEvent {
   minuteLocal: number;
 }
 
+/**
+ * Recordatorio manual creado por el usuario. A diferencia del automático,
+ * es una alarma recurrente fija (no respeta "ya entrenó hoy") que el SO
+ * repite solo, sin necesidad de reprogramar.
+ */
+export interface ManualReminder {
+  id: string;
+  /** Ranura estable para asignar IDs de notificación sin colisiones. */
+  seq: number;
+  hour: number;
+  minute: number;
+  /** Días (Weekday del plugin: 1=Dom … 7=Sáb). Vacío = todos los días. */
+  weekdays: number[];
+  label: string;
+  enabled: boolean;
+}
+
+/** Máximo de recordatorios manuales (acota los pendientes en iOS). */
+export const MAX_MANUAL_REMINDERS = 15;
+
+/** Días de la semana en orden Lunes→Domingo (Weekday del plugin: 1=Dom … 7=Sáb). */
+export const WEEKDAYS_MON_FIRST = [2, 3, 4, 5, 6, 7, 1];
+
+/** Clave i18n corta (TRAINING_REMINDER.weekdays.*) para un Weekday del plugin. */
+export function weekdayKey(weekday: number): string {
+  return (
+    { 1: 'sun', 2: 'mon', 3: 'tue', 4: 'wed', 5: 'thu', 6: 'fri', 7: 'sat' }[
+      weekday
+    ] ?? ''
+  );
+}
+
+/** Una notificación futura a mostrar en la lista de "próximas". */
+export interface UpcomingNotification {
+  /** Epoch ms del disparo. */
+  date: number;
+  kind: 'automatic' | 'manual';
+  /** Etiqueta del manual (vacío para el automático). */
+  label: string;
+  reminderId?: string;
+}
+
 export interface TrainingReminderState {
   enabled: boolean;
   permissionGranted: boolean;
@@ -84,12 +126,28 @@ export function toLocalISODate(date: Date): string {
 }
 
 /**
- * Infiere la hora habitual de entrenamiento: bin de 30 min con más sesiones
- * (moda) entre las últimas MAX_EVENTS_CONSIDERED sesiones de los últimos
- * MAX_EVENT_AGE_DAYS días. Ante empate gana el bin con la sesión más
- * reciente. Con menos de MIN_EVENTS_FOR_CONFIDENCE sesiones se devuelve el
- * default (20:00, confident=false). El resultado se acota a la ventana
- * 7:00–22:30 para no proponer avisos de madrugada.
+ * Redondea una hora local a la media hora más cercana y la acota a la ventana
+ * 7:00–22:30. Ej.: 9:51 → 10:00, 9:38 → 9:30. Devuelve minutos del día.
+ */
+function roundToWindowHalfHour(hourLocal: number, minuteLocal: number): number {
+  const rounded =
+    Math.round((hourLocal * 60 + minuteLocal) / BIN_MINUTES) * BIN_MINUTES;
+  return Math.min(
+    Math.max(rounded, EARLIEST_REMINDER_MINUTES),
+    LATEST_REMINDER_MINUTES
+  );
+}
+
+/**
+ * Infiere la hora del recordatorio a partir de las últimas
+ * MAX_EVENTS_CONSIDERED sesiones de los últimos MAX_EVENT_AGE_DAYS días,
+ * redondeando cada hora a la media hora más cercana (acotada a 7:00–22:30):
+ *
+ * - Sin ninguna sesión: default 20:00 (`confident=false`).
+ * - Con 1–4 sesiones: la hora de la sesión **más reciente** redondeada, para
+ *   que desde el primer aviso se parezca a cuando entrenas (`confident=false`).
+ * - Con ≥ MIN_EVENTS_FOR_CONFIDENCE: la franja más frecuente (moda); ante
+ *   empate gana la del evento más reciente (`confident=true`).
  */
 export function computeSuggestedTime(
   events: ReadonlyArray<TrainingEvent>,
@@ -101,7 +159,8 @@ export function computeSuggestedTime(
     .sort((a, b) => b.timestamp - a.timestamp)
     .slice(0, MAX_EVENTS_CONSIDERED);
 
-  if (recent.length < MIN_EVENTS_FOR_CONFIDENCE) {
+  // Sin datos: default sensato hasta acumular sesiones.
+  if (recent.length === 0) {
     return {
       hour: DEFAULT_TRAINING_REMINDER_STATE.suggestedHour,
       minute: DEFAULT_TRAINING_REMINDER_STATE.suggestedMinute,
@@ -109,39 +168,92 @@ export function computeSuggestedTime(
     };
   }
 
-  // Moda por bin; ante empate, el bin cuyo evento más reciente sea más nuevo
-  const bins = new Map<number, { count: number; lastTimestamp: number }>();
-  for (const event of recent) {
-    const bin = Math.floor(
-      (event.hourLocal * 60 + event.minuteLocal) / BIN_MINUTES
+  const confident = recent.length >= MIN_EVENTS_FOR_CONFIDENCE;
+  const toTime = (minutesOfDay: number): SuggestedTime => ({
+    hour: Math.floor(minutesOfDay / 60),
+    minute: minutesOfDay % 60,
+    confident,
+  });
+
+  // Pocas sesiones: la más reciente redondeada a la media hora más cercana.
+  if (!confident) {
+    return toTime(
+      roundToWindowHalfHour(recent[0].hourLocal, recent[0].minuteLocal)
     );
-    const entry = bins.get(bin) ?? { count: 0, lastTimestamp: 0 };
-    entry.count++;
-    entry.lastTimestamp = Math.max(entry.lastTimestamp, event.timestamp);
-    bins.set(bin, entry);
   }
 
-  let bestBin = -1;
+  // Con suficientes sesiones: moda de las franjas; empate → la más reciente.
+  const slots = new Map<number, { count: number; lastTimestamp: number }>();
+  for (const event of recent) {
+    const slot = roundToWindowHalfHour(event.hourLocal, event.minuteLocal);
+    const entry = slots.get(slot) ?? { count: 0, lastTimestamp: 0 };
+    entry.count++;
+    entry.lastTimestamp = Math.max(entry.lastTimestamp, event.timestamp);
+    slots.set(slot, entry);
+  }
+
+  let bestSlot = -1;
   let best = { count: 0, lastTimestamp: 0 };
-  for (const [bin, entry] of bins) {
+  for (const [slot, entry] of slots) {
     if (
       entry.count > best.count ||
       (entry.count === best.count && entry.lastTimestamp > best.lastTimestamp)
     ) {
-      bestBin = bin;
+      bestSlot = slot;
       best = entry;
     }
   }
+  return toTime(bestSlot);
+}
 
-  const minutes = Math.min(
-    Math.max(bestBin * BIN_MINUTES, EARLIEST_REMINDER_MINUTES),
-    LATEST_REMINDER_MINUTES
-  );
-  return {
-    hour: Math.floor(minutes / 60),
-    minute: minutes % 60,
-    confident: true,
-  };
+/** Weekday del plugin (1=Domingo … 7=Sábado) para una fecha local. */
+export function pluginWeekday(date: Date): number {
+  return date.getDay() + 1;
+}
+
+/**
+ * Próximas `count` ocurrencias, estrictamente futuras, de una hora local en
+ * los días de la semana dados (weekdays vacío = todos los días). Sirve tanto
+ * para recordatorios manuales recurrentes como para previsualizar cuándo
+ * sonarán. Devuelve fechas absolutas ordenadas de forma ascendente.
+ */
+export function nextOccurrences(
+  now: Date,
+  hour: number,
+  minute: number,
+  weekdays: ReadonlyArray<number>,
+  count: number
+): Date[] {
+  const everyDay = weekdays.length === 0;
+  const result: Date[] = [];
+  for (let offset = 0; offset < 366 && result.length < count; offset++) {
+    const day = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate() + offset,
+      hour,
+      minute,
+      0,
+      0
+    );
+    if (day.getTime() <= now.getTime()) {
+      continue;
+    }
+    if (everyDay || weekdays.includes(pluginWeekday(day))) {
+      result.push(day);
+    }
+  }
+  return result;
+}
+
+/** Menor ranura libre para asignar el `seq` de un recordatorio manual. */
+export function allocateReminderSeq(existing: ReadonlyArray<ManualReminder>): number {
+  const used = new Set(existing.map((r) => r.seq));
+  let seq = 0;
+  while (used.has(seq)) {
+    seq++;
+  }
+  return seq;
 }
 
 /** Hora efectiva del recordatorio: la del usuario si hizo override, si no la sugerida. */
