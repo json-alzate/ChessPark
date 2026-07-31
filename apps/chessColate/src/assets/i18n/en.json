@@ -718,6 +718,41 @@
     "backToHome": "Back to Home",
     "retry": "Try again"
   },
+  "STREAK": {
+    "title": "Streak",
+    "suddenDeath": "Sudden death",
+    "record": "Best",
+    "puzzleElo": "Puzzle rating",
+    "toBeatRecord": "To beat your best",
+    "beatingRecord": "You're beating your best!",
+    "rules": "No clock: take all the time you need. Every solve nudges the difficulty up, and a single mistake ends the streak.",
+    "homeCard": {
+      "description": "Chain puzzles that get harder and harder. One mistake and it's over.",
+      "lastRun": "last run"
+    },
+    "actions": {
+      "start": "Start streak",
+      "retry": "New streak",
+      "skip": "Skip puzzle",
+      "backToHome": "Back to home"
+    },
+    "result": {
+      "title": "Streak over",
+      "newRecord": "New best!",
+      "solvedInARow": "puzzles in a row",
+      "maxElo": "Top difficulty"
+    },
+    "exit": {
+      "title": "Leave the streak?",
+      "message": "You're on {{score}} puzzles in a row. Leaving ends the streak here.",
+      "cancel": "Keep playing",
+      "confirm": "Leave"
+    },
+    "error": {
+      "title": "We couldn't load the puzzle",
+      "message": "Check your connection and try again."
+    }
+  },
   "KNIGHT_TOUR": {
     "title": "Knight Tour",
     "restart": "Restart",

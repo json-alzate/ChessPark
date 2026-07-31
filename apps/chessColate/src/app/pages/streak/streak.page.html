@@ -1,0 +1,205 @@
+<ion-content [fullscreen]="true">
+  <div class="main-container" data-theme="halloween">
+
+    <!-- Barra superior: contador de racha, récord y acciones -->
+    <div class="navbar bg-base-100 shadow-sm">
+      <div class="flex-1">
+        <div class="flex items-center gap-3">
+          <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/15">
+            <ion-icon name="flame" class="text-xl text-primary"></ion-icon>
+          </div>
+          <div class="flex flex-col leading-none">
+            <span class="text-2xl font-extrabold">{{ score }}</span>
+            <span class="mt-0.5 text-[11px] font-bold uppercase tracking-wide text-base-content/50">
+              {{ 'STREAK.title' | transloco }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-none items-center gap-2">
+        @if (record.bestScore > 0) {
+        <div class="flex flex-col items-end leading-none">
+          <span class="text-sm font-bold text-[var(--cc-elo)]">{{ record.bestScore }}</span>
+          <span class="mt-0.5 text-[10px] font-bold uppercase tracking-wide text-base-content/50">
+            {{ 'STREAK.record' | transloco }}
+          </span>
+        </div>
+        }
+        <button class="btn btn-square btn-ghost btn-error" (click)="onExit()">
+          <ion-icon name="close-outline" class="h-5 w-5"></ion-icon>
+        </button>
+      </div>
+    </div>
+
+    @if (status === 'error') {
+    <!-- Sin puzzle disponible: catálogo inalcanzable (sin conexión y sin caché) -->
+    <div class="container mx-auto flex max-w-md flex-col items-center gap-4 px-4 py-16 text-center">
+      <h2 class="text-xl font-bold">{{ 'STREAK.error.title' | transloco }}</h2>
+      <p class="text-sm text-base-content/60">{{ 'STREAK.error.message' | transloco }}</p>
+      <div class="flex w-full flex-col gap-2">
+        <button class="btn btn-primary font-bold" (click)="retry()">
+          <ion-icon name="refresh-outline"></ion-icon>
+          <span>{{ 'STREAK.actions.retry' | transloco }}</span>
+        </button>
+        <button class="btn btn-ghost" (click)="goToHome()">
+          {{ 'STREAK.actions.backToHome' | transloco }}
+        </button>
+      </div>
+    </div>
+    } @else {
+
+    <!-- Body: 1 columna mobile, 2 columnas desktop -->
+    <div class="lg:flex lg:items-start lg:justify-center lg:gap-8 lg:px-6 lg:pt-4">
+
+      <!-- COLUMNA IZQUIERDA: tablero -->
+      <div class="relative lg:w-[480px] lg:flex-shrink-0">
+        @if (puzzleToPlay) {
+        <lib-board-puzzle
+          [setPuzzle]="$any(puzzleToPlay)"
+          [setForceStopTimer]="forceStopBoardTimer"
+          (puzzleCompleted)="onPuzzleSolved($any($event))"
+          (puzzleFailed)="onPuzzleFailed($any($event))"
+        ></lib-board-puzzle>
+        } @else {
+        <div class="skeleton mx-auto aspect-square w-full rounded-none"></div>
+        }
+
+        @if (status === 'loading' && puzzleToPlay) {
+        <!-- Cargando el siguiente puzzle: se tapa el tablero para que no se
+             juegue el anterior por inercia -->
+        <div class="absolute inset-0 flex items-center justify-center bg-base-300/60">
+          <span class="loading loading-spinner loading-lg text-primary"></span>
+        </div>
+        }
+      </div>
+
+      <!-- COLUMNA DERECHA: estado de la racha -->
+      <div class="flex flex-col gap-3 p-4 lg:w-[360px] lg:flex-shrink-0 lg:p-0 lg:pt-2">
+
+        <!-- Turno -->
+        @if (puzzleToPlay) {
+        <div class="flex items-center gap-3">
+          <img [src]="'assets/images/king-' + playerColor + '.svg'" [alt]="playerColor" class="h-8 w-8" />
+          <div class="flex flex-col">
+            <span class="text-base font-semibold">{{ 'PUZZLES.help.yourTurn' | transloco }}</span>
+            <span class="text-sm text-base-content/80">
+              @if (playerColor === 'white') {
+              {{ 'PUZZLES.help.findBestMoveWhite' | transloco }}
+              } @else {
+              {{ 'PUZZLES.help.findBestMoveBlack' | transloco }}
+              }
+            </span>
+          </div>
+        </div>
+        }
+
+        <!-- Elo del ejercicio: discreto, que informe sin robar atención -->
+        @if (puzzleToPlay) {
+        <div class="flex items-baseline justify-between gap-2 px-1">
+          <span class="text-xs text-base-content/50">{{ 'STREAK.puzzleElo' | transloco }}</span>
+          <span class="font-mono text-sm font-semibold text-base-content/70">{{ puzzleElo }}</span>
+        </div>
+        }
+
+        <!-- Cuánto falta para el récord -->
+        @if (record.bestScore > 0 && toBeatRecord > 0) {
+        <div class="rounded-xl border border-base-300 bg-base-100 px-4 py-3">
+          <div class="flex items-baseline justify-between gap-2">
+            <span class="text-sm text-base-content/60">{{ 'STREAK.toBeatRecord' | transloco }}</span>
+            <span class="font-mono text-lg font-bold">{{ toBeatRecord }}</span>
+          </div>
+          <div class="mt-2 h-1.5 overflow-hidden rounded-full bg-base-300">
+            <div
+              class="h-full rounded-full bg-primary transition-all"
+              [style.width.%]="(score / record.bestScore) * 100"
+            ></div>
+          </div>
+        </div>
+        } @else if (record.bestScore > 0) {
+        <div class="flex items-center justify-center gap-1.5 rounded-xl border border-success/20 bg-success/10 px-3 py-2 text-success">
+          <ion-icon name="trophy" class="text-sm"></ion-icon>
+          <span class="text-[11px] font-bold uppercase tracking-widest">{{ 'STREAK.beatingRecord' | transloco }}</span>
+        </div>
+        }
+
+        <!-- Salto -->
+        @if (config.maxSkips > 0) {
+        <button
+          class="btn btn-outline btn-block font-bold"
+          [disabled]="skipsLeft === 0 || status !== 'playing'"
+          (click)="useSkip()"
+        >
+          <ion-icon name="play-forward-outline"></ion-icon>
+          <span>{{ 'STREAK.actions.skip' | transloco }}</span>
+          <span class="badge badge-sm">{{ skipsLeft }}</span>
+        </button>
+        }
+
+        <!-- Reglas del modo, siempre a la vista: el salto y la muerte súbita no
+             deben ser una sorpresa -->
+        <p class="text-center text-xs leading-snug text-base-content/50">
+          {{ 'STREAK.rules' | transloco }}
+        </p>
+      </div>
+
+    </div>
+    }
+
+    <!-- Resultado de la racha -->
+    @if (status === 'finished') {
+    <div class="modal modal-open modal-bottom sm:modal-middle">
+      <div class="modal-box text-center">
+
+        @if (achievedNewRecord && finishedRun && finishedRun.score > 0) {
+        <h3 class="mb-4 flex items-center justify-center gap-2 text-2xl font-bold text-success">
+          <ion-icon name="trophy"></ion-icon> {{ 'STREAK.result.newRecord' | transloco }}
+        </h3>
+        } @else {
+        <h3 class="mb-4 text-2xl font-bold">{{ 'STREAK.result.title' | transloco }}</h3>
+        }
+
+        <div class="flex flex-col items-center gap-1 py-2">
+          <span class="text-6xl font-extrabold leading-none text-primary">{{ finishedRun?.score }}</span>
+          <span class="text-sm text-base-content/60">{{ 'STREAK.result.solvedInARow' | transloco }}</span>
+        </div>
+
+        <div class="mt-4 grid grid-cols-2 gap-2">
+          <div class="rounded-box bg-base-200 px-3 py-2">
+            <div class="text-[11px] font-bold uppercase tracking-wide text-base-content/50">
+              {{ 'STREAK.record' | transloco }}
+            </div>
+            <div class="text-xl font-bold">{{ record.bestScore }}</div>
+          </div>
+          <div class="rounded-box bg-base-200 px-3 py-2">
+            <div class="text-[11px] font-bold uppercase tracking-wide text-base-content/50">
+              {{ 'STREAK.result.maxElo' | transloco }}
+            </div>
+            <div class="text-xl font-bold" style="color: #bf811c">{{ finishedRun?.maxEloReached }}</div>
+          </div>
+        </div>
+
+        @if (finishedRun?.endedBy === 'fail') {
+        <button class="btn btn-outline btn-error btn-sm mt-4 w-full font-bold" (click)="showFailedSolution()">
+          <span>{{ 'PUZZLE_SOLUTION.actions.solution' | transloco }}</span>
+          <ion-icon name="eye"></ion-icon>
+        </button>
+        }
+
+        <div class="modal-action mt-4 flex flex-col justify-center gap-2 sm:flex-row">
+          <button class="btn btn-outline" (click)="goToHome()">
+            <ion-icon name="home-outline"></ion-icon>
+            <span>{{ 'STREAK.actions.backToHome' | transloco }}</span>
+          </button>
+          <button class="btn btn-primary shadow-md font-bold" (click)="retry()">
+            <ion-icon name="refresh-outline"></ion-icon>
+            <span>{{ 'STREAK.actions.retry' | transloco }}</span>
+          </button>
+        </div>
+      </div>
+      <div class="modal-backdrop bg-base-300/60"></div>
+    </div>
+    }
+
+  </div>
+</ion-content>

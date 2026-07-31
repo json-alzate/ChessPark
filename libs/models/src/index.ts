@@ -10,3 +10,4 @@ export * from './lib/block.model';
 export * from './lib/coordinates-puzzles.model';
 export * from './lib/planElos.model';
 export * from './lib/public-plan.model';
+export * from './lib/streak.model';

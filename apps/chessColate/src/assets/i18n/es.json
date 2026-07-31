@@ -718,6 +718,41 @@
     "backToHome": "Volver al Home",
     "retry": "Volver a intentar"
   },
+  "STREAK": {
+    "title": "Racha",
+    "suddenDeath": "Muerte súbita",
+    "record": "Récord",
+    "puzzleElo": "Elo del ejercicio",
+    "toBeatRecord": "Para batir tu récord",
+    "beatingRecord": "¡Estás batiendo tu récord!",
+    "rules": "Sin reloj: piensa lo que necesites. Cada acierto sube un poco la dificultad y un solo error termina la racha.",
+    "homeCard": {
+      "description": "Encadena puzzles cada vez más difíciles. Un error y se acaba.",
+      "lastRun": "la última"
+    },
+    "actions": {
+      "start": "Empezar racha",
+      "retry": "Otra racha",
+      "skip": "Saltar puzzle",
+      "backToHome": "Volver al inicio"
+    },
+    "result": {
+      "title": "Racha terminada",
+      "newRecord": "¡Nuevo récord!",
+      "solvedInARow": "puzzles seguidos",
+      "maxElo": "Dificultad máxima"
+    },
+    "exit": {
+      "title": "¿Salir de la racha?",
+      "message": "Llevas {{score}} puzzles seguidos. Si sales, la racha termina aquí.",
+      "cancel": "Seguir jugando",
+      "confirm": "Salir"
+    },
+    "error": {
+      "title": "No pudimos traer el puzzle",
+      "message": "Revisa tu conexión e inténtalo de nuevo."
+    }
+  },
   "KNIGHT_TOUR": {
     "title": "Recorrido del Caballo",
     "restart": "Reiniciar",

@@ -77,6 +77,11 @@ export const routes: Routes = [
     canActivate: [PublicPlansGuard],
   },
   {
+    path: 'streak',
+    loadComponent: () =>
+      import('./pages/streak/streak.page').then((m) => m.StreakPage),
+  },
+  {
     path: 'coordinates',
     loadComponent: () =>
       import('./pages/coordinates/coordinates.page').then(

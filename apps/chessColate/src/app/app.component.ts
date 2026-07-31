@@ -10,6 +10,7 @@ import {
   homeOutline,
   gridOutline,
   extensionPuzzleOutline,
+  flameOutline,
   shuffleOutline,
   timeOutline,
   heartOutline,
@@ -153,11 +154,17 @@ export class AppComponent implements OnInit, OnDestroy {
 
     // --- Ejercicios de entrenamiento ---
     {
+      title: 'STREAK.title',
+      icon: 'flame-outline',
+      route: '/streak',
+      enabled: true,
+      divider: true,
+    },
+    {
       title: 'MENU.navigation.coordinates',
       icon: 'grid-outline',
       route: '/coordinates',
       enabled: true,
-      divider: true,
     },
     {
       title: 'KNIGHT_TOUR.title',
@@ -212,6 +219,7 @@ export class AppComponent implements OnInit, OnDestroy {
       'home-outline': homeOutline,
       'grid-outline': gridOutline,
       'extension-puzzle-outline': extensionPuzzleOutline,
+      'flame-outline': flameOutline,
       'shuffle-outline': shuffleOutline,
       'time-outline': timeOutline,
       'heart-outline': heartOutline,
