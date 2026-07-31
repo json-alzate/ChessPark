@@ -11,20 +11,21 @@ import {
   ViewWillLeave,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { arrowForward, statsChartOutline, eye, close, flash, heart, trophy, logoGooglePlaystore, logoApple, optionsOutline, globeOutline, chevronForwardOutline } from 'ionicons/icons';
+import { arrowForward, statsChartOutline, eye, close, flash, flame, heart, trophy, logoGooglePlaystore, logoApple, optionsOutline, globeOutline, chevronForwardOutline } from 'ionicons/icons';
 import { Subscription } from 'rxjs';
 import { Store, select } from '@ngrx/store';
 import { AuthState, getIsInitialized } from '@cpark/state';
 
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
-import { Block, Plan, PlanTypes, Puzzle } from '@cpark/models';
+import { Block, Plan, PlanTypes, Puzzle, StreakRecord } from '@cpark/models';
 
 // Services
 import { BlockService } from '@services/block.service';
 import { PlanService } from '@services/plan.service';
 import { PuzzlesProvider } from '@chesspark/puzzles-provider';
 import { InfinityPuzzlePoolService } from '@services/infinity-puzzle-pool.service';
+import { StreakStorageService } from '@services/streak-storage.service';
 
 import { ProfileService } from '@services/profile.service';
 
@@ -96,12 +97,13 @@ export class HomePage implements OnInit, ViewWillEnter, ViewWillLeave {
   private store = inject(Store<AuthState>);
   private infinityPoolService = inject(InfinityPuzzlePoolService);
   private translocoService = inject(TranslocoService);
+  private streakStorage = inject(StreakStorageService);
 
   isInitialized = false;
   private initSubscription?: Subscription;
 
   constructor(private blockService: BlockService) {
-    addIcons({ arrowForward, statsChartOutline, eye, close, flash, heart, trophy, logoGooglePlaystore, logoApple, optionsOutline, globeOutline, chevronForwardOutline });
+    addIcons({ arrowForward, statsChartOutline, eye, close, flash, flame, heart, trophy, logoGooglePlaystore, logoApple, optionsOutline, globeOutline, chevronForwardOutline });
   }
 
   async showSolution() {
@@ -143,9 +145,14 @@ export class HomePage implements OnInit, ViewWillEnter, ViewWillLeave {
   reto333Stats: any = null;
   isLoadingReto333 = true;
 
+  /** Récord del modo Racha, para la tarjeta de acceso. */
+  streakRecord: StreakRecord | null = null;
+
   ionViewWillEnter() {
     this.isLoadingPuzzle = true;
     this.puzzleLoadStarted = false;
+    // El récord vive en el dispositivo: leerlo es inmediato y sin red
+    this.streakRecord = this.streakStorage.getRecord();
 
     // Re-suscribir en cada entrada: si ya isInitialized=true dispara inmediatamente
     this.initSubscription = this.store.pipe(select(getIsInitialized)).subscribe(initialized => {
@@ -246,6 +253,11 @@ export class HomePage implements OnInit, ViewWillEnter, ViewWillLeave {
       await loader.dismiss();
       console.error('Error al iniciar el plan infinito:', error);
     }
+  }
+
+  /** Modo Racha: pantalla propia, no pasa por el flujo de rutinas. */
+  goToStreak() {
+    this.router.navigate(['/streak']);
   }
 
   async startReto333Plan() {

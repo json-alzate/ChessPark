@@ -1,5 +1,16 @@
 # Racha de Puzzles (Streak) — Feature Document
 
+> **Estado: implementado.** Este documento es la spec de planificación original.
+> Para el flujo real tal como quedó —reglas finales, de dónde sale cada puzzle,
+> qué se guarda y qué quedó fuera— ver
+> [`docs/implementado/RACHA_STREAK_FLOW.md`](../implementado/RACHA_STREAK_FLOW.md).
+>
+> Decisiones que se tomaron sobre las preguntas abiertas del final: arranque en
+> **800** con **+15 por acierto** encadenado al elo real de cada puzzle (no a una
+> fórmula), en pantalla **el elo del ejercicio**, récord **solo local**, **sin
+> compartir** por ahora, **sin pistas**, tema **mezclado** y **sin efecto** sobre
+> el elo del perfil.
+
 ## Concepto
 
 Un modo de juego calcado del **[Streak de Lichess](https://lichess.org/streak)**: el usuario resuelve puzzles **uno tras otro, de dificultad creciente**, y la partida continúa **mientras no falle**. **Un solo error termina la racha.** La puntuación es simplemente **cuántos puzzles resolvió seguidos** antes de fallar.

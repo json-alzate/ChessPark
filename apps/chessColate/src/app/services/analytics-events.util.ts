@@ -4,7 +4,13 @@
  * en un solo sitio para que todos los choke points emitan params consistentes.
  */
 
-export type RoutineKind = 'default' | 'infinity' | 'reto333' | 'custom' | 'public';
+export type RoutineKind =
+  | 'default'
+  | 'infinity'
+  | 'reto333'
+  | 'streak'
+  | 'custom'
+  | 'public';
 
 export interface RoutineMeta {
   /** Familia de la rutina. */
@@ -38,6 +44,8 @@ export function routineMetaFromPlanType(planType: string): RoutineMeta {
       return { kind: 'infinity', minutes: 0, category: '', name: 'Infinita' };
     case 'reto333':
       return { kind: 'reto333', minutes: 0, category: '', name: 'Reto 333' };
+    case 'streak':
+      return { kind: 'streak', minutes: 0, category: '', name: 'Racha' };
     case 'custom':
       return { kind: 'custom', minutes: 0, category: '', name: 'Personalizada' };
     case 'public':
@@ -71,6 +79,7 @@ const SCREEN_NAMES: Record<string, string> = {
   '/puzzles/custom-plans': 'Rutinas personalizadas',
   '/puzzles/custom-plans/create': 'Crear rutina',
   '/puzzles/public-plans': 'Rutinas públicas',
+  '/streak': 'Racha',
   '/coordinates': 'Coordenadas',
   '/knight-tour': 'Recorrido del Caballo',
   '/chess960': 'Ajedrez 960',
