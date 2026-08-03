@@ -90,6 +90,8 @@ legible). El resto son **acciones semánticas**. Nombres y params en `snake_case
 | `puzzle_storage_file_deleted` | borra un archivo | `theme` (tema o apertura), `elo_start` | `settings/storage/storage.page.ts` |
 | `puzzle_storage_theme_deleted` | borra un tema/apertura entero | `theme`, `files_count`, `size_mb` | `settings/storage/storage.page.ts` |
 | `puzzle_storage_cleared` | borra todo lo descargado | `files_count`, `size_mb` | `settings/storage/storage.page.ts` |
+| `app_review_requested` | se pide la tarjeta nativa de la tienda | `trigger` (`new_record`/`good_routine`/`grace_window`), `completed_routines` | `app-review.service.ts` |
+| `app_review_store_opened` | toca "Califícanos" en Ajustes | — | `app-review.service.ts` |
 
 \* `routine_uid`/`author_uid` solo en rutinas custom/públicas.
 

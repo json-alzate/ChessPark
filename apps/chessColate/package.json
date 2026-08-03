@@ -8,6 +8,7 @@
     "android:run": "npx cap run android"
   },
   "dependencies": {
+    "@capacitor-community/in-app-review": "^7.1.0",
     "@capacitor-firebase/analytics": "^7.5.0",
     "@capacitor-firebase/authentication": "^7.4.0",
     "@capacitor-firebase/crashlytics": "^7.5.0",

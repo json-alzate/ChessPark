@@ -527,7 +527,12 @@
     "language": "Language",
     "appearance": "Appearance",
     "notifications": "Notifications",
-    "storage": "Storage"
+    "storage": "Storage",
+    "support": "Support the app"
+  },
+  "APP_REVIEW": {
+    "rateRowTitle": "Rate us",
+    "rateRowDesc": "Leave a review on the store: it helps more people find ChessColate"
   },
   "STORAGE": {
     "pageTitle": "Downloaded puzzles",
