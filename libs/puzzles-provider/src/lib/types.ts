@@ -90,6 +90,37 @@ export interface CacheEntry {
 }
 
 /**
+ * Entrada del índice de archivos cacheados.
+ *
+ * Vive en el store `puzzlesIndex`, que es pequeño y se puede leer entero sin
+ * traer los puzzles a memoria. Todos los campos de metadata son opcionales
+ * a propósito: las entradas escritas antes de existir esta metadata no los
+ * tienen y se completan de forma perezosa al listar.
+ */
+export interface CachedFileIndexEntry {
+  /** URL del archivo — misma clave que en `puzzlesCache` */
+  key: string;
+  /** Fecha de descarga */
+  timestamp: number;
+  theme?: string;
+  opening?: string;
+  eloStart?: number;
+  eloEnd?: number;
+  /** Nº de puzzles del archivo */
+  count?: number;
+  /** Tamaño aproximado en bytes */
+  sizeBytes?: number;
+}
+
+/**
+ * Totales agregados del caché de puzzles
+ */
+export interface StorageSummary {
+  files: number;
+  sizeBytes: number;
+}
+
+/**
  * Entrada del pool de puzzles de entrenamiento continuo (infinity)
  */
 export interface InfinityPoolEntry {

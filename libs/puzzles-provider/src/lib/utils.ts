@@ -65,6 +65,66 @@ export function buildPuzzleUrl(
 }
 
 /**
+ * Datos extraídos de una URL de archivo de puzzles
+ */
+export interface ParsedPuzzleUrl {
+  /** Tema del archivo (indefinido si el archivo es de una apertura) */
+  theme?: string;
+  /** Familia de apertura (indefinida si el archivo es de un tema) */
+  opening?: string;
+  eloStart: number;
+  eloEnd: number;
+}
+
+/**
+ * Inversa de `buildPuzzleUrl`: extrae tema/apertura y rango de ELO de una URL
+ * del CDN. La carpeta contenedora es la fuente del nombre (los valores de
+ * apertura llevan guiones bajos, así que partir el nombre del archivo sería
+ * ambiguo).
+ *
+ * Devuelve `null` si la URL no sigue el patrón conocido.
+ */
+export function parsePuzzleUrl(url: string): ParsedPuzzleUrl | null {
+  const match = url.match(
+    /\/puzzlesFiles(Themes|Openings)\/([^/]+)\/[^/]+_(\d+)_(\d+)\.json$/
+  );
+
+  if (match) {
+    const isTheme = match[1] === 'Themes';
+    return {
+      theme: isTheme ? match[2] : undefined,
+      opening: isTheme ? undefined : match[2],
+      eloStart: parseInt(match[3], 10),
+      eloEnd: parseInt(match[4], 10),
+    };
+  }
+
+  // Fallback: al menos el rango de ELO, que es lo que necesita el filtrado
+  const eloMatch = url.match(/_(\d+)_(\d+)\.json$/);
+  if (!eloMatch) return null;
+
+  return {
+    eloStart: parseInt(eloMatch[1], 10),
+    eloEnd: parseInt(eloMatch[2], 10),
+  };
+}
+
+/**
+ * Tamaño aproximado en bytes que ocupa un conjunto de puzzles.
+ *
+ * Es el tamaño del JSON serializado, no lo que IndexedDB reserva en disco
+ * (el structured clone añade su propio overhead). Suficiente para una pantalla
+ * de "cuánto ocupa esto", y honesto siempre que se comunique como aproximado.
+ */
+export function estimateSizeBytes(puzzles: Puzzle[]): number {
+  try {
+    return JSON.stringify(puzzles).length;
+  } catch {
+    return 0;
+  }
+}
+
+/**
  * Mezcla un array de puzzles usando el algoritmo Fisher-Yates
  */
 export function shuffleArray<T>(array: T[]): T[] {

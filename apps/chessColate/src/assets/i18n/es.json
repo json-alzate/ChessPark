@@ -526,7 +526,32 @@
     "title": "Ajustes",
     "language": "Idioma",
     "appearance": "Apariencia",
-    "notifications": "Notificaciones"
+    "notifications": "Notificaciones",
+    "storage": "Almacenamiento"
+  },
+  "STORAGE": {
+    "pageTitle": "Puzzles descargados",
+    "settingsRowTitle": "Gestionar descargas",
+    "settingsRowDesc": "Mira cuánto ocupan los puzzles descargados y libera espacio",
+    "summary": "{{files}} archivos · {{size}}",
+    "loading": "Calculando…",
+    "empty": "No tienes puzzles descargados. Se descargan solos cuando entrenas.",
+    "intro": "Los puzzles se guardan en el dispositivo para que no haya que volver a descargarlos. Borrarlos no afecta a tu progreso ni a tu ELO.",
+    "openings": "Aperturas",
+    "otherFiles": "Otros archivos",
+    "filesCount": "{{count}} archivos",
+    "oneFile": "1 archivo",
+    "puzzlesCount": "{{count}} puzzles",
+    "deleteAll": "Borrar todo",
+    "confirm": {
+      "delete": "Borrar",
+      "fileTitle": "¿Borrar este archivo?",
+      "fileMessage": "{{name}} · {{eloRange}}. Se volverá a descargar cuando lo necesites.",
+      "groupTitle": "¿Borrar {{name}}?",
+      "groupMessage": "{{files}} archivos ({{size}}). Se volverán a descargar cuando los necesites.",
+      "allTitle": "¿Borrar todo?",
+      "allMessage": "{{files}} archivos ({{size}}). No pierdes tu progreso ni tu ELO."
+    }
   },
   "TRAINING_REMINDER": {
     "pageTitle": "Recordatorios",

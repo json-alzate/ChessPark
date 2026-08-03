@@ -1,0 +1,113 @@
+<ion-content [fullscreen]="true">
+  <div class="min-h-screen bg-base-100" data-theme="halloween">
+    <app-navbar></app-navbar>
+
+    <div class="container mx-auto px-4 py-8 max-w-lg pb-16">
+
+      <!-- Header -->
+      <div class="mb-6">
+        <div class="breadcrumbs text-sm mb-1">
+          <ul>
+            <li>
+              <a (click)="goToHome()" class="cursor-pointer gap-1">
+                <ion-icon name="home-outline" class="h-4 w-4"></ion-icon>
+                <span>{{ 'MENU.navigation.home' | transloco }}</span>
+              </a>
+            </li>
+            <li>
+              <a (click)="goToSettings()" class="cursor-pointer gap-1">
+                <ion-icon name="settings-outline" class="h-4 w-4"></ion-icon>
+                <span>{{ 'SETTINGS.title' | transloco }}</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <h2 class="text-2xl font-bold">{{ 'STORAGE.pageTitle' | transloco }}</h2>
+      </div>
+
+      @if (loading) {
+        <!-- Skeleton: el primer listado calcula el tamaño de descargas antiguas -->
+        <div class="flex flex-col gap-2">
+          <div class="skeleton h-14 w-full"></div>
+          <div class="skeleton h-14 w-full"></div>
+          <div class="skeleton h-14 w-full"></div>
+        </div>
+      } @else if (totalFiles === 0) {
+        <div class="bg-base-200/40 border border-base-content/10 rounded-box p-6 text-center">
+          <ion-icon name="server-outline" class="text-4xl opacity-40"></ion-icon>
+          <p class="mt-3 text-sm opacity-70">{{ 'STORAGE.empty' | transloco }}</p>
+        </div>
+      } @else {
+
+        <!-- Resumen + borrar todo -->
+        <div class="bg-base-200/40 border border-base-content/10 rounded-box p-4 mb-4
+                    flex items-center justify-between gap-4">
+          <div>
+            <div class="text-base font-bold">
+              {{ 'STORAGE.summary' | transloco: { files: totalFiles, size: formatBytes(totalSizeBytes) } }}
+            </div>
+            <div class="text-xs opacity-60 mt-1">{{ 'STORAGE.intro' | transloco }}</div>
+          </div>
+          <button class="btn btn-sm btn-outline btn-error shrink-0" (click)="confirmDeleteAll()">
+            {{ 'STORAGE.deleteAll' | transloco }}
+          </button>
+        </div>
+
+        <!-- Lista agrupada por tema / apertura -->
+        <ul class="flex flex-col gap-2">
+          @for (group of groups; track group.key) {
+            <li class="bg-base-200/40 border border-base-content/10 rounded-box overflow-hidden">
+
+              <!-- Cabecera del grupo -->
+              <div class="flex items-center gap-2 p-3">
+                <button class="flex items-center gap-2 flex-1 text-left min-w-0"
+                  (click)="toggleGroup(group)">
+                  <ion-icon name="chevron-down-outline"
+                    class="text-base opacity-60 transition-transform shrink-0"
+                    [class.-rotate-90]="!isExpanded(group)"></ion-icon>
+                  <div class="min-w-0">
+                    <div class="text-base truncate">{{ group.name }}</div>
+                    <div class="text-xs opacity-60">
+                      {{ filesCountLabel(group.files.length) }} · {{ groupSizeLabel(group) }}
+                      @if (group.kind === 'opening') {
+                        <span class="badge badge-ghost badge-xs ml-1">{{ 'STORAGE.openings' | transloco }}</span>
+                      }
+                    </div>
+                  </div>
+                </button>
+                <button class="btn btn-ghost btn-sm btn-square text-error shrink-0"
+                  [attr.aria-label]="'STORAGE.deleteAll' | transloco"
+                  (click)="confirmDeleteGroup(group)">
+                  <ion-icon name="trash-outline" class="text-lg"></ion-icon>
+                </button>
+              </div>
+
+              <!-- Archivos del grupo -->
+              @if (isExpanded(group)) {
+                <ul class="border-t border-base-content/10">
+                  @for (file of group.files; track file.url) {
+                    <li class="flex items-center gap-2 py-2 pl-9 pr-3 border-b border-base-content/5 last:border-b-0">
+                      <div class="flex-1 min-w-0 text-sm">
+                        <span>{{ file.eloLabel }}</span>
+                        @if (file.count !== undefined) {
+                          <span class="opacity-60"> · {{ 'STORAGE.puzzlesCount' | transloco: { count: file.count } }}</span>
+                        }
+                        <span class="opacity-60"> · {{ fileSizeLabel(file) }}</span>
+                      </div>
+                      <button class="btn btn-ghost btn-xs btn-square text-error shrink-0"
+                        [attr.aria-label]="'STORAGE.confirm.delete' | transloco"
+                        (click)="confirmDeleteFile(group, file)">
+                        <ion-icon name="trash-outline" class="text-base"></ion-icon>
+                      </button>
+                    </li>
+                  }
+                </ul>
+              }
+            </li>
+          }
+        </ul>
+      }
+
+    </div>
+  </div>
+</ion-content>

@@ -111,6 +111,11 @@ export const routes: Routes = [
       import('./pages/settings/settings.page').then((m) => m.SettingsPage),
   },
   {
+    path: 'settings/storage',
+    loadComponent: () =>
+      import('./pages/settings/storage/storage.page').then((m) => m.StoragePage),
+  },
+  {
     path: 'reminders',
     loadComponent: () =>
       import('./pages/reminders/reminders.page').then((m) => m.RemindersPage),

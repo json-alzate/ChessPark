@@ -14,6 +14,7 @@ import {
   homeOutline,
   notificationsOutline,
   chevronForwardOutline,
+  serverOutline,
 } from 'ionicons/icons';
 import { Subscription } from 'rxjs';
 
@@ -21,6 +22,7 @@ import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 import { ProfileService } from '@services/profile.service';
 import { LanguageService, SupportedLang } from '@services/language.service';
 import { AnalyticsService } from '@services/analytics.service';
+import { PuzzleStorageService } from '@services/puzzle-storage.service';
 
 addIcons({
   languageOutline,
@@ -31,6 +33,7 @@ addIcons({
   homeOutline,
   notificationsOutline,
   chevronForwardOutline,
+  serverOutline,
 });
 
 interface LanguageOption {
@@ -50,11 +53,17 @@ export class SettingsPage implements OnInit, OnDestroy {
   private profileService = inject(ProfileService);
   private router = inject(Router);
   private analyticsService = inject(AnalyticsService);
+  private puzzleStorageService = inject(PuzzleStorageService);
 
   readonly isNativePlatform = Capacitor.isNativePlatform();
 
   currentLang: SupportedLang = this.languageService.getCurrentLang();
   isAuthenticated = false;
+  /**
+   * Resumen de lo descargado ("124 archivos · 18,3 MB"), ya formateado para
+   * interpolarlo en la traducción. `null` mientras se calcula.
+   */
+  storageSummary: { files: number; size: string } | null = null;
 
   // Mapea cada idioma disponible con su clave de traducción en COMMON.languages
   readonly languages: LanguageOption[] = [
@@ -70,6 +79,25 @@ export class SettingsPage implements OnInit, OnDestroy {
       // Mantener sincronizado el idioma activo con el del perfil cargado
       this.currentLang = this.languageService.getCurrentLang();
     });
+
+    void this.loadStorageSummary();
+  }
+
+  /**
+   * Calcula el resumen de almacenamiento sin bloquear la pantalla: si falla
+   * (p. ej. sin IndexedDB) la fila se queda con el texto de carga en vez de
+   * romper Ajustes.
+   */
+  private async loadStorageSummary(): Promise<void> {
+    try {
+      const summary = await this.puzzleStorageService.getSummary();
+      this.storageSummary = {
+        files: summary.files,
+        size: this.puzzleStorageService.formatBytes(summary.sizeBytes),
+      };
+    } catch (error) {
+      console.warn('[SettingsPage] No se pudo calcular el almacenamiento:', error);
+    }
   }
 
   ngOnDestroy(): void {
@@ -82,6 +110,10 @@ export class SettingsPage implements OnInit, OnDestroy {
 
   goToReminders(): void {
     this.router.navigate(['/reminders']);
+  }
+
+  goToStorage(): void {
+    this.router.navigate(['/settings/storage']);
   }
 
   /**

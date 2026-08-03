@@ -12,6 +12,8 @@ export type {
   PuzzlesIndex,
   PuzzlesProviderConfig,
   CacheEntry,
+  CachedFileIndexEntry,
+  StorageSummary,
   InfinityPoolEntry,
 } from './lib/types';
 
@@ -28,6 +30,8 @@ export {
   getRepoBase,
   getEloRange,
   buildPuzzleUrl,
+  parsePuzzleUrl,
+  estimateSizeBytes,
   shuffleArray,
   dedupeByUid,
   filterByColor,
@@ -36,6 +40,8 @@ export {
   filterEloSequenceByManifest,
   limitPuzzleCount,
 } from './lib/utils';
+
+export type { ParsedPuzzleUrl } from './lib/utils';
 
 // Exportar utilidades del manifiesto de combinaciones válidas
 export {

@@ -221,6 +221,33 @@ Para mejorar significativamente el rendimiento, la librería procesa múltiples 
 - No bloquea la respuesta al cachear
 - Las verificaciones de caché se realizan en paralelo sin afectar las descargas
 
+### Inspeccionar y vaciar lo descargado
+
+Para construir una pantalla de "cuánto ocupa esto y cómo lo borro", el servicio
+de caché (`provider.getCacheService()`) expone:
+
+```ts
+// Lista los archivos guardados con su metadata: tema o apertura, rango de ELO,
+// nº de puzzles y tamaño aproximado. Solo lee el índice, no los puzzles.
+await cacheService.listCachedFiles();   // CachedFileIndexEntry[]
+
+// Totales agregados
+await cacheService.getStorageSummary(); // { files, sizeBytes }
+
+// Borrado
+await cacheService.deleteCachedPuzzles(url);   // uno
+await cacheService.deleteCachedFiles(urls);    // varios, en una transacción
+await cacheService.clearCache();               // todos los archivos
+await cacheService.clearInfinityPool();        // el pool de entrenamiento continuo
+```
+
+El tema/apertura y el rango de ELO salen de la propia URL con `parsePuzzleUrl()`,
+la inversa de `buildPuzzleUrl()`. Las entradas guardadas antes de existir esta
+metadata la completan de forma perezosa la primera vez que se listan.
+
+> `getCacheSize()` devuelve un **conteo de entradas**, no bytes, pese a su
+> nombre. Para bytes usar `getStorageSummary()`.
+
 ## Cómo Funciona Internamente
 
 ### Flujo de Obtención de Puzzles
