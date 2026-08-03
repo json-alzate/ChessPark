@@ -526,7 +526,32 @@
     "title": "Settings",
     "language": "Language",
     "appearance": "Appearance",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "storage": "Storage"
+  },
+  "STORAGE": {
+    "pageTitle": "Downloaded puzzles",
+    "settingsRowTitle": "Manage downloads",
+    "settingsRowDesc": "See how much space downloaded puzzles take and free it up",
+    "summary": "{{files}} files · {{size}}",
+    "loading": "Calculating…",
+    "empty": "You have no downloaded puzzles. They download on their own as you train.",
+    "intro": "Puzzles are stored on your device so they don't have to be downloaded again. Deleting them doesn't affect your progress or your ELO.",
+    "openings": "Openings",
+    "otherFiles": "Other files",
+    "filesCount": "{{count}} files",
+    "oneFile": "1 file",
+    "puzzlesCount": "{{count}} puzzles",
+    "deleteAll": "Delete all",
+    "confirm": {
+      "delete": "Delete",
+      "fileTitle": "Delete this file?",
+      "fileMessage": "{{name}} · {{eloRange}}. It will be downloaded again when you need it.",
+      "groupTitle": "Delete {{name}}?",
+      "groupMessage": "{{files}} files ({{size}}). They will be downloaded again when you need them.",
+      "allTitle": "Delete everything?",
+      "allMessage": "{{files}} files ({{size}}). You won't lose your progress or your ELO."
+    }
   },
   "TRAINING_REMINDER": {
     "pageTitle": "Reminders",

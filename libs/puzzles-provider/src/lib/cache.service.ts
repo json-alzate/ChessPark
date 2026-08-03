@@ -1,5 +1,12 @@
 import { DEFAULT_CONFIG } from './constants';
-import { CacheEntry, InfinityPoolEntry, Puzzle } from './types';
+import {
+  CacheEntry,
+  CachedFileIndexEntry,
+  InfinityPoolEntry,
+  Puzzle,
+  StorageSummary,
+} from './types';
+import { estimateSizeBytes, parsePuzzleUrl } from './utils';
 
 /**
  * Servicio de caché para almacenar puzzles localmente
@@ -176,9 +183,21 @@ export class PuzzlesCacheService {
       const indexStore = transaction.objectStore(this.INDEX_STORE_NAME);
 
       store.put(entry);
-      
-      // Actualizar índice de URLs cacheadas
-      indexStore.put({ key: url, timestamp: entry.timestamp });
+
+      // Actualizar índice de URLs cacheadas, con la metadata que alimenta la
+      // pantalla de gestión de descargas (tema/apertura y ELO salen de la URL)
+      const meta = parsePuzzleUrl(url);
+      const indexEntry: CachedFileIndexEntry = {
+        key: url,
+        timestamp: entry.timestamp,
+        theme: meta?.theme,
+        opening: meta?.opening,
+        eloStart: meta?.eloStart,
+        eloEnd: meta?.eloEnd,
+        count: puzzles.length,
+        sizeBytes: estimateSizeBytes(puzzles),
+      };
+      indexStore.put(indexEntry);
 
       return new Promise((resolve, reject) => {
         transaction.oncomplete = () => resolve();
@@ -236,6 +255,193 @@ export class PuzzlesCacheService {
     } catch (error) {
       console.error('Error en clearCache:', error);
     }
+  }
+
+  /**
+   * Borra varios archivos cacheados en una sola transacción.
+   * Pensado para "borrar todos los archivos de un tema".
+   */
+  async deleteCachedFiles(urls: string[]): Promise<void> {
+    if (!this.db || urls.length === 0) return;
+
+    try {
+      const transaction = this.db.transaction([this.STORE_NAME, this.INDEX_STORE_NAME], 'readwrite');
+      const store = transaction.objectStore(this.STORE_NAME);
+      const indexStore = transaction.objectStore(this.INDEX_STORE_NAME);
+
+      for (const url of urls) {
+        store.delete(url);
+        indexStore.delete(url);
+      }
+
+      return new Promise((resolve, reject) => {
+        transaction.oncomplete = () => resolve();
+        transaction.onerror = () => reject(transaction.error);
+      });
+    } catch (error) {
+      console.error('[PuzzlesCacheService] Error en deleteCachedFiles:', error);
+    }
+  }
+
+  /**
+   * Lista todos los archivos cacheados con su metadata, para la pantalla de
+   * gestión de descargas.
+   *
+   * Lee solo el índice (pequeño): traer `puzzlesCache` entero para pintar una
+   * lista significaría deserializar todos los puzzles. Tema/apertura y ELO se
+   * derivan siempre de la URL; `count`/`sizeBytes` faltantes en entradas
+   * antiguas se completan una única vez (ver `backfillIndexMetadata`).
+   */
+  async listCachedFiles(): Promise<CachedFileIndexEntry[]> {
+    if (!this.enableCache || !this.db) return [];
+
+    try {
+      const entries = await this.getAllIndexEntries();
+
+      const enriched = entries.map((entry) => {
+        const meta = parsePuzzleUrl(entry.key);
+        return {
+          ...entry,
+          theme: entry.theme ?? meta?.theme,
+          opening: entry.opening ?? meta?.opening,
+          eloStart: entry.eloStart ?? meta?.eloStart,
+          eloEnd: entry.eloEnd ?? meta?.eloEnd,
+        } as CachedFileIndexEntry;
+      });
+
+      const pending = enriched.filter(
+        (entry) => entry.count === undefined || entry.sizeBytes === undefined
+      );
+
+      if (pending.length === 0) return enriched;
+
+      // Si el backfill falla, la lista se muestra igual (sin tamaño) antes que
+      // dejar al usuario con una pantalla vacía
+      const orphans = await this.backfillIndexMetadata(pending);
+      return enriched.filter((entry) => !orphans.has(entry.key));
+    } catch (error) {
+      console.error('[PuzzlesCacheService] Error en listCachedFiles:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Totales agregados del caché: nº de archivos y bytes aproximados.
+   */
+  async getStorageSummary(): Promise<StorageSummary> {
+    const files = await this.listCachedFiles();
+    return {
+      files: files.length,
+      sizeBytes: files.reduce((total, entry) => total + (entry.sizeBytes ?? 0), 0),
+    };
+  }
+
+  /**
+   * Vacía el pool de puzzles de entrenamiento continuo (infinity).
+   * Vive en su propio store, así que `clearCache()` no lo toca: se llama
+   * aparte desde "borrar todo" para que no quede nada almacenado.
+   */
+  async clearInfinityPool(): Promise<void> {
+    if (!this.db) return;
+    if (!this.db.objectStoreNames.contains(this.POOL_STORE_NAME)) return;
+
+    try {
+      const transaction = this.db.transaction([this.POOL_STORE_NAME], 'readwrite');
+      transaction.objectStore(this.POOL_STORE_NAME).clear();
+
+      return new Promise((resolve, reject) => {
+        transaction.oncomplete = () => resolve();
+        transaction.onerror = () => reject(transaction.error);
+      });
+    } catch (error) {
+      console.error('[PuzzlesCacheService] Error en clearInfinityPool:', error);
+    }
+  }
+
+  /**
+   * Lee el store del índice completo
+   */
+  private async getAllIndexEntries(): Promise<CachedFileIndexEntry[]> {
+    if (!this.db) return [];
+
+    const transaction = this.db.transaction([this.INDEX_STORE_NAME], 'readonly');
+    const store = transaction.objectStore(this.INDEX_STORE_NAME);
+
+    return new Promise((resolve, reject) => {
+      const request = store.getAll();
+      request.onsuccess = () => resolve((request.result ?? []) as CachedFileIndexEntry[]);
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  /**
+   * Completa `count` y `sizeBytes` de entradas del índice escritas antes de que
+   * existiera esa metadata, y persiste el resultado para no repetir el trabajo.
+   *
+   * Recorre `puzzlesCache` con un único cursor (una sola transacción, sin
+   * `await` intermedios que la dejarían expirar) y muta las entradas recibidas.
+   * Devuelve las URLs que están en el índice pero no en el caché: entradas
+   * huérfanas, que se eliminan del índice y no deben mostrarse.
+   */
+  private async backfillIndexMetadata(
+    entries: CachedFileIndexEntry[]
+  ): Promise<Set<string>> {
+    const orphans = new Set(entries.map((entry) => entry.key));
+    if (!this.db) return orphans;
+
+    const byUrl = new Map(entries.map((entry) => [entry.key, entry]));
+    let scanCompleted = false;
+
+    try {
+      const readTx = this.db.transaction([this.STORE_NAME], 'readonly');
+      const store = readTx.objectStore(this.STORE_NAME);
+
+      await new Promise<void>((resolve, reject) => {
+        const cursorReq = store.openCursor();
+        cursorReq.onsuccess = (event) => {
+          const cursor = (event.target as IDBRequest<IDBCursorWithValue>).result;
+          if (!cursor) {
+            resolve();
+            return;
+          }
+
+          const cacheEntry: CacheEntry = cursor.value;
+          const indexEntry = byUrl.get(cacheEntry.url);
+          if (indexEntry) {
+            indexEntry.count = cacheEntry.puzzles?.length ?? 0;
+            indexEntry.sizeBytes = estimateSizeBytes(cacheEntry.puzzles ?? []);
+            orphans.delete(cacheEntry.url);
+          }
+
+          cursor.continue();
+        };
+        cursorReq.onerror = () => reject(cursorReq.error);
+      });
+
+      scanCompleted = true;
+
+      const writeTx = this.db.transaction([this.INDEX_STORE_NAME], 'readwrite');
+      const indexStore = writeTx.objectStore(this.INDEX_STORE_NAME);
+      for (const entry of entries) {
+        if (orphans.has(entry.key)) {
+          indexStore.delete(entry.key);
+        } else {
+          indexStore.put(entry);
+        }
+      }
+
+      await new Promise<void>((resolve, reject) => {
+        writeTx.oncomplete = () => resolve();
+        writeTx.onerror = () => reject(writeTx.error);
+      });
+    } catch (error) {
+      console.error('[PuzzlesCacheService] Error en backfillIndexMetadata:', error);
+      // Sin recorrido completo no se sabe qué falta de verdad: mejor listar
+      // los archivos sin tamaño que hacer desaparecer la lista entera
+      if (!scanCompleted) return new Set();
+    }
+
+    return orphans;
   }
 
   /**
@@ -425,15 +631,11 @@ export class PuzzlesCacheService {
       const min = targetElo - tolerance;
       const max = targetElo + tolerance;
 
-      // Parsear ELO de la URL: patrón _(\d+)_\d+\.json al final del nombre de archivo
-      const eloPattern = /_(\d+)_\d+\.json$/;
       return allKeys.filter((url) => {
-        const match = url.match(eloPattern);
-        if (!match) return false;
-        const eloStart = parseInt(match[1], 10);
-        const eloEnd = eloStart + 19;
+        const parsed = parsePuzzleUrl(url);
+        if (!parsed) return false;
         // El rango [eloStart, eloEnd] se solapa con [min, max]
-        return eloStart <= max && eloEnd >= min;
+        return parsed.eloStart <= max && parsed.eloEnd >= min;
       });
     } catch (error) {
       console.error('[PuzzlesCacheService] Error en getCachedUrlsMatchingElo:', error);

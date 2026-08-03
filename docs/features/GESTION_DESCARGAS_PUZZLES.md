@@ -1,5 +1,10 @@
 # Gestión de Descargas de Puzzles — Feature Document
 
+> ✅ **Implementado.** Este documento es el **diseño original**. Para saber **cómo quedó
+> funcionando** (arquitectura, archivos, decisiones y bordes conocidos), ver
+> **[GESTION_DESCARGAS_PUZZLES_FLOW.md](../implementado/GESTION_DESCARGAS_PUZZLES_FLOW.md)**.
+> Las seis decisiones abiertas al final se resolvieron **según lo propuesto**.
+
 ## Concepto
 
 Hoy ChessColate descarga archivos de puzzles desde el CDN y los guarda en el dispositivo **de forma completamente invisible**: el usuario nunca ve qué tiene almacenado, cuánto ocupa, ni puede borrarlo. El caché crece silenciosamente sesión tras sesión y la única limpieza es automática (expiración a 1 año, evicción a los 90 días sin uso).

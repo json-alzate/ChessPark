@@ -34,7 +34,11 @@ export type AnalyticsEventName =
   | 'training_reminder_tapped'
   | 'training_reminder_manual_created'
   | 'training_reminder_manual_deleted'
-  | 'training_reminder_test_sent';
+  | 'training_reminder_test_sent'
+  | 'puzzle_storage_opened'
+  | 'puzzle_storage_file_deleted'
+  | 'puzzle_storage_theme_deleted'
+  | 'puzzle_storage_cleared';
 
 /** Valores primitivos admitidos por GA4 como parámetros de evento. */
 export type AnalyticsParams = Record<string, string | number | boolean>;

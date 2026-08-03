@@ -86,6 +86,10 @@ legible). El resto son **acciones semánticas**. Nombres y params en `snake_case
 | `public_plan_saved` | guarda/quita una pública | `plan_uid`, `saved` | `public-plans.component.ts` |
 | `language_changed` | cambia idioma | `from`, `to` | `settings.page.ts` |
 | `donation_completed` | donación exitosa | `value`, `currency`, `item_id` | `donation.page.ts` |
+| `puzzle_storage_opened` | abre la gestión de descargas | `files_count`, `size_mb` | `settings/storage/storage.page.ts` |
+| `puzzle_storage_file_deleted` | borra un archivo | `theme` (tema o apertura), `elo_start` | `settings/storage/storage.page.ts` |
+| `puzzle_storage_theme_deleted` | borra un tema/apertura entero | `theme`, `files_count`, `size_mb` | `settings/storage/storage.page.ts` |
+| `puzzle_storage_cleared` | borra todo lo descargado | `files_count`, `size_mb` | `settings/storage/storage.page.ts` |
 
 \* `routine_uid`/`author_uid` solo en rutinas custom/públicas.
 

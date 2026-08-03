@@ -64,6 +64,32 @@
         </section>
       }
 
+      <!-- Almacenamiento (también en web: el caché de puzzles vive en IndexedDB) -->
+      <section class="mb-8">
+        <div class="flex items-center gap-2 mb-3 opacity-80">
+          <ion-icon name="server-outline" class="text-xl"></ion-icon>
+          <h2 class="text-lg font-bold">{{ 'SETTINGS.storage' | transloco }}</h2>
+        </div>
+
+        <ul class="menu bg-base-200/40 border border-base-content/10 w-full rounded-box gap-1 p-2">
+          <li>
+            <a (click)="goToStorage()" class="flex items-center justify-between py-3">
+              <div>
+                <div class="text-base">{{ 'STORAGE.settingsRowTitle' | transloco }}</div>
+                <div class="text-xs opacity-60">
+                  @if (storageSummary) {
+                    {{ 'STORAGE.summary' | transloco: storageSummary }}
+                  } @else {
+                    {{ 'STORAGE.loading' | transloco }}
+                  }
+                </div>
+              </div>
+              <ion-icon name="chevron-forward-outline" class="text-xl opacity-60"></ion-icon>
+            </a>
+          </li>
+        </ul>
+      </section>
+
       <!-- Apariencia (próximamente: estilo de piezas y color de tablero) -->
       <!--
         Estos ajustes se implementarán más adelante. El modelo Profile ya tiene
