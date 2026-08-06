@@ -23,6 +23,8 @@ import { PlanService } from '@services/plan.service';
 import { PlanStorageService } from '@services/plan-storage.service';
 import { AnalyticsService } from '@services/analytics.service';
 import { TrainingReminderService } from '@services/training-reminder.service';
+import { AppReviewService } from '@services/app-review.service';
+import { routineAccuracy } from '@services/app-review.util';
 import { LoadingController } from '@ionic/angular/standalone';
 
 import { BoardPuzzleSolutionComponent } from '@chesspark/board';
@@ -79,6 +81,7 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
   private translocoService = inject(TranslocoService);
   private analyticsService = inject(AnalyticsService);
   private trainingReminderService = inject(TrainingReminderService);
+  private appReviewService = inject(AppReviewService);
 
   /**
    * Menú minimalista de rutinas: animalito + duración (minutos).
@@ -112,6 +115,10 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
   private hasHadPlan: boolean = false; // Flag para saber si alguna vez tuvimos un plan
   // Evita evaluar/mostrar el prompt del recordatorio más de una vez por visita
   private reminderPromptChecked: boolean = false;
+  // Igual para la invitación a calificar la app
+  private appReviewChecked = false;
+  // Cálculo del ELO total y del récord de la rutina recién terminada
+  private eloReady: Promise<void> = Promise.resolve();
   private destroy$ = new Subject<void>();
 
   constructor() {
@@ -177,7 +184,9 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
           if (plan.isFinished === true) {
             this.hasHadPlan = true;
             this.plan = plan;
-            this.getTotalElo();
+            // Se guarda la promesa (sin await, para no retrasar los tableros):
+            // los avisos posteriores necesitan el récord y el ELO ya calculados.
+            this.eloReady = this.getTotalElo();
 
             this.plan.blocks.forEach((block, blockIndex) => {
               // Inicialmente carga 4 tableros por bloque
@@ -192,8 +201,8 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
               await this.checkLikeStatus();
             }
 
-            // Momento oportuno (peak-end) para proponer el recordatorio
-            void this.maybeShowReminderPrompt();
+            // Momento oportuno (peak-end) para los avisos de fin de rutina
+            void this.runPostRoutinePrompts();
           }
           // Si el plan no está terminado, ignorarlo (es un plan nuevo que se está creando)
         } else if (!plan && !this.isLoadingPlan && !this.hasHadPlan) {
@@ -224,25 +233,36 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Avisos que aprovechan el pico emocional del final de rutina. Como mucho
+   * uno por visita: si se propone el recordatorio, la invitación a calificar
+   * espera a otra rutina en vez de encadenar dos tarjetas seguidas.
+   */
+  private async runPostRoutinePrompts(): Promise<void> {
+    const reminderShown = await this.maybeShowReminderPrompt();
+    await this.maybeRequestAppReview(!reminderShown);
+  }
+
+  /**
    * Propone activar el recordatorio de entrenamiento en el momento emocional
    * correcto (acaba de completar una sesión): solo en nativo, una sola vez,
    * con al menos 2 sesiones registradas y con el permiso aún sin decidir.
+   * Devuelve si se va a mostrar el modal.
    */
-  private async maybeShowReminderPrompt(): Promise<void> {
+  private async maybeShowReminderPrompt(): Promise<boolean> {
     if (this.reminderPromptChecked || this.isFromHistory) {
-      return;
+      return false;
     }
     this.reminderPromptChecked = true;
 
     if (!Capacitor.isNativePlatform()) {
-      return;
+      return false;
     }
     const state = this.trainingReminderService.getState();
     if (state.enabled || state.contextPromptShownAt !== null) {
-      return;
+      return false;
     }
     if (this.trainingReminderService.getEventsCount() < 2) {
-      return;
+      return false;
     }
     // Solo se descarta si el permiso está denegado en firme (no podría llegar
     // la notificación). Si está 'granted' (p. ej. Android <= 12, que lo concede
@@ -252,11 +272,38 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
     const permission =
       await this.trainingReminderService.checkPermissionStatus();
     if (permission === 'denied') {
-      return;
+      return false;
     }
 
     // Pequeño retardo para no competir con la animación de resultados
     setTimeout(() => void this.showReminderPrompt(), 800);
+    return true;
+  }
+
+  /**
+   * Suma esta rutina a los contadores de la invitación a calificar la app y,
+   * si el usuario ya lleva suficiente uso y la rutina salió bien, deja que
+   * salga la tarjeta nativa de la tienda. Los planes abiertos desde el
+   * historial no cuentan: no son una rutina recién terminada.
+   */
+  private async maybeRequestAppReview(canPrompt: boolean): Promise<void> {
+    if (this.appReviewChecked || this.isFromHistory || !this.plan) {
+      return;
+    }
+    this.appReviewChecked = true;
+
+    // El récord y el ELO ganado se calculan aparte; hay que esperarlos.
+    await this.eloReady;
+
+    await this.appReviewService.onRoutineFinished(
+      this.plan.uid,
+      {
+        isNewRecord: this.isNewRecord,
+        accuracy: routineAccuracy(this.plan.blocks),
+        eloDelta: this.eloDelta,
+      },
+      canPrompt
+    );
   }
 
   private async showReminderPrompt(): Promise<void> {

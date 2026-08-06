@@ -91,3 +91,24 @@ Orden acordado (ver docs de diseño en [features/](./features/)):
 4. **Chess Runner** — [features/CHESS_RUNNER.md](./features/CHESS_RUNNER.md). Requiere assets pixel-art + cerrar decisiones abiertas del doc.
 5. **Puzzle Geo Hunt** — [features/PUZZLE_GEO_HUNT.md](./features/PUZZLE_GEO_HUNT.md).
 6. **Cuadros de Conquista** — [features/CUADROS_DE_CONQUISTA.md](./features/CUADROS_DE_CONQUISTA.md). El más complejo; necesita un *design spike* que cierre poderes/economía/matchmaking antes de codificar.
+
+> El orden vivo está en [features/README.md](./features/README.md), que es el que se
+> mantiene al día conforme salen features.
+
+---
+
+## 4. Calificar la app (In-App Review) — verificación 🔴 (prioridad media)
+
+Implementado y documentado en [implementado/CALIFICAR_APP_FLOW.md](./implementado/CALIFICAR_APP_FLOW.md).
+Lo que no se puede cerrar desde el entorno de desarrollo:
+
+- **Probar la tarjeta nativa en un canal de pruebas de Play Store** 🔴 — en `debug`
+  la llamada no falla pero no muestra nada, que es el comportamiento esperado. Para
+  verla de verdad hace falta la app instalada desde Play (internal testing sirve).
+- **Comprobar que "Califícanos" abre la ficha** 🔴 — se usa `market://details?id=…`
+  en Android nativo y la URL web en el resto; conviene confirmarlo en dispositivo.
+- **iOS** 🔴 — el plugin soporta `SKStoreReviewController` y la lógica es la misma,
+  pero falta `npx cap sync ios`, validarlo en dispositivo y apuntar la fila de
+  Ajustes a la App Store en vez de a Play.
+- **Mirar la distribución de `trigger`** en GA4 tras unas semanas: si casi todo
+  entra por `grace_window`, los umbrales de "buena rutina" están demasiado altos.

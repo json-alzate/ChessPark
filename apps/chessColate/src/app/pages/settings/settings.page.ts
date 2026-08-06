@@ -15,6 +15,7 @@ import {
   notificationsOutline,
   chevronForwardOutline,
   serverOutline,
+  starOutline,
 } from 'ionicons/icons';
 import { Subscription } from 'rxjs';
 
@@ -23,6 +24,7 @@ import { ProfileService } from '@services/profile.service';
 import { LanguageService, SupportedLang } from '@services/language.service';
 import { AnalyticsService } from '@services/analytics.service';
 import { PuzzleStorageService } from '@services/puzzle-storage.service';
+import { AppReviewService } from '@services/app-review.service';
 
 addIcons({
   languageOutline,
@@ -34,6 +36,7 @@ addIcons({
   notificationsOutline,
   chevronForwardOutline,
   serverOutline,
+  starOutline,
 });
 
 interface LanguageOption {
@@ -54,6 +57,7 @@ export class SettingsPage implements OnInit, OnDestroy {
   private router = inject(Router);
   private analyticsService = inject(AnalyticsService);
   private puzzleStorageService = inject(PuzzleStorageService);
+  private appReviewService = inject(AppReviewService);
 
   readonly isNativePlatform = Capacitor.isNativePlatform();
 
@@ -114,6 +118,14 @@ export class SettingsPage implements OnInit, OnDestroy {
 
   goToStorage(): void {
     this.router.navigate(['/settings/storage']);
+  }
+
+  /**
+   * Abre la ficha de la tienda para calificar. Es la vía manual: no pasa por
+   * la tarjeta nativa, así que no tiene cuota ni espera de 90 días.
+   */
+  rateApp(): void {
+    this.appReviewService.openStoreListing();
   }
 
   /**

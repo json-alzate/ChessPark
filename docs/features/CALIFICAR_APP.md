@@ -229,5 +229,3 @@ No hay toggle: el flujo autom√°tico es silencioso y de baja frecuencia por dise√
 - Hook en la pantalla de resultados de rutina ([`plan-played.component.ts`](../../apps/chessColate/src/app/pages/puzzles/containers/plan-played/plan-played.component.ts)) para llamar a `AppReviewService.maybeRequestReview(...)`.
 - `AnalyticsService` existente para los eventos.
 - App publicada en Play Store (o track de testing) para poder ver la tarjeta nativa en dispositivo.
-</content>
-</invoke>

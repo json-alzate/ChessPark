@@ -90,6 +90,26 @@
         </ul>
       </section>
 
+      <!-- Apoya la app: calificar en la tienda (siempre disponible, sin cuota) -->
+      <section class="mb-8">
+        <div class="flex items-center gap-2 mb-3 opacity-80">
+          <ion-icon name="star-outline" class="text-xl"></ion-icon>
+          <h2 class="text-lg font-bold">{{ 'SETTINGS.support' | transloco }}</h2>
+        </div>
+
+        <ul class="menu bg-base-200/40 border border-base-content/10 w-full rounded-box gap-1 p-2">
+          <li>
+            <a (click)="rateApp()" class="flex items-center justify-between py-3">
+              <div>
+                <div class="text-base">{{ 'APP_REVIEW.rateRowTitle' | transloco }} ⭐</div>
+                <div class="text-xs opacity-60">{{ 'APP_REVIEW.rateRowDesc' | transloco }}</div>
+              </div>
+              <ion-icon name="chevron-forward-outline" class="text-xl opacity-60"></ion-icon>
+            </a>
+          </li>
+        </ul>
+      </section>
+
       <!-- Apariencia (próximamente: estilo de piezas y color de tablero) -->
       <!--
         Estos ajustes se implementarán más adelante. El modelo Profile ya tiene
