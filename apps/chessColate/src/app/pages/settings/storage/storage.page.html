@@ -53,6 +53,34 @@
           </button>
         </div>
 
+        <!-- Paquetes de partidas: pesan como los puzzles y se borran igual -->
+        @if (gamePacks.length > 0) {
+          <section class="mb-4">
+            <h3 class="text-xs font-bold uppercase tracking-wide opacity-60 mb-2">
+              {{ 'GAMES.title' | transloco }}
+            </h3>
+            <ul class="flex flex-col gap-2">
+              @for (pack of gamePacks; track pack.id) {
+                <li class="bg-base-200/40 border border-base-content/10 rounded-box
+                           p-4 flex items-center justify-between gap-3">
+                  <div class="min-w-0">
+                    <div class="text-base font-bold truncate">{{ pack.name }}</div>
+                    <div class="text-xs opacity-60 mt-0.5">
+                      {{ 'GAMES.gamesCount' | transloco: { count: pack.games } }}
+                      · {{ formatBytes(pack.sizeBytes) }}
+                    </div>
+                  </div>
+                  <button class="btn btn-ghost btn-sm btn-circle shrink-0"
+                    (click)="confirmDeletePack(pack)"
+                    [attr.aria-label]="'GAMES.delete' | transloco">
+                    <ion-icon name="trash-outline" class="text-lg opacity-60"></ion-icon>
+                  </button>
+                </li>
+              }
+            </ul>
+          </section>
+        }
+
         <!-- Lista agrupada por tema / apertura -->
         <ul class="flex flex-col gap-2">
           @for (group of groups; track group.key) {

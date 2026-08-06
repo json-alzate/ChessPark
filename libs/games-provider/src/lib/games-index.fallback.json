@@ -1,0 +1,29 @@
+{
+  "generatedAt": "2026-08-06T17:27:16.848Z",
+  "collections": [
+    {
+      "id": "alekhine",
+      "name": "Alexander Alekhine",
+      "reign": "1927–1935, 1937–1946",
+      "games": 1661,
+      "sizeBytes": 1080504,
+      "file": "players/alekhine.pgn"
+    },
+    {
+      "id": "anand",
+      "name": "Viswanathan Anand",
+      "reign": "2000–2002, 2007–2013",
+      "games": 4310,
+      "sizeBytes": 2847186,
+      "file": "players/anand.pgn"
+    },
+    {
+      "id": "petrosian",
+      "name": "Tigran Petrosian",
+      "reign": "1963–1969",
+      "games": 1893,
+      "sizeBytes": 1130944,
+      "file": "players/petrosian.pgn"
+    }
+  ]
+}

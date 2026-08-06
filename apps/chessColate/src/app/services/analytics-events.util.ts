@@ -79,6 +79,8 @@ const SCREEN_NAMES: Record<string, string> = {
   '/puzzles/custom-plans': 'Rutinas personalizadas',
   '/puzzles/custom-plans/create': 'Crear rutina',
   '/puzzles/public-plans': 'Rutinas públicas',
+  '/games': 'Partidas',
+  '/games/viewer': 'Reproductor de partidas',
   '/streak': 'Racha',
   '/coordinates': 'Coordenadas',
   '/knight-tour': 'Recorrido del Caballo',
@@ -96,6 +98,7 @@ export function screenNameFromUrl(url: string): string {
   const path = (url || '/').split('?')[0].split('#')[0];
   if (SCREEN_NAMES[path]) return SCREEN_NAMES[path];
   if (path.startsWith('/puzzles/custom-plans/edit')) return 'Editar rutina';
+  if (path.startsWith('/games/')) return 'Colección de partidas';
   if (path === '' || path === '/') return 'Inicio';
   return path;
 }

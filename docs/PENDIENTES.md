@@ -112,3 +112,25 @@ Lo que no se puede cerrar desde el entorno de desarrollo:
   Ajustes a la App Store en vez de a Play.
 - **Mirar la distribución de `trigger`** en GA4 tras unas semanas: si casi todo
   entra por `grace_window`, los umbrales de "buena rutina" están demasiado altos.
+
+---
+
+## 5. Reproductor de Partidas — verificación y catálogo 🔴 (prioridad media)
+
+Implementado y documentado en [implementado/REPRODUCTOR_PARTIDAS_FLOW.md](./implementado/REPRODUCTOR_PARTIDAS_FLOW.md).
+Lo que queda:
+
+- **Probarlo en un móvil** 🔴 — compila y los tests de la lógica pasan, pero el
+  tablero, la descarga real desde el CDN y el encadenado del modo TV no se han
+  ejecutado en un dispositivo. Comprobar sobre todo que la pantalla se queda
+  encendida al reproducir y **se suelta al salir**.
+- **Completar el catálogo** 🔴 — hoy hay tres campeones (Alekhine, Anand y
+  Petrosian). Los demás salen de [PGN Mentor](https://www.pgnmentor.com/files.html)
+  y **no requieren tocar la app**: dejar el `.pgn` en `players/`, añadir su
+  entrada en `players.meta.json`, ejecutar `node tools/build-index.mjs` y hacer
+  push en [chesscolate_pngs_packs](https://github.com/json-alzate/chesscolate_pngs_packs).
+- **Mirar `games_pack_downloaded`** tras unas semanas: dice qué campeones pide
+  la gente y por tanto a quién añadir después.
+- **Segunda entrega**: listas de reproducción y la lista automática de "me
+  gusta" (ver el documento de la feature).
+

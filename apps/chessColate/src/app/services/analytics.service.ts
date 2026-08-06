@@ -40,7 +40,15 @@ export type AnalyticsEventName =
   | 'puzzle_storage_theme_deleted'
   | 'puzzle_storage_cleared'
   | 'app_review_requested'
-  | 'app_review_store_opened';
+  | 'app_review_store_opened'
+  | 'games_catalog_opened'
+  | 'games_pack_downloaded'
+  | 'games_pack_deleted'
+  | 'game_opened'
+  | 'games_tv_started'
+  | 'games_tv_next'
+  | 'games_speed_changed'
+  | 'games_pgn_load_failed';
 
 /** Valores primitivos admitidos por GA4 como parámetros de evento. */
 export type AnalyticsParams = Record<string, string | number | boolean>;

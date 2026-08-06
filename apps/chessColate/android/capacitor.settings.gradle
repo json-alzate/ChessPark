@@ -5,6 +5,9 @@ project(':capacitor-android').projectDir = new File('../../../node_modules/@capa
 include ':capacitor-community-in-app-review'
 project(':capacitor-community-in-app-review').projectDir = new File('../../../node_modules/@capacitor-community/in-app-review/android')
 
+include ':capacitor-community-keep-awake'
+project(':capacitor-community-keep-awake').projectDir = new File('../../../node_modules/@capacitor-community/keep-awake/android')
+
 include ':capacitor-firebase-analytics'
 project(':capacitor-firebase-analytics').projectDir = new File('../../../node_modules/@capacitor-firebase/analytics/android')
 
@@ -20,8 +23,8 @@ project(':capacitor-app').projectDir = new File('../../../node_modules/@capacito
 include ':capacitor-local-notifications'
 project(':capacitor-local-notifications').projectDir = new File('../../../node_modules/@capacitor/local-notifications/android')
 
-include ':revenuecat-purchases-capacitor'
-project(':revenuecat-purchases-capacitor').projectDir = new File('../../../node_modules/@revenuecat/purchases-capacitor/android')
-
 include ':capacitor-splash-screen'
 project(':capacitor-splash-screen').projectDir = new File('../../../node_modules/@capacitor/splash-screen/android')
+
+include ':revenuecat-purchases-capacitor'
+project(':revenuecat-purchases-capacitor').projectDir = new File('../../../node_modules/@revenuecat/purchases-capacitor/android')

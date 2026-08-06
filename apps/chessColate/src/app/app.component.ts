@@ -24,6 +24,7 @@ import {
   createOutline,
   globeOutline,
   downloadOutline,
+  libraryOutline,
   settingsOutline,
 } from 'ionicons/icons';
 import {
@@ -152,6 +153,15 @@ export class AppComponent implements OnInit, OnDestroy {
       enabled: true,
     },
 
+    // --- Estudio ---
+    {
+      title: 'GAMES.title',
+      icon: 'library-outline',
+      route: '/games',
+      enabled: true,
+      divider: true,
+    },
+
     // --- Ejercicios de entrenamiento ---
     {
       title: 'STREAK.title',
@@ -218,6 +228,7 @@ export class AppComponent implements OnInit, OnDestroy {
     addIcons({
       'home-outline': homeOutline,
       'grid-outline': gridOutline,
+      'library-outline': libraryOutline,
       'extension-puzzle-outline': extensionPuzzleOutline,
       'flame-outline': flameOutline,
       'shuffle-outline': shuffleOutline,
