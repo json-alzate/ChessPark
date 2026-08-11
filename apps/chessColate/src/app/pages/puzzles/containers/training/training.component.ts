@@ -34,6 +34,8 @@ import { PlanService } from '@services/plan.service';
 import { AnalyticsService } from '@services/analytics.service';
 import { routineMetaFromPlanType } from '@services/analytics-events.util';
 import { TrainingReminderService } from '@services/training-reminder.service';
+import { Reto333StorageService } from '@services/reto333-storage.service';
+import { UserRecordsService } from '@services/user-records.service';
 import { UidGeneratorService } from '@chesspark/common-utils';
 import { addIcons } from 'ionicons';
 import {
@@ -93,6 +95,8 @@ export class TrainingComponent implements OnInit, OnDestroy {
   private infinityPoolService = inject(InfinityPuzzlePoolService);
   private analyticsService = inject(AnalyticsService);
   private trainingReminderService = inject(TrainingReminderService);
+  private reto333Storage = inject(Reto333StorageService);
+  private userRecordsService = inject(UserRecordsService);
 
   // Subject para gestionar suscripciones
   private destroy$ = new Subject<void>();
@@ -728,30 +732,19 @@ export class TrainingComponent implements OnInit, OnDestroy {
     
     const completed = solvedCount >= 333;
 
-    // Récord de mejor racha (persistente entre intentos)
-    let bestScore = solvedCount;
-    try {
-      const prevStr = localStorage.getItem('chesscolate_reto333_stats');
-      if (prevStr) {
-        const prev = JSON.parse(prevStr);
-        if (typeof prev?.bestScore === 'number') {
-          bestScore = Math.max(prev.bestScore, solvedCount);
-        }
-      }
-    } catch (e) {
-      console.error('Error leyendo el récord del reto 333:', e);
-    }
-
-    // Save state custom locally
-    const statsData = {
-      maxElo: this.reto333EloLocal,
-      lastTime: timePlayedSec,
-      completed,
-      lastScore: solvedCount,
-      bestScore,
-      timeString
-    };
-    localStorage.setItem('chesscolate_reto333_stats', JSON.stringify(statsData));
+    // La marca queda en el dispositivo (lectura inmediata) y, si hay sesión,
+    // sube al perfil para que se vea también desde otro dispositivo
+    const record = this.reto333Storage.saveAttempt(
+      {
+        score: solvedCount,
+        maxElo: this.reto333EloLocal,
+        timeSeconds: timePlayedSec,
+        timeString,
+        completed,
+      },
+      this.profileService.getProfile?.uid
+    );
+    this.userRecordsService.push();
 
     this.reto333AlertData = {
       solvedCount,
@@ -766,7 +759,7 @@ export class TrainingComponent implements OnInit, OnDestroy {
       time_seconds: timePlayedSec,
       elo: this.reto333EloLocal,
       completed,
-      best_score: bestScore,
+      best_score: record.bestScore,
     });
   }
 
