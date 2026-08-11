@@ -24,6 +24,7 @@ import {
   createOutline,
   globeOutline,
   downloadOutline,
+  libraryOutline,
   settingsOutline,
 } from 'ionicons/icons';
 import {
@@ -41,6 +42,7 @@ import { TranslocoPipe } from '@jsverse/transloco';
 // Services
 import { AuthService } from '@services/auth.service';
 import { ProfileService } from '@services/profile.service';
+import { UserRecordsService } from '@services/user-records.service';
 import { FirestoreService } from '@services/firestore.service';
 import { PwaService } from '@services/pwa.service';
 import { AnalyticsService } from '@services/analytics.service';
@@ -106,6 +108,7 @@ export class AppComponent implements OnInit, OnDestroy {
   revenueCat = inject(RevenueCatService);
   analyticsService = inject(AnalyticsService);
   trainingReminderService = inject(TrainingReminderService);
+  userRecordsService = inject(UserRecordsService);
   modalController = inject(ModalController);
   menuController = inject(MenuController);
   // Datos del usuario
@@ -150,6 +153,15 @@ export class AppComponent implements OnInit, OnDestroy {
       icon: 'time-outline',
       route: '/puzzles/plans-history',
       enabled: true,
+    },
+
+    // --- Estudio ---
+    {
+      title: 'GAMES.title',
+      icon: 'library-outline',
+      route: '/games',
+      enabled: true,
+      divider: true,
     },
 
     // --- Ejercicios de entrenamiento ---
@@ -218,6 +230,7 @@ export class AppComponent implements OnInit, OnDestroy {
     addIcons({
       'home-outline': homeOutline,
       'grid-outline': gridOutline,
+      'library-outline': libraryOutline,
       'extension-puzzle-outline': extensionPuzzleOutline,
       'flame-outline': flameOutline,
       'shuffle-outline': shuffleOutline,
@@ -319,6 +332,10 @@ export class AppComponent implements OnInit, OnDestroy {
           if (dataAuth) {
             // Usuario autenticado - obtener o crear perfil
             await this.profileService.checkProfile(dataAuth);
+            // Récords del Reto 333 y de la Racha: fusionar lo del dispositivo
+            // con lo del perfil antes de marcar la app como inicializada, para
+            // que el inicio ya pinte las marcas buenas
+            await this.userRecordsService.syncFromProfile();
             // Reconfigurar RevenueCat con el nuevo user ID
             await this.configureRevenueCatUser(dataAuth.uid);
             // Correlacionar analítica/crashes con el usuario (UID, nunca email)

@@ -77,6 +77,27 @@ export const routes: Routes = [
     canActivate: [PublicPlansGuard],
   },
   {
+    path: 'games',
+    loadComponent: () =>
+      import('./pages/games/games.page').then((m) => m.GamesPage),
+  },
+  {
+    // PGN que trae el usuario: no tiene id de colección
+    path: 'games/pgn',
+    loadComponent: () =>
+      import('./pages/games/player/player.page').then((m) => m.GamesPlayerPage),
+  },
+  {
+    path: 'games/viewer',
+    loadComponent: () =>
+      import('./pages/games/viewer/viewer.page').then((m) => m.GamesViewerPage),
+  },
+  {
+    path: 'games/:id',
+    loadComponent: () =>
+      import('./pages/games/player/player.page').then((m) => m.GamesPlayerPage),
+  },
+  {
     path: 'streak',
     loadComponent: () =>
       import('./pages/streak/streak.page').then((m) => m.StreakPage),

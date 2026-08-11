@@ -25,6 +25,7 @@ import { LanguageService, SupportedLang } from '@services/language.service';
 import { AnalyticsService } from '@services/analytics.service';
 import { PuzzleStorageService } from '@services/puzzle-storage.service';
 import { AppReviewService } from '@services/app-review.service';
+import { GamesService } from '@services/games.service';
 
 addIcons({
   languageOutline,
@@ -58,6 +59,7 @@ export class SettingsPage implements OnInit, OnDestroy {
   private analyticsService = inject(AnalyticsService);
   private puzzleStorageService = inject(PuzzleStorageService);
   private appReviewService = inject(AppReviewService);
+  private gamesService = inject(GamesService);
 
   readonly isNativePlatform = Capacitor.isNativePlatform();
 
@@ -94,10 +96,18 @@ export class SettingsPage implements OnInit, OnDestroy {
    */
   private async loadStorageSummary(): Promise<void> {
     try {
-      const summary = await this.puzzleStorageService.getSummary();
+      // Los paquetes de partidas ocupan tanto como los puzzles, así que el
+      // resumen los cuenta juntos: si no, el número mentiría.
+      const [puzzles, games] = await Promise.all([
+        this.puzzleStorageService.getSummary(),
+        this.gamesService.getStorageSummary(),
+      ]);
+
       this.storageSummary = {
-        files: summary.files,
-        size: this.puzzleStorageService.formatBytes(summary.sizeBytes),
+        files: puzzles.files + games.packs,
+        size: this.puzzleStorageService.formatBytes(
+          puzzles.sizeBytes + games.sizeBytes
+        ),
       };
     } catch (error) {
       console.warn('[SettingsPage] No se pudo calcular el almacenamiento:', error);

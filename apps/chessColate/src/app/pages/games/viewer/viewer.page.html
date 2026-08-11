@@ -1,0 +1,158 @@
+<ion-content [fullscreen]="true">
+  <div class="min-h-screen bg-base-100" data-theme="halloween">
+
+    <div class="container mx-auto px-4 py-4 max-w-lg pb-16">
+
+      <!-- Cabecera: quién juega contra quién, siempre visible -->
+      <div class="flex items-start gap-2 mb-3">
+        <button class="btn btn-ghost btn-sm btn-circle shrink-0" (click)="goBack()"
+          [attr.aria-label]="'COMMON.actions.close' | transloco">
+          <ion-icon name="arrow-back-outline" class="text-xl"></ion-icon>
+        </button>
+
+        <div class="min-w-0 flex-1">
+          @if (game) {
+            <div class="flex items-baseline justify-between gap-2">
+              <h2 class="text-base font-bold truncate">
+                {{ game.header.white }} – {{ game.header.black }}
+              </h2>
+              <span class="font-mono text-sm shrink-0">{{ game.header.result }}</span>
+            </div>
+            <p class="text-xs opacity-60 truncate">
+              {{ game.header.event }}
+              @if (game.header.year) { {{ game.header.year }} }
+            </p>
+          } @else {
+            <h2 class="text-base font-bold">{{ collectionName }}</h2>
+          }
+        </div>
+      </div>
+
+      @if (notFound) {
+        <div class="bg-base-200/40 border border-base-content/10 rounded-box p-6 text-center">
+          <p class="text-sm opacity-70">{{ 'GAMES.gameUnreadable' | transloco }}</p>
+        </div>
+      } @else if (game) {
+
+        <!-- Tablero -->
+        <lib-board-game-player
+          [fens]="game.fens"
+          [moveSquares]="game.moveSquares"
+          [msPerMove]="settings.msPerMove"
+          [soundEnabled]="settings.soundEnabled"
+          [orientation]="orientation"
+          (indexChange)="onIndexChange($event)"
+          (playingChange)="onPlayingChange($event)"
+          (finished)="onGameFinished()">
+        </lib-board-game-player>
+
+        <!-- Jugadas -->
+        <div class="mt-3">
+          <div class="overflow-x-auto whitespace-nowrap text-sm font-mono
+                      bg-base-200/40 border border-base-content/10 rounded-box px-3 py-2">
+            @for (san of game.sanMoves; track $index) {
+              @if ($index % 2 === 0) {
+                <span class="opacity-50 mr-1">{{ ($index / 2) + 1 }}.</span>
+              }
+              <button class="px-1 rounded"
+                [class.bg-primary]="currentMove === $index + 1"
+                [class.text-primary-content]="currentMove === $index + 1"
+                (click)="goToMove($index + 1)">{{ san }}</button>
+            }
+          </div>
+          <div class="text-xs opacity-60 text-right mt-1">
+            {{ 'GAMES.moveProgress' | transloco: { current: currentMove, total: totalMoves } }}
+          </div>
+        </div>
+
+        <!-- Controles de la partida -->
+        <div class="flex items-center justify-center gap-1 mt-3">
+          <button class="btn btn-ghost btn-circle" (click)="toStart()"
+            [attr.aria-label]="'GAMES.controls.start' | transloco">
+            <ion-icon name="play-skip-back-outline" class="text-xl"></ion-icon>
+          </button>
+          <button class="btn btn-ghost btn-circle" (click)="previousMove()"
+            [attr.aria-label]="'GAMES.controls.previous' | transloco">
+            <ion-icon name="chevron-back-outline" class="text-2xl"></ion-icon>
+          </button>
+          <button class="btn btn-primary btn-circle btn-lg" (click)="togglePlay()"
+            [attr.aria-label]="'GAMES.controls.play' | transloco">
+            <ion-icon [name]="isPlaying ? 'pause-outline' : 'play-outline'" class="text-2xl"></ion-icon>
+          </button>
+          <button class="btn btn-ghost btn-circle" (click)="nextMove()"
+            [attr.aria-label]="'GAMES.controls.next' | transloco">
+            <ion-icon name="chevron-forward-outline" class="text-2xl"></ion-icon>
+          </button>
+          <button class="btn btn-ghost btn-circle" (click)="toEnd()"
+            [attr.aria-label]="'GAMES.controls.end' | transloco">
+            <ion-icon name="play-skip-forward-outline" class="text-xl"></ion-icon>
+          </button>
+        </div>
+
+        <!-- Velocidad, girar y sonido -->
+        <div class="flex items-center justify-between gap-2 mt-3">
+          <div class="flex items-center gap-1">
+            <ion-icon name="speedometer-outline" class="opacity-60"></ion-icon>
+            @for (speed of speeds; track speed) {
+              <button class="btn btn-xs" [class.btn-primary]="settings.msPerMove === speed"
+                (click)="setSpeed(speed)">
+                {{ 'GAMES.speedLabel' | transloco: { seconds: speed / 1000 } }}
+              </button>
+            }
+          </div>
+
+          <div class="flex items-center gap-1 shrink-0">
+            <button class="btn btn-ghost btn-sm btn-circle" (click)="flipBoard()"
+              [attr.aria-label]="'GAMES.controls.flip' | transloco">
+              <ion-icon name="swap-vertical-outline" class="text-lg"></ion-icon>
+            </button>
+            <button class="btn btn-ghost btn-sm btn-circle" (click)="toggleSound()"
+              [attr.aria-label]="'GAMES.controls.sound' | transloco">
+              <ion-icon [name]="settings.soundEnabled ? 'volume-high-outline' : 'volume-mute-outline'"
+                class="text-lg"></ion-icon>
+            </button>
+          </div>
+        </div>
+
+        <!-- Modo TV: solo si se entró a ver la colección entera -->
+        @if (isTv) {
+          <div class="border-t border-base-content/10 mt-4 pt-3">
+            <div class="flex items-center justify-between gap-2">
+              <button class="btn btn-ghost btn-sm" (click)="goToPreviousGame()">
+                <ion-icon name="play-back-outline"></ion-icon>
+                {{ 'GAMES.previousGame' | transloco }}
+              </button>
+
+              <span class="text-xs opacity-60 font-mono">
+                {{ tvPositionLabel.current }} / {{ tvPositionLabel.total }}
+              </span>
+
+              <button class="btn btn-ghost btn-sm" (click)="goToNextGame()">
+                {{ 'GAMES.nextGame' | transloco }}
+                <ion-icon name="play-forward-outline"></ion-icon>
+              </button>
+            </div>
+
+            <div class="flex items-center justify-center gap-1 mt-2">
+              <button class="btn btn-xs" [class.btn-primary]="settings.autoNextGame"
+                (click)="toggleAutoNext()">
+                {{ 'GAMES.autoplay' | transloco }}
+              </button>
+              <button class="btn btn-xs" [class.btn-primary]="settings.shuffle"
+                (click)="toggleShuffle()">
+                <ion-icon name="shuffle-outline"></ion-icon>
+                {{ 'GAMES.shuffle' | transloco }}
+              </button>
+              <button class="btn btn-xs" [class.btn-primary]="settings.loopCollection"
+                (click)="toggleLoop()">
+                <ion-icon name="repeat-outline"></ion-icon>
+                {{ 'GAMES.loop' | transloco }}
+              </button>
+            </div>
+          </div>
+        }
+      }
+
+    </div>
+  </div>
+</ion-content>

@@ -6,6 +6,12 @@ Permite al usuario conectar su cuenta de **chess.com** y/o **lichess** mediante 
 
 Disponible en **chessColate (web)** y **chess-extension (mobile)**.
 
+> **Esta feature es dueña de los conectores de chess.com y lichess.** El
+> [Reproductor de Partidas](./REPRODUCTOR_PARTIDAS.md) los necesita para su fuente
+> "mis partidas", pero se decidió construirlos aquí y no allí, para no duplicarlos ni
+> meter dependencia de terceros en una feature que puede vivir sin ella. Cuando existan,
+> el reproductor los consumirá como una fuente más.
+
 ---
 
 ## Arquitectura

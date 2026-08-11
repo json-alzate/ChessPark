@@ -18,7 +18,7 @@ import { AuthState, getIsInitialized } from '@cpark/state';
 
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
-import { Block, Plan, PlanTypes, Puzzle, StreakRecord } from '@cpark/models';
+import { Block, Plan, PlanTypes, Puzzle, Reto333Record, StreakRecord } from '@cpark/models';
 
 // Services
 import { BlockService } from '@services/block.service';
@@ -26,6 +26,7 @@ import { PlanService } from '@services/plan.service';
 import { PuzzlesProvider } from '@chesspark/puzzles-provider';
 import { InfinityPuzzlePoolService } from '@services/infinity-puzzle-pool.service';
 import { StreakStorageService } from '@services/streak-storage.service';
+import { Reto333StorageService } from '@services/reto333-storage.service';
 
 import { ProfileService } from '@services/profile.service';
 
@@ -98,6 +99,7 @@ export class HomePage implements OnInit, ViewWillEnter, ViewWillLeave {
   private infinityPoolService = inject(InfinityPuzzlePoolService);
   private translocoService = inject(TranslocoService);
   private streakStorage = inject(StreakStorageService);
+  private reto333Storage = inject(Reto333StorageService);
 
   isInitialized = false;
   private initSubscription?: Subscription;
@@ -142,7 +144,8 @@ export class HomePage implements OnInit, ViewWillEnter, ViewWillLeave {
     await modal.present();
   }
 
-  reto333Stats: any = null;
+  /** Marca del Reto 333, para la tarjeta de acceso. */
+  reto333Stats: Reto333Record | null = null;
   isLoadingReto333 = true;
 
   /** Récord del modo Racha, para la tarjeta de acceso. */
@@ -151,33 +154,32 @@ export class HomePage implements OnInit, ViewWillEnter, ViewWillLeave {
   ionViewWillEnter() {
     this.isLoadingPuzzle = true;
     this.puzzleLoadStarted = false;
-    // El récord vive en el dispositivo: leerlo es inmediato y sin red
-    this.streakRecord = this.streakStorage.getRecord();
+    // La copia del dispositivo se lee al instante, sin red
+    this.loadRecords();
 
     // Re-suscribir en cada entrada: si ya isInitialized=true dispara inmediatamente
     this.initSubscription = this.store.pipe(select(getIsInitialized)).subscribe(initialized => {
       this.isInitialized = initialized;
+      if (initialized) {
+        // Con la sesión resuelta, los récords del perfil ya están fusionados
+        // con los del dispositivo: se releen por si llegaron de la nube
+        this.loadRecords();
+      }
       if (initialized && !this.puzzleLoadStarted) {
         this.puzzleLoadStarted = true;
         this.loadInfinitePuzzle();
         this.maybeShowOnboarding();
       }
     });
+  }
 
-    this.isLoadingReto333 = true;
-
-    // Cargar estadísticas del Reto 333
-    setTimeout(() => {
-      const statsStr = localStorage.getItem('chesscolate_reto333_stats');
-      if (statsStr) {
-        try {
-          this.reto333Stats = JSON.parse(statsStr);
-        } catch (e) {
-          console.error('Error parseando las stats del reto 333:', e);
-        }
-      }
-      this.isLoadingReto333 = false;
-    }, 500);
+  /** Récords que se muestran en las tarjetas de Racha y Reto 333. */
+  private loadRecords() {
+    this.streakRecord = this.streakStorage.getRecord();
+    this.reto333Stats = this.reto333Storage.getRecord();
+    // Con marca en el dispositivo se pinta ya. Sin ella puede que aún esté por
+    // llegar del perfil, así que el esqueleto aguanta hasta que abra la sesión.
+    this.isLoadingReto333 = !this.reto333Stats && !this.isInitialized;
   }
 
   ionViewWillLeave() {

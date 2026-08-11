@@ -41,6 +41,7 @@ import { AnalyticsService } from '@services/analytics.service';
 import { ProfileService } from '@services/profile.service';
 import { StreakService } from '@services/streak.service';
 import { StreakStorageService } from '@services/streak-storage.service';
+import { UserRecordsService } from '@services/user-records.service';
 import { TrainingReminderService } from '@services/training-reminder.service';
 import {
   DEFAULT_STREAK_CONFIG,
@@ -76,6 +77,7 @@ export class StreakPage implements ViewWillEnter, ViewWillLeave, OnDestroy {
   private router = inject(Router);
   private streakService = inject(StreakService);
   private streakStorage = inject(StreakStorageService);
+  private userRecords = inject(UserRecordsService);
   private profileService = inject(ProfileService);
   private analyticsService = inject(AnalyticsService);
   private trainingReminderService = inject(TrainingReminderService);
@@ -420,6 +422,9 @@ export class StreakPage implements ViewWillEnter, ViewWillLeave, OnDestroy {
     const worthRecording = run.score > 0 || endedBy === 'fail';
     if (worthRecording) {
       this.record = this.streakStorage.saveRun(run);
+      // Con sesión, el récord sube al perfil para que siga ahí en otro
+      // dispositivo o tras reinstalar
+      this.userRecords.push();
     }
     this.finishedRun = run;
     this.achievedNewRecord = beatsRecord;

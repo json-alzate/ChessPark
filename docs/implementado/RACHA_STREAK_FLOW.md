@@ -63,7 +63,7 @@ flowchart TD
 
 - **Lógica pura** ([`streak.util.ts`](../../apps/chessColate/src/app/services/streak.util.ts)) — la rampa de dificultad, la elección de tema y cómo una racha actualiza el récord. Testeada en [`streak.util.spec.ts`](../../apps/chessColate/src/app/services/streak.util.spec.ts).
 - **Fuente de puzzles** ([`streak.service.ts`](../../apps/chessColate/src/app/services/streak.service.ts)) — pide **un** puzzle al catálogo para el elo objetivo, sin repetir los ya jugados.
-- **Persistencia** ([`streak-storage.service.ts`](../../apps/chessColate/src/app/services/streak-storage.service.ts)) — récord y últimas 20 rachas en localStorage.
+- **Persistencia** ([`streak-storage.service.ts`](../../apps/chessColate/src/app/services/streak-storage.service.ts)) — récord y últimas 20 rachas en localStorage. El récord además viaja a la cuenta: ver [Récords sincronizados](./RECORDS_SINCRONIZADOS_FLOW.md).
 - **Pantalla** ([`streak.page.ts`](../../apps/chessColate/src/app/pages/streak/streak.page.ts)) — el bucle del juego y la pantalla de resultado.
 - **Modelo** ([`streak.model.ts`](../../libs/models/src/lib/streak.model.ts)) — `StreakConfig`, `StreakRun`, `StreakRecord`.
 
@@ -146,12 +146,17 @@ puzzle precargado simplemente se descarta.
 
 ## Qué se guarda
 
-En localStorage, sin cuenta ni servidor:
+En localStorage:
 
 | Clave | Contenido |
 |---|---|
 | `chessColate_streak_record` | Mejor racha, cuándo se logró, rachas jugadas y última puntuación. |
 | `chessColate_streak_runs` | Las 20 rachas más recientes (sin los ids de los puzzles). |
+
+Con sesión iniciada, el **récord** (no el historial de rachas) se sincroniza
+además con el perfil en Firestore, para que siga ahí al cambiar de dispositivo o
+reinstalar. Cómo se fusionan las dos copias:
+[Récords sincronizados](./RECORDS_SINCRONIZADOS_FLOW.md).
 
 ---
 
@@ -172,7 +177,8 @@ Además emite los `puzzle_started` / `puzzle_completed` de siempre con
 ## Lo que quedó fuera
 
 - **Compartir el resultado** — se decidió dejarlo para más adelante.
-- **Récord sincronizado con la cuenta** — hoy vive solo en el dispositivo.
+- **Historial de rachas en la nube** — solo sube el récord; las 20 últimas
+  rachas siguen siendo del dispositivo.
 - **Leaderboard** — necesita backend.
 - **Rampa adaptativa** (que suba más rápido si resuelves muy rápido) y **elegir
   tema** desde la interfaz: la configuración existe en el modelo, pero la

@@ -1,0 +1,145 @@
+<ion-content [fullscreen]="true">
+  <div class="min-h-screen bg-base-100" data-theme="halloween">
+    <app-navbar></app-navbar>
+
+    <div class="container mx-auto px-4 py-8 max-w-lg pb-16">
+
+      <!-- Header -->
+      <div class="mb-6">
+        <div class="breadcrumbs text-sm mb-1">
+          <ul>
+            <li>
+              <a (click)="goToHome()" class="cursor-pointer gap-1">
+                <ion-icon name="home-outline" class="h-4 w-4"></ion-icon>
+                <span>{{ 'MENU.navigation.home' | transloco }}</span>
+              </a>
+            </li>
+            <li>
+              <a (click)="goToCatalog()" class="cursor-pointer gap-1">
+                <ion-icon name="library-outline" class="h-4 w-4"></ion-icon>
+                <span>{{ 'GAMES.title' | transloco }}</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="flex items-start justify-between gap-3">
+          <div class="min-w-0">
+            <h2 class="text-2xl font-bold truncate">{{ collection?.name }}</h2>
+            @if (collection?.reign) {
+              <p class="text-sm opacity-60">
+                {{ 'GAMES.championOf' | transloco: { reign: collection?.reign } }}
+              </p>
+            }
+            @if (!loading) {
+              <p class="text-sm opacity-60">
+                {{ 'GAMES.gamesCount' | transloco: { count: visibleGames.length } }}
+              </p>
+            }
+          </div>
+
+          @if (!isUserPgn && !loading) {
+            <button class="btn btn-ghost btn-sm btn-circle shrink-0" (click)="confirmDelete()"
+              [attr.aria-label]="'GAMES.delete' | transloco">
+              <ion-icon name="trash-outline" class="text-xl opacity-60"></ion-icon>
+            </button>
+          }
+        </div>
+      </div>
+
+      @if (loading) {
+        <div class="bg-base-200/40 border border-base-content/10 rounded-box p-6 text-center mb-4">
+          <span class="loading loading-spinner loading-md"></span>
+          <p class="mt-3 text-sm opacity-70">
+            @if (progress !== null) {
+              {{ 'GAMES.downloading' | transloco }} {{ (progress * 100) | number: '1.0-0' }}%
+            } @else {
+              {{ 'GAMES.preparing' | transloco }}
+            }
+          </p>
+          @if (progress !== null) {
+            <progress class="progress progress-primary w-full mt-3 h-1.5"
+              [value]="progress * 100" max="100"></progress>
+          }
+        </div>
+      } @else if (error) {
+        <div class="bg-base-200/40 border border-base-content/10 rounded-box p-6 text-center">
+          <p class="text-sm opacity-70">{{ 'GAMES.openFailed' | transloco }}</p>
+        </div>
+      } @else {
+
+        <!-- Modo TV: el corazón de la pantalla -->
+        <button class="btn btn-primary btn-block mb-4" (click)="startTv()"
+          [disabled]="visibleGames.length === 0">
+          <ion-icon name="play-outline" class="text-xl"></ion-icon>
+          {{ 'GAMES.watchTv' | transloco }}
+        </button>
+
+        <!-- Búsqueda por rival -->
+        <label class="input input-bordered input-sm flex items-center gap-2 mb-3">
+          <ion-icon name="search-outline" class="opacity-60"></ion-icon>
+          <input type="text" class="grow" [(ngModel)]="filters.opponent"
+            (ngModelChange)="applyFilters()"
+            [placeholder]="'GAMES.searchOpponent' | transloco" />
+        </label>
+
+        <!-- Filtros -->
+        <div class="flex flex-wrap gap-1.5 mb-4">
+          <button class="btn btn-xs" [class.btn-primary]="filters.result === 'all' && filters.color === 'all'"
+            (click)="setResultFilter('all'); setColorFilter('all')">
+            {{ 'GAMES.filters.all' | transloco }}
+          </button>
+          <button class="btn btn-xs" [class.btn-primary]="filters.result === 'won'"
+            (click)="setResultFilter('won')">
+            {{ 'GAMES.filters.won' | transloco }}
+          </button>
+          <button class="btn btn-xs" [class.btn-primary]="filters.result === 'drawn'"
+            (click)="setResultFilter('drawn')">
+            {{ 'GAMES.filters.drawn' | transloco }}
+          </button>
+          <button class="btn btn-xs" [class.btn-primary]="filters.color === 'white'"
+            (click)="setColorFilter('white')">
+            {{ 'GAMES.filters.white' | transloco }}
+          </button>
+          <button class="btn btn-xs" [class.btn-primary]="filters.color === 'black'"
+            (click)="setColorFilter('black')">
+            {{ 'GAMES.filters.black' | transloco }}
+          </button>
+        </div>
+
+        @if (visibleGames.length === 0) {
+          <div class="bg-base-200/40 border border-base-content/10 rounded-box p-6 text-center">
+            <p class="text-sm opacity-70">{{ 'GAMES.noGamesMatch' | transloco }}</p>
+          </div>
+        } @else {
+          <ul class="flex flex-col divide-y divide-base-content/10">
+            @for (game of pagedGames; track game.index) {
+              <li>
+                <button class="w-full text-left py-3 px-1" (click)="openGame(game)">
+                  <div class="flex items-baseline justify-between gap-3">
+                    <span class="text-sm font-medium truncate">
+                      {{ game.white }} – {{ game.black }}
+                    </span>
+                    <span class="text-sm font-mono opacity-80 shrink-0">{{ game.result }}</span>
+                  </div>
+                  <div class="text-xs opacity-60 mt-0.5 truncate">
+                    {{ game.event }}
+                    @if (game.year) { {{ game.year }} }
+                    · {{ 'GAMES.moves' | transloco: { count: game.plies } }}
+                  </div>
+                </button>
+              </li>
+            }
+          </ul>
+
+          @if (hasMore) {
+            <button class="btn btn-ghost btn-sm btn-block mt-3" (click)="showMore()">
+              {{ 'GAMES.showMore' | transloco }}
+            </button>
+          }
+        }
+      }
+
+    </div>
+  </div>
+</ion-content>

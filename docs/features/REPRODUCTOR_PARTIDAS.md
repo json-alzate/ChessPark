@@ -1,239 +1,406 @@
 # Reproductor de Partidas / TV de Partidas — Feature Document
 
+> ✅ **Primera entrega implementada.** Este documento es el **diseño original**.
+> Para saber **cómo quedó funcionando** (arquitectura, decisiones que cambiaron
+> al construirlo y bordes conocidos), ver
+> **[REPRODUCTOR_PARTIDAS_FLOW.md](../implementado/REPRODUCTOR_PARTIDAS_FLOW.md)**.
+> Las **listas de reproducción y el "me gusta"** (capa 3) siguen pendientes.
+
 ## Concepto
 
-Poder **cargar una partida de ajedrez y reproducirla automáticamente** sobre el tablero, con un **timer configurable por movimiento** (1s, 2s, 3s…), como si fuera un video: play, pausa, avanzar/retroceder jugada, ir al inicio/fin.
+Una pantalla de **Partidas** donde el usuario descarga la colección de un campeón
+del mundo y la ve reproducirse sobre el tablero, como un video: play, pausa,
+jugada adelante y atrás, y una velocidad configurable por movimiento.
 
-Y un nivel más: poder **cargar un archivo con muchas partidas** (un PGN multi-partida, p. ej. todas las partidas de un jugador) y que la app **las vaya reproduciendo una tras otra** — un **"TV de partidas"**. Así el usuario puede sentarse a ver, por ejemplo, "las partidas de Kasparov" o "mis últimas 20 partidas de Lichess" en modo pasivo, o navegarlas una a una.
+Y el modo que da nombre a la feature: **el TV**. Le das a un botón y la app va
+pasando las partidas de esa colección una tras otra, sola. Sin elegir nada.
 
-Dos casos de uso que comparten el mismo motor:
+Pegar un PGN a mano es algo que casi nadie va a hacer, así que lo que convierte
+esto en una feature de verdad es **que la app traiga las partidas puestas**. De
+ahí las tres capas:
 
-1. **Reproductor de una partida** — pego/importo un PGN, elijo la velocidad, le doy play y la veo desarrollarse.
-2. **TV de partidas** — importo un archivo `.pgn` con N partidas y las reproduzco en cadena (autoplay entre partidas) o salto entre ellas desde una lista.
+| Capa | Qué es | Entrega |
+|---|---|---|
+| **1 · Motor** | Reproducir una secuencia de jugadas, con controles y velocidad | v1 |
+| **2 · Catálogo** | Paquetes de campeones descargables desde el CDN | v1 |
+| **3 · Listas** | Listas propias y una automática de "me gusta" | v2 |
 
-> **Base técnica ya existente**: el componente [`BoardPuzzleSolutionComponent`](../../libs/board/src/lib/board-puzzle-solution/board-puzzle-solution.component.ts) de `@chesspark/board` ya hace casi todo lo necesario para reproducir una secuencia de jugadas: mantiene `arrayFenSolution` / `arrayMovesSolution`, un `currentMoveNumber`, botones de anterior/siguiente/ir-al-final, reproducción con `interval` de RxJS, `cm-chessboard` para el render, `chess.js` para la lógica y `SoundsService` para el sonido de las piezas. Este feature es, en buena parte, **generalizar ese motor** para que consuma un PGN arbitrario (no solo la solución de un puzzle) y añadirle el timer configurable y el encadenado de partidas.
+> **Base técnica ya existente**: [`BoardPuzzleSolutionComponent`](../../libs/board/src/lib/board-puzzle-solution/board-puzzle-solution.component.ts)
+> ya reproduce una secuencia de jugadas: mantiene las posiciones y los
+> movimientos, un índice de jugada actual, botones de anterior/siguiente,
+> reproducción con `interval` de RxJS, `cm-chessboard` para pintar, `chess.js`
+> para la lógica y `SoundsService` para el sonido. La capa 1 es en buena parte
+> **generalizar ese motor** para que consuma una partida cualquiera.
+
+> **Importar "mis partidas" de lichess / chess.com queda fuera**, por decisión
+> explícita: esos conectores son el corazón de [Game Analytics](./GAME_ANALYTICS.md)
+> y se construyen allí. Cuando existan, el reproductor los consumirá como una
+> fuente más.
 
 ---
 
 ## Objetivos
 
-- Dar una herramienta de **estudio pasivo/activo**: ver partidas completas sobre el tablero sin tener que moverlas a mano.
-- **Velocidad configurable por jugada** para adaptar el ritmo (repaso rápido vs. estudio lento).
-- Soportar **archivos multi-partida** (colecciones de un jugador, torneo, apertura) y reproducirlos en secuencia — el "TV".
-- Reutilizar el **tablero y motor de reproducción ya existentes** (`@chesspark/board`, `chess.js`, `cm-chessboard`) en vez de reinventarlos.
-- Mantenerlo **offline-first**: la reproducción no depende de red una vez cargado el PGN.
+- Estudio pasivo o activo: ver partidas completas sin moverlas a mano.
+- **Velocidad configurable** para adaptar el ritmo (repaso rápido vs. estudio lento).
+- Que la app traiga **su propio catálogo**, sin que el usuario busque archivos.
+- Que **añadir un jugador nuevo no obligue a publicar una versión** en la tienda.
+- Reutilizar el tablero, el motor de reproducción y la caché que ya existen.
+- **Offline-first**: un paquete descargado se reproduce sin red.
 
 ---
 
-## Alcance funcional
+## Las tres pantallas
 
-### 1. Reproductor de una sola partida
+### 1 · Partidas (el catálogo)
 
-**Entrada del PGN** (cualquiera de estas vías):
-- Pegar texto PGN en un textarea.
-- Importar un archivo `.pgn` desde el dispositivo.
-- (Futuro) Importar por URL / desde un ID de Lichess/Chess.com.
+```
+╔═══════════════════════════════════════════╗
+║  Partidas                                 ║
+║                                           ║
+║  EN TU DISPOSITIVO                        ║
+║  ┌───────────────────────────────────┐    ║
+║  │ Petrosian                         │    ║
+║  │ 1.893 partidas · 1,1 MB         ▸ │    ║
+║  └───────────────────────────────────┘    ║
+║                                           ║
+║  CAMPEONES DEL MUNDO                      ║
+║  ┌───────────────────────────────────┐    ║
+║  │ Alekhine    1927–1935, 1937–1946  │    ║
+║  │ 1.661 partidas · 1,0 MB        ⬇  │    ║
+║  ├───────────────────────────────────┤    ║
+║  │ Anand       2000–2002, 2007–2013  │    ║
+║  │ 4.310 partidas · 2,7 MB     ▓▓░ 62%   ║
+║  └───────────────────────────────────┘    ║
+║                                           ║
+║  ┌───────────────────────────────────┐    ║
+║  │ Abrir un PGN propio               │    ║
+║  └───────────────────────────────────┘    ║
+╚═══════════════════════════════════════════╝
+```
 
-**Controles de reproducción** (sobre el tablero):
+Lo descargado va arriba: es lo único que funciona sin conexión y es a lo que se
+vuelve. Cada jugador dice **cuántas partidas trae y cuánto ocupa antes de
+descargar** — la misma honestidad que la pantalla de Almacenamiento. El botón de
+descarga se convierte en barra de progreso mientras baja y en flecha de entrar
+cuando termina.
 
-| Control | Acción |
-|---------|--------|
-| ▶ / ⏸ Play/Pausa | Inicia/pausa la reproducción automática al ritmo del timer |
-| ⏮ Inicio | Vuelve a la posición inicial |
-| ◀ Anterior | Retrocede una jugada |
-| ▶ Siguiente | Avanza una jugada |
-| ⏭ Final | Salta a la posición final |
-| 🔄 Girar | Invierte la orientación del tablero (ver desde negras) |
-| ⏱ Velocidad | Selector del timer por jugada (0.5s / 1s / 2s / 3s / 5s / manual) |
+Abajo, discreta, la entrada para cargar un PGN propio (pegar o abrir archivo).
 
-**Información en pantalla**:
-- Cabecera con metadatos del PGN (`White`, `Black`, `Event`, `Date`, `Result`, ELOs si están).
-- Lista de jugadas (notación SAN) con resaltado de la jugada actual; tocar una jugada salta a esa posición.
-- Indicador de progreso (`jugada 12 / 40`).
-- Barra tipo "scrubber" para arrastrar por la partida (nice-to-have).
+### 2 · El jugador
 
-**Comportamiento del timer**:
-- Al llegar al final, se detiene (no hace loop por defecto; loop opcional).
-- Sonido de pieza en cada jugada (reutilizando `SoundsService`), con opción de silenciar.
+```
+╔═══════════════════════════════════════════╗
+║  ‹ Petrosian                         ⋮    ║
+║  Campeón del mundo 1963–1969              ║
+║  1.893 partidas                           ║
+║                                           ║
+║  ┌───────────────────────────────────┐    ║
+║  │        ▶  VER EN MODO TV          │    ║
+║  └───────────────────────────────────┘    ║
+║                                           ║
+║  Buscar rival…                            ║
+║  [Todas] [Ganadas] [Con blancas] [Negras] ║
+║                                           ║
+║  Petrosian – Botvinnik            1-0     ║
+║  Moscú 1963 · 41 jugadas                  ║
+║  ─────────────────────────────────────    ║
+║  Spassky – Petrosian              0-1     ║
+║  Moscú 1966 · 36 jugadas                  ║
+╚═══════════════════════════════════════════╝
+```
 
-### 2. TV de partidas (archivo multi-partida)
+El botón grande es el corazón de la feature: **le das y se pone a pasar partidas
+sola**. Debajo, para quien sí quiere elegir, la lista con búsqueda por rival y
+filtros por resultado y color. En el menú de los tres puntos, borrar el paquete.
 
-- Al importar un `.pgn` con varias partidas, se parsea la **lista completa** y se muestra un **selector/lista de partidas** (con `White`, `Black`, resultado, evento, fecha).
-- **Reproducción encadenada (autoplay)**: al terminar una partida, tras una **pausa configurable entre partidas** (p. ej. 3s), pasa automáticamente a la siguiente. Esto es el "modo TV".
-- Controles adicionales del TV:
-  - ⏭ Siguiente partida / ⏮ Partida anterior.
-  - Modo **autoplay entre partidas** on/off.
-  - **Aleatorio** (shuffle) on/off — útil para colecciones grandes.
-  - **Loop de la colección** on/off.
-- La lista permite saltar directamente a cualquier partida.
+### 3 · El reproductor
+
+```
+╔═══════════════════════════════════════════╗
+║  ‹   Petrosian – Botvinnik          1-0   ║
+║      Moscú 1963                           ║
+║                                           ║
+║           ┌─────────────────┐             ║
+║           │     TABLERO     │             ║
+║           └─────────────────┘             ║
+║                                           ║
+║   1.d4 Nf6  2.c4 e6  3.Nc3 d5  4.cxd5 ... ║
+║                     ▲ jugada 12 / 41      ║
+║                                           ║
+║      ⏮   ◀   ▶/⏸   ▶   ⏭                 ║
+║   ⏱ 2s      girar      sonido             ║
+║                                           ║
+║   ── solo en modo TV ─────────────────    ║
+║   ⏮ anterior   partida 3/1.893   ⏭        ║
+║   aleatorio · repetir · autoplay          ║
+╚═══════════════════════════════════════════╝
+```
+
+La lista de jugadas se desplaza sola con la partida; tocar una salta a esa
+posición. La velocidad se cambia en caliente, sin reiniciar.
+
+La franja inferior **solo aparece si vienes del modo TV**: si entraste tocando
+una partida concreta, esos controles sobran.
 
 ---
 
-## Flujo de usuario
+## El catálogo
+
+### Dónde vive
+
+Repositorio público [**chesscolate_pngs_packs**](https://github.com/json-alzate/chesscolate_pngs_packs),
+servido por jsDelivr igual que los archivos de puzzles:
 
 ```
-[Usuario abre "Reproductor de partidas"]
-        ↓
-[Elige fuente: pegar PGN | importar .pgn]
-        ↓
-┌─────────────── ¿1 partida o varias? ───────────────┐
-│                                                     │
-▼ (1 partida)                          ▼ (N partidas → TV)
-[Se carga la partida]                  [Se parsea la colección]
-        ↓                                      ↓
-[Tablero + controles + velocidad]      [Lista de partidas + tablero]
-        ↓                                      ↓
-[▶ Play: reproduce jugada a jugada]    [▶ Play de la 1ª partida]
-        ↓                                      ↓
-[Fin de la partida → stop/loop]        [Fin → pausa Ns → siguiente partida]
-                                               ↓
-                                       [Recorre toda la colección
-                                        (autoplay / shuffle / loop)]
+cdn.jsdelivr.net/gh/json-alzate/chesscolate_pngs_packs@main/
+    index.json              ← qué colecciones existen
+    players/petrosian.pgn   ← un paquete por jugador
+    players/alekhine.pgn
+    players/anand.pgn
 ```
+
+### Un paquete por jugador, en PGN
+
+**Sin trocear por periodos.** El paquete de Petrosian son 1,1 MB con 1.893
+partidas — unos 580 bytes por partida — y el más pesado del catálogo de PGN
+Mentor rondaría los 5 MB. Eso es una descarga normal, y trocear obligaría al
+usuario a entender qué periodo quiere antes de ver nada.
+
+**Y en PGN tal cual, sin convertir a JSON.** La app tiene que saber leer PGN de
+todas formas para los archivos que traiga el usuario, así que si el catálogo
+también es PGN hay **un solo camino de lectura** en vez de dos, y desaparece el
+paso de conversión. El tamaño es prácticamente el mismo.
+
+### El índice, y por qué vive en el CDN
+
+```jsonc
+{
+  "generatedAt": "2026-08-06T17:19:54.508Z",
+  "collections": [
+    {
+      "id": "petrosian",
+      "name": "Tigran Petrosian",
+      "reign": "1963–1969",
+      "games": 1893,
+      "sizeBytes": 1130944,
+      "file": "players/petrosian.pgn"
+    }
+  ]
+}
+```
+
+El catálogo de la app es **un recorrido por esa lista**: cada fila pinta una
+tarjeta y la URL de descarga sale de juntar la base del CDN con `file`.
+
+Aquí hay una diferencia deliberada con los puzzles. Su índice
+([`puzzles-manifest.json`](../../libs/puzzles-provider/src/lib/puzzles-manifest.json))
+**va compilado dentro de la app**, así que añadir puzzles exige publicar una
+versión. Aquel catálogo es estático; este está pensado para crecer, y por eso su
+índice **se descarga**: publicar un campeón nuevo es un commit en el repositorio
+de partidas, sin pasar por la tienda.
+
+Se guarda en el dispositivo tras pedirlo, así que la segunda visita pinta al
+instante y funciona sin conexión. Como respaldo, una copia del índice viaja
+dentro de la app para el primer arranque sin red.
+
+**Sin versión por paquete**: si un paquete cambia, quien ya lo tenga no se
+entera. Se decidió no hacerlo porque los paquetes no van a variar; el índice deja
+sitio para añadirlo más adelante sin romper nada.
+
+### Añadir un jugador
+
+En el repositorio de partidas: dejar el `.pgn` en `players/`, añadir su nombre y
+años en `players.meta.json`, ejecutar `node tools/build-index.mjs` y hacer
+commit. **La app no se toca.**
+
+### Origen de las partidas
+
+[PGN Mentor](https://www.pgnmentor.com/files.html), que las distribuye libres y
+gratis, con colecciones ya organizadas por jugador. Las jugadas de una partida
+son hechos y no son obra protegida; lo que sí tiene autor son los comentarios y
+anotaciones, y estos archivos no llevan ninguno.
 
 ---
 
 ## Diseño técnico
 
-### Ubicación en el proyecto
+### Dónde vive cada cosa
 
-- **Nueva página**: `apps/chessColate/src/app/pages/game-viewer/` (nombre a alinear: `game-viewer` / `partidas` / `tv`), registrada en [`app.routes.ts`](../../apps/chessColate/src/app/app.routes.ts).
-- **Componente de reproducción reutilizable en `@chesspark/board`**: extraer/generalizar el motor de [`board-puzzle-solution.component.ts`](../../libs/board/src/lib/board-puzzle-solution/board-puzzle-solution.component.ts) a un nuevo `board-game-player` (o parametrizar el existente) que reciba una lista de posiciones y exponga los controles de reproducción. El tablero base es [`board.component.ts`](../../libs/board/src/lib/board/board.component.ts) / [`fen-board.component.ts`](../../libs/board/src/lib/fen-board/fen-board.component.ts).
-- **Servicio de parseo PGN**: `GamePgnService` (nuevo, en `libs/common-utils` o en la app), envuelve `chess.js` para convertir PGN → estructura navegable.
+- **Lib `games-provider`**, hermana de [`puzzles-provider`](../../libs/puzzles-provider/):
+  índice, descarga, caché y lectura de PGN.
+- **Página** `apps/chessColate/src/app/pages/games/`, con las tres vistas.
+- **Componente de reproducción** en `@chesspark/board`, hermano del de solución
+  de puzzles.
 
-### Parseo de PGN
+### Lectura de PGN
 
-`chess.js` (ya en el repo, `^1.4.0`) sabe cargar un PGN de **una** partida (`chess.loadPgn(pgn)` + `chess.history()`), pero **no** separa un archivo multi-partida. Para el TV hay que **dividir el archivo en partidas individuales** antes de pasarlas a `chess.js`.
+`chess.js` (ya en el repo) sabe cargar **una** partida, pero no separa un archivo
+multi-partida. El troceo se hace antes, buscando los bloques de cabecera: cada
+partida empieza con sus etiquetas entre corchetes.
 
-Opciones para el split multi-partida:
-- **Split propio por regex** sobre los headers `[Event ...]` (cada partida empieza con un bloque de tags). Suficiente para PGNs estándar, cero dependencias nuevas.
-- **Librería dedicada** (`@mliebelt/pgn-parser` o similar) si necesitamos tolerar variantes, comentarios NAG, sub-líneas, etc. — evaluar solo si el split propio se queda corto.
+**Se lee en dos pasos, y esto importa con 4.310 partidas:**
 
-De cada partida derivamos, con `chess.js`, la secuencia de **FENs** y de **movimientos SAN** — exactamente el mismo par de arrays (`arrayFenSolution` / `arrayMovesSolution`) que ya consume el componente de solución de puzzles.
+1. Al abrir un paquete se extraen **solo las cabeceras** de cada partida (quién
+   juega, evento, fecha, resultado). Es un recorrido de texto, sin ajedrez de
+   por medio.
+2. Las **posiciones de una partida se derivan cuando esa partida se va a ver**,
+   no antes.
+
+Derivar las posiciones de 4.310 partidas al abrir la pantalla la congelaría
+varios segundos sin que nadie lo haya pedido.
 
 ### Modelo de datos
 
 ```ts
-interface ParsedGame {
-  id: string;                 // uid local para la sesión
-  headers: Record<string, string>;  // White, Black, Event, Date, Result, WhiteElo...
-  sanMoves: string[];         // ['e4', 'e5', 'Nf3', ...]
-  fens: string[];             // FEN por cada ply, incluyendo la posición inicial
-  result: string;             // '1-0' | '0-1' | '1/2-1/2' | '*'
-  startFen?: string;          // para partidas con posición inicial no estándar (Chess960/FEN tag)
+/** Una colección del índice remoto. */
+interface GameCollectionInfo {
+  id: string;
+  name: string;
+  reign: string;
+  games: number;
+  sizeBytes: number;
+  file: string;
 }
 
-interface GameCollection {
-  source: 'paste' | 'file';
-  fileName?: string;
-  games: ParsedGame[];
+/** Una partida, tal como sale de la primera pasada (sin posiciones). */
+interface GameHeader {
+  index: number;
+  white: string;
+  black: string;
+  event: string;
+  date: string;
+  result: string;
+  plies: number;
+}
+
+/** Una partida ya lista para reproducir. */
+interface ParsedGame {
+  header: GameHeader;
+  sanMoves: string[];
+  fens: string[];      // una por jugada, incluida la posición inicial
+  startFen?: string;   // posición inicial no estándar
 }
 
 interface PlaybackSettings {
   msPerMove: number;          // 500 | 1000 | 2000 | 3000 | 5000
   soundEnabled: boolean;
-  autoNextGame: boolean;      // modo TV: encadenar partidas
-  gapBetweenGamesMs: number;  // pausa entre partidas (p. ej. 3000)
+  autoNextGame: boolean;
   shuffle: boolean;
   loopCollection: boolean;
   boardOrientation: 'white' | 'black';
 }
 ```
 
-`PlaybackSettings` se persiste en el storage local ya usado por la app (mismo patrón que el resto de settings) para recordar la velocidad preferida.
+`PlaybackSettings` se guarda en el almacenamiento local, como el resto de ajustes.
 
 ### Motor de reproducción
 
-Reusar el patrón ya presente en el componente de solución:
-- `currentMoveNumber` como índice sobre `fens`.
-- Reproducción automática con `interval(msPerMove)` de RxJS + `takeUntil` para pausar/parar.
-- En cada tick: `board.setPosition(fens[i])`, resaltar la jugada en la lista, disparar sonido.
-- Al llegar a `fens.length - 1`: parar; si `autoNextGame`, esperar `gapBetweenGamesMs` y cargar la siguiente `ParsedGame` (respetando `shuffle` / `loopCollection`).
+- Un índice sobre la lista de posiciones.
+- Reproducción con `interval(msPerMove)` de RxJS y `takeUntil` para pausar.
+- En cada tick: pintar la posición, resaltar la jugada, sonar la pieza.
+- Al final: parar; si el autoplay está activo, esperar una pausa breve y cargar
+  la siguiente partida (respetando aleatorio y repetición).
 
-### Casos borde a contemplar
+### Casos borde
 
-- PGN inválido o vacío → mensaje de error claro, no romper la pantalla.
-- Partidas con **variantes/comentarios/NAGs** → en el MVP se ignoran las sub-líneas y se reproduce solo la línea principal.
-- **Posición inicial no estándar** (tag `[FEN ...]`, Chess960) → respetar `startFen`.
-- Partida sin movimientos (solo headers) → saltarla en el TV.
-- Archivos **muy grandes** (cientos de partidas) → parsear de forma perezosa/paginada para no bloquear la UI.
-- Promociones y enroques → ya cubiertos por `chess.js` al derivar los FENs.
+- **ELO vacío** (`[WhiteElo ""]`): normal en partidas anteriores a 1970. No se
+  muestra rating en vez de mostrar cero.
+- **Codificaciones viejas** en nombres de torneo: se pintan como vengan, sin
+  romper la lista.
+- Partidas con **variantes o comentarios**: solo la línea principal.
+- **Posición inicial no estándar**: se respeta.
+- Partida **sin jugadas** (solo cabeceras): se salta en el TV.
+- **Sin red y sin paquete descargado**: decirlo claro y ofrecer lo que sí está.
+- PGN propio inválido: mensaje claro, no romper la pantalla.
 
 ---
 
-## Instrumentación (analytics)
+## Decisiones cerradas
 
-Reusar el `AnalyticsService` existente (catálogo en [OBSERVABILITY_TRACKING](../implementado/OBSERVABILITY_TRACKING.md)). Eventos sugeridos:
+| Decisión | Cómo quedó | Por qué |
+|---|---|---|
+| **Nombre y entrada** | "Partidas", desde el menú lateral | Es lo que el usuario busca; "reproductor" describe el mecanismo, no el contenido. El home ya compite con el entrenamiento. |
+| **Troceo de paquetes** | Uno por jugador, sin periodos | 1,1 MB es una descarga normal; trocear añade una decisión que nadie pidió. |
+| **Formato** | PGN tal cual | Un solo camino de lectura, compartido con los PGN del usuario. |
+| **Índice** | Remoto, en el CDN, con copia de respaldo en la app | Añadir un campeón no debe exigir publicar una versión. |
+| **Versión por paquete** | No, por ahora | No van a variar; el índice deja sitio. |
+| **Tablero** | Solo mirar, no se mueven piezas | Explorar variantes es justo lo que hace el [Analizador](./ANALIZADOR_PARTIDAS.md); meterlo a medias aquí los pisa. |
+| **Pantalla encendida** | Sí, mientras reproduce en modo TV | Es un modo para dejarlo corriendo; que se apague a los 30 s lo arruina. Se suelta al pausar y al salir. |
+| **Filtros** | Rival, resultado y color | Salen directos de las cabeceras, sin trabajo extra al generar el catálogo. Año y torneo, si los datos lo piden. |
+| **Velocidades** | Fijas: 0,5 / 1 / 2 / 3 / 5 s | Un toque frente a un arrastre fino; en móvil se nota. |
+| **Al entrar en un jugador** | No arranca solo | El botón de TV es explícito y bien visible. |
+| **Conectores externos** | Fuera, van en Game Analytics | No duplicarlos ni meter dependencia de terceros aquí. |
+| **Componente del tablero** | Uno **hermano**, no generalizar el de puzzles | Aquel arrastra la validación de jugadas, la promoción y Stockfish; tocarlo ponía en riesgo el flujo de entrenamiento. _(decidido al construirlo)_ |
+| **Fotos de los jugadores** | Fuera: solo nombre y años | Evita meterse en derechos de imagen por un adorno. _(decidido al construirlo)_ |
+| **Primer catálogo** | Tres campeones | Validar el montaje antes de preparar diecisiete paquetes a ciegas. Ampliarlo no toca la app. _(decidido al construirlo)_ |
+
+---
+
+## Instrumentación
+
+Sobre el `AnalyticsService` existente ([catálogo](../implementado/OBSERVABILITY_REFERENCIA.md)):
 
 | Evento | Cuándo | Params |
 |--------|--------|--------|
-| `game_viewer_opened` | se abre la pantalla | `source` (`home`/`menu`) |
-| `game_loaded` | se carga PGN correctamente | `mode` (`single`/`collection`), `games_count`, `input` (`paste`/`file`) |
-| `game_playback_started` | play de una partida | `ms_per_move` |
-| `game_viewer_speed_changed` | cambia el timer | `ms_per_move` |
-| `tv_autoplay_next` | encadena a la siguiente partida | `index`, `games_count` |
-| `game_load_failed` | PGN inválido | `reason` |
-
----
-
-## Consideraciones UX
-
-- **Controles grandes y accesibles** (es una experiencia tipo "reproductor de video", pensada para móvil y para dejar corriendo).
-- **La velocidad debe ser fácil de cambiar en caliente**, sin reiniciar la partida.
-- **Modo TV = mínima fricción**: darle play y que ruede solo; los controles de partida siguiente/anterior siempre visibles.
-- **Cabecera con quién juega contra quién** siempre visible — clave cuando se ven colecciones de un jugador.
-- **Silenciar el sonido** con un toque (para dejarlo de fondo).
-- Respetar la **orientación** elegida a través de las partidas del TV.
+| `games_catalog_opened` | se abre Partidas | `downloaded_count` |
+| `games_pack_downloaded` | termina una descarga | `player`, `games`, `size_kb` |
+| `games_pack_deleted` | se borra un paquete | `player` |
+| `game_opened` | se abre una partida | `source` (`catalog`/`tv`/`file`/`paste`), `player` |
+| `games_tv_started` | arranca el modo TV | `player`, `games_count` |
+| `games_tv_next` | encadena a la siguiente | `index` |
+| `games_speed_changed` | cambia la velocidad | `ms_per_move` |
+| `games_pgn_load_failed` | PGN propio inválido | `reason` |
 
 ---
 
 ## Métricas de éxito
 
-- Nº de `game_loaded` (uso real) y proporción `single` vs `collection`.
-- Duración media de sesión en la pantalla del TV.
-- Distribución de `ms_per_move` (qué velocidad prefiere la gente).
-- Tasa de `game_load_failed` (calidad del parseo).
+- **Qué campeones se descargan** — dice a quién añadir después.
+- Cuántos llegan a usar el **modo TV** y cuánto duran en él: es la métrica que
+  dice si la feature funciona.
+- Reparto entre catálogo y PGN propio.
+- Distribución de velocidad.
 
 ---
 
-## Alcance inicial (MVP)
+## Alcance de la primera entrega (v1)
 
-1. Página nueva "Reproductor de partidas" enlazada desde el menú/home.
-2. Cargar **una** partida por PGN pegado + reproducción con **timer configurable** (0.5/1/2/3/5s) y controles play/pausa/anterior/siguiente/inicio/fin.
-3. Lista de jugadas con salto por clic + cabecera de metadatos + girar tablero + sonido on/off.
-4. Generalizar el motor de reproducción a partir de [`board-puzzle-solution.component.ts`](../../libs/board/src/lib/board-puzzle-solution/board-puzzle-solution.component.ts).
-5. **TV**: importar `.pgn` multi-partida, lista de partidas, autoplay encadenado con pausa entre partidas, siguiente/anterior partida.
-6. Persistir `PlaybackSettings` (velocidad, sonido) y eventos de analytics.
+1. Lib `games-provider`: índice remoto con respaldo local, descarga de paquetes,
+   caché en el dispositivo y lectura de PGN en dos pasos.
+2. Motor de reproducción generalizado, con velocidad y controles completos.
+3. Las tres pantallas, con búsqueda por rival y filtros de resultado y color.
+4. Modo TV: encadenado, aleatorio, repetición y pantalla encendida.
+5. Cargar PGN propio (pegar o abrir archivo).
+6. Entrada en el menú lateral, textos en español e inglés, analítica e
+   integración con la pantalla de Almacenamiento.
 
-## Fuera de alcance inicial
+## Segunda entrega (v2)
 
-- Variantes, comentarios y NAGs (solo línea principal en el MVP).
-- Importar por URL / API de Lichess o Chess.com (solo pegar + archivo local).
-- Análisis con Stockfish sobre la partida reproducida (el motor ya está en `@chesspark/stockfish-wasm`; se puede añadir después como "evaluar esta posición").
-- Guardar/gestionar colecciones de partidas en la nube (por ahora es una carga efímera por sesión).
-- Scrubber/timeline con arrastre fino (nice-to-have, no bloqueante).
+- Listas propias y la lista automática de **"Me gusta"**.
+- Sincronización de listas con el perfil cuando hay sesión.
+- Ampliar el catálogo según lo que digan las descargas.
 
----
+## Fuera de alcance
 
-## Decisiones a alinear antes de implementar
-
-> Siguiendo la práctica del repo de **discutir antes de implementar** los detalles de diseño/producto:
-
-1. **Nombre y ubicación**: ¿"Reproductor de partidas", "TV de partidas", "Ver partidas"? ¿Entrada desde el home, el menú lateral o ambos?
-2. **Velocidades del timer**: ¿el set 0.5/1/2/3/5s está bien, o prefieres un slider continuo?
-3. **Split multi-PGN**: ¿empezamos con split propio por regex (cero deps) o metemos ya una librería de parseo robusta?
-4. **Modo TV por defecto**: al cargar una colección, ¿arranca en autoplay solo o espera al play del usuario?
-5. **Fuentes de entrada del MVP**: ¿pegar + archivo local es suficiente, o quieres desde el inicio la importación por usuario de Lichess/Chess.com?
-6. **Reutilización vs. componente nuevo**: ¿generalizamos `BoardPuzzleSolutionComponent` (riesgo de tocar el flujo de puzzles) o creamos un `BoardGamePlayerComponent` hermano y compartimos utilidades?
+- Importar partidas de lichess / chess.com → [Game Analytics](./GAME_ANALYTICS.md).
+- Variantes, comentarios y símbolos de evaluación.
+- Análisis con Stockfish sobre la partida (el motor ya está en
+  [`stockfish-wasm`](../../libs/stockfish-wasm/src/lib/); se puede añadir después).
+- Barra de arrastre fino por la partida.
+- Colecciones temáticas curadas a mano.
 
 ---
 
 ## Dependencias técnicas
 
-- `chess.js` (ya en el repo) para derivar FENs/SAN de cada partida.
-- `cm-chessboard` + `@chesspark/board` (ya en el repo) para el render y los controles.
+- `chess.js` y `cm-chessboard` + `@chesspark/board` (ya en el repo).
 - `SoundsService` de `@chesspark/common-utils` para el sonido de piezas.
-- Storage local existente para `PlaybackSettings`.
-- Import de archivos: plugin de Capacitor para leer `.pgn` del dispositivo (p. ej. `@capacitor/filesystem` / file input web).
-- `AnalyticsService` existente para la instrumentación.
-- (Opcional futuro) split robusto de PGN multi-partida (`@mliebelt/pgn-parser` u otro).
+- La caché y el patrón de catálogo de [`puzzles-provider`](../../libs/puzzles-provider/).
+- `@capacitor-community/keep-awake` (versión 7, la 8 exige Capacitor 8) para la
+  pantalla encendida en modo TV.
+- Almacenamiento local para los ajustes de reproducción.
+- `AnalyticsService` existente.
+- **Fuera de la app**: el repositorio
+  [chesscolate_pngs_packs](https://github.com/json-alzate/chesscolate_pngs_packs)
+  y su generador de índice.

@@ -6,8 +6,12 @@ import { applyRunToRecord, emptyStreakRecord } from './streak.util';
 
 /**
  * Persistencia local del modo Racha: récord personal y las últimas rachas
- * jugadas. Todo en localStorage, igual que el récord del Reto 333 y el resto
+ * jugadas. Todo en localStorage, igual que la marca del Reto 333 y el resto
  * del estado local de la app.
+ *
+ * El récord además se sincroniza con el perfil de Firestore desde
+ * [UserRecordsService], para que sobreviva a un cambio de dispositivo o a una
+ * reinstalación. Las rachas del historial siguen siendo solo locales.
  */
 @Injectable({
   providedIn: 'root',
@@ -30,6 +34,18 @@ export class StreakStorageService {
     } catch (error) {
       console.error('Error al leer el récord de la racha:', error);
       return emptyStreakRecord();
+    }
+  }
+
+  /**
+   * Reemplaza el récord guardado. Lo usa la sincronización con Firestore, que
+   * ya trae el récord fusionado entre el dispositivo y la nube.
+   */
+  setRecord(record: StreakRecord): void {
+    try {
+      localStorage.setItem(this.RECORD_KEY, JSON.stringify(record));
+    } catch (error) {
+      console.error('Error al guardar el récord de la racha:', error);
     }
   }
 
