@@ -1,0 +1,26 @@
+{
+  "name": "game-reporter",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/game-reporter/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/game-reporter",
+        "main": "libs/game-reporter/src/index.ts",
+        "tsConfig": "libs/game-reporter/tsconfig.lib.json",
+        "assets": ["libs/game-reporter/*.md"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/game-reporter/jest.config.ts"
+      }
+    }
+  }
+}

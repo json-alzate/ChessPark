@@ -48,7 +48,12 @@ export type AnalyticsEventName =
   | 'games_tv_started'
   | 'games_tv_next'
   | 'games_speed_changed'
-  | 'games_pgn_load_failed';
+  | 'games_pgn_load_failed'
+  | 'game_analytics_opened'
+  | 'game_analytics_connected'
+  | 'game_analytics_synced'
+  | 'game_analytics_disconnected'
+  | 'game_analytics_filtered';
 
 /** Valores primitivos admitidos por GA4 como parámetros de evento. */
 export type AnalyticsParams = Record<string, string | number | boolean>;

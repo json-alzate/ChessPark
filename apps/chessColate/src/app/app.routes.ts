@@ -98,6 +98,11 @@ export const routes: Routes = [
       import('./pages/games/player/player.page').then((m) => m.GamesPlayerPage),
   },
   {
+    path: 'analytics',
+    loadComponent: () =>
+      import('./pages/analytics/analytics.page').then((m) => m.AnalyticsPage),
+  },
+  {
     path: 'streak',
     loadComponent: () =>
       import('./pages/streak/streak.page').then((m) => m.StreakPage),

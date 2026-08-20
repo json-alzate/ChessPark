@@ -20,13 +20,13 @@ la feature se implemente o cambie de posición. Por eso los IDs se leen salteado
 | ✅ | F04 | [Gestión de Descargas de Puzzles](../implementado/GESTION_DESCARGAS_PUZZLES_FLOW.md) | Medio (confianza/espacio) | Bajo-Medio | Caché de `puzzles-provider` (ya existe) |
 | ✅ | F05 | [Calificar la App (In-App Review)](../implementado/CALIFICAR_APP_FLOW.md) | Alto (negocio) | Bajo | `@capacitor-community/in-app-review` |
 | ✅ | F06 | [Reproductor / TV de Partidas](../implementado/REPRODUCTOR_PARTIDAS_FLOW.md) | Alto | Medio-Alto | — (estrenó el lector de PGN y el catálogo de partidas) |
+| ✅ | F12 | [Análisis de Partidas (Game Analytics)](../implementado/GAME_ANALYTICS_FLOW.md) | Alto | Alto | APIs externas (chess.com/lichess) |
 | ⬜ | F07 | [Rutina con BD de Puzzles Personalizada (PGN)](./RUTINA_PGN_PERSONALIZADA.md) | Alto | Medio | F06 (lector de PGN, ya hecho) |
 | ⬜ | F08 | [Método del Pájaro Carpintero](./METODO_PAJARO_CARPINTERO.md) | Alto | Medio | F07 (set congelado) |
 | ⬜ | F09 | [Analizador de Partidas (capas de dibujo)](./ANALIZADOR_PARTIDAS.md) | Alto (estudio) | Alto | F06 (lector de PGN + reproducción, ya hechos) |
 | ⬜ | F10 | [Puzzle Feed](./PUZZLE_FEED.md) | Alto (engagement) | Medio-Alto | — |
 | ⬜ | F11 | [Chess Runner](./CHESS_RUNNER.md) | Medio | Medio | — |
-| ⬜ | F12 | [Game Analytics](./GAME_ANALYTICS.md) | Alto | Alto | APIs externas (chess.com/lichess) |
-| ⬜ | F13 | [Sparring Personalizado (IA con tu estilo)](./SPARRING_PERSONALIZADO.md) | Alto | Alto (Nivel 1) / Muy Alto (Nivel 2) | F12 (ingesta de partidas) + `stockfish-wasm` |
+| ⬜ | F13 | [Sparring Personalizado (IA con tu estilo)](./SPARRING_PERSONALIZADO.md) | Alto | Alto (Nivel 1) / Muy Alto (Nivel 2) | F12 (ingesta de partidas, ya hecha) + `stockfish-wasm` |
 | ⬜ | F14 | [Cuadros de Conquista](./CUADROS_DE_CONQUISTA.md) | Alto | Muy Alto | Backend + matchmaking |
 | ⬜ | F15 | [Puzzle Racer (Multijugador)](./PUZZLE_RACER.md) | Alto (competitivo/viral) | Alto | RTDB + matchmaking (sin backend propio) |
 | ⬜ | F16 | [Puzzle Geo Hunt](./PUZZLE_GEO_HUNT.md) | Medio (nicho) | Muy Alto | GPS + AR + permisos |
@@ -54,11 +54,8 @@ la feature se implemente o cambie de posición. Por eso los IDs se leen salteado
 ### F11 · [Chess Runner](./CHESS_RUNNER.md)
 **Capa de gamificación** (mini-juego previo al puzzle). Autocontenido, sin dependencias de datos externas; encaja cuando ya hay volumen de puzzles jugándose. Esfuerzo medio (animación/gameplay).
 
-### F12 · [Game Analytics](./GAME_ANALYTICS.md)
-**Nuevas libs** (`chess-com-provider`, `lichess-provider`, `game-reporter`) y **APIs externas**. Alto valor pero mayor superficie y dependencia de terceros; es bastante independiente, así que puede solaparse en paralelo con las anteriores si hay capacidad.
-
 ### F13 · [Sparring Personalizado (IA con tu estilo)](./SPARRING_PERSONALIZADO.md)
-**Consume directamente la ingesta de F12**: los providers de chess.com/lichess, el caché de partidas y el modelo `ChessGame`. A partir de ahí construye un **perfil de estilo** y un rival jugable que aproxima tu fuerza y tus manías. El **Nivel 1** (perfil estadístico + Stockfish sesgado con [`stockfish-wasm`](../../libs/stockfish-wasm/src/lib/)) es **on-device, sin backend** — de ahí que llegue justo tras F12. El **Nivel 2** (clon neuronal tipo Maia fine-tuneado) es I+D con GPU/backend y **no bloquea** el lanzamiento.
+**Consume directamente la ingesta de F12, que ya está hecha**: los conectores de chess.com/lichess, el archivo local de partidas y el modelo `ChessGame`. A partir de ahí construye un **perfil de estilo** y un rival jugable que aproxima tu fuerza y tus manías. El **Nivel 1** (perfil estadístico + Stockfish sesgado con [`stockfish-wasm`](../../libs/stockfish-wasm/src/lib/)) es **on-device, sin backend** — de ahí que llegue justo tras F12. El **Nivel 2** (clon neuronal tipo Maia fine-tuneado) es I+D con GPU/backend y **no bloquea** el lanzamiento.
 
 ### F14 · [Cuadros de Conquista](./CUADROS_DE_CONQUISTA.md)
 **PvP asíncrono** con matchmaking, economía de poderes y estado compartido → **requiere backend**. Complejidad alta; conviene atacarlo cuando la base de usuarios (que la Racha y F10 ayudan a crecer) lo justifique.
@@ -82,6 +79,7 @@ Conviene tratarlos como piezas transversales, no re-implementarlas por feature:
 - **Catálogo descargable con índice remoto** (un archivo por jugador, índice en el CDN, caché propia en IndexedDB) → **ya existe**: lo estrenó F06 en [`libs/games-provider`](../../libs/games-provider/). A diferencia del de puzzles, su índice se descarga, así que publicar contenido nuevo no exige sacar versión.
 - **Metadata del caché de puzzles** (tema + rango de ELO + tamaño por archivo descargado) → **ya existe**: la estrenó la [Gestión de Descargas](../implementado/GESTION_DESCARGAS_PUZZLES_FLOW.md) y deja medible cuánto espacio ocupa la app.
 - **RTDB + matchmaking client-side** (canal efímero de tiempo real, transacciones de lobby, `onDisconnect`) → lo estrena F15 y lo puede reutilizar F14 (Cuadros de Conquista) para su capa PvP. RTDB no está cableada hoy (solo Firestore).
+- **Conectores de chess.com y lichess + archivo local de partidas propias** → **ya existe**: lo estrenó F12 en [`libs/chess-com-provider`](../../libs/chess-com-provider/), [`libs/lichess-provider`](../../libs/lichess-provider/) y [`libs/game-reporter`](../../libs/game-reporter/), con el modelo común `ChessGame` y descarga mes a mes cacheada en IndexedDB. Lo reutiliza F13 (Sparring Personalizado) y lo puede consumir F06 como fuente "mis partidas".
 - **AnalyticsService** [(catálogo)](../implementado/OBSERVABILITY_TRACKING.md) → todas instrumentan sobre la base ya implementada.
 
 ---
@@ -105,3 +103,4 @@ Conviene tratarlos como piezas transversales, no re-implementarlas por feature:
 - [Gestión de Descargas de Puzzles](../implementado/GESTION_DESCARGAS_PUZZLES_FLOW.md) — pantalla de Almacenamiento que lista los archivos descargados por tema y rango de ELO, con su tamaño, y permite borrarlos. Idea original en [`GESTION_DESCARGAS_PUZZLES.md`](./GESTION_DESCARGAS_PUZZLES.md).
 - [Calificar la App (In-App Review)](../implementado/CALIFICAR_APP_FLOW.md) — invitación silenciosa a calificar en la Play Store, solo tras una rutina que salió bien y como mucho cada 90 días, más un acceso manual en Ajustes. Idea original en [`CALIFICAR_APP.md`](./CALIFICAR_APP.md).
 - [Reproductor / TV de Partidas](../implementado/REPRODUCTOR_PARTIDAS_FLOW.md) — catálogo de campeones del mundo descargable desde el CDN, reproducción jugada a jugada con velocidad configurable y modo TV que encadena la colección. Idea original en [`REPRODUCTOR_PARTIDAS.md`](./REPRODUCTOR_PARTIDAS.md).
+- [Análisis de Partidas](../implementado/GAME_ANALYTICS_FLOW.md) — conectas tu cuenta de chess.com o de lichess y la app descarga tus partidas públicas para enseñarte evolución del rating, porcentaje de puntuación, rendimiento por color y por apertura y mapa de actividad. Todo en el dispositivo, sin backend. Idea original en [`GAME_ANALYTICS.md`](./GAME_ANALYTICS.md).

@@ -1,0 +1,7 @@
+// El canvas necesita una altura fija: Chart.js con `maintainAspectRatio: false`
+// crece hasta la del contenedor, y sin ella el contenedor mide cero.
+.rating-chart {
+  position: relative;
+  height: 220px;
+  width: 100%;
+}

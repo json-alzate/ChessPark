@@ -1,0 +1,284 @@
+<ion-content [fullscreen]="true">
+  <div class="min-h-screen bg-base-100" data-theme="halloween">
+    <app-navbar></app-navbar>
+
+    <div class="container mx-auto px-4 py-8 max-w-lg pb-16">
+
+      <!-- Header -->
+      <div class="mb-6">
+        <div class="breadcrumbs text-sm mb-1">
+          <ul>
+            <li>
+              <a (click)="goToHome()" class="cursor-pointer gap-1">
+                <ion-icon name="home-outline" class="h-4 w-4"></ion-icon>
+                <span>{{ 'MENU.navigation.home' | transloco }}</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class="flex items-center justify-between gap-3">
+          <h2 class="text-2xl font-bold">{{ 'ANALYTICS.title' | transloco }}</h2>
+          @if (hasAccounts) {
+            <button class="btn btn-ghost btn-sm btn-circle" (click)="sync()"
+              [disabled]="syncing"
+              [attr.aria-label]="'ANALYTICS.refresh' | transloco">
+              <ion-icon name="refresh-outline" class="text-xl"></ion-icon>
+            </button>
+          }
+        </div>
+        <p class="text-sm opacity-60 mt-1">{{ 'ANALYTICS.subtitle' | transloco }}</p>
+      </div>
+
+      @if (loading) {
+        <div class="flex flex-col gap-2">
+          <div class="skeleton h-24 w-full"></div>
+          <div class="skeleton h-40 w-full"></div>
+        </div>
+      } @else {
+
+        <!-- Conectar cuentas -->
+        @if (!hasAccounts) {
+          <section class="bg-base-200/40 border border-base-content/10 rounded-box p-5">
+            <div class="flex items-center gap-2 mb-1">
+              <ion-icon name="link-outline" class="text-xl opacity-60"></ion-icon>
+              <h3 class="text-base font-bold">{{ 'ANALYTICS.connect.title' | transloco }}</h3>
+            </div>
+            <p class="text-sm opacity-60 mb-4">
+              {{ 'ANALYTICS.connect.description' | transloco }}
+            </p>
+
+            <label class="form-control w-full mb-3">
+              <span class="label-text text-xs opacity-70 mb-1 block">Chess.com</span>
+              <input type="text" class="input input-bordered w-full"
+                autocapitalize="off" autocomplete="off" spellcheck="false"
+                [(ngModel)]="chesscomInput"
+                [placeholder]="'ANALYTICS.connect.usernamePlaceholder' | transloco" />
+            </label>
+
+            <label class="form-control w-full mb-4">
+              <span class="label-text text-xs opacity-70 mb-1 block">Lichess</span>
+              <input type="text" class="input input-bordered w-full"
+                autocapitalize="off" autocomplete="off" spellcheck="false"
+                [(ngModel)]="lichessInput"
+                [placeholder]="'ANALYTICS.connect.usernamePlaceholder' | transloco" />
+            </label>
+
+            <span class="label-text text-xs opacity-70 mb-2 block">
+              {{ 'ANALYTICS.connect.historyLabel' | transloco }}
+            </span>
+            <div class="join w-full mb-4">
+              @for (range of historyRanges; track range) {
+                <button class="btn btn-sm join-item flex-1"
+                  [class.btn-primary]="historyMonths === range"
+                  (click)="historyMonths = range">
+                  {{ 'ANALYTICS.connect.months' | transloco: { count: range } }}
+                </button>
+              }
+            </div>
+            <p class="text-xs opacity-50 mb-4">
+              {{ 'ANALYTICS.connect.historyHint' | transloco }}
+            </p>
+
+            <button class="btn btn-primary w-full" (click)="connect()"
+              [disabled]="!canConnect || verifying">
+              @if (verifying) {
+                <span class="loading loading-spinner loading-sm"></span>
+              }
+              {{ 'ANALYTICS.connect.action' | transloco }}
+            </button>
+
+            <p class="text-xs opacity-50 mt-4">
+              {{ 'ANALYTICS.connect.privacy' | transloco }}
+            </p>
+          </section>
+        } @else {
+
+          <!-- Descarga en curso -->
+          @if (syncing) {
+            <div class="bg-base-200/40 border border-base-content/10 rounded-box p-4 mb-4">
+              <div class="flex items-center justify-between gap-3 text-sm">
+                <span>{{ 'ANALYTICS.syncing' | transloco }}</span>
+                <span class="font-mono opacity-60">{{ progressPercent }}%</span>
+              </div>
+              <progress class="progress progress-primary w-full mt-2 h-1.5"
+                [value]="progressPercent" max="100"></progress>
+              @if (progressLabel) {
+                <p class="text-xs opacity-50 mt-1">{{ progressLabel }}</p>
+              }
+            </div>
+          }
+
+          @if (errorMessage) {
+            <div class="bg-error/10 border border-error/30 rounded-box p-4 mb-4">
+              <p class="text-sm text-error">{{ errorMessage }}</p>
+            </div>
+          }
+
+          @if (!syncing && allGamesEmpty) {
+            <div class="bg-base-200/40 border border-base-content/10 rounded-box p-6 text-center">
+              <ion-icon name="stats-chart-outline" class="text-4xl opacity-40"></ion-icon>
+              <p class="mt-3 text-sm opacity-70">{{ 'ANALYTICS.noGames' | transloco }}</p>
+            </div>
+          }
+
+          @if (stats) {
+            <!-- Filtros -->
+            <section class="mb-5">
+              @if (availablePlatforms.length > 1) {
+                <div class="join w-full mb-2">
+                  <button class="btn btn-xs join-item flex-1"
+                    [class.btn-primary]="platformFilter === 'both'"
+                    (click)="setPlatformFilter('both')">
+                    {{ 'ANALYTICS.filters.allPlatforms' | transloco }}
+                  </button>
+                  @for (platform of availablePlatforms; track platform) {
+                    <button class="btn btn-xs join-item flex-1"
+                      [class.btn-primary]="platformFilter === platform"
+                      (click)="setPlatformFilter(platform)">
+                      {{ platformLabel(platform) }}
+                    </button>
+                  }
+                </div>
+              }
+
+              <div class="flex flex-wrap gap-1.5">
+                @for (timeClass of availableTimeClasses; track timeClass) {
+                  <button class="btn btn-xs"
+                    [class.btn-primary]="isTimeClassActive(timeClass)"
+                    [class.btn-outline]="!isTimeClassActive(timeClass)"
+                    (click)="toggleTimeClass(timeClass)">
+                    {{ 'ANALYTICS.timeClasses.' + timeClass | transloco }}
+                  </button>
+                }
+              </div>
+            </section>
+
+            <!-- Cifras generales -->
+            <section class="grid grid-cols-2 gap-2 mb-6">
+              <div class="bg-base-200/40 border border-base-content/10 rounded-box p-3">
+                <div class="text-xs opacity-60">{{ 'ANALYTICS.stats.games' | transloco }}</div>
+                <div class="text-2xl font-bold font-mono">{{ stats.games }}</div>
+              </div>
+              <div class="bg-base-200/40 border border-base-content/10 rounded-box p-3">
+                <div class="text-xs opacity-60">{{ 'ANALYTICS.stats.score' | transloco }}</div>
+                <div class="text-2xl font-bold font-mono">{{ toPercent(stats.winRate) }}%</div>
+              </div>
+              <div class="bg-base-200/40 border border-base-content/10 rounded-box p-3">
+                <div class="text-xs opacity-60">{{ 'ANALYTICS.stats.record' | transloco }}</div>
+                <div class="text-base font-bold font-mono">
+                  <span class="text-success">{{ stats.wins }}</span> /
+                  <span class="opacity-70">{{ stats.draws }}</span> /
+                  <span class="text-error">{{ stats.losses }}</span>
+                </div>
+              </div>
+              <div class="bg-base-200/40 border border-base-content/10 rounded-box p-3">
+                <div class="text-xs opacity-60">{{ 'ANALYTICS.stats.avgOpponent' | transloco }}</div>
+                <div class="text-2xl font-bold font-mono">{{ stats.averageOpponentRating || '—' }}</div>
+              </div>
+            </section>
+
+            <!-- Progreso de rating -->
+            <section class="mb-6">
+              <h3 class="text-xs font-bold uppercase tracking-wide opacity-60 mb-2">
+                {{ 'ANALYTICS.ratingProgress' | transloco }}
+              </h3>
+              @if (ratingPoints.length > 1) {
+                <div class="bg-base-200/40 border border-base-content/10 rounded-box p-3">
+                  <app-rating-chart [points]="ratingPoints"></app-rating-chart>
+                </div>
+              } @else {
+                <p class="text-sm opacity-60">{{ 'ANALYTICS.notEnoughData' | transloco }}</p>
+              }
+            </section>
+
+            <!-- Mapa de actividad -->
+            <section class="mb-6">
+              <h3 class="text-xs font-bold uppercase tracking-wide opacity-60 mb-2">
+                {{ 'ANALYTICS.activity.title' | transloco }}
+              </h3>
+              <div class="bg-base-200/40 border border-base-content/10 rounded-box p-3">
+                <app-activity-heatmap [days]="activityDays"></app-activity-heatmap>
+              </div>
+            </section>
+
+            <!-- Con blancas y con negras -->
+            <section class="mb-6">
+              <h3 class="text-xs font-bold uppercase tracking-wide opacity-60 mb-2">
+                {{ 'ANALYTICS.byColor' | transloco }}
+              </h3>
+              <div class="grid grid-cols-2 gap-2">
+                <div class="bg-base-200/40 border border-base-content/10 rounded-box p-3">
+                  <div class="text-xs opacity-60">{{ 'GAMES.filters.white' | transloco }}</div>
+                  <div class="text-xl font-bold font-mono">{{ toPercent(stats.byColor.white.winRate) }}%</div>
+                  <div class="text-xs opacity-50">
+                    {{ 'ANALYTICS.openings.gamesCount' | transloco: { count: stats.byColor.white.games } }}
+                  </div>
+                </div>
+                <div class="bg-base-200/40 border border-base-content/10 rounded-box p-3">
+                  <div class="text-xs opacity-60">{{ 'GAMES.filters.black' | transloco }}</div>
+                  <div class="text-xl font-bold font-mono">{{ toPercent(stats.byColor.black.winRate) }}%</div>
+                  <div class="text-xs opacity-50">
+                    {{ 'ANALYTICS.openings.gamesCount' | transloco: { count: stats.byColor.black.games } }}
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Aperturas -->
+            <section class="mb-6">
+              <h3 class="text-xs font-bold uppercase tracking-wide opacity-60 mb-2">
+                {{ 'ANALYTICS.openings.title' | transloco }}
+              </h3>
+              <app-openings-table [openings]="openings"></app-openings-table>
+            </section>
+
+            <p class="text-xs opacity-50 mb-6">
+              {{ 'ANALYTICS.range' | transloco: {
+                   from: formatDate(stats.firstPlayedAt),
+                   to: formatDate(stats.lastPlayedAt)
+                 } }}
+            </p>
+          }
+
+          <!-- Cuentas conectadas -->
+          <section>
+            <h3 class="text-xs font-bold uppercase tracking-wide opacity-60 mb-2">
+              {{ 'ANALYTICS.accounts' | transloco }}
+            </h3>
+            <ul class="flex flex-col gap-2 mb-4">
+              @for (account of connectedList; track account.platform) {
+                <li class="bg-base-200/40 border border-base-content/10 rounded-box p-3
+                           flex items-center justify-between gap-3">
+                  <div class="min-w-0">
+                    <div class="text-sm font-bold truncate">{{ account.username }}</div>
+                    <div class="text-xs opacity-60">{{ platformLabel(account.platform) }}</div>
+                  </div>
+                  <button class="btn btn-ghost btn-sm btn-circle text-error"
+                    (click)="disconnect(account.platform, account.username)"
+                    [attr.aria-label]="'ANALYTICS.disconnect' | transloco">
+                    <ion-icon name="trash-outline" class="text-lg"></ion-icon>
+                  </button>
+                </li>
+              }
+            </ul>
+
+            <span class="label-text text-xs opacity-70 mb-2 block">
+              {{ 'ANALYTICS.connect.historyLabel' | transloco }}
+            </span>
+            <div class="join w-full">
+              @for (range of historyRanges; track range) {
+                <button class="btn btn-sm join-item flex-1"
+                  [class.btn-primary]="historyMonths === range"
+                  [disabled]="syncing"
+                  (click)="setHistoryRange(range)">
+                  {{ 'ANALYTICS.connect.months' | transloco: { count: range } }}
+                </button>
+              }
+            </div>
+          </section>
+        }
+      }
+
+    </div>
+  </div>
+</ion-content>

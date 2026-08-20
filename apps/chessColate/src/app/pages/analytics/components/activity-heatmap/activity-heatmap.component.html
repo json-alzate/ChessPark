@@ -1,0 +1,23 @@
+@if (weeks.length > 0) {
+  <div class="heatmap-scroll overflow-x-auto pb-1">
+    <div class="flex gap-[3px]">
+      @for (week of weeks; track $index) {
+        <div class="flex flex-col gap-[3px]">
+          @for (day of week; track $index) {
+            <span class="heatmap-cell" [attr.data-level]="level(day)"
+              [attr.title]="title(day)"
+              [class.invisible]="day === null"></span>
+          }
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="flex items-center justify-end gap-1.5 mt-2 text-xs opacity-60">
+    <span>{{ 'ANALYTICS.activity.less' | transloco }}</span>
+    @for (level of [0, 1, 2, 3, 4]; track level) {
+      <span class="heatmap-cell" [attr.data-level]="level"></span>
+    }
+    <span>{{ 'ANALYTICS.activity.more' | transloco }}</span>
+  </div>
+}

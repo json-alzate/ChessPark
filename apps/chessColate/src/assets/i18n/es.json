@@ -588,6 +588,65 @@
       "sound": "Sonido"
     }
   },
+  "ANALYTICS": {
+    "title": "Análisis de partidas",
+    "subtitle": "Conecta tu cuenta y mira cómo juegas de verdad",
+    "refresh": "Actualizar partidas",
+    "syncing": "Descargando tus partidas…",
+    "noGames": "No encontramos partidas en ese periodo. Prueba con un historial más largo.",
+    "notEnoughData": "Aún no hay partidas suficientes para dibujar la evolución.",
+    "accounts": "Cuentas conectadas",
+    "disconnect": "Desconectar",
+    "disconnectTitle": "¿Desconectar esta cuenta?",
+    "disconnectMessage": "Se borrarán las partidas de {{username}} en {{platform}} guardadas en este dispositivo. Puedes volver a conectarla cuando quieras.",
+    "ratingProgress": "Evolución del rating",
+    "byColor": "Con blancas y con negras",
+    "range": "De {{from}} a {{to}}",
+    "connect": {
+      "title": "Conecta tu cuenta",
+      "description": "Escribe tu nombre de usuario en chess.com, en lichess o en las dos. No hace falta contraseña: se usan solo las partidas públicas.",
+      "usernamePlaceholder": "Tu nombre de usuario",
+      "historyLabel": "Cuánto historial descargar",
+      "months": "{{count}} meses",
+      "historyHint": "Cuanto más historial, más tarda la primera descarga. Después solo se bajan los meses nuevos.",
+      "action": "Analizar mis partidas",
+      "privacy": "Tus partidas se guardan solo en este dispositivo. No se sube nada a ningún servidor."
+    },
+    "filters": {
+      "allPlatforms": "Todas"
+    },
+    "timeClasses": {
+      "bullet": "Bullet",
+      "blitz": "Blitz",
+      "rapid": "Rápidas",
+      "classical": "Clásicas",
+      "daily": "Por días"
+    },
+    "stats": {
+      "games": "Partidas",
+      "score": "Puntuación",
+      "record": "G / T / P",
+      "avgOpponent": "Rival medio"
+    },
+    "activity": {
+      "title": "Actividad",
+      "less": "Menos",
+      "more": "Más"
+    },
+    "openings": {
+      "title": "Aperturas",
+      "gamesCount": "{{count}} partidas",
+      "asWhite": "{{count}} con blancas",
+      "asBlack": "{{count}} con negras",
+      "showMore": "Ver más",
+      "empty": "Ninguna apertura llega a {{min}} partidas todavía."
+    },
+    "errors": {
+      "unknownUserTitle": "No encontramos ese usuario",
+      "unknownUser": "{{platform}} no conoce a ese usuario. Revisa cómo lo escribiste.",
+      "syncFailed": "No se pudieron descargar todas las partidas. Revisa tu conexión e inténtalo otra vez."
+    }
+  },
   "STORAGE": {
     "pageTitle": "Puzzles descargados",
     "settingsRowTitle": "Gestionar descargas",
