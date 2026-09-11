@@ -630,8 +630,7 @@
     },
     "activity": {
       "title": "Activity",
-      "less": "Less",
-      "more": "More"
+      "gamesLastYear": "{{count}} games in the last year:"
     },
     "openings": {
       "title": "Openings",

@@ -28,8 +28,9 @@ Debajo, la nota de que nada sale del dispositivo.
 - **Cuatro cifras de cabecera**: partidas, puntuación, el desglose
   ganadas / tablas / perdidas y el rating medio del rival.
 - **Evolución del rating**, una línea por plataforma.
-- **Mapa de actividad** al estilo del de GitHub: una columna por semana, un
-  cuadro por día.
+- **Mapa de actividad** del último año, con el mismo gráfico que tenía la app
+  anterior (matriz de Chart.js): una columna por semana, un cuadro por día y la
+  semana empezando en lunes, repartido en todo el ancho sin desplazamiento.
 - **Con blancas y con negras**, para ver de qué lado se juega mejor.
 - **Tabla de aperturas** con la barra de ganadas / tablas / perdidas a escala.
 

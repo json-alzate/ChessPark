@@ -630,8 +630,7 @@
     },
     "activity": {
       "title": "Actividad",
-      "less": "Menos",
-      "more": "Más"
+      "gamesLastYear": "{{count}} partidas en el último año:"
     },
     "openings": {
       "title": "Aperturas",

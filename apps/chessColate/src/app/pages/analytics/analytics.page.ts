@@ -132,6 +132,19 @@ export class AnalyticsPage implements OnInit {
     return this.allGames.length === 0;
   }
 
+  /**
+   * La partida más antigua y la más reciente de todo lo descargado. Sale de
+   * todas las partidas y no de las filtradas: describe qué cubre la descarga,
+   * y no debe encoger al marcar un control de tiempo.
+   */
+  get downloadedFrom(): number {
+    return this.allGames[0]?.playedAt ?? 0;
+  }
+
+  get downloadedTo(): number {
+    return this.allGames[this.allGames.length - 1]?.playedAt ?? 0;
+  }
+
   get canConnect(): boolean {
     return Boolean(this.chesscomInput.trim() || this.lichessInput.trim());
   }

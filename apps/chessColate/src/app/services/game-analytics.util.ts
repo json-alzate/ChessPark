@@ -9,7 +9,7 @@ import {
   ChessPlatform,
   TimeClass,
 } from '@cpark/models';
-import { ActivityDay, RatingDataPoint } from '@chesspark/game-reporter';
+import { RatingDataPoint } from '@chesspark/game-reporter';
 
 /** Una cuenta conectada por el usuario. */
 export interface ConnectedAccounts {
@@ -90,67 +90,4 @@ export function thinSeries(
     thinned.push(last);
   }
   return thinned;
-}
-
-/** Una semana del mapa de actividad: siete días de domingo a sábado. */
-export type ActivityWeek = (ActivityDay | null)[];
-
-/**
- * Coloca los días en columnas de siete para dibujar el mapa.
- *
- * La primera y la última semana casi nunca están completas, así que se rellenan
- * con huecos: sin ellos, los días saldrían en la fila equivocada y el mapa
- * diría que se jugó un martes lo que se jugó un jueves.
- */
-export function toActivityWeeks(days: ActivityDay[]): ActivityWeek[] {
-  if (days.length === 0) {
-    return [];
-  }
-
-  const weeks: ActivityWeek[] = [];
-  let current: ActivityWeek = new Array(dayOfWeek(days[0].date)).fill(null);
-
-  for (const day of days) {
-    current.push(day);
-    if (current.length === 7) {
-      weeks.push(current);
-      current = [];
-    }
-  }
-
-  if (current.length > 0) {
-    weeks.push([...current, ...new Array(7 - current.length).fill(null)]);
-  }
-
-  return weeks;
-}
-
-/** Día de la semana de una fecha 'YYYY-MM-DD', con el domingo como 0. */
-function dayOfWeek(dateKey: string): number {
-  const [year, month, day] = dateKey.split('-').map(Number);
-  return new Date(year, month - 1, day).getDay();
-}
-
-/**
- * El nivel de intensidad de un día, de 0 a 4.
- *
- * Los cortes son relativos al día más movido del propio usuario: quien juega
- * tres partidas al día merece ver su mapa con relieve igual que quien juega
- * treinta.
- */
-export function activityLevel(games: number, max: number): number {
-  if (games === 0 || max === 0) {
-    return 0;
-  }
-  const ratio = games / max;
-  if (ratio <= 0.25) {
-    return 1;
-  }
-  if (ratio <= 0.5) {
-    return 2;
-  }
-  if (ratio <= 0.75) {
-    return 3;
-  }
-  return 4;
 }

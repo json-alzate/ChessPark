@@ -1,11 +1,9 @@
-import { ActivityDay, RatingDataPoint } from '@chesspark/game-reporter';
+import { RatingDataPoint } from '@chesspark/game-reporter';
 
 import {
-  activityLevel,
   monthsForRange,
   platformLabel,
   thinSeries,
-  toActivityWeeks,
   toPercent,
 } from './game-analytics.util';
 
@@ -65,39 +63,5 @@ describe('thinSeries', () => {
     expect(thinned.length).toBeLessThanOrEqual(101);
     expect(thinned[0]).toEqual(points[0]);
     expect(thinned[thinned.length - 1]).toEqual(points[999]);
-  });
-});
-
-describe('toActivityWeeks', () => {
-  it('rellena con huecos hasta completar la semana', () => {
-    // 2026-01-05 es lunes: el domingo previo queda como hueco
-    const days: ActivityDay[] = [
-      { date: '2026-01-05', games: 2 },
-      { date: '2026-01-06', games: 0 },
-    ];
-
-    const weeks = toActivityWeeks(days);
-
-    expect(weeks).toHaveLength(1);
-    expect(weeks[0][0]).toBeNull();
-    expect(weeks[0][1]).toEqual(days[0]);
-    expect(weeks[0]).toHaveLength(7);
-  });
-
-  it('sin días no hay semanas', () => {
-    expect(toActivityWeeks([])).toEqual([]);
-  });
-});
-
-describe('activityLevel', () => {
-  it('un día sin partidas es el nivel más bajo', () => {
-    expect(activityLevel(0, 20)).toBe(0);
-  });
-
-  it('escala respecto al día más movido del propio usuario', () => {
-    expect(activityLevel(1, 4)).toBe(1);
-    expect(activityLevel(2, 4)).toBe(2);
-    expect(activityLevel(3, 4)).toBe(3);
-    expect(activityLevel(4, 4)).toBe(4);
   });
 });

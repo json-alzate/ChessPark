@@ -93,6 +93,54 @@
           </section>
         } @else {
 
+          <!-- Cuentas conectadas -->
+          <section class="mb-5">
+            <h3 class="text-xs font-bold uppercase tracking-wide opacity-60 mb-2">
+              {{ 'ANALYTICS.accounts' | transloco }}
+            </h3>
+            <ul class="flex flex-col gap-2">
+              @for (account of connectedList; track account.platform) {
+                <li class="bg-base-200/40 border border-base-content/10 rounded-box p-3
+                           flex items-center justify-between gap-3">
+                  <div class="min-w-0">
+                    <div class="text-sm font-bold truncate">{{ account.username }}</div>
+                    <div class="text-xs opacity-60">{{ platformLabel(account.platform) }}</div>
+                  </div>
+                  <button class="btn btn-ghost btn-sm btn-circle text-error"
+                    (click)="disconnect(account.platform, account.username)"
+                    [attr.aria-label]="'ANALYTICS.disconnect' | transloco">
+                    <ion-icon name="trash-outline" class="text-lg"></ion-icon>
+                  </button>
+                </li>
+              }
+            </ul>
+          </section>
+
+          <!-- Cuánto historial: arriba, porque cambia todo lo que se ve debajo -->
+          <section class="mb-5">
+            <span class="label-text text-xs opacity-70 mb-2 block">
+              {{ 'ANALYTICS.connect.historyLabel' | transloco }}
+            </span>
+            <div class="join w-full">
+              @for (range of historyRanges; track range) {
+                <button class="btn btn-sm join-item flex-1"
+                  [class.btn-primary]="historyMonths === range"
+                  [disabled]="syncing"
+                  (click)="setHistoryRange(range)">
+                  {{ 'ANALYTICS.connect.months' | transloco: { count: range } }}
+                </button>
+              }
+            </div>
+            @if (!allGamesEmpty) {
+              <p class="text-xs opacity-50 mt-2">
+                {{ 'ANALYTICS.range' | transloco: {
+                     from: formatDate(downloadedFrom),
+                     to: formatDate(downloadedTo)
+                   } }}
+              </p>
+            }
+          </section>
+
           <!-- Descarga en curso -->
           @if (syncing) {
             <div class="bg-base-200/40 border border-base-content/10 rounded-box p-4 mb-4">
@@ -231,51 +279,7 @@
               </h3>
               <app-openings-table [openings]="openings"></app-openings-table>
             </section>
-
-            <p class="text-xs opacity-50 mb-6">
-              {{ 'ANALYTICS.range' | transloco: {
-                   from: formatDate(stats.firstPlayedAt),
-                   to: formatDate(stats.lastPlayedAt)
-                 } }}
-            </p>
           }
-
-          <!-- Cuentas conectadas -->
-          <section>
-            <h3 class="text-xs font-bold uppercase tracking-wide opacity-60 mb-2">
-              {{ 'ANALYTICS.accounts' | transloco }}
-            </h3>
-            <ul class="flex flex-col gap-2 mb-4">
-              @for (account of connectedList; track account.platform) {
-                <li class="bg-base-200/40 border border-base-content/10 rounded-box p-3
-                           flex items-center justify-between gap-3">
-                  <div class="min-w-0">
-                    <div class="text-sm font-bold truncate">{{ account.username }}</div>
-                    <div class="text-xs opacity-60">{{ platformLabel(account.platform) }}</div>
-                  </div>
-                  <button class="btn btn-ghost btn-sm btn-circle text-error"
-                    (click)="disconnect(account.platform, account.username)"
-                    [attr.aria-label]="'ANALYTICS.disconnect' | transloco">
-                    <ion-icon name="trash-outline" class="text-lg"></ion-icon>
-                  </button>
-                </li>
-              }
-            </ul>
-
-            <span class="label-text text-xs opacity-70 mb-2 block">
-              {{ 'ANALYTICS.connect.historyLabel' | transloco }}
-            </span>
-            <div class="join w-full">
-              @for (range of historyRanges; track range) {
-                <button class="btn btn-sm join-item flex-1"
-                  [class.btn-primary]="historyMonths === range"
-                  [disabled]="syncing"
-                  (click)="setHistoryRange(range)">
-                  {{ 'ANALYTICS.connect.months' | transloco: { count: range } }}
-                </button>
-              }
-            </div>
-          </section>
         }
       }
 
