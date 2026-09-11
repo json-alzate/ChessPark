@@ -200,6 +200,11 @@ Al abrir la pantalla se pinta **primero lo que ya está en el dispositivo** y so
 después se va a la red: los números aparecen al instante aunque la descarga
 tarde. Si no hay nada guardado, la primera descarga arranca sola.
 
+**Al abrir solo se enseña lo que cae dentro del rango elegido.** En el
+dispositivo puede haber más, si antes se eligió un historial más largo; sin este
+corte, la pantalla diría 24 meses con el selector en 6. Lo de fuera se queda
+guardado, así que volver a ampliar el rango no lo descarga otra vez.
+
 Lo descargado aparece en **Ajustes → Almacenamiento**, cuenta por cuenta, con su
 número de partidas y su tamaño, y se puede borrar desde ahí igual que los
 puzzles y los paquetes de campeones. El botón de *borrar todo* también lo

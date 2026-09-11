@@ -7,6 +7,7 @@ import {
   newestFirst,
   opponentOf,
   platformLabel,
+  rangeStart,
   thinSeries,
   toPercent,
 } from './game-analytics.util';
@@ -50,6 +51,20 @@ describe('monthsForRange', () => {
       { year: 2025, month: 12 },
       { year: 2026, month: 1 },
     ]);
+  });
+});
+
+describe('rangeStart', () => {
+  it('empieza el primer día del mes más antiguo del rango', () => {
+    expect(rangeStart(3, new Date(2026, 2, 15))).toBe(
+      new Date(2026, 0, 1).getTime()
+    );
+  });
+
+  it('con un solo mes, empieza el día 1 del mes en curso', () => {
+    expect(rangeStart(1, new Date(2026, 2, 15))).toBe(
+      new Date(2026, 2, 1).getTime()
+    );
   });
 });
 

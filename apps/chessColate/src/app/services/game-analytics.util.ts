@@ -59,6 +59,16 @@ export function monthsForRange(months: number, now = new Date()): ArchiveMonth[]
   return archiveMonthsBetween(from, now);
 }
 
+/**
+ * Desde qué instante cuenta un rango: el primer milisegundo del mes más
+ * antiguo que cubre. Es el mismo corte que usa la descarga, así que lo que se
+ * enseña al abrir coincide con lo que se acaba de descargar.
+ */
+export function rangeStart(months: number, now = new Date()): number {
+  const [first] = monthsForRange(months, now);
+  return new Date(first.year, first.month - 1, 1).getTime();
+}
+
 /** El nombre visible de una plataforma. */
 export function platformLabel(platform: ChessPlatform): string {
   return platform === 'chess.com' ? 'Chess.com' : 'Lichess';

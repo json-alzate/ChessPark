@@ -24,6 +24,7 @@ import {
   GameAnalyticsSettings,
   HistoryRange,
   monthsForRange,
+  rangeStart,
 } from './game-analytics.util';
 
 /** Se lanza cuando la plataforma no conoce ese nombre de usuario. */
@@ -221,8 +222,16 @@ export class GameAnalyticsService {
    * Lo que ya está en el dispositivo, sin tocar la red. Es lo que se pinta al
    * abrir la pantalla: los reportes aparecen al instante y la descarga, si
    * hace falta, va por detrás.
+   *
+   * Solo entra lo que cae dentro del rango elegido. En el dispositivo puede
+   * haber más —si antes se eligió un historial más largo—, pero enseñarlo
+   * haría que la pantalla dijera 24 meses con el selector en 6. Lo de fuera se
+   * queda guardado: volver a ampliar el rango no lo descarga otra vez.
    */
-  async loadStored(accounts: ConnectedAccounts): Promise<ChessGame[]> {
+  async loadStored(
+    accounts: ConnectedAccounts,
+    historyMonths: HistoryRange
+  ): Promise<ChessGame[]> {
     const games: ChessGame[] = [];
 
     if (accounts.chesscom.trim()) {
@@ -242,7 +251,10 @@ export class GameAnalyticsService {
       );
     }
 
-    this.games = games.sort((a, b) => a.playedAt - b.playedAt);
+    const from = rangeStart(historyMonths);
+    this.games = games
+      .filter((game) => game.playedAt >= from)
+      .sort((a, b) => a.playedAt - b.playedAt);
     return this.games;
   }
 

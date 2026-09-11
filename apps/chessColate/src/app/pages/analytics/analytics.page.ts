@@ -196,7 +196,7 @@ export class AnalyticsPage implements OnInit {
     this.lichessInput = settings.accounts.lichess;
 
     if (this.hasAccounts) {
-      this.allGames = await this.gameAnalytics.loadStored(this.accounts);
+      this.allGames = await this.gameAnalytics.loadStored(this.accounts, this.historyMonths);
       this.recalculate();
 
       // Nada guardado todavía: la primera descarga tiene que salir sola
@@ -275,7 +275,7 @@ export class AnalyticsPage implements OnInit {
     this.lichessInput = settings.accounts.lichess;
 
     this.allGames = this.hasAccounts
-      ? await this.gameAnalytics.loadStored(this.accounts)
+      ? await this.gameAnalytics.loadStored(this.accounts, this.historyMonths)
       : [];
     this.recalculate();
   }
