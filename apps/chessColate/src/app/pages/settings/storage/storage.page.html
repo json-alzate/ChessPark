@@ -81,6 +81,35 @@
           </section>
         }
 
+        <!-- Archivo de partidas propias descargado para el análisis -->
+        @if (archiveAccounts.length > 0) {
+          <section class="mb-4">
+            <h3 class="text-xs font-bold uppercase tracking-wide opacity-60 mb-2">
+              {{ 'ANALYTICS.title' | transloco }}
+            </h3>
+            <ul class="flex flex-col gap-2">
+              @for (account of archiveAccounts; track account.platform + account.username) {
+                <li class="bg-base-200/40 border border-base-content/10 rounded-box
+                           p-4 flex items-center justify-between gap-3">
+                  <div class="min-w-0">
+                    <div class="text-base font-bold truncate">{{ account.username }}</div>
+                    <div class="text-xs opacity-60 mt-0.5">
+                      {{ platformLabel(account.platform) }}
+                      · {{ 'ANALYTICS.openings.gamesCount' | transloco: { count: account.games } }}
+                      · {{ formatBytes(account.sizeBytes) }}
+                    </div>
+                  </div>
+                  <button class="btn btn-ghost btn-sm btn-circle shrink-0"
+                    (click)="confirmDeleteAccount(account)"
+                    [attr.aria-label]="'ANALYTICS.disconnect' | transloco">
+                    <ion-icon name="trash-outline" class="text-lg opacity-60"></ion-icon>
+                  </button>
+                </li>
+              }
+            </ul>
+          </section>
+        }
+
         <!-- Lista agrupada por tema / apertura -->
         <ul class="flex flex-col gap-2">
           @for (group of groups; track group.key) {

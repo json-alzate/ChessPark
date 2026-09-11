@@ -100,13 +100,19 @@ legible). El resto son **acciones semánticas**. Nombres y params en `snake_case
 | `games_tv_next` | el TV encadena a la siguiente | `index` | `pages/games/viewer/viewer.page.ts` |
 | `games_speed_changed` | cambia la velocidad | `ms_per_move` | `pages/games/viewer/viewer.page.ts` |
 | `games_pgn_load_failed` | un PGN propio no trae partidas | `reason` | `games.service.ts` |
+| `game_analytics_opened` | se abre Análisis de partidas | `connected`, `games_count` | `pages/analytics/analytics.page.ts` |
+| `game_analytics_connected` | se conecta una cuenta externa | `platforms`, `history_months` | `pages/analytics/analytics.page.ts` |
+| `game_analytics_synced` | termina una descarga de partidas propias | `platforms`, `months`, `games_count` | `game-analytics.service.ts` |
+| `game_analytics_filtered` | se cambia el filtro de plataforma | `platform`, `time_classes` | `pages/analytics/analytics.page.ts` |
+| `game_analytics_disconnected` | se desconecta una cuenta | `platform` | `game-analytics.service.ts` |
 
 \* `routine_uid`/`author_uid` solo en rutinas custom/públicas.
 
 **Nombres de pantalla** (`screen_name`): mapeados en `analytics-events.util.ts` — p. ej.
 `/coordinates` → "Coordenadas", `/puzzles/training` → "Entrenamiento", `/knight-tour` →
 "Recorrido del Caballo", `/chess960` → "Ajedrez 960", `/puzzles/custom-plans` → "Rutinas
-personalizadas", `/puzzles/public-plans` → "Rutinas públicas". Rutas no mapeadas caen a la ruta cruda.
+personalizadas", `/puzzles/public-plans` → "Rutinas públicas", `/analytics` → "Análisis de
+partidas". Rutas no mapeadas caen a la ruta cruda.
 
 ## 7. Cómo añadir un evento nuevo
 

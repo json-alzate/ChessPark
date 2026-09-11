@@ -81,6 +81,7 @@ const SCREEN_NAMES: Record<string, string> = {
   '/puzzles/public-plans': 'Rutinas públicas',
   '/games': 'Partidas',
   '/games/viewer': 'Reproductor de partidas',
+  '/analytics': 'Análisis de partidas',
   '/streak': 'Racha',
   '/coordinates': 'Coordenadas',
   '/knight-tour': 'Recorrido del Caballo',

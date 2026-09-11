@@ -20,7 +20,10 @@ import {
   StorageGroup,
 } from '@services/puzzle-storage.service';
 import { GamesService } from '@services/games.service';
+import { GameAnalyticsService } from '@services/game-analytics.service';
+import { platformLabel } from '@services/game-analytics.util';
 import { GameCollectionInfo } from '@chesspark/games-provider';
+import { AccountStorageSummary } from '@chesspark/game-reporter';
 
 addIcons({
   homeOutline,
@@ -52,11 +55,17 @@ export class StoragePage implements OnInit {
   private analyticsService = inject(AnalyticsService);
   private puzzleStorageService = inject(PuzzleStorageService);
   private gamesService = inject(GamesService);
+  private gameAnalyticsService = inject(GameAnalyticsService);
 
   groups: StorageGroup[] = [];
   /** Paquetes de partidas descargados; ocupan tanto como los puzzles. */
   gamePacks: GameCollectionInfo[] = [];
   gamePacksSizeBytes = 0;
+  /** Archivo de partidas propias descargado para el análisis, por cuenta. */
+  archiveAccounts: AccountStorageSummary[] = [];
+  archiveSizeBytes = 0;
+
+  readonly platformLabel = platformLabel;
   totalFiles = 0;
   totalSizeBytes = 0;
   /** El primer listado puede tardar (completa el tamaño de descargas antiguas). */
@@ -166,6 +175,24 @@ export class StoragePage implements OnInit {
     await this.refresh();
   }
 
+  /** Borra el archivo descargado de una cuenta de chess.com o lichess. */
+  async confirmDeleteAccount(account: AccountStorageSummary): Promise<void> {
+    const confirmed = await this.confirm(
+      this.translocoService.translate('ANALYTICS.disconnectTitle'),
+      this.translocoService.translate('ANALYTICS.disconnectMessage', {
+        platform: platformLabel(account.platform),
+        username: account.username,
+      })
+    );
+    if (!confirmed) return;
+
+    await this.gameAnalyticsService.disconnect(
+      account.platform,
+      account.username
+    );
+    await this.refresh();
+  }
+
   async confirmDeleteAll(): Promise<void> {
     const confirmed = await this.confirm(
       this.translocoService.translate('STORAGE.confirm.allTitle'),
@@ -181,6 +208,7 @@ export class StoragePage implements OnInit {
     await this.puzzleStorageService.deleteAll();
     // Si no se borraran, el total seguiría contándolos y el número mentiría.
     await this.gamesService.clearGamePacks();
+    await this.gameAnalyticsService.clearArchive();
     void this.analyticsService.logEvent('puzzle_storage_cleared', {
       files_count: filesCount,
       size_mb: sizeMb,
@@ -195,9 +223,10 @@ export class StoragePage implements OnInit {
   private async refresh(): Promise<void> {
     this.loading = true;
     try {
-      const [groups, packs] = await Promise.all([
+      const [groups, packs, accounts] = await Promise.all([
         this.puzzleStorageService.getGroups(),
         this.gamesService.getDownloadedCollections(),
+        this.gameAnalyticsService.getStorageByAccount(),
       ]);
 
       this.groups = groups;
@@ -206,13 +235,20 @@ export class StoragePage implements OnInit {
         (total, pack) => total + pack.sizeBytes,
         0
       );
+      this.archiveAccounts = accounts;
+      this.archiveSizeBytes = accounts.reduce(
+        (total, account) => total + account.sizeBytes,
+        0
+      );
 
       this.totalFiles =
         this.groups.reduce((total, group) => total + group.files.length, 0) +
-        packs.length;
+        packs.length +
+        accounts.length;
       this.totalSizeBytes =
         this.groups.reduce((total, group) => total + group.sizeBytes, 0) +
-        this.gamePacksSizeBytes;
+        this.gamePacksSizeBytes +
+        this.archiveSizeBytes;
       // Un grupo que ya no existe no debe seguir marcado como desplegado
       const keys = new Set(this.groups.map((group) => group.key));
       this.expanded = new Set([...this.expanded].filter((key) => keys.has(key)));
@@ -221,6 +257,8 @@ export class StoragePage implements OnInit {
       this.groups = [];
       this.gamePacks = [];
       this.gamePacksSizeBytes = 0;
+      this.archiveAccounts = [];
+      this.archiveSizeBytes = 0;
       this.totalFiles = 0;
       this.totalSizeBytes = 0;
     } finally {

@@ -588,6 +588,65 @@
       "sound": "Sound"
     }
   },
+  "ANALYTICS": {
+    "title": "Game analytics",
+    "subtitle": "Connect your account and see how you really play",
+    "refresh": "Refresh games",
+    "syncing": "Downloading your games…",
+    "noGames": "We found no games in that period. Try a longer history.",
+    "notEnoughData": "Not enough games yet to draw the rating chart.",
+    "accounts": "Connected accounts",
+    "disconnect": "Disconnect",
+    "disconnectTitle": "Disconnect this account?",
+    "disconnectMessage": "This deletes {{username}}'s games on {{platform}} stored on this device. You can connect it again whenever you want.",
+    "ratingProgress": "Rating progress",
+    "byColor": "As White and as Black",
+    "range": "From {{from}} to {{to}}",
+    "connect": {
+      "title": "Connect your account",
+      "description": "Enter your username on chess.com, lichess or both. No password needed: only public games are used.",
+      "usernamePlaceholder": "Your username",
+      "historyLabel": "How much history to download",
+      "months": "{{count}} months",
+      "historyHint": "The longer the history, the longer the first download takes. After that only new months are fetched.",
+      "action": "Analyse my games",
+      "privacy": "Your games are stored on this device only. Nothing is uploaded to any server."
+    },
+    "filters": {
+      "allPlatforms": "All"
+    },
+    "timeClasses": {
+      "bullet": "Bullet",
+      "blitz": "Blitz",
+      "rapid": "Rapid",
+      "classical": "Classical",
+      "daily": "Daily"
+    },
+    "stats": {
+      "games": "Games",
+      "score": "Score",
+      "record": "W / D / L",
+      "avgOpponent": "Avg. opponent"
+    },
+    "activity": {
+      "title": "Activity",
+      "less": "Less",
+      "more": "More"
+    },
+    "openings": {
+      "title": "Openings",
+      "gamesCount": "{{count}} games",
+      "asWhite": "{{count}} as White",
+      "asBlack": "{{count}} as Black",
+      "showMore": "Show more",
+      "empty": "No opening reaches {{min}} games yet."
+    },
+    "errors": {
+      "unknownUserTitle": "User not found",
+      "unknownUser": "{{platform}} does not know that user. Check the spelling.",
+      "syncFailed": "Some games could not be downloaded. Check your connection and try again."
+    }
+  },
   "STORAGE": {
     "pageTitle": "Downloaded puzzles",
     "settingsRowTitle": "Manage downloads",

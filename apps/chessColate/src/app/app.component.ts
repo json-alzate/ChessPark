@@ -26,6 +26,7 @@ import {
   downloadOutline,
   libraryOutline,
   settingsOutline,
+  statsChartOutline,
 } from 'ionicons/icons';
 import {
   IonMenu,
@@ -163,6 +164,12 @@ export class AppComponent implements OnInit, OnDestroy {
       enabled: true,
       divider: true,
     },
+    {
+      title: 'ANALYTICS.title',
+      icon: 'stats-chart-outline',
+      route: '/analytics',
+      enabled: true,
+    },
 
     // --- Ejercicios de entrenamiento ---
     {
@@ -247,6 +254,7 @@ export class AppComponent implements OnInit, OnDestroy {
       'globe-outline': globeOutline,
       'download-outline': downloadOutline,
       'settings-outline': settingsOutline,
+      'stats-chart-outline': statsChartOutline,
     });
     this.initApp();
   }
