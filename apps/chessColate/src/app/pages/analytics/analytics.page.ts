@@ -13,7 +13,12 @@ import {
   linkOutline,
 } from 'ionicons/icons';
 
-import { ChessGame, ChessPlatform, TimeClass } from '@cpark/models';
+import {
+  ChessGame,
+  ChessPlatform,
+  outcomeForUser,
+  TimeClass,
+} from '@cpark/models';
 import {
   ActivityDay,
   applyFilters,
@@ -29,14 +34,18 @@ import {
 
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 import { AnalyticsService } from '@services/analytics.service';
+import { GamesService } from '@services/games.service';
 import {
   GameAnalyticsService,
   UnknownUsernameError,
 } from '@services/game-analytics.service';
 import {
+  boardOrientation,
   ConnectedAccounts,
   HISTORY_RANGES,
   HistoryRange,
+  newestFirst,
+  opponentOf,
   platformLabel,
   TIME_CLASSES,
   toPercent,
@@ -53,6 +62,9 @@ addIcons({
   trashOutline,
   linkOutline,
 });
+
+/** Filas de la lista de partidas que se pintan de cada vez. */
+const GAMES_PAGE_SIZE = 20;
 
 /**
  * Análisis de las partidas del usuario en chess.com y lichess.
@@ -85,6 +97,7 @@ export class AnalyticsPage implements OnInit {
   private transloco = inject(TranslocoService);
   private analytics = inject(AnalyticsService);
   private gameAnalytics = inject(GameAnalyticsService);
+  private gamesService = inject(GamesService);
 
   /** Formulario de conexión. */
   chesscomInput = '';
@@ -117,14 +130,28 @@ export class AnalyticsPage implements OnInit {
   ratingPoints: RatingDataPoint[] = [];
   openings: OpeningStats[] = [];
   activityDays: ActivityDay[] = [];
+  /** Las partidas filtradas, de la más reciente a la más antigua. */
+  gamesList: ChessGame[] = [];
+  /** Cuántas filas de la lista se pintan; crece con "Ver más". */
+  shownGames = GAMES_PAGE_SIZE;
 
   readonly historyRanges = HISTORY_RANGES;
   readonly timeClasses = TIME_CLASSES;
   readonly platformLabel = platformLabel;
   readonly toPercent = toPercent;
+  readonly opponentOf = opponentOf;
+  readonly outcomeForUser = outcomeForUser;
 
   get hasAccounts(): boolean {
     return Boolean(this.accounts.chesscom || this.accounts.lichess);
+  }
+
+  get pagedGames(): ChessGame[] {
+    return this.gamesList.slice(0, this.shownGames);
+  }
+
+  get hasMoreGames(): boolean {
+    return this.shownGames < this.gamesList.length;
   }
 
   /** Hay cuentas conectadas pero ninguna partida que enseñar. */
@@ -356,6 +383,39 @@ export class AnalyticsPage implements OnInit {
     this.ratingPoints = getRatingProgress(games);
     this.openings = getOpeningStats(games);
     this.activityDays = getActivityHeatmap(games);
+    this.gamesList = newestFirst(games);
+    this.shownGames = GAMES_PAGE_SIZE;
+  }
+
+  // — Lista de partidas ——————————————————————————————————————
+
+  showMoreGames(): void {
+    this.shownGames += GAMES_PAGE_SIZE;
+  }
+
+  /**
+   * Abre una partida en el reproductor de Partidas.
+   *
+   * Se le pasa la lista entera tal como se ve —con sus filtros y en su orden—
+   * y el tablero se orienta desde el color con el que jugó el usuario.
+   */
+  openGame(game: ChessGame): void {
+    const index = this.gamesList.indexOf(game);
+    if (index < 0) {
+      return;
+    }
+
+    this.gamesService.openOwnGames(
+      this.transloco.translate('ANALYTICS.gamesList.title'),
+      this.gamesList
+    );
+    this.router.navigate(['/games/viewer'], {
+      queryParams: {
+        index,
+        color: boardOrientation(game),
+        source: 'analytics',
+      },
+    });
   }
 
   // — Ayudas de plantilla ————————————————————————————————————

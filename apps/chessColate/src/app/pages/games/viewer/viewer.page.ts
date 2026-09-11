@@ -94,6 +94,11 @@ export class GamesViewerPage implements OnInit, OnDestroy {
   currentMove = 0;
   isPlaying = false;
   orientation: 'w' | 'b' = 'w';
+  /**
+   * Desde qué lado se ve cada partida al cargarla. Blancas por defecto; las
+   * partidas propias de Análisis piden el color con el que jugó el usuario.
+   */
+  private startOrientation: 'w' | 'b' = 'w';
 
   settings: PlaybackSettings = this.gamesService.getSettings();
   readonly speeds = PLAYBACK_SPEEDS;
@@ -128,6 +133,7 @@ export class GamesViewerPage implements OnInit, OnDestroy {
 
     const params = this.route.snapshot.queryParamMap;
     this.isTv = params.get('tv') === '1';
+    this.startOrientation = params.get('color') === 'b' ? 'b' : 'w';
     const index = Number(params.get('index') ?? 0);
 
     if (this.isTv) {
@@ -142,7 +148,7 @@ export class GamesViewerPage implements OnInit, OnDestroy {
     }
 
     void this.analytics.logEvent('game_opened', {
-      source: this.isTv ? 'tv' : 'catalog',
+      source: this.isTv ? 'tv' : params.get('source') ?? 'catalog',
       player: pack.collection.id || 'own_pgn',
     });
   }
@@ -163,8 +169,8 @@ export class GamesViewerPage implements OnInit, OnDestroy {
     this.game = game;
     this.currentMove = 0;
     this.notFound = false;
-    // El tablero se ve desde el lado de quien mueve primero abajo: blancas.
-    this.orientation = 'w';
+    // Blancas abajo, salvo que quien abrió la partida pidiera otro lado
+    this.orientation = this.startOrientation;
   }
 
   // — Controles del tablero ————————————————————————————————

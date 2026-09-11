@@ -72,6 +72,14 @@ describe('countPlies', () => {
     expect(countPlies('1.e4 $1 e5 *')).toBe(2);
   });
 
+  it('no cuenta los comentarios de reloj de chess.com y lichess', () => {
+    expect(
+      countPlies(
+        '1. e4 {[%clk 0:02:59.9]} 1... e5 { [%clk 0:02:58] } 2. Nf3 {[%clk 0:02:57]} 1-0'
+      )
+    ).toBe(3);
+  });
+
   it('sin jugadas devuelve cero', () => {
     expect(countPlies('')).toBe(0);
   });

@@ -9,8 +9,10 @@ import {
   GameHeader,
   GamesStorageSummary,
   ParsedGame,
+  parseGameHeader,
   parsePackHeaders,
 } from '@chesspark/games-provider';
+import { ChessGame } from '@cpark/models';
 
 import { AnalyticsService } from './analytics.service';
 import {
@@ -174,6 +176,31 @@ export class GamesService {
       },
       headers,
       games,
+    };
+    this.openPack = pack;
+    return pack;
+  }
+
+  /**
+   * Abre como paquete las partidas propias que lista Análisis, para verlas en
+   * el mismo reproductor que las de los campeones.
+   *
+   * Se respeta el orden de la lista, así que la posición de cada fila es su
+   * índice dentro del paquete. Las cabeceras salen del PGN de cada partida:
+   * es lo que el visor sabe leer, venga de chess.com o de lichess.
+   */
+  openOwnGames(title: string, games: ChessGame[]): OpenPack {
+    const pack: OpenPack = {
+      collection: {
+        id: '',
+        name: title,
+        reign: '',
+        games: games.length,
+        sizeBytes: 0,
+        file: '',
+      },
+      headers: games.map((game, index) => parseGameHeader(game.pgn, index)),
+      games: games.map((game) => game.pgn),
     };
     this.openPack = pack;
     return pack;

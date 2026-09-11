@@ -6,6 +6,8 @@
 import {
   ArchiveMonth,
   archiveMonthsBetween,
+  ChessGame,
+  ChessGamePlayer,
   ChessPlatform,
   TimeClass,
 } from '@cpark/models';
@@ -90,4 +92,22 @@ export function thinSeries(
     thinned.push(last);
   }
   return thinned;
+}
+
+/** Las partidas de la más reciente a la más antigua: el orden de la lista. */
+export function newestFirst(games: ChessGame[]): ChessGame[] {
+  return [...games].sort((a, b) => b.playedAt - a.playedAt);
+}
+
+/** El rival del usuario en una partida. */
+export function opponentOf(game: ChessGame): ChessGamePlayer {
+  return game.userColor === 'white' ? game.black : game.white;
+}
+
+/**
+ * Desde qué lado se ve el tablero al abrir una partida propia: el del color
+ * con el que jugó el usuario, que es como la vio mientras la jugaba.
+ */
+export function boardOrientation(game: ChessGame): 'w' | 'b' {
+  return game.userColor === 'white' ? 'w' : 'b';
 }

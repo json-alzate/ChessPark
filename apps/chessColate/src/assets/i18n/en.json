@@ -642,6 +642,17 @@
       "showMore": "Show more",
       "empty": "No opening reaches {{min}} games yet."
     },
+    "gamesList": {
+      "title": "Games",
+      "hint": "Tap a game to replay it move by move.",
+      "vs": "vs {{name}}",
+      "showMore": "Show more",
+      "outcome": {
+        "win": "Won",
+        "draw": "Draw",
+        "loss": "Lost"
+      }
+    },
     "errors": {
       "unknownUserTitle": "User not found",
       "unknownUser": "{{platform}} does not know that user. Check the spelling.",

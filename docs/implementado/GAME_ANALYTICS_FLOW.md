@@ -34,12 +34,14 @@ Debajo, la nota de que nada sale del dispositivo.
   pasar por encima de un día se ve la fecha y cuántas partidas hubo.
 - **Con blancas y con negras**, para ver de qué lado se juega mejor.
 - **Tabla de aperturas** con la barra de ganadas / tablas / perdidas a escala.
+- **Tus partidas**, de la más reciente a la más antigua, de 20 en 20: rival y su
+  rating, resultado, control de tiempo, plataforma, fecha y apertura. Tocando
+  una se abre en el reproductor (ver [Ver una partida](#ver-una-partida)).
 
-Arriba de todo, filtros por plataforma y por control de tiempo; los reportes se
+Arriba de todo, las cuentas conectadas —cada una con su botón de desconectar—,
+el selector de historial con el periodo que cubre lo descargado y los filtros
+por plataforma y por control de tiempo. Los reportes y la lista de partidas se
 recalculan al instante porque **las partidas ya están en memoria**.
-
-Al final, las cuentas conectadas —cada una con su botón de desconectar— y el
-selector de historial, por si se quiere ampliar el periodo.
 
 ---
 
@@ -166,6 +168,29 @@ la línea concreta (`…-6.Be3-e5`): sin eso, la tabla tendría una fila por par
 **La gráfica se adelgaza a 400 puntos como mucho.** Un año de blitz son miles de
 partidas; dibujarlas todas tarda y no se lee mejor. Se toma una de cada N
 conservando el primer y el último punto, que son los que marcan la tendencia.
+
+---
+
+## Ver una partida
+
+La lista reutiliza tal cual el
+[reproductor de partidas](./REPRODUCTOR_PARTIDAS_FLOW.md). Al tocar una fila,
+las partidas de la lista —con sus filtros y en su orden— se abren como un
+paquete más, igual que un PGN propio, y el visor carga la que se tocó. Al salir,
+el botón de volver regresa a Análisis.
+
+Dos diferencias con las partidas de los campeones:
+
+- **El tablero se ve desde tu color.** El visor acepta el lado desde el que
+  empezar y Análisis le pasa el color con el que jugaste; los campeones siguen
+  con las blancas abajo.
+- **`game_opened` lleva `source: analytics`**, para distinguir estas partidas de
+  las del catálogo y del modo TV.
+
+Los PGN de chess.com y lichess llevan el reloj como comentario tras cada jugada
+(`{ [%clk 0:02:59] }`). El contador de jugadas del lector de PGN los contaba
+como jugadas; ahora los ignora, lo que también arregla los PGN de esas
+plataformas que se pegan en Partidas.
 
 ---
 

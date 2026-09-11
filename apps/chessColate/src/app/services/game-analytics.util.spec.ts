@@ -1,11 +1,35 @@
+import { ChessGame } from '@cpark/models';
 import { RatingDataPoint } from '@chesspark/game-reporter';
 
 import {
+  boardOrientation,
   monthsForRange,
+  newestFirst,
+  opponentOf,
   platformLabel,
   thinSeries,
   toPercent,
 } from './game-analytics.util';
+
+function buildGame(overrides: Partial<ChessGame> = {}): ChessGame {
+  return {
+    id: 'g1',
+    source: 'lichess',
+    pgn: '1. e4 e5',
+    timeControl: '300+0',
+    timeControlSeconds: 300,
+    incrementSeconds: 0,
+    timeClass: 'blitz',
+    playedAt: 1_000,
+    white: { username: 'ana', rating: 1500 },
+    black: { username: 'rival', rating: 1600 },
+    result: '1-0',
+    userColor: 'white',
+    variant: 'standard',
+    analyzed: false,
+    ...overrides,
+  };
+}
 
 describe('monthsForRange', () => {
   it('cuenta hacia atrás incluyendo el mes en curso', () => {
@@ -63,5 +87,44 @@ describe('thinSeries', () => {
     expect(thinned.length).toBeLessThanOrEqual(101);
     expect(thinned[0]).toEqual(points[0]);
     expect(thinned[thinned.length - 1]).toEqual(points[999]);
+  });
+});
+
+describe('newestFirst', () => {
+  it('pone primero la partida más reciente', () => {
+    const games = [
+      buildGame({ id: 'vieja', playedAt: 1_000 }),
+      buildGame({ id: 'nueva', playedAt: 3_000 }),
+      buildGame({ id: 'media', playedAt: 2_000 }),
+    ];
+
+    expect(newestFirst(games).map((game) => game.id)).toEqual([
+      'nueva',
+      'media',
+      'vieja',
+    ]);
+  });
+
+  it('no desordena la lista original', () => {
+    const games = [buildGame({ id: 'a', playedAt: 1 }), buildGame({ id: 'b', playedAt: 2 })];
+    newestFirst(games);
+    expect(games[0].id).toBe('a');
+  });
+});
+
+describe('opponentOf', () => {
+  it('con blancas, el rival es quien lleva negras', () => {
+    expect(opponentOf(buildGame({ userColor: 'white' })).username).toBe('rival');
+  });
+
+  it('con negras, el rival es quien lleva blancas', () => {
+    expect(opponentOf(buildGame({ userColor: 'black' })).username).toBe('ana');
+  });
+});
+
+describe('boardOrientation', () => {
+  it('ve el tablero desde el color con el que jugó el usuario', () => {
+    expect(boardOrientation(buildGame({ userColor: 'white' }))).toBe('w');
+    expect(boardOrientation(buildGame({ userColor: 'black' }))).toBe('b');
   });
 });

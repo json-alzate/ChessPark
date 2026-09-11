@@ -281,6 +281,72 @@
               </h3>
               <app-openings-table [openings]="openings"></app-openings-table>
             </section>
+
+            <!-- Partidas: las mismas que cuentan las cifras de arriba -->
+            <section class="mb-6">
+              <h3 class="text-xs font-bold uppercase tracking-wide opacity-60 mb-1">
+                {{ 'ANALYTICS.gamesList.title' | transloco }} ({{ gamesList.length }})
+              </h3>
+              <p class="text-xs opacity-50 mb-2">{{ 'ANALYTICS.gamesList.hint' | transloco }}</p>
+
+              <ul class="flex flex-col divide-y divide-base-content/10
+                         bg-base-200/40 border border-base-content/10 rounded-box">
+                @for (game of pagedGames; track game.source + game.id) {
+                  <li>
+                    <button class="w-full text-left py-3 px-3 flex items-center gap-3"
+                      (click)="openGame(game)">
+                      <!-- Color con el que jugó el usuario -->
+                      <span class="w-3 h-3 rounded-full shrink-0 border border-base-content/40"
+                        [class.bg-white]="game.userColor === 'white'"
+                        [class.bg-black]="game.userColor === 'black'"
+                        [attr.title]="(game.userColor === 'white' ? 'GAMES.filters.white' : 'GAMES.filters.black') | transloco">
+                      </span>
+
+                      <div class="min-w-0 flex-1">
+                        <div class="text-sm font-medium truncate">
+                          {{ 'ANALYTICS.gamesList.vs' | transloco: { name: opponentOf(game).username } }}
+                          @if (opponentOf(game).rating) {
+                            <span class="opacity-60">({{ opponentOf(game).rating }})</span>
+                          }
+                        </div>
+                        <div class="text-xs opacity-60 mt-0.5 truncate">
+                          {{ 'ANALYTICS.timeClasses.' + game.timeClass | transloco }}
+                          · {{ platformLabel(game.source) }}
+                          · {{ formatDate(game.playedAt) }}
+                          @if (game.opening?.name) {
+                            · {{ game.opening?.name }}
+                          }
+                        </div>
+                      </div>
+
+                      @switch (outcomeForUser(game)) {
+                        @case ('win') {
+                          <span class="badge badge-success badge-sm shrink-0">
+                            {{ 'ANALYTICS.gamesList.outcome.win' | transloco }}
+                          </span>
+                        }
+                        @case ('loss') {
+                          <span class="badge badge-error badge-sm shrink-0">
+                            {{ 'ANALYTICS.gamesList.outcome.loss' | transloco }}
+                          </span>
+                        }
+                        @default {
+                          <span class="badge badge-ghost badge-sm shrink-0">
+                            {{ 'ANALYTICS.gamesList.outcome.draw' | transloco }}
+                          </span>
+                        }
+                      }
+                    </button>
+                  </li>
+                }
+              </ul>
+
+              @if (hasMoreGames) {
+                <button class="btn btn-ghost btn-sm btn-block mt-2" (click)="showMoreGames()">
+                  {{ 'ANALYTICS.gamesList.showMore' | transloco }}
+                </button>
+              }
+            </section>
           }
         }
       }

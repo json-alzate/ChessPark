@@ -642,6 +642,17 @@
       "showMore": "Ver más",
       "empty": "Ninguna apertura llega a {{min}} partidas todavía."
     },
+    "gamesList": {
+      "title": "Partidas",
+      "hint": "Toca una partida para verla jugada a jugada.",
+      "vs": "vs {{name}}",
+      "showMore": "Ver más",
+      "outcome": {
+        "win": "Ganada",
+        "draw": "Tablas",
+        "loss": "Perdida"
+      }
+    },
     "errors": {
       "unknownUserTitle": "No encontramos ese usuario",
       "unknownUser": "{{platform}} no conoce a ese usuario. Revisa cómo lo escribiste.",

@@ -65,11 +65,16 @@ export function splitHeadersAndMoves(gameText: string): {
  * Cuenta las jugadas del texto de movimientos. PGN Mentor pega el número a la
  * jugada ('1.d4 Nf6 2.Nf3'), así que se le quita el número a cada trozo y lo
  * que quede con contenido cuenta como jugada.
+ *
+ * Los comentarios se quitan antes de trocear: chess.com y lichess meten el
+ * reloj tras cada jugada ('{ [%clk 0:02:59] }'), a veces con espacios dentro,
+ * y cada trozo del comentario contaría como una jugada más.
  */
 export function countPlies(movetext: string): number {
   let count = 0;
+  const withoutComments = movetext.replace(/\{[^}]*\}/g, ' ');
 
-  for (const raw of movetext.split(/\s+/)) {
+  for (const raw of withoutComments.split(/\s+/)) {
     if (!raw) {
       continue;
     }
