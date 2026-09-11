@@ -194,6 +194,40 @@ plataformas que se pegan en Partidas.
 
 ---
 
+## Mapa de calor de una pieza
+
+Dentro del reproductor, unas pestañas **Partida / Mapa de calor** cambian el
+tablero para enseñar por dónde se movió una pieza concreta en esa partida. Sirve
+para las partidas propias y para las de los campeones; no aparece en modo TV.
+
+- **Qué cuenta:** las casillas a las que llegó. Cada jugada de la pieza suma uno
+  en su casilla de destino; no cuentan las casillas que atraviesa ni el tiempo
+  que pasa en cada una. El número va escrito encima de la casilla y la
+  intensidad del color es relativa a la casilla más visitada de esa pieza.
+- **Qué pieza:** una concreta, identificada por su casilla inicial ("Caballo de
+  g1"). Al abrir se elige la dama del color del usuario —o blancas, en las
+  partidas de campeones— y un selector deja cambiar a las piezas del rival.
+- **Para comprobarlo:** la casilla inicial va enmarcada en azul, la pieza se
+  dibuja donde terminó (no se dibuja si la capturaron) y en la lista de jugadas
+  van resaltadas las suyas.
+
+El cálculo está en
+[`piece-heatmap.ts`](../../libs/game-reporter/src/lib/piece-heatmap.ts), junto
+al resto de reportes, y el tablero en
+[`board-heatmap`](../../libs/board/src/lib/board-heatmap/), que solo recibe las
+cuentas ya hechas. Tres jugadas mueven o quitan una pieza que no es la que dice
+la jugada, y se tratan aparte:
+
+- **Enroque:** también llega la torre, y cuenta como jugada suya.
+- **Captura al paso:** el peón capturado no está en la casilla de destino.
+- **Coronación:** la pieza sigue siendo el mismo peón; se anota a qué coronó.
+
+Como el id de cada pieza es su casilla inicial, sumar el mapa de muchas
+partidas —la siguiente fase: por apertura, en las que se gana o se pierde— será
+sumar las cuentas de las piezas con el mismo id.
+
+---
+
 ## Rendimiento y espacio
 
 Al abrir la pantalla se pinta **primero lo que ya está en el dispositivo** y solo

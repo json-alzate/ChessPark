@@ -1,0 +1,16 @@
+<div class="board-heatmap">
+  <div #boardContainer class="board-heatmap__board"></div>
+
+  <!-- Capa de colores y números, alineada casilla a casilla con el tablero -->
+  <div class="board-heatmap__overlay" aria-hidden="true">
+    @for (cell of cells; track cell.square) {
+      <div class="board-heatmap__cell"
+        [attr.data-level]="cell.level"
+        [class.board-heatmap__cell--start]="cell.isStart">
+        @if (cell.count) {
+          <span class="board-heatmap__count">{{ cell.count }}</span>
+        }
+      </div>
+    }
+  </div>
+</div>

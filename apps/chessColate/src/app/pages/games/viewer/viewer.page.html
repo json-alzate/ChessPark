@@ -34,85 +34,174 @@
         </div>
       } @else if (game) {
 
+        <!-- Ver la partida o el mapa de calor de una pieza (no en modo TV) -->
+        @if (!isTv) {
+          <div class="join w-full mb-3">
+            <button class="btn btn-sm join-item flex-1" [class.btn-primary]="!heatmapMode"
+              (click)="setHeatmapMode(false)">
+              {{ 'GAMES.heatmap.tabGame' | transloco }}
+            </button>
+            <button class="btn btn-sm join-item flex-1" [class.btn-primary]="heatmapMode"
+              (click)="setHeatmapMode(true)">
+              {{ 'GAMES.heatmap.tabHeatmap' | transloco }}
+            </button>
+          </div>
+        }
+
         <!-- Tablero -->
-        <lib-board-game-player
-          [fens]="game.fens"
-          [moveSquares]="game.moveSquares"
-          [msPerMove]="settings.msPerMove"
-          [soundEnabled]="settings.soundEnabled"
-          [orientation]="orientation"
-          (indexChange)="onIndexChange($event)"
-          (playingChange)="onPlayingChange($event)"
-          (finished)="onGameFinished()">
-        </lib-board-game-player>
+        @if (heatmapMode) {
+          <lib-board-heatmap
+            [counts]="selectedPiece?.arrivals ?? {}"
+            [startSquare]="selectedPiece?.startSquare ?? ''"
+            [piece]="selectedPiece && !selectedPiece.capturedAtPly ? boardPieceCode(selectedPiece) : ''"
+            [pieceSquare]="selectedPiece?.lastSquare ?? ''"
+            [orientation]="orientation">
+          </lib-board-heatmap>
+
+          <!-- Qué pieza: color y, dentro de él, cada pieza por su casilla inicial -->
+          <div class="mt-3">
+            <div class="join w-full mb-2">
+              @for (option of heatmapColorOptions; track option.color) {
+                <button class="btn btn-xs join-item flex-1"
+                  [class.btn-primary]="heatmapColor === option.color"
+                  (click)="setHeatmapColor(option.color)">
+                  {{ option.label | transloco }}
+                </button>
+              }
+            </div>
+
+            <div class="flex flex-wrap gap-1">
+              @for (piece of heatmapPieces; track piece.id) {
+                <button class="btn btn-xs font-mono gap-0.5"
+                  [class.btn-primary]="piece.id === selectedPieceId"
+                  [class.opacity-50]="piece.capturedAtPly && piece.id !== selectedPieceId"
+                  (click)="selectPiece(piece)">
+                  <span class="text-base leading-none">{{ pieceSymbol(piece) }}</span>
+                  {{ piece.startSquare }}
+                </button>
+              }
+            </div>
+
+            @if (selectedPiece; as piece) {
+              <p class="text-sm mt-3">
+                <span class="font-bold">
+                  {{ 'GAMES.heatmap.pieceName' | transloco: {
+                       piece: ('GAMES.heatmap.pieces.' + piece.type | transloco),
+                       square: piece.startSquare
+                     } }}
+                </span>
+                ·
+                @if (piece.plies.length === 0) {
+                  {{ 'GAMES.heatmap.noMoves' | transloco }}
+                } @else if (piece.plies.length === 1) {
+                  {{ 'GAMES.heatmap.oneMove' | transloco }}
+                } @else {
+                  {{ 'GAMES.heatmap.movesCount' | transloco: { count: piece.plies.length } }}
+                }
+                @if (piece.promotedTo) {
+                  · {{ 'GAMES.heatmap.promoted' | transloco: {
+                         piece: ('GAMES.heatmap.pieces.' + piece.promotedTo | transloco)
+                       } }}
+                }
+                @if (piece.capturedAtPly) {
+                  · {{ 'GAMES.heatmap.captured' | transloco: {
+                         move: moveNumberOfPly(piece.capturedAtPly)
+                       } }}
+                }
+              </p>
+              <p class="text-xs opacity-60 mt-1">{{ 'GAMES.heatmap.hint' | transloco }}</p>
+            }
+          </div>
+        } @else {
+          <lib-board-game-player
+            [fens]="game.fens"
+            [moveSquares]="game.moveSquares"
+            [msPerMove]="settings.msPerMove"
+            [soundEnabled]="settings.soundEnabled"
+            [orientation]="orientation"
+            (indexChange)="onIndexChange($event)"
+            (playingChange)="onPlayingChange($event)"
+            (finished)="onGameFinished()">
+          </lib-board-game-player>
+        }
 
         <!-- Jugadas -->
         <div class="mt-3">
-          <div class="overflow-x-auto whitespace-nowrap text-sm font-mono
-                      bg-base-200/40 border border-base-content/10 rounded-box px-3 py-2">
+          <!-- En el mapa de calor la lista se parte en líneas: así se ven todas
+               las jugadas resaltadas de la pieza sin tener que desplazarse -->
+          <div class="overflow-x-auto text-sm font-mono
+                      bg-base-200/40 border border-base-content/10 rounded-box px-3 py-2"
+            [class.whitespace-nowrap]="!heatmapMode">
             @for (san of game.sanMoves; track $index) {
               @if ($index % 2 === 0) {
                 <span class="opacity-50 mr-1">{{ ($index / 2) + 1 }}.</span>
               }
               <button class="px-1 rounded"
-                [class.bg-primary]="currentMove === $index + 1"
-                [class.text-primary-content]="currentMove === $index + 1"
+                [class.bg-primary]="!heatmapMode && currentMove === $index + 1"
+                [class.text-primary-content]="!heatmapMode && currentMove === $index + 1"
+                [class.bg-primary/40]="isSelectedPieceMove($index + 1)"
+                [class.font-bold]="isSelectedPieceMove($index + 1)"
                 (click)="goToMove($index + 1)">{{ san }}</button>
             }
           </div>
-          <div class="text-xs opacity-60 text-right mt-1">
-            {{ 'GAMES.moveProgress' | transloco: { current: currentMove, total: totalMoves } }}
+          @if (!heatmapMode) {
+            <div class="text-xs opacity-60 text-right mt-1">
+              {{ 'GAMES.moveProgress' | transloco: { current: currentMove, total: totalMoves } }}
+            </div>
+          }
+        </div>
+
+        <!-- Los controles de reproducción no pintan nada en el mapa de calor -->
+        @if (!heatmapMode) {
+          <!-- Controles de la partida -->
+          <div class="flex items-center justify-center gap-1 mt-3">
+            <button class="btn btn-ghost btn-circle" (click)="toStart()"
+              [attr.aria-label]="'GAMES.controls.start' | transloco">
+              <ion-icon name="play-skip-back-outline" class="text-xl"></ion-icon>
+            </button>
+            <button class="btn btn-ghost btn-circle" (click)="previousMove()"
+              [attr.aria-label]="'GAMES.controls.previous' | transloco">
+              <ion-icon name="chevron-back-outline" class="text-2xl"></ion-icon>
+            </button>
+            <button class="btn btn-primary btn-circle btn-lg" (click)="togglePlay()"
+              [attr.aria-label]="'GAMES.controls.play' | transloco">
+              <ion-icon [name]="isPlaying ? 'pause-outline' : 'play-outline'" class="text-2xl"></ion-icon>
+            </button>
+            <button class="btn btn-ghost btn-circle" (click)="nextMove()"
+              [attr.aria-label]="'GAMES.controls.next' | transloco">
+              <ion-icon name="chevron-forward-outline" class="text-2xl"></ion-icon>
+            </button>
+            <button class="btn btn-ghost btn-circle" (click)="toEnd()"
+              [attr.aria-label]="'GAMES.controls.end' | transloco">
+              <ion-icon name="play-skip-forward-outline" class="text-xl"></ion-icon>
+            </button>
           </div>
-        </div>
 
-        <!-- Controles de la partida -->
-        <div class="flex items-center justify-center gap-1 mt-3">
-          <button class="btn btn-ghost btn-circle" (click)="toStart()"
-            [attr.aria-label]="'GAMES.controls.start' | transloco">
-            <ion-icon name="play-skip-back-outline" class="text-xl"></ion-icon>
-          </button>
-          <button class="btn btn-ghost btn-circle" (click)="previousMove()"
-            [attr.aria-label]="'GAMES.controls.previous' | transloco">
-            <ion-icon name="chevron-back-outline" class="text-2xl"></ion-icon>
-          </button>
-          <button class="btn btn-primary btn-circle btn-lg" (click)="togglePlay()"
-            [attr.aria-label]="'GAMES.controls.play' | transloco">
-            <ion-icon [name]="isPlaying ? 'pause-outline' : 'play-outline'" class="text-2xl"></ion-icon>
-          </button>
-          <button class="btn btn-ghost btn-circle" (click)="nextMove()"
-            [attr.aria-label]="'GAMES.controls.next' | transloco">
-            <ion-icon name="chevron-forward-outline" class="text-2xl"></ion-icon>
-          </button>
-          <button class="btn btn-ghost btn-circle" (click)="toEnd()"
-            [attr.aria-label]="'GAMES.controls.end' | transloco">
-            <ion-icon name="play-skip-forward-outline" class="text-xl"></ion-icon>
-          </button>
-        </div>
+          <!-- Velocidad, girar y sonido -->
+          <div class="flex items-center justify-between gap-2 mt-3">
+            <div class="flex items-center gap-1">
+              <ion-icon name="speedometer-outline" class="opacity-60"></ion-icon>
+              @for (speed of speeds; track speed) {
+                <button class="btn btn-xs" [class.btn-primary]="settings.msPerMove === speed"
+                  (click)="setSpeed(speed)">
+                  {{ 'GAMES.speedLabel' | transloco: { seconds: speed / 1000 } }}
+                </button>
+              }
+            </div>
 
-        <!-- Velocidad, girar y sonido -->
-        <div class="flex items-center justify-between gap-2 mt-3">
-          <div class="flex items-center gap-1">
-            <ion-icon name="speedometer-outline" class="opacity-60"></ion-icon>
-            @for (speed of speeds; track speed) {
-              <button class="btn btn-xs" [class.btn-primary]="settings.msPerMove === speed"
-                (click)="setSpeed(speed)">
-                {{ 'GAMES.speedLabel' | transloco: { seconds: speed / 1000 } }}
+            <div class="flex items-center gap-1 shrink-0">
+              <button class="btn btn-ghost btn-sm btn-circle" (click)="flipBoard()"
+                [attr.aria-label]="'GAMES.controls.flip' | transloco">
+                <ion-icon name="swap-vertical-outline" class="text-lg"></ion-icon>
               </button>
-            }
+              <button class="btn btn-ghost btn-sm btn-circle" (click)="toggleSound()"
+                [attr.aria-label]="'GAMES.controls.sound' | transloco">
+                <ion-icon [name]="settings.soundEnabled ? 'volume-high-outline' : 'volume-mute-outline'"
+                  class="text-lg"></ion-icon>
+              </button>
+            </div>
           </div>
-
-          <div class="flex items-center gap-1 shrink-0">
-            <button class="btn btn-ghost btn-sm btn-circle" (click)="flipBoard()"
-              [attr.aria-label]="'GAMES.controls.flip' | transloco">
-              <ion-icon name="swap-vertical-outline" class="text-lg"></ion-icon>
-            </button>
-            <button class="btn btn-ghost btn-sm btn-circle" (click)="toggleSound()"
-              [attr.aria-label]="'GAMES.controls.sound' | transloco">
-              <ion-icon [name]="settings.soundEnabled ? 'volume-high-outline' : 'volume-mute-outline'"
-                class="text-lg"></ion-icon>
-            </button>
-          </div>
-        </div>
+        }
 
         <!-- Modo TV: solo si se entró a ver la colección entera -->
         @if (isTv) {

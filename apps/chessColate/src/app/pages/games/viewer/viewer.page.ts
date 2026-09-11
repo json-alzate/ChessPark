@@ -29,15 +29,27 @@ import {
 } from 'ionicons/icons';
 
 import { ParsedGame } from '@chesspark/games-provider';
-import { BoardGamePlayerComponent } from '@chesspark/board';
+import {
+  getPieceHeatmap,
+  PieceHeatmap,
+  TrackedPiece,
+} from '@chesspark/game-reporter';
+import {
+  BoardGamePlayerComponent,
+  BoardHeatmapComponent,
+} from '@chesspark/board';
 
 import { AnalyticsService } from '@services/analytics.service';
 import { GamesService } from '@services/games.service';
 import {
   PLAYBACK_SPEEDS,
   PlaybackSettings,
+  boardPieceCode,
   buildPlayOrder,
+  defaultHeatmapPiece,
+  moveNumberOfPly,
   nextPosition,
+  pieceSymbol,
 } from '@services/games.util';
 
 addIcons({
@@ -77,6 +89,7 @@ const GAP_BETWEEN_GAMES_MS = 2500;
     IonContent,
     IonIcon,
     BoardGamePlayerComponent,
+    BoardHeatmapComponent,
   ],
 })
 export class GamesViewerPage implements OnInit, OnDestroy {
@@ -112,12 +125,63 @@ export class GamesViewerPage implements OnInit, OnDestroy {
 
   private gapTimer?: ReturnType<typeof setTimeout>;
 
+  /** La partida que está cargada, dentro del paquete. */
+  private currentIndex = 0;
+
+  // — Mapa de calor ——————————————————————————————————————————
+
+  /** El tablero enseña por dónde se movió una pieza en vez de la partida. */
+  heatmapMode = false;
+  heatmap: PieceHeatmap | null = null;
+  /** De qué color son las piezas que ofrece el selector. */
+  heatmapColor: 'w' | 'b' = 'w';
+  selectedPieceId = '';
+  /** La partida es del usuario (se abrió desde Análisis). */
+  isOwnGame = false;
+
+  readonly pieceSymbol = pieceSymbol;
+  readonly moveNumberOfPly = moveNumberOfPly;
+  readonly boardPieceCode = boardPieceCode;
+
   get collectionName(): string {
     return this.gamesService.currentPack?.collection.name ?? '';
   }
 
   get totalMoves(): number {
     return this.game ? this.game.fens.length - 1 : 0;
+  }
+
+  /** Las piezas del color elegido, para el selector. */
+  get heatmapPieces(): TrackedPiece[] {
+    return (
+      this.heatmap?.pieces.filter((piece) => piece.color === this.heatmapColor) ??
+      []
+    );
+  }
+
+  get selectedPiece(): TrackedPiece | null {
+    return (
+      this.heatmap?.pieces.find((piece) => piece.id === this.selectedPieceId) ??
+      null
+    );
+  }
+
+  /**
+   * Los dos colores del selector. En una partida propia se nombran como el
+   * usuario la vive —sus piezas y las del rival—, y el suyo va primero.
+   */
+  get heatmapColorOptions(): Array<{ color: 'w' | 'b'; label: string }> {
+    if (!this.isOwnGame) {
+      return [
+        { color: 'w', label: 'GAMES.heatmap.white' },
+        { color: 'b', label: 'GAMES.heatmap.black' },
+      ];
+    }
+    const own = this.startOrientation;
+    return [
+      { color: own, label: 'GAMES.heatmap.yourPieces' },
+      { color: own === 'w' ? 'b' : 'w', label: 'GAMES.heatmap.opponent' },
+    ];
   }
 
   get tvPositionLabel(): { current: number; total: number } {
@@ -134,6 +198,7 @@ export class GamesViewerPage implements OnInit, OnDestroy {
     const params = this.route.snapshot.queryParamMap;
     this.isTv = params.get('tv') === '1';
     this.startOrientation = params.get('color') === 'b' ? 'b' : 'w';
+    this.isOwnGame = params.get('source') === 'analytics';
     const index = Number(params.get('index') ?? 0);
 
     if (this.isTv) {
@@ -167,10 +232,65 @@ export class GamesViewerPage implements OnInit, OnDestroy {
     }
 
     this.game = game;
+    this.currentIndex = index;
     this.currentMove = 0;
     this.notFound = false;
     // Blancas abajo, salvo que quien abrió la partida pidiera otro lado
     this.orientation = this.startOrientation;
+
+    if (this.heatmapMode) {
+      this.loadHeatmap();
+    }
+  }
+
+  // — Mapa de calor ——————————————————————————————————————————
+
+  /**
+   * Cambia entre ver la partida y ver el mapa de calor. Al volver a la partida
+   * el reproductor se monta de nuevo desde la posición inicial.
+   */
+  setHeatmapMode(on: boolean): void {
+    if (on === this.heatmapMode) {
+      return;
+    }
+
+    if (on) {
+      if (this.isPlaying) {
+        this.board?.togglePlay();
+      }
+      this.loadHeatmap();
+      void this.analytics.logEvent('game_heatmap_opened', {
+        source: this.isOwnGame ? 'analytics' : 'catalog',
+      });
+    } else {
+      this.currentMove = 0;
+    }
+
+    this.heatmapMode = on;
+  }
+
+  setHeatmapColor(color: 'w' | 'b'): void {
+    this.heatmapColor = color;
+    this.selectedPieceId =
+      defaultHeatmapPiece(this.heatmap?.pieces ?? [], color)?.id ?? '';
+  }
+
+  selectPiece(piece: TrackedPiece): void {
+    this.selectedPieceId = piece.id;
+  }
+
+  /** La jugada `ply` la hizo la pieza elegida: se resalta en la lista. */
+  isSelectedPieceMove(ply: number): boolean {
+    return (
+      this.heatmapMode && (this.selectedPiece?.plies.includes(ply) ?? false)
+    );
+  }
+
+  /** Calcula el mapa de la partida cargada y elige la pieza de partida. */
+  private loadHeatmap(): void {
+    const pgn = this.gamesService.getGamePgn(this.currentIndex);
+    this.heatmap = pgn ? getPieceHeatmap(pgn) : null;
+    this.setHeatmapColor(this.startOrientation);
   }
 
   // — Controles del tablero ————————————————————————————————

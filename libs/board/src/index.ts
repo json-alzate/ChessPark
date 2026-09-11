@@ -4,3 +4,5 @@ export * from './lib/board-puzzle-solution/board-puzzle-solution.component';
 export * from './lib/board-game-player/board-game-player.component';
 export * from './lib/fen-board/fen-board.component';
 export * from './lib/chess960-board/chess960-board';
+export * from './lib/board-heatmap/board-heatmap.component';
+export * from './lib/board-heatmap/board-heatmap.util';

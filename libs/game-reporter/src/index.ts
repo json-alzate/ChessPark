@@ -14,6 +14,15 @@ export {
   toDayKey,
 } from './lib/reports';
 
+// Mapa de calor de las piezas de una partida
+export { getPieceHeatmap } from './lib/piece-heatmap';
+export type {
+  PieceColor,
+  PieceKind,
+  PieceHeatmap,
+  TrackedPiece,
+} from './lib/piece-heatmap';
+
 // Tipos
 export type {
   GamesSource,

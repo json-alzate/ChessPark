@@ -49,6 +49,7 @@ export type AnalyticsEventName =
   | 'games_tv_next'
   | 'games_speed_changed'
   | 'games_pgn_load_failed'
+  | 'game_heatmap_opened'
   | 'game_analytics_opened'
   | 'game_analytics_connected'
   | 'game_analytics_synced'

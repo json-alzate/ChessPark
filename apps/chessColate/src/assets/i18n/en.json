@@ -586,6 +586,29 @@
       "end": "Go to end",
       "flip": "Flip the board",
       "sound": "Sound"
+    },
+    "heatmap": {
+      "tabGame": "Game",
+      "tabHeatmap": "Heatmap",
+      "yourPieces": "Your pieces",
+      "opponent": "Opponent",
+      "white": "White",
+      "black": "Black",
+      "pieceName": "{{piece}} from {{square}}",
+      "pieces": {
+        "k": "King",
+        "q": "Queen",
+        "r": "Rook",
+        "b": "Bishop",
+        "n": "Knight",
+        "p": "Pawn"
+      },
+      "noMoves": "did not move",
+      "oneMove": "1 move",
+      "movesCount": "{{count}} moves",
+      "promoted": "promoted: {{piece}}",
+      "captured": "captured on move {{move}}",
+      "hint": "Each number is how many times it landed on that square, and the blue frame is where it started. Its moves are highlighted in the list."
     }
   },
   "ANALYTICS": {

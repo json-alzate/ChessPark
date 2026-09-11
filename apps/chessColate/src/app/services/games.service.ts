@@ -154,6 +154,19 @@ export class GamesService {
     return buildGame(pack.games[index], pack.headers[index]);
   }
 
+  /**
+   * El PGN tal cual de una partida del paquete abierto. Lo usa el mapa de
+   * calor, que necesita las jugadas con sus capturas y enroques, no solo las
+   * posiciones.
+   */
+  getGamePgn(index: number): string | null {
+    const pack = this.openPack;
+    if (!pack || index < 0 || index >= pack.games.length) {
+      return null;
+    }
+    return pack.games[index];
+  }
+
   /** Abre un PGN que trae el usuario (pegado o de un archivo). */
   openUserPgn(pgn: string, title: string): OpenPack | null {
     const { headers, games } = parsePackHeaders(pgn);

@@ -586,6 +586,29 @@
       "end": "Ir al final",
       "flip": "Girar el tablero",
       "sound": "Sonido"
+    },
+    "heatmap": {
+      "tabGame": "Partida",
+      "tabHeatmap": "Mapa de calor",
+      "yourPieces": "Tus piezas",
+      "opponent": "Rival",
+      "white": "Blancas",
+      "black": "Negras",
+      "pieceName": "{{piece}} de {{square}}",
+      "pieces": {
+        "k": "Rey",
+        "q": "Dama",
+        "r": "Torre",
+        "b": "Alfil",
+        "n": "Caballo",
+        "p": "Peón"
+      },
+      "noMoves": "no se movió",
+      "oneMove": "1 jugada",
+      "movesCount": "{{count}} jugadas",
+      "promoted": "coronó: {{piece}}",
+      "captured": "la capturaron en la jugada {{move}}",
+      "hint": "Cada número es las veces que llegó a esa casilla y el marco azul es donde empezó. Sus jugadas van resaltadas en la lista."
     }
   },
   "ANALYTICS": {

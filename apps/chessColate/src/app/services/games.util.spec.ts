@@ -1,13 +1,18 @@
+import { TrackedPiece } from '@chesspark/game-reporter';
 import { GameHeader } from '@chesspark/games-provider';
 
 import {
-  EMPTY_FILTERS,
+  boardPieceCode,
   buildPlayOrder,
+  defaultHeatmapPiece,
+  EMPTY_FILTERS,
   filterGames,
   formatBytes,
+  moveNumberOfPly,
   nextPosition,
   opponentOf,
   outcomeFor,
+  pieceSymbol,
   playedColor,
 } from './games.util';
 
@@ -179,5 +184,67 @@ describe('formatBytes', () => {
 
   it('usa kilobytes por debajo', () => {
     expect(formatBytes(430000)).toBe('420 KB');
+  });
+});
+
+// — Mapa de calor de una pieza ————————————————————————————————
+
+function trackedPiece(overrides: Partial<TrackedPiece> = {}): TrackedPiece {
+  return {
+    id: 'w-d1',
+    color: 'w',
+    type: 'q',
+    startSquare: 'd1',
+    arrivals: {},
+    plies: [],
+    lastSquare: 'd1',
+    ...overrides,
+  };
+}
+
+describe('pieceSymbol', () => {
+  it('usa el símbolo blanco o negro según el color', () => {
+    expect(pieceSymbol({ color: 'w', type: 'n' })).toBe('♘');
+    expect(pieceSymbol({ color: 'b', type: 'n' })).toBe('♞');
+  });
+});
+
+describe('moveNumberOfPly', () => {
+  it('las dos medias jugadas de un turno son la misma jugada', () => {
+    expect(moveNumberOfPly(1)).toBe(1);
+    expect(moveNumberOfPly(2)).toBe(1);
+    expect(moveNumberOfPly(3)).toBe(2);
+  });
+});
+
+describe('defaultHeatmapPiece', () => {
+  const pieces = [
+    trackedPiece({ id: 'w-e1', type: 'k', startSquare: 'e1' }),
+    trackedPiece({ id: 'w-d1' }),
+    trackedPiece({ id: 'b-e8', color: 'b', type: 'k', startSquare: 'e8' }),
+  ];
+
+  it('elige la dama del color pedido', () => {
+    expect(defaultHeatmapPiece(pieces, 'w')?.id).toBe('w-d1');
+  });
+
+  it('sin dama, la primera pieza de ese color', () => {
+    expect(defaultHeatmapPiece(pieces, 'b')?.id).toBe('b-e8');
+  });
+
+  it('sin piezas de ese color, ninguna', () => {
+    expect(defaultHeatmapPiece([], 'w')).toBeNull();
+  });
+});
+
+describe('boardPieceCode', () => {
+  it('dibuja la pieza con la que empezó', () => {
+    expect(boardPieceCode(trackedPiece({ color: 'b', type: 'n' }))).toBe('bn');
+  });
+
+  it('un peón coronado se dibuja como su nueva pieza', () => {
+    expect(
+      boardPieceCode(trackedPiece({ type: 'p', promotedTo: 'q' }))
+    ).toBe('wq');
   });
 });

@@ -4,6 +4,7 @@
  */
 
 import { GameHeader } from '@chesspark/games-provider';
+import { PieceKind, TrackedPiece } from '@chesspark/game-reporter';
 
 /** Velocidades ofrecidas, en milisegundos por jugada. */
 export const PLAYBACK_SPEEDS = [500, 1000, 2000, 3000, 5000] as const;
@@ -165,4 +166,55 @@ export function formatBytes(bytes: number): string {
     return `${mb.toFixed(1).replace('.', ',')} MB`;
   }
   return `${Math.round(bytes / 1024)} KB`;
+}
+
+// — Mapa de calor de una pieza ————————————————————————————————
+
+const WHITE_SYMBOLS: Record<PieceKind, string> = {
+  k: '♔',
+  q: '♕',
+  r: '♖',
+  b: '♗',
+  n: '♘',
+  p: '♙',
+};
+
+const BLACK_SYMBOLS: Record<PieceKind, string> = {
+  k: '♚',
+  q: '♛',
+  r: '♜',
+  b: '♝',
+  n: '♞',
+  p: '♟',
+};
+
+/** El símbolo de la pieza con la que empezó, para el selector. */
+export function pieceSymbol(piece: Pick<TrackedPiece, 'color' | 'type'>): string {
+  return (piece.color === 'w' ? WHITE_SYMBOLS : BLACK_SYMBOLS)[piece.type];
+}
+
+/** El número de jugada de una media jugada: la 1 y la 2 son la jugada 1. */
+export function moveNumberOfPly(ply: number): number {
+  return Math.ceil(ply / 2);
+}
+
+/**
+ * La pieza que se enseña al abrir el mapa: la dama de ese color, que es la
+ * que más se mueve y la del ejemplo de siempre; si no hay dama (una posición
+ * de partida propia), la primera que haya.
+ */
+export function defaultHeatmapPiece(
+  pieces: TrackedPiece[],
+  color: 'w' | 'b'
+): TrackedPiece | null {
+  const own = pieces.filter((piece) => piece.color === color);
+  return own.find((piece) => piece.type === 'q') ?? own[0] ?? null;
+}
+
+/**
+ * Cómo se dibuja la pieza en el tablero, con el código de cm-chessboard: un
+ * peón que coronó se dibuja como la pieza en la que se convirtió.
+ */
+export function boardPieceCode(piece: TrackedPiece): string {
+  return `${piece.color}${piece.promotedTo ?? piece.type}`;
 }
