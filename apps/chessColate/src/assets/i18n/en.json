@@ -630,7 +630,9 @@
     },
     "activity": {
       "title": "Activity",
-      "gamesLastYear": "{{count}} games in the last year:"
+      "gamesLastYear": "{{count}} games in the last year:",
+      "oneGame": "1 game",
+      "gamesCount": "{{count}} games"
     },
     "openings": {
       "title": "Openings",

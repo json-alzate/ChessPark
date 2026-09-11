@@ -30,7 +30,8 @@ Debajo, la nota de que nada sale del dispositivo.
 - **Evolución del rating**, una línea por plataforma.
 - **Mapa de actividad** del último año, con el mismo gráfico que tenía la app
   anterior (matriz de Chart.js): una columna por semana, un cuadro por día y la
-  semana empezando en lunes, repartido en todo el ancho sin desplazamiento.
+  semana empezando en lunes, repartido en todo el ancho sin desplazamiento. Al
+  pasar por encima de un día se ve la fecha y cuántas partidas hubo.
 - **Con blancas y con negras**, para ver de qué lado se juega mejor.
 - **Tabla de aperturas** con la barra de ganadas / tablas / perdidas a escala.
 

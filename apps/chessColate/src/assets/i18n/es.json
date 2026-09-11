@@ -630,7 +630,9 @@
     },
     "activity": {
       "title": "Actividad",
-      "gamesLastYear": "{{count}} partidas en el último año:"
+      "gamesLastYear": "{{count}} partidas en el último año:",
+      "oneGame": "1 partida",
+      "gamesCount": "{{count}} partidas"
     },
     "openings": {
       "title": "Aperturas",

@@ -11,7 +11,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
-import { Chart, LinearScale, TimeScale } from 'chart.js';
+import { Chart, LinearScale, TimeScale, Tooltip } from 'chart.js';
 import {
   MatrixController,
   MatrixDataPoint,
@@ -23,6 +23,7 @@ import {
   endOfToday,
   format,
   getISODay,
+  parseISO,
   startOfDay,
   subDays,
 } from 'date-fns';
@@ -41,8 +42,10 @@ const WEEKS_SHOWN = 53;
  * por día, más intenso cuantas más partidas se jugaron.
  *
  * Es el mismo gráfico que tenía la app anterior (Chesscolate-old): matriz de
- * Chart.js con escalas de fecha, la semana empezando en lunes y los 53
- * columnas repartidas en todo el ancho, sin desplazamiento horizontal.
+ * Chart.js con escalas de fecha, la semana empezando en lunes y las 53
+ * columnas repartidas en todo el ancho, sin desplazamiento horizontal. A
+ * diferencia de aquella, al pasar por encima de un día se ve cuántas partidas
+ * hubo.
  */
 @Component({
   selector: 'app-activity-heatmap',
@@ -66,7 +69,15 @@ export class ActivityHeatmapComponent
   private chart: Chart<'matrix'> | null = null;
 
   constructor() {
-    Chart.register(MatrixController, MatrixElement, LinearScale, TimeScale);
+    // El tooltip se registra aquí y no se da por hecho: la gráfica de rating
+    // también lo registra, pero no se pinta si hay menos de dos partidas
+    Chart.register(
+      MatrixController,
+      MatrixElement,
+      LinearScale,
+      TimeScale,
+      Tooltip
+    );
   }
 
   ngAfterViewInit(): void {
@@ -155,7 +166,26 @@ export class ActivityHeatmapComponent
       options: {
         aspectRatio: 5,
         plugins: {
-          tooltip: { enabled: false },
+          // Al pasar por encima de un día: la fecha y cuántas partidas
+          tooltip: {
+            displayColors: false,
+            callbacks: {
+              title: (items) => {
+                const point = items[0]?.raw as MatrixDataPoint | undefined;
+                return point
+                  ? format(parseISO(String(point.x)), 'd MMM yyyy', { locale })
+                  : '';
+              },
+              label: (item) => {
+                const games = (item.raw as MatrixDataPoint).v ?? 0;
+                return games === 1
+                  ? this.transloco.translate('ANALYTICS.activity.oneGame')
+                  : this.transloco.translate('ANALYTICS.activity.gamesCount', {
+                      count: games,
+                    });
+              },
+            },
+          },
           legend: { display: false },
         },
         scales: {
