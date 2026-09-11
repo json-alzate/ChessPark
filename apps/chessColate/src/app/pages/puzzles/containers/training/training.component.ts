@@ -8,7 +8,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
-import { interval, Subject } from 'rxjs';
+import { interval, Subject, Subscription } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 // Transloco
@@ -119,7 +119,24 @@ export class TrainingComponent implements OnInit, OnDestroy {
   timerUnsubscribe$ = new Subject<void>();
 
   timeLeftBlock = 0;
-  timerUnsubscribeBlock$ = new Subject<void>();
+  /**
+   * Suscripción viva del cronómetro del bloque. Es una sola referencia (y no un
+   * Subject de cancelación) a propósito: al reemplazar el Subject, la
+   * suscripción anterior quedaba corriendo y el tiempo del bloque bajaba al
+   * doble de velocidad, saltándose bloques enteros.
+   */
+  private blockTimerSub: Subscription | null = null;
+  /**
+   * El bloque actual ya agotó su tiempo y falta hacer el cambio. Evita que un
+   * tic tardío vuelva a pedir el siguiente bloque.
+   */
+  private blockTimeExpired = false;
+  /**
+   * Hay una solución en pantalla (modal o reproducción). Mientras la haya, el
+   * fin de tiempo del bloque espera: primero se ve la solución del ejercicio
+   * fallado y solo después se pasa al bloque siguiente.
+   */
+  private isSolutionOpen = false;
   countPuzzlesPlayedBlock = 0;
   totalPuzzlesInBlock = 0;
   forceStopTimerInPuzzleBoard = false;
@@ -299,6 +316,10 @@ export class TrainingComponent implements OnInit, OnDestroy {
     }
 
     this.isProcessingBlock = true;
+    // El bloque anterior queda cerrado: ningún contador suyo debe seguir vivo
+    // ni volver a dispararse.
+    this.stopBlockTimer();
+    this.blockTimeExpired = false;
     this.currentIndexBlock++;
 
     // se valida si se ha llegado al final del plan
@@ -509,31 +530,65 @@ export class TrainingComponent implements OnInit, OnDestroy {
   }
 
   initTimeToEndBlock(timeBlock: number) {
-    this.timeLeftBlock = timeBlock;
-    this.timerUnsubscribeBlock$ = new Subject<void>();
-    const countDown = interval(1000);
-    countDown.pipe(takeUntil(this.timerUnsubscribeBlock$)).subscribe(() => {
-      if (this.timeLeftBlock > 0) {
-        this.timeLeftBlock--;
-      } else {
-        // unsubscribe
-        this.stopBlockTimer();
-        this.playNextBlock();
-      }
-    });
+    // Apagar siempre lo anterior: es lo único que garantiza que nunca haya dos
+    // cuentas atrás restando a la vez sobre el mismo tiempo.
+    this.stopBlockTimer();
+
+    this.timeLeftBlock = Math.max(timeBlock, 0);
+    this.blockTimeExpired = false;
+
+    if (this.timeLeftBlock === 0) {
+      return;
+    }
+
+    this.blockTimerSub = interval(1000)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        if (this.timeLeftBlock > 0) {
+          this.timeLeftBlock--;
+        } else {
+          this.onBlockTimeUp();
+        }
+      });
+  }
+
+  /**
+   * Se acabó el tiempo del bloque. No cambia de bloque a la fuerza: si el
+   * usuario está viendo la solución de un ejercicio fallado, el cambio espera a
+   * que la cierre. Así nunca se abren dos pantallas encima de la otra.
+   */
+  private onBlockTimeUp() {
+    if (this.blockTimeExpired) {
+      return;
+    }
+    this.blockTimeExpired = true;
+    this.stopBlockTimer();
+    // El bloque terminó: el tablero deja de contar el tiempo del ejercicio.
+    this.forceStopTimerInPuzzleBoard = true;
+
+    if (this.isSolutionOpen) {
+      return;
+    }
+
+    this.playNextBlock();
   }
 
   pauseBlockTimer() {
-    this.timerUnsubscribeBlock$.next();
+    this.stopBlockTimer();
   }
 
   resumeBlockTimer() {
+    // Sin tiempo restante no hay nada que reanudar: arrancar aquí creaba un
+    // contador que expiraba al primer segundo y forzaba un cambio de bloque.
+    if (this.timeLeftBlock <= 0) {
+      return;
+    }
     this.initTimeToEndBlock(this.timeLeftBlock);
   }
 
   stopBlockTimer() {
-    this.timerUnsubscribeBlock$.next();
-    this.timerUnsubscribeBlock$.complete();
+    this.blockTimerSub?.unsubscribe();
+    this.blockTimerSub = null;
   }
 
   pausePlanTimer() {
@@ -551,6 +606,14 @@ export class TrainingComponent implements OnInit, OnDestroy {
     puzzleCompleted: Puzzle,
     puzzleStatus: 'good' | 'bad' | 'timeOut'
   ) {
+    // El cambio de bloque ya está en marcha (se acabó su tiempo y se está
+    // abriendo la presentación del siguiente): este resultado llegó tarde. Si
+    // se registrara, iría a parar al bloque equivocado y además abriría una
+    // solución encima de la presentación.
+    if (this.isProcessingBlock) {
+      return;
+    }
+
     const currentBlock = this.plan.blocks?.[this.currentIndexBlock];
     if (!currentBlock) {
       return;
@@ -644,38 +707,53 @@ export class TrainingComponent implements OnInit, OnDestroy {
     switch (puzzleStatus) {
       case 'good':
         this.soundsService.playGood();
-        this.selectPuzzleToPlay();
         break;
       case 'bad':
         this.soundsService.playError();
-
         break;
       case 'timeOut':
         this.soundsService.playLowTime();
         break;
     }
 
-    if (puzzleStatus !== 'good') {
-      const block = this.plan.blocks[this.currentIndexBlock];
-      if (block.showPuzzleSolution) {
-        if (this.plan.planType === 'reto333') {
-          this.showSolutionAndAlertReto333();
-        } else {
-          this.showSolution();
-        }
-      } else if (block.streamSolution) {
-        this.activateStreamSolution();
+    if (puzzleStatus === 'good') {
+      this.continueAfterPuzzle();
+      return;
+    }
+
+    const block = this.plan.blocks[this.currentIndexBlock];
+    if (block.showPuzzleSolution) {
+      if (this.plan.planType === 'reto333') {
+        this.showSolutionAndAlertReto333();
       } else {
-        if (this.plan.planType === 'reto333') {
-          this.showReto333Alert();
-        } else {
-          this.selectPuzzleToPlay();
-        }
+        this.showSolution();
+      }
+    } else if (block.streamSolution) {
+      this.activateStreamSolution();
+    } else {
+      if (this.plan.planType === 'reto333') {
+        this.showReto333Alert();
+      } else {
+        this.continueAfterPuzzle();
       }
     }
   }
 
+  /**
+   * Qué hacer cuando el ejercicio ya se cerró (resuelto, fallado, o con su
+   * solución vista). Es el único punto que decide entre seguir en el bloque o
+   * cambiar de bloque, para que el fin de tiempo nunca se cuele por su cuenta.
+   */
+  private continueAfterPuzzle() {
+    if (this.blockTimeExpired) {
+      this.playNextBlock();
+      return;
+    }
+    this.selectPuzzleToPlay();
+  }
+
   async showSolutionAndAlertReto333() {
+    this.isSolutionOpen = true;
     this.forceStopTimerInPuzzleBoard = true;
     if (this.plan.blocks[this.currentIndexBlock].time !== -1) {
       this.pauseBlockTimer();
@@ -697,6 +775,7 @@ export class TrainingComponent implements OnInit, OnDestroy {
     await modal.present();
 
     modal.onDidDismiss().then(() => {
+      this.isSolutionOpen = false;
       this.forceStopTimerInPuzzleBoard = false;
       this.showReto333Alert();
     });
@@ -793,6 +872,7 @@ export class TrainingComponent implements OnInit, OnDestroy {
   }
 
   activateStreamSolution() {
+    this.isSolutionOpen = true;
     this.forceStopTimerInPuzzleBoard = true;
     if (this.plan.blocks[this.currentIndexBlock].time !== -1) {
       this.pauseBlockTimer();
@@ -801,7 +881,16 @@ export class TrainingComponent implements OnInit, OnDestroy {
   }
 
   onStreamSolutionFinished() {
+    this.isSolutionOpen = false;
     this.streamSolutionActive = false;
+
+    // Si el bloque se quedó sin tiempo mientras se veía la solución, ahora toca
+    // cambiar de bloque en vez de pedir otro ejercicio.
+    if (this.blockTimeExpired) {
+      this.playNextBlock();
+      return;
+    }
+
     this.forceStopTimerInPuzzleBoard = false;
     this.selectPuzzleToPlay();
     if (this.plan.blocks[this.currentIndexBlock]?.time !== -1) {
@@ -810,6 +899,10 @@ export class TrainingComponent implements OnInit, OnDestroy {
   }
 
   async showSolution() {
+    // Se marca antes de cualquier espera: mientras el modal se crea y aparece
+    // el cronómetro del bloque puede vencer, y necesita saber que hay una
+    // solución en curso para no abrir la presentación del bloque encima.
+    this.isSolutionOpen = true;
     this.forceStopTimerInPuzzleBoard = true;
     if (this.plan.blocks[this.currentIndexBlock].time !== -1) {
       this.pauseBlockTimer();
@@ -831,7 +924,16 @@ export class TrainingComponent implements OnInit, OnDestroy {
 
     await modal.present();
 
-    modal.onDidDismiss().then((data) => {
+    modal.onDidDismiss().then(() => {
+      this.isSolutionOpen = false;
+
+      // El tiempo del bloque se acabó mientras se veía la solución: primero la
+      // solución, y ahora sí el cambio de bloque.
+      if (this.blockTimeExpired) {
+        this.playNextBlock();
+        return;
+      }
+
       this.forceStopTimerInPuzzleBoard = false;
       // Asegurar que el mensaje de ajedrez a la ciegas se muestre si aplica
       this.selectPuzzleToPlay();
@@ -903,6 +1005,8 @@ export class TrainingComponent implements OnInit, OnDestroy {
     this.isGoshHelperShow = false;
     this.isDropdownOpen = false;
     this.isProcessingBlock = false;
+    this.blockTimeExpired = false;
+    this.isSolutionOpen = false;
     this.currentIndexBlock = -1;
     this.timeLeftBlock = 0;
     this.countPuzzlesPlayedBlock = 0;
@@ -925,6 +1029,8 @@ export class TrainingComponent implements OnInit, OnDestroy {
     this.isGoshHelperShow = false;
     this.isDropdownOpen = false;
     this.isProcessingBlock = false;
+    this.blockTimeExpired = false;
+    this.isSolutionOpen = false;
 
     // Resetear variables del componente
     this.currentIndexBlock = -1;
@@ -994,10 +1100,7 @@ export class TrainingComponent implements OnInit, OnDestroy {
       this.timerUnsubscribe$.complete();
     }
 
-    if (this.timerUnsubscribeBlock$ && !this.timerUnsubscribeBlock$.closed) {
-      this.timerUnsubscribeBlock$.next();
-      this.timerUnsubscribeBlock$.complete();
-    }
+    this.stopBlockTimer();
 
     // Limpiar flags
     this.showBlockTimer = false;
