@@ -609,6 +609,18 @@
       "promoted": "promoted: {{piece}}",
       "captured": "captured on move {{move}}",
       "hint": "Each number is how many times it landed on that square, and the blue frame is where it started. Its moves are highlighted in the list."
+    },
+    "review": {
+      "tab": "Rating",
+      "analyzing": "Analysing the game with Stockfish…",
+      "analyzingHint": "The first time takes a while; after that it is saved and shows up instantly.",
+      "failed": "The game could not be analysed.",
+      "retry": "Retry",
+      "best": "Best piece",
+      "worst": "Worst piece",
+      "ranking": "Ranking",
+      "unrated": "No rating, did not move",
+      "legend": "Ratings go from 1 to 10 and come from the quality of each piece's moves according to Stockfish: one blunder weighs more than several good moves. In the list, ?! is an inaccuracy, ? a mistake and ?? a blunder."
     }
   },
   "ANALYTICS": {

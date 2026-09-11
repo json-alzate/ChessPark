@@ -23,6 +23,24 @@ export type {
   TrackedPiece,
 } from './lib/piece-heatmap';
 
+// Valoración de las piezas de una partida
+export {
+  reviewGame,
+  winChance,
+  engineEvalForWhite,
+  terminalEval,
+  moveAccuracy,
+  classifyMove,
+  ratingFromAccuracies,
+} from './lib/piece-ratings';
+export type {
+  PositionEval,
+  MoveClassification,
+  MoveReview,
+  PieceRating,
+  GameReview,
+} from './lib/piece-ratings';
+
 // Tipos
 export type {
   GamesSource,

@@ -1,4 +1,4 @@
-import { TrackedPiece } from '@chesspark/game-reporter';
+import { PieceRating, TrackedPiece } from '@chesspark/game-reporter';
 import { GameHeader } from '@chesspark/games-provider';
 
 import {
@@ -8,12 +8,15 @@ import {
   EMPTY_FILTERS,
   filterGames,
   formatBytes,
+  moveAnnotation,
   moveNumberOfPly,
   nextPosition,
   opponentOf,
   outcomeFor,
   pieceSymbol,
   playedColor,
+  rankedPieces,
+  ratingTone,
 } from './games.util';
 
 /** Cabecera de ejemplo, con lo mínimo para filtrar. */
@@ -246,5 +249,66 @@ describe('boardPieceCode', () => {
     expect(
       boardPieceCode(trackedPiece({ type: 'p', promotedTo: 'q' }))
     ).toBe('wq');
+  });
+});
+
+// — Valoración de las piezas ——————————————————————————————————
+
+function pieceRating(overrides: Partial<PieceRating> = {}): PieceRating {
+  return {
+    id: 'w-g1',
+    color: 'w',
+    type: 'n',
+    startSquare: 'g1',
+    moves: 3,
+    rating: 7,
+    accuracy: 80,
+    counts: { excellent: 2, good: 1, inaccuracy: 0, mistake: 0, blunder: 0 },
+    ...overrides,
+  };
+}
+
+describe('moveAnnotation', () => {
+  it('marca imprecisiones, errores y errores graves', () => {
+    expect(moveAnnotation('inaccuracy')).toBe('?!');
+    expect(moveAnnotation('mistake')).toBe('?');
+    expect(moveAnnotation('blunder')).toBe('??');
+  });
+
+  it('las buenas jugadas no llevan marca', () => {
+    expect(moveAnnotation('excellent')).toBe('');
+    expect(moveAnnotation('good')).toBe('');
+  });
+});
+
+describe('ratingTone', () => {
+  it('reparte las notas en verde, amarillo y rojo', () => {
+    expect(ratingTone(8.2)).toBe('high');
+    expect(ratingTone(6)).toBe('mid');
+    expect(ratingTone(4.1)).toBe('low');
+  });
+});
+
+describe('rankedPieces', () => {
+  const pieces = [
+    pieceRating({ id: 'w-g1', rating: 6.5, moves: 4 }),
+    pieceRating({ id: 'w-b1', rating: 8.1, moves: 2 }),
+    pieceRating({ id: 'w-d1', rating: 6.5, moves: 7 }),
+    pieceRating({ id: 'w-a2', rating: null, moves: 0 }),
+    pieceRating({ id: 'b-g8', color: 'b', rating: 9 }),
+  ];
+
+  it('ordena de la mejor nota a la peor, y a igual nota la que más jugó', () => {
+    expect(rankedPieces(pieces, 'w').map((piece) => piece.id)).toEqual([
+      'w-b1',
+      'w-d1',
+      'w-g1',
+    ]);
+  });
+
+  it('deja fuera las que no tienen nota y las del otro color', () => {
+    const ids = rankedPieces(pieces, 'w').map((piece) => piece.id);
+    expect(ids).not.toContain('w-a2');
+    expect(ids).not.toContain('b-g8');
   });
 });

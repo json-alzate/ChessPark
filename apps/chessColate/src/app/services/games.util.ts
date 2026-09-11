@@ -4,7 +4,12 @@
  */
 
 import { GameHeader } from '@chesspark/games-provider';
-import { PieceKind, TrackedPiece } from '@chesspark/game-reporter';
+import {
+  MoveClassification,
+  PieceKind,
+  PieceRating,
+  TrackedPiece,
+} from '@chesspark/game-reporter';
 
 /** Velocidades ofrecidas, en milisegundos por jugada. */
 export const PLAYBACK_SPEEDS = [500, 1000, 2000, 3000, 5000] as const;
@@ -217,4 +222,47 @@ export function defaultHeatmapPiece(
  */
 export function boardPieceCode(piece: TrackedPiece): string {
   return `${piece.color}${piece.promotedTo ?? piece.type}`;
+}
+
+// — Valoración de las piezas ——————————————————————————————————
+
+/**
+ * La marca clásica de una jugada en la lista: '?!' imprecisión, '?' error y
+ * '??' error grave. Las buenas no llevan marca.
+ */
+export function moveAnnotation(classification: MoveClassification): string {
+  switch (classification) {
+    case 'inaccuracy':
+      return '?!';
+    case 'mistake':
+      return '?';
+    case 'blunder':
+      return '??';
+    default:
+      return '';
+  }
+}
+
+/** El tono de una nota, como en las fichas de fútbol: verde, amarillo o rojo. */
+export function ratingTone(rating: number): 'high' | 'mid' | 'low' {
+  if (rating >= 7) {
+    return 'high';
+  }
+  if (rating >= 5.5) {
+    return 'mid';
+  }
+  return 'low';
+}
+
+/** Las piezas con nota de un color, de la mejor a la peor; a igual nota, la que más jugó. */
+export function rankedPieces(
+  pieces: PieceRating[],
+  color: 'w' | 'b'
+): PieceRating[] {
+  return pieces
+    .filter((piece) => piece.color === color && piece.rating !== null)
+    .sort(
+      (a, b) =>
+        (b.rating as number) - (a.rating as number) || b.moves - a.moves
+    );
 }

@@ -34,16 +34,20 @@
         </div>
       } @else if (game) {
 
-        <!-- Ver la partida o el mapa de calor de una pieza (no en modo TV) -->
+        <!-- Pestañas: la partida, el mapa de calor y la valoración (no en modo TV) -->
         @if (!isTv) {
           <div class="join w-full mb-3">
-            <button class="btn btn-sm join-item flex-1" [class.btn-primary]="!heatmapMode"
-              (click)="setHeatmapMode(false)">
+            <button class="btn btn-sm join-item flex-1" [class.btn-primary]="mode === 'game'"
+              (click)="setMode('game')">
               {{ 'GAMES.heatmap.tabGame' | transloco }}
             </button>
-            <button class="btn btn-sm join-item flex-1" [class.btn-primary]="heatmapMode"
-              (click)="setHeatmapMode(true)">
+            <button class="btn btn-sm join-item flex-1" [class.btn-primary]="mode === 'heatmap'"
+              (click)="setMode('heatmap')">
               {{ 'GAMES.heatmap.tabHeatmap' | transloco }}
+            </button>
+            <button class="btn btn-sm join-item flex-1" [class.btn-primary]="mode === 'review'"
+              (click)="setMode('review')">
+              {{ 'GAMES.review.tab' | transloco }}
             </button>
           </div>
         }
@@ -61,7 +65,7 @@
           <!-- Qué pieza: color y, dentro de él, cada pieza por su casilla inicial -->
           <div class="mt-3">
             <div class="join w-full mb-2">
-              @for (option of heatmapColorOptions; track option.color) {
+              @for (option of colorOptions; track option.color) {
                 <button class="btn btn-xs join-item flex-1"
                   [class.btn-primary]="heatmapColor === option.color"
                   (click)="setHeatmapColor(option.color)">
@@ -140,8 +144,10 @@
                 [class.bg-primary]="!heatmapMode && currentMove === $index + 1"
                 [class.text-primary-content]="!heatmapMode && currentMove === $index + 1"
                 [class.bg-primary/40]="isSelectedPieceMove($index + 1)"
-                [class.font-bold]="isSelectedPieceMove($index + 1)"
-                (click)="goToMove($index + 1)">{{ san }}</button>
+                [class.font-bold]="isSelectedPieceMove($index + 1) || annotationOf($index + 1) === '??'"
+                [class.text-warning]="annotationOf($index + 1) === '?!' && currentMove !== $index + 1"
+                [class.text-error]="(annotationOf($index + 1) === '?' || annotationOf($index + 1) === '??') && currentMove !== $index + 1"
+                (click)="goToMove($index + 1)">{{ san }}{{ annotationOf($index + 1) }}</button>
             }
           </div>
           @if (!heatmapMode) {
@@ -201,6 +207,140 @@
               </button>
             </div>
           </div>
+        }
+
+        <!-- Valoración: la nota de cada pieza según la calidad de sus jugadas -->
+        @if (reviewMode) {
+          <section class="mt-4">
+            @if (reviewing) {
+              <div class="bg-base-200/40 border border-base-content/10 rounded-box p-4">
+                <div class="flex items-center justify-between gap-3 text-sm">
+                  <span>{{ 'GAMES.review.analyzing' | transloco }}</span>
+                  <span class="font-mono opacity-60">{{ reviewProgress }}%</span>
+                </div>
+                <progress class="progress progress-primary w-full mt-2 h-1.5"
+                  [value]="reviewProgress" max="100"></progress>
+                <p class="text-xs opacity-50 mt-2">{{ 'GAMES.review.analyzingHint' | transloco }}</p>
+              </div>
+            } @else if (reviewFailed) {
+              <div class="bg-error/10 border border-error/30 rounded-box p-4">
+                <p class="text-sm text-error">{{ 'GAMES.review.failed' | transloco }}</p>
+                <button class="btn btn-sm btn-outline mt-3" (click)="loadReview()">
+                  {{ 'GAMES.review.retry' | transloco }}
+                </button>
+              </div>
+            } @else if (review) {
+
+              <!-- De qué color -->
+              <div class="join w-full mb-3">
+                @for (option of colorOptions; track option.color) {
+                  <button class="btn btn-xs join-item flex-1"
+                    [class.btn-primary]="reviewColor === option.color"
+                    (click)="setReviewColor(option.color)">
+                    {{ option.label | transloco }}
+                  </button>
+                }
+              </div>
+
+              <!-- Mejor y peor pieza del partido -->
+              <div class="grid grid-cols-2 gap-2 mb-4">
+                <div class="bg-base-200/40 border border-base-content/10 rounded-box p-3">
+                  <div class="text-xs opacity-60">{{ 'GAMES.review.best' | transloco }}</div>
+                  @if (bestPiece; as piece) {
+                    <div class="flex items-baseline justify-between gap-2 mt-1">
+                      <span class="text-sm font-bold truncate">
+                        <span class="text-lg leading-none">{{ pieceSymbol(piece) }}</span>
+                        {{ piece.startSquare }}
+                      </span>
+                      <span class="text-2xl font-bold font-mono"
+                        [class.text-success]="ratingTone(piece.rating ?? 0) === 'high'"
+                        [class.text-warning]="ratingTone(piece.rating ?? 0) === 'mid'"
+                        [class.text-error]="ratingTone(piece.rating ?? 0) === 'low'">
+                        {{ piece.rating | number: '1.1-1' }}
+                      </span>
+                    </div>
+                  } @else {
+                    <div class="text-sm opacity-50 mt-1">—</div>
+                  }
+                </div>
+
+                <div class="bg-base-200/40 border border-base-content/10 rounded-box p-3">
+                  <div class="text-xs opacity-60">{{ 'GAMES.review.worst' | transloco }}</div>
+                  @if (worstPiece; as piece) {
+                    <div class="flex items-baseline justify-between gap-2 mt-1">
+                      <span class="text-sm font-bold truncate">
+                        <span class="text-lg leading-none">{{ pieceSymbol(piece) }}</span>
+                        {{ piece.startSquare }}
+                      </span>
+                      <span class="text-2xl font-bold font-mono"
+                        [class.text-success]="ratingTone(piece.rating ?? 0) === 'high'"
+                        [class.text-warning]="ratingTone(piece.rating ?? 0) === 'mid'"
+                        [class.text-error]="ratingTone(piece.rating ?? 0) === 'low'">
+                        {{ piece.rating | number: '1.1-1' }}
+                      </span>
+                    </div>
+                  } @else {
+                    <div class="text-sm opacity-50 mt-1">—</div>
+                  }
+                </div>
+              </div>
+
+              <!-- Clasificación -->
+              <h3 class="text-xs font-bold uppercase tracking-wide opacity-60 mb-2">
+                {{ 'GAMES.review.ranking' | transloco }}
+              </h3>
+              <ul class="flex flex-col divide-y divide-base-content/10
+                         bg-base-200/40 border border-base-content/10 rounded-box">
+                @for (piece of rankedPieces; track piece.id; let position = $index) {
+                  <li class="flex items-center gap-3 px-3 py-2">
+                    <span class="text-xs font-mono opacity-50 w-4 text-right">{{ position + 1 }}</span>
+                    <span class="text-lg leading-none">{{ pieceSymbol(piece) }}</span>
+                    <div class="min-w-0 flex-1">
+                      <div class="text-sm font-medium truncate">
+                        {{ 'GAMES.heatmap.pieceName' | transloco: {
+                             piece: ('GAMES.heatmap.pieces.' + piece.type | transloco),
+                             square: piece.startSquare
+                           } }}
+                      </div>
+                      <div class="text-xs opacity-60">
+                        @if (piece.moves === 1) {
+                          {{ 'GAMES.heatmap.oneMove' | transloco }}
+                        } @else {
+                          {{ 'GAMES.heatmap.movesCount' | transloco: { count: piece.moves } }}
+                        }
+                        @if (piece.counts.inaccuracy) {
+                          · <span class="text-warning">{{ piece.counts.inaccuracy }}?!</span>
+                        }
+                        @if (piece.counts.mistake) {
+                          · <span class="text-error">{{ piece.counts.mistake }}?</span>
+                        }
+                        @if (piece.counts.blunder) {
+                          · <span class="text-error font-bold">{{ piece.counts.blunder }}??</span>
+                        }
+                      </div>
+                    </div>
+                    <span class="font-mono font-bold text-base"
+                      [class.text-success]="ratingTone(piece.rating ?? 0) === 'high'"
+                      [class.text-warning]="ratingTone(piece.rating ?? 0) === 'mid'"
+                      [class.text-error]="ratingTone(piece.rating ?? 0) === 'low'">
+                      {{ piece.rating | number: '1.1-1' }}
+                    </span>
+                  </li>
+                }
+              </ul>
+
+              @if (unratedPieces.length) {
+                <p class="text-xs opacity-60 mt-3">
+                  {{ 'GAMES.review.unrated' | transloco }}:
+                  @for (piece of unratedPieces; track piece.id) {
+                    <span class="font-mono whitespace-nowrap">{{ pieceSymbol(piece) }}{{ piece.startSquare }}</span>
+                  }
+                </p>
+              }
+
+              <p class="text-xs opacity-50 mt-3">{{ 'GAMES.review.legend' | transloco }}</p>
+            }
+          </section>
         }
 
         <!-- Modo TV: solo si se entró a ver la colección entera -->

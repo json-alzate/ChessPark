@@ -30,8 +30,12 @@ import {
 
 import { ParsedGame } from '@chesspark/games-provider';
 import {
+  GameReview,
   getPieceHeatmap,
+  MoveReview,
   PieceHeatmap,
+  PieceRating,
+  reviewGame,
   TrackedPiece,
 } from '@chesspark/game-reporter';
 import {
@@ -41,15 +45,19 @@ import {
 
 import { AnalyticsService } from '@services/analytics.service';
 import { GamesService } from '@services/games.service';
+import { GameReviewService } from '@services/game-review.service';
 import {
   PLAYBACK_SPEEDS,
   PlaybackSettings,
   boardPieceCode,
   buildPlayOrder,
   defaultHeatmapPiece,
+  moveAnnotation,
   moveNumberOfPly,
   nextPosition,
   pieceSymbol,
+  rankedPieces,
+  ratingTone,
 } from '@services/games.util';
 
 addIcons({
@@ -72,6 +80,9 @@ addIcons({
 
 /** Pausa entre una partida y la siguiente en modo TV. */
 const GAP_BETWEEN_GAMES_MS = 2500;
+
+/** Las pestañas del reproductor. */
+type ViewerMode = 'game' | 'heatmap' | 'review';
 
 /**
  * Reproductor de una partida, y el modo TV que encadena toda la colección.
@@ -99,6 +110,7 @@ export class GamesViewerPage implements OnInit, OnDestroy {
   private router = inject(Router);
   private gamesService = inject(GamesService);
   private analytics = inject(AnalyticsService);
+  private gameReview = inject(GameReviewService);
 
   game: ParsedGame | null = null;
   notFound = false;
@@ -130,8 +142,8 @@ export class GamesViewerPage implements OnInit, OnDestroy {
 
   // — Mapa de calor ——————————————————————————————————————————
 
-  /** El tablero enseña por dónde se movió una pieza en vez de la partida. */
-  heatmapMode = false;
+  /** Qué pestaña se ve: la partida, el mapa de calor o la valoración. */
+  mode: ViewerMode = 'game';
   heatmap: PieceHeatmap | null = null;
   /** De qué color son las piezas que ofrece el selector. */
   heatmapColor: 'w' | 'b' = 'w';
@@ -142,6 +154,28 @@ export class GamesViewerPage implements OnInit, OnDestroy {
   readonly pieceSymbol = pieceSymbol;
   readonly moveNumberOfPly = moveNumberOfPly;
   readonly boardPieceCode = boardPieceCode;
+
+  // — Valoración de las piezas ————————————————————————————————
+
+  review: GameReview | null = null;
+  /** Stockfish está analizando la partida. */
+  reviewing = false;
+  /** Avance del análisis, de 0 a 100. */
+  reviewProgress = 0;
+  reviewFailed = false;
+  /** De qué color son las piezas de la clasificación. */
+  reviewColor: 'w' | 'b' = 'w';
+  private reviewByPly = new Map<number, MoveReview>();
+
+  readonly ratingTone = ratingTone;
+
+  get heatmapMode(): boolean {
+    return this.mode === 'heatmap';
+  }
+
+  get reviewMode(): boolean {
+    return this.mode === 'review';
+  }
 
   get collectionName(): string {
     return this.gamesService.currentPack?.collection.name ?? '';
@@ -170,7 +204,7 @@ export class GamesViewerPage implements OnInit, OnDestroy {
    * Los dos colores del selector. En una partida propia se nombran como el
    * usuario la vive —sus piezas y las del rival—, y el suyo va primero.
    */
-  get heatmapColorOptions(): Array<{ color: 'w' | 'b'; label: string }> {
+  get colorOptions(): Array<{ color: 'w' | 'b'; label: string }> {
     if (!this.isOwnGame) {
       return [
         { color: 'w', label: 'GAMES.heatmap.white' },
@@ -182,6 +216,28 @@ export class GamesViewerPage implements OnInit, OnDestroy {
       { color: own, label: 'GAMES.heatmap.yourPieces' },
       { color: own === 'w' ? 'b' : 'w', label: 'GAMES.heatmap.opponent' },
     ];
+  }
+
+  /** Las piezas con nota del color elegido, de la mejor a la peor. */
+  get rankedPieces(): PieceRating[] {
+    return rankedPieces(this.review?.pieces ?? [], this.reviewColor);
+  }
+
+  /** Las piezas de ese color que no se movieron y se quedan sin nota. */
+  get unratedPieces(): PieceRating[] {
+    return (
+      this.review?.pieces.filter(
+        (piece) => piece.color === this.reviewColor && piece.rating === null
+      ) ?? []
+    );
+  }
+
+  get bestPiece(): PieceRating | null {
+    return this.review?.best[this.reviewColor] ?? null;
+  }
+
+  get worstPiece(): PieceRating | null {
+    return this.review?.worst[this.reviewColor] ?? null;
   }
 
   get tvPositionLabel(): { current: number; total: number } {
@@ -238,35 +294,53 @@ export class GamesViewerPage implements OnInit, OnDestroy {
     // Blancas abajo, salvo que quien abrió la partida pidiera otro lado
     this.orientation = this.startOrientation;
 
+    // Partida nueva: lo calculado para la anterior ya no vale
+    this.gameReview.cancel();
+    this.review = null;
+    this.reviewByPly = new Map();
+    this.reviewing = false;
+    this.reviewFailed = false;
+
     if (this.heatmapMode) {
       this.loadHeatmap();
+    }
+    if (this.reviewMode) {
+      void this.loadReview();
     }
   }
 
   // — Mapa de calor ——————————————————————————————————————————
 
   /**
-   * Cambia entre ver la partida y ver el mapa de calor. Al volver a la partida
-   * el reproductor se monta de nuevo desde la posición inicial.
+   * Cambia de pestaña. El mapa de calor cambia el tablero, así que al salir de
+   * él el reproductor se monta de nuevo desde la posición inicial; entre la
+   * partida y la valoración el tablero es el mismo y no se toca.
    */
-  setHeatmapMode(on: boolean): void {
-    if (on === this.heatmapMode) {
+  setMode(mode: ViewerMode): void {
+    if (mode === this.mode) {
       return;
     }
 
-    if (on) {
+    const source = this.isOwnGame ? 'analytics' : 'catalog';
+
+    if (mode === 'heatmap') {
       if (this.isPlaying) {
         this.board?.togglePlay();
       }
       this.loadHeatmap();
-      void this.analytics.logEvent('game_heatmap_opened', {
-        source: this.isOwnGame ? 'analytics' : 'catalog',
-      });
-    } else {
+      void this.analytics.logEvent('game_heatmap_opened', { source });
+    } else if (this.mode === 'heatmap') {
       this.currentMove = 0;
     }
 
-    this.heatmapMode = on;
+    this.mode = mode;
+
+    if (mode === 'review') {
+      void this.analytics.logEvent('game_review_opened', { source });
+      if (!this.review && !this.reviewing) {
+        void this.loadReview();
+      }
+    }
   }
 
   setHeatmapColor(color: 'w' | 'b'): void {
@@ -284,6 +358,67 @@ export class GamesViewerPage implements OnInit, OnDestroy {
     return (
       this.heatmapMode && (this.selectedPiece?.plies.includes(ply) ?? false)
     );
+  }
+
+  // — Valoración de las piezas ————————————————————————————————
+
+  /**
+   * Analiza la partida con Stockfish —o la saca de lo guardado— y pone nota a
+   * cada pieza. Si se cambia de partida a medias, el análisis se cancela y su
+   * resultado se descarta.
+   */
+  async loadReview(): Promise<void> {
+    const game = this.game;
+    const pgn = this.gamesService.getGamePgn(this.currentIndex);
+    if (!game || !pgn) {
+      this.reviewFailed = true;
+      return;
+    }
+
+    this.reviewColor = this.startOrientation;
+    this.reviewing = true;
+    this.reviewFailed = false;
+    this.reviewProgress = 0;
+
+    try {
+      const evals = await this.gameReview.evaluatePositions(
+        game.fens,
+        (done, total) => {
+          this.reviewProgress = Math.round((done / total) * 100);
+        }
+      );
+
+      // Cancelado: quien canceló ya dejó la pantalla como tiene que estar
+      if (evals === null || game !== this.game) {
+        return;
+      }
+
+      this.review = reviewGame(pgn, evals);
+      this.reviewByPly = new Map(
+        (this.review?.moves ?? []).map((move) => [move.ply, move])
+      );
+      this.reviewFailed = this.review === null;
+    } catch (error) {
+      console.error('Error al valorar la partida:', error);
+      this.reviewFailed = true;
+    } finally {
+      if (game === this.game) {
+        this.reviewing = false;
+      }
+    }
+  }
+
+  setReviewColor(color: 'w' | 'b'): void {
+    this.reviewColor = color;
+  }
+
+  /** La marca de la jugada en la lista ('?!', '?', '??'), solo en la valoración. */
+  annotationOf(ply: number): string {
+    if (!this.reviewMode) {
+      return '';
+    }
+    const verdict = this.reviewByPly.get(ply);
+    return verdict ? moveAnnotation(verdict.classification) : '';
   }
 
   /** Calcula el mapa de la partida cargada y elige la pieza de partida. */
@@ -419,6 +554,8 @@ export class GamesViewerPage implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     clearTimeout(this.gapTimer);
+    // Un análisis a medias no debe seguir ocupando Stockfish fuera de aquí
+    this.gameReview.cancel();
     // Salir de la pantalla siempre suelta la pantalla encendida.
     void this.gamesService.keepScreenAwake(false);
   }

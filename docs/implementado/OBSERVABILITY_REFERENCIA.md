@@ -97,6 +97,8 @@ legible). El resto son **acciones semánticas**. Nombres y params en `snake_case
 | `games_pack_deleted` | se borra un paquete | `player` | `games.service.ts` |
 | `game_opened` | se abre una partida | `source` (`catalog`/`tv`/`analytics`), `player` | `pages/games/viewer/viewer.page.ts` |
 | `game_heatmap_opened` | se abre el mapa de calor de una partida | `source` (`catalog`/`analytics`) | `pages/games/viewer/viewer.page.ts` |
+| `game_review_opened` | se abre la valoración de una partida | `source` (`catalog`/`analytics`) | `pages/games/viewer/viewer.page.ts` |
+| `game_review_completed` | termina de analizar una partida con Stockfish | `positions`, `depth`, `duration_s`, `failed_positions` | `game-review.service.ts` |
 | `games_tv_started` | arranca el modo TV | `player`, `games_count` | `pages/games/player/player.page.ts` |
 | `games_tv_next` | el TV encadena a la siguiente | `index` | `pages/games/viewer/viewer.page.ts` |
 | `games_speed_changed` | cambia la velocidad | `ms_per_move` | `pages/games/viewer/viewer.page.ts` |

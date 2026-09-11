@@ -228,6 +228,78 @@ sumar las cuentas de las piezas con el mismo id.
 
 ---
 
+## Valoración de las piezas
+
+La tercera pestaña del reproductor, **Valoración**, pone nota del 1 al 10 a cada
+pieza, como las fichas de un partido de fútbol, y elige la mejor y la peor de
+cada color. Tampoco aparece en modo TV.
+
+### Cómo se calcula
+
+Se puntúan las **jugadas**, no las piezas quietas: lo que hace una pieza en la
+partida son sus jugadas.
+
+1. **Stockfish evalúa cada posición una vez**: la inicial y la que queda tras
+   cada media jugada. Son unas 80 evaluaciones en una partida de 40 jugadas.
+2. **Cada evaluación se pasa a probabilidad de ganar**, con la curva que publica
+   lichess. Así perder un peón con la partida igualada pesa mucho y perderlo
+   con nueve de ventaja casi nada.
+3. **Cada jugada se valora por lo que perdió quien movió**: su probabilidad de
+   ganar antes menos la de después. De ahí salen su precisión (fórmula de
+   lichess) y su clase: excelente, buena, imprecisión (desde 5 puntos), error
+   (desde 10) o error grave (desde 15), con los cortes de lichess.
+4. **Cada jugada se apunta a la pieza que la hizo**, con el mismo seguimiento
+   del mapa de calor. En el enroque cuenta para el rey y para la torre.
+5. **La nota de la pieza** sale de la media armónica de sus precisiones,
+   llevada a la escala del 1 al 10. Se usa la armónica y no la media normal
+   porque una sola mala jugada la hunde, igual que un error que acaba en gol
+   hunde la nota de un defensa aunque haya hecho bien todo lo demás.
+6. **Mejor y peor pieza:** optan las que hicieron al menos 2 jugadas. Si
+   ninguna llega, todas las que tienen nota. Si un color solo tiene una pieza
+   con nota, no hay "peor".
+
+Para comprobarlo, en la lista de jugadas cada una lleva su marca clásica (`?!`
+imprecisión, `?` error, `??` error grave) y cada fila de la clasificación dice
+cuántas tuvo esa pieza.
+
+### Detalles que importan
+
+- **La puntuación de Stockfish viene desde el lado que mueve**, no desde las
+  blancas: se le da la vuelta cuando mueven negras. Sin eso, las jugadas de
+  negras saldrían valoradas al revés.
+- **Las posiciones terminadas no se preguntan a Stockfish**: el mate lo gana
+  quien no está al turno y las tablas valen cero. El servicio del motor no
+  devuelve evaluación para una posición sin jugadas.
+- **Si una evaluación falla**, las dos jugadas que la tocan se quedan sin
+  valorar; el resto de la partida sigue valiendo.
+- **Profundidad 12**, la velocidad media: el motor de la app es la versión
+  ligera de Stockfish con un solo hilo, y va posición a posición. El evento
+  `game_review_completed` mide cuánto tarda de verdad para poder ajustarla.
+- **Se guarda en el dispositivo** el análisis de las últimas 30 partidas: volver
+  a abrir la valoración de una partida ya vista es instantáneo.
+- **Se cancela** al cambiar de partida o salir del reproductor: no se pide
+  ninguna posición más y el resultado se descarta. La posición que el motor ya
+  tenía termina sola, porque el servicio de Stockfish no la para, y un análisis
+  nuevo espera a que acabe; si no, tomaría esa respuesta como la de su primera
+  posición y todas sus evaluaciones quedarían desplazadas una.
+
+### Límites
+
+- **Una pieza que no se mueve no tiene nota**, como un suplente que no juega.
+  Una torre que defiende quieta toda la partida no recibe mérito, aunque
+  sostuviera la posición.
+- **Una captura se apunta a la pieza que captura**, y dejar una pieza colgada, a
+  la que movió y la dejó así, no a la que capturan.
+- **La nota es tan buena como el análisis**: con profundidad 12 alguna jugada
+  brillante puede salir como error.
+
+La idea de quitar una pieza y ver cuánto cambia la evaluación se descartó como
+nota principal —mide cuánto vale la pieza, no cómo jugó, y deja posiciones
+ilegales—, pero puede servir más adelante para medir la importancia de una
+pieza quieta en momentos concretos.
+
+---
+
 ## Rendimiento y espacio
 
 Al abrir la pantalla se pinta **primero lo que ya está en el dispositivo** y solo

@@ -609,6 +609,18 @@
       "promoted": "coronó: {{piece}}",
       "captured": "la capturaron en la jugada {{move}}",
       "hint": "Cada número es las veces que llegó a esa casilla y el marco azul es donde empezó. Sus jugadas van resaltadas en la lista."
+    },
+    "review": {
+      "tab": "Valoración",
+      "analyzing": "Analizando la partida con Stockfish…",
+      "analyzingHint": "La primera vez tarda un poco; después queda guardada y sale al instante.",
+      "failed": "No se pudo analizar la partida.",
+      "retry": "Reintentar",
+      "best": "Mejor pieza",
+      "worst": "Peor pieza",
+      "ranking": "Clasificación",
+      "unrated": "Sin nota, no se movieron",
+      "legend": "La nota va del 1 al 10 y sale de la calidad de sus jugadas según Stockfish: un error grave pesa más que varias buenas jugadas. En la lista, ?! es imprecisión, ? error y ?? error grave."
     }
   },
   "ANALYTICS": {
