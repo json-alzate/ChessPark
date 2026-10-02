@@ -69,6 +69,8 @@ export class LichessProvider {
       // Sin esto la partida llega sin PGN ni nombre de apertura
       pgnInJson: 'true',
       opening: 'true',
+      // Sin esto el PGN no trae el reloj de cada jugada ('{[%clk …]}')
+      clocks: 'true',
     });
 
     const url = `${this.baseUrl}/games/user/${encodeURIComponent(

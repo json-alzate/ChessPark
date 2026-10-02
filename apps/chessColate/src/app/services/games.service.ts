@@ -212,7 +212,14 @@ export class GamesService {
         sizeBytes: 0,
         file: '',
       },
-      headers: games.map((game, index) => parseGameHeader(game.pgn, index)),
+      // El ritmo sale del propio ChessGame (ya normalizado por el conector),
+      // no del PGN: así no depende de que chess.com o lichess hayan escrito
+      // el tag TimeControl igual que lo clasificamos nosotros.
+      headers: games.map((game, index) => ({
+        ...parseGameHeader(game.pgn, index),
+        timeControl: game.timeControl || null,
+        timeClass: game.timeClass,
+      })),
       games: games.map((game) => game.pgn),
     };
     this.openPack = pack;

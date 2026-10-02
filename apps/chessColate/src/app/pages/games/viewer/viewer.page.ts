@@ -41,6 +41,7 @@ import {
 import {
   BoardGamePlayerComponent,
   BoardHeatmapComponent,
+  BoardPlayerInfoComponent,
 } from '@chesspark/board';
 
 import { AnalyticsService } from '@services/analytics.service';
@@ -52,8 +53,11 @@ import {
   boardPieceCode,
   buildPlayOrder,
   defaultHeatmapPiece,
+  formatClock,
+  formatTimeControlValue,
   moveAnnotation,
   moveNumberOfPly,
+  moveTimes,
   nextPosition,
   pieceSymbol,
   rankedPieces,
@@ -101,6 +105,7 @@ type ViewerMode = 'game' | 'heatmap' | 'review';
     IonIcon,
     BoardGamePlayerComponent,
     BoardHeatmapComponent,
+    BoardPlayerInfoComponent,
   ],
 })
 export class GamesViewerPage implements OnInit, OnDestroy {
@@ -154,6 +159,15 @@ export class GamesViewerPage implements OnInit, OnDestroy {
   readonly pieceSymbol = pieceSymbol;
   readonly moveNumberOfPly = moveNumberOfPly;
   readonly boardPieceCode = boardPieceCode;
+  readonly formatTimeControlValue = formatTimeControlValue;
+  readonly formatClock = formatClock;
+
+  // — Tiempo por jugada ——————————————————————————————————————————
+
+  /** Segundos pensados en cada jugada; null donde no se pudo calcular. */
+  moveTimeSeconds: (number | null)[] = [];
+  /** Altura (%) de cada barra, ya escalada al máximo de la partida. */
+  moveTimeBarHeights: number[] = [];
 
   // — Valoración de las piezas ————————————————————————————————
 
@@ -183,6 +197,56 @@ export class GamesViewerPage implements OnInit, OnDestroy {
 
   get totalMoves(): number {
     return this.game ? this.game.fens.length - 1 : 0;
+  }
+
+  /** Hay al menos una jugada con tiempo calculado, así que vale la pena la gráfica. */
+  get hasMoveTimes(): boolean {
+    return this.moveTimeSeconds.some((seconds) => seconds !== null);
+  }
+
+  /** Quién se ve arriba y abajo del tablero, según el lado desde el que se mira. */
+  get topPlayer(): { name: string; rating: number | null } {
+    if (!this.game) {
+      return { name: '', rating: null };
+    }
+    return this.orientation === 'w'
+      ? { name: this.game.header.black, rating: this.game.header.blackElo }
+      : { name: this.game.header.white, rating: this.game.header.whiteElo };
+  }
+
+  get bottomPlayer(): { name: string; rating: number | null } {
+    if (!this.game) {
+      return { name: '', rating: null };
+    }
+    return this.orientation === 'w'
+      ? { name: this.game.header.white, rating: this.game.header.whiteElo }
+      : { name: this.game.header.black, rating: this.game.header.blackElo };
+  }
+
+  /**
+   * El reloj de cada jugador va cambiando con la jugada que se está viendo,
+   * como en una partida en vivo. En el mapa de calor no hay "jugada actual"
+   * de verdad, así que ahí no se enseña.
+   */
+  get topClock(): string {
+    return this.clockForColor(this.orientation === 'w' ? 'b' : 'w');
+  }
+
+  get bottomClock(): string {
+    return this.clockForColor(this.orientation);
+  }
+
+  private clockForColor(color: 'w' | 'b'): string {
+    if (!this.game || this.heatmapMode) {
+      return '';
+    }
+    // Blancas juegan las jugadas impares, negras las pares; el reloj de cada
+    // una es el de su última jugada hasta donde se ha llegado.
+    let ply = this.currentMove;
+    if (ply > 0 && ply % 2 === 1 !== (color === 'w')) {
+      ply--;
+    }
+    return ply > 0 ? formatClock(this.game.clocks[ply - 1] ?? null) : '';
   }
 
   /** Las piezas del color elegido, para el selector. */
@@ -300,6 +364,7 @@ export class GamesViewerPage implements OnInit, OnDestroy {
     this.reviewByPly = new Map();
     this.reviewing = false;
     this.reviewFailed = false;
+    this.loadMoveTimes();
 
     if (this.heatmapMode) {
       this.loadHeatmap();
@@ -307,6 +372,23 @@ export class GamesViewerPage implements OnInit, OnDestroy {
     if (this.reviewMode) {
       void this.loadReview();
     }
+  }
+
+  // — Tiempo por jugada ——————————————————————————————————————————
+
+  /** Cuánto se pensó cada jugada, y la altura que le toca en la gráfica. */
+  private loadMoveTimes(): void {
+    this.moveTimeSeconds = this.game
+      ? moveTimes(this.game.clocks, this.game.header.timeControl)
+      : [];
+
+    const known = this.moveTimeSeconds.filter(
+      (seconds): seconds is number => seconds !== null
+    );
+    const max = Math.max(1, ...known);
+    this.moveTimeBarHeights = this.moveTimeSeconds.map((seconds) =>
+      seconds === null ? 4 : Math.max(6, Math.round((seconds / max) * 100))
+    );
   }
 
   // — Mapa de calor ——————————————————————————————————————————

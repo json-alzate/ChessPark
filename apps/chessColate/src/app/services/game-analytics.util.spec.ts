@@ -88,6 +88,7 @@ describe('thinSeries', () => {
       date: index,
       rating: 1500 + index,
       platform: 'lichess' as const,
+      timeClass: 'blitz' as const,
     }));
 
   it('no toca las series cortas', () => {

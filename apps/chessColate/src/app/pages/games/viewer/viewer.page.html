@@ -4,7 +4,7 @@
     <div class="container mx-auto px-4 py-4 max-w-lg pb-16">
 
       <!-- Cabecera: quién juega contra quién, siempre visible -->
-      <div class="flex items-start gap-2 mb-3">
+      <div class="viewer-header flex items-start gap-2 mb-3">
         <button class="btn btn-ghost btn-sm btn-circle shrink-0" (click)="goBack()"
           [attr.aria-label]="'COMMON.actions.close' | transloco">
           <ion-icon name="arrow-back-outline" class="text-xl"></ion-icon>
@@ -21,6 +21,12 @@
             <p class="text-xs opacity-60 truncate">
               {{ game.header.event }}
               @if (game.header.year) { {{ game.header.year }} }
+              @if (game.header.timeClass) {
+                · {{ 'ANALYTICS.timeClasses.' + game.header.timeClass | transloco }}
+                @if (game.header.timeControl) {
+                  ({{ formatTimeControlValue(game.header.timeControl) }})
+                }
+              }
             </p>
           } @else {
             <h2 class="text-base font-bold">{{ collectionName }}</h2>
@@ -53,6 +59,8 @@
         }
 
         <!-- Tablero -->
+        <lib-board-player-info [name]="topPlayer.name" [rating]="topPlayer.rating" [clock]="topClock"></lib-board-player-info>
+
         @if (heatmapMode) {
           <lib-board-heatmap
             [counts]="selectedPiece?.arrivals ?? {}"
@@ -61,6 +69,7 @@
             [pieceSquare]="selectedPiece?.lastSquare ?? ''"
             [orientation]="orientation">
           </lib-board-heatmap>
+          <lib-board-player-info [name]="bottomPlayer.name" [rating]="bottomPlayer.rating"></lib-board-player-info>
 
           <!-- Qué pieza: color y, dentro de él, cada pieza por su casilla inicial -->
           <div class="mt-3">
@@ -127,6 +136,7 @@
             (playingChange)="onPlayingChange($event)"
             (finished)="onGameFinished()">
           </lib-board-game-player>
+          <lib-board-player-info [name]="bottomPlayer.name" [rating]="bottomPlayer.rating" [clock]="bottomClock"></lib-board-player-info>
         }
 
         <!-- Jugadas -->
@@ -148,6 +158,9 @@
                 [class.text-warning]="annotationOf($index + 1) === '?!' && currentMove !== $index + 1"
                 [class.text-error]="(annotationOf($index + 1) === '?' || annotationOf($index + 1) === '??') && currentMove !== $index + 1"
                 (click)="goToMove($index + 1)">{{ san }}{{ annotationOf($index + 1) }}</button>
+              @if (formatClock(game.clocks[$index]); as clock) {
+                <span class="text-[10px] opacity-40 mr-1">{{ clock }}</span>
+              }
             }
           </div>
           @if (!heatmapMode) {
@@ -156,6 +169,30 @@
             </div>
           }
         </div>
+
+        <!-- Tiempo por jugada: cuanto más alta la barra, más se pensó esa jugada -->
+        @if (hasMoveTimes) {
+          <div class="mt-3">
+            <h3 class="text-xs font-bold uppercase tracking-wide opacity-60 mb-2">
+              {{ 'GAMES.moveTimes.title' | transloco }}
+            </h3>
+            <div class="overflow-x-auto bg-base-200/40 border border-base-content/10 rounded-box px-2 py-2">
+              <div class="flex items-end gap-px h-16 min-w-max">
+                @for (seconds of moveTimeSeconds; track $index) {
+                  <button class="w-1.5 shrink-0 rounded-t-sm transition-colors"
+                    [class.bg-primary]="!heatmapMode && currentMove === $index + 1"
+                    [class.bg-base-content/50]="(heatmapMode || currentMove !== $index + 1) && $index % 2 === 0"
+                    [class.bg-base-content/25]="(heatmapMode || currentMove !== $index + 1) && $index % 2 === 1"
+                    [style.height.%]="moveTimeBarHeights[$index]"
+                    [title]="seconds !== null ? (seconds | number: '1.0-1') + ' s' : ''"
+                    (click)="goToMove($index + 1)">
+                  </button>
+                }
+              </div>
+            </div>
+            <p class="text-xs opacity-60 mt-1">{{ 'GAMES.moveTimes.hint' | transloco }}</p>
+          </div>
+        }
 
         <!-- Los controles de reproducción no pintan nada en el mapa de calor -->
         @if (!heatmapMode) {

@@ -621,6 +621,10 @@
       "ranking": "Ranking",
       "unrated": "No rating, did not move",
       "legend": "Ratings go from 1 to 10 and come from the quality of each piece's moves according to Stockfish: one blunder weighs more than several good moves. In the list, ?! is an inaccuracy, ? a mistake and ?? a blunder."
+    },
+    "moveTimes": {
+      "title": "Time per move",
+      "hint": "The taller the bar, the longer that move was thought over."
     }
   },
   "ANALYTICS": {
@@ -636,6 +640,7 @@
     "disconnectMessage": "This deletes {{username}}'s games on {{platform}} stored on this device. You can connect it again whenever you want.",
     "ratingProgress": "Rating progress",
     "byColor": "As White and as Black",
+    "statsTab": "Statistics",
     "range": "From {{from}} to {{to}}",
     "connect": {
       "title": "Connect your account",

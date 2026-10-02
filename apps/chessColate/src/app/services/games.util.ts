@@ -266,3 +266,93 @@ export function rankedPieces(
         (b.rating as number) - (a.rating as number) || b.moves - a.moves
     );
 }
+
+// — Ritmo y reloj de la partida ————————————————————————————————
+
+/**
+ * El 'timeControl' en bruto ('180+2', '600+0'…) a minutos: '3+2', '10+0'.
+ * Lo compuesto (clásicas FIDE a varias fases) y lo que no se entiende se
+ * enseña tal cual llegó.
+ */
+export function formatTimeControlValue(raw: string): string {
+  const simple = /^(\d+)(?:\+(\d+))?$/.exec(raw);
+  if (!simple) {
+    return raw;
+  }
+  const minutes = Math.round(Number(simple[1]) / 60);
+  const increment = Number(simple[2] ?? 0);
+  return `${minutes}+${increment}`;
+}
+
+/**
+ * El reloj de una jugada ('0:09:58.2') a algo corto para la lista de jugadas:
+ * sin fracción de segundo, y sin la hora cuando es cero.
+ */
+export function formatClock(raw: string | null): string {
+  if (!raw) {
+    return '';
+  }
+  const match = /^(\d+):(\d{2}):(\d{2})(?:\.\d+)?$/.exec(raw);
+  if (!match) {
+    return raw;
+  }
+  const hours = Number(match[1]);
+  return hours > 0 ? `${hours}:${match[2]}:${match[3]}` : `${Number(match[2])}:${match[3]}`;
+}
+
+/** Un reloj ('0:09:58.2') a segundos; null si no tiene esa forma. */
+function parseClockSeconds(raw: string | null): number | null {
+  if (!raw) {
+    return null;
+  }
+  const match = /^(\d+):(\d{2}):(\d{2}(?:\.\d+)?)$/.exec(raw);
+  if (!match) {
+    return null;
+  }
+  return Number(match[1]) * 3600 + Number(match[2]) * 60 + Number(match[3]);
+}
+
+/** El 'timeControl' en bruto ('180+2') a segundos; null en formas compuestas o sin tag. */
+function parseTimeControlSeconds(
+  raw: string | null
+): { baseSeconds: number; incrementSeconds: number } | null {
+  const match = raw ? /^(\d+)(?:\+(\d+))?$/.exec(raw) : null;
+  return match
+    ? { baseSeconds: Number(match[1]), incrementSeconds: Number(match[2] ?? 0) }
+    : null;
+}
+
+/**
+ * Cuánto se pensó cada jugada: el reloj de antes de esa jugada menos el de
+ * después, más el incremento —como lo enseña chess.com bajo la lista de
+ * jugadas—. La primera jugada de cada color necesita el tiempo base del
+ * control para tener un "antes"; si no se conoce, esa jugada queda sin dato,
+ * pero las siguientes de ese color sí se calculan, porque ya hay un reloj
+ * previo real del que partir.
+ */
+export function moveTimes(
+  clocks: ReadonlyArray<string | null>,
+  timeControl: string | null
+): (number | null)[] {
+  const parsed = parseTimeControlSeconds(timeControl);
+  const incrementSeconds = parsed?.incrementSeconds ?? 0;
+  let prevWhite = parsed?.baseSeconds ?? null;
+  let prevBlack = parsed?.baseSeconds ?? null;
+
+  return clocks.map((raw, i) => {
+    const isWhite = (i + 1) % 2 === 1;
+    const current = parseClockSeconds(raw);
+    const prev = isWhite ? prevWhite : prevBlack;
+    const spent =
+      current !== null && prev !== null
+        ? Math.max(prev - current + incrementSeconds, 0)
+        : null;
+
+    if (isWhite) {
+      prevWhite = current;
+    } else {
+      prevBlack = current;
+    }
+    return spent;
+  });
+}

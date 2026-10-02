@@ -1,0 +1,11 @@
+<div class="flex items-center gap-2 py-1 min-w-0">
+  <span class="text-sm font-medium truncate">
+    {{ name || '—' }}
+    @if (rating) {
+      <span class="text-xs opacity-60 font-mono">({{ rating }})</span>
+    }
+  </span>
+  @if (clock) {
+    <span class="text-xs opacity-70 font-mono tabular-nums ml-auto shrink-0">{{ clock }}</span>
+  }
+</div>

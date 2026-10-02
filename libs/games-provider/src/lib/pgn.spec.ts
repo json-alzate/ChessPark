@@ -113,6 +113,58 @@ describe('parseGameHeader', () => {
     expect(header.date).toBe('1945.??.??');
     expect(header.year).toBe(1945);
   });
+
+  it('sin tag TimeControl (normal en una partida histórica) no hay ritmo', () => {
+    const header = parseGameHeader(games[0], 0);
+
+    expect(header.timeControl).toBeNull();
+    expect(header.timeClass).toBeNull();
+  });
+
+  it('clasifica un TimeControl simple de chess.com o lichess', () => {
+    const blitz = `[Event "Live Chess"]
+[White "A"]
+[Black "B"]
+[Result "1-0"]
+[TimeControl "180+2"]
+
+1.e4 e5 1-0`;
+
+    const header = parseGameHeader(blitz, 0);
+
+    expect(header.timeControl).toBe('180+2');
+    expect(header.timeClass).toBe('blitz');
+  });
+
+  it('clasifica una partida por correspondencia', () => {
+    const daily = `[Event "Daily"]
+[White "A"]
+[Black "B"]
+[Result "1-0"]
+[TimeControl "1/86400"]
+
+1.e4 e5 1-0`;
+
+    const header = parseGameHeader(daily, 0);
+
+    expect(header.timeControl).toBe('1/86400');
+    expect(header.timeClass).toBe('daily');
+  });
+
+  it('guarda un TimeControl compuesto sin clasificarlo', () => {
+    const classical = `[Event "FIDE"]
+[White "A"]
+[Black "B"]
+[Result "1-0"]
+[TimeControl "40/7200:20/3600:900+30"]
+
+1.e4 e5 1-0`;
+
+    const header = parseGameHeader(classical, 0);
+
+    expect(header.timeControl).toBe('40/7200:20/3600:900+30');
+    expect(header.timeClass).toBeNull();
+  });
 });
 
 describe('parsePackHeaders', () => {
@@ -154,6 +206,26 @@ describe('buildGame', () => {
     const onlyHeaders = '[Event "X"]\n[White "A"]\n[Black "B"]\n[Result "*"]\n\n*';
 
     expect(buildGame(onlyHeaders, parseGameHeader(onlyHeaders, 0))).toBeNull();
+  });
+
+  it('saca el reloj de cada jugada de los comentarios %clk', () => {
+    const withClocks = `[Event "Live Chess"]
+[White "A"]
+[Black "B"]
+[Result "1-0"]
+[TimeControl "180+2"]
+
+1. e4 {[%clk 0:03:00]} 1... e5 {[%clk 0:02:59]} 2. Nf3 {[%clk 0:02:58]} 1-0`;
+
+    const game = buildGame(withClocks, parseGameHeader(withClocks, 0));
+
+    expect(game?.clocks).toEqual(['0:03:00', '0:02:59', '0:02:58']);
+  });
+
+  it('sin comentarios de reloj, los relojes quedan en null', () => {
+    const game = buildGame(games[0], parseGameHeader(games[0], 0));
+
+    expect(game?.clocks).toEqual([null, null, null, null, null, null]);
   });
 
   it('respeta una posición inicial no estándar', () => {

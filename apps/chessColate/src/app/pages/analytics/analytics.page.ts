@@ -135,6 +135,9 @@ export class AnalyticsPage implements OnInit {
   /** Cuántas filas de la lista se pintan; crece con "Ver más". */
   shownGames = GAMES_PAGE_SIZE;
 
+  /** Qué tab se ve en la sección de Estadísticas / Aperturas / Partidas. */
+  activeTab: 'stats' | 'openings' | 'games' = 'stats';
+
   readonly historyRanges = HISTORY_RANGES;
   readonly timeClasses = TIME_CLASSES;
   readonly platformLabel = platformLabel;
@@ -388,6 +391,10 @@ export class AnalyticsPage implements OnInit {
   }
 
   // — Lista de partidas ——————————————————————————————————————
+
+  setActiveTab(tab: 'stats' | 'openings' | 'games'): void {
+    this.activeTab = tab;
+  }
 
   showMoreGames(): void {
     this.shownGames += GAMES_PAGE_SIZE;

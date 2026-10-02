@@ -8,8 +8,11 @@ import {
   EMPTY_FILTERS,
   filterGames,
   formatBytes,
+  formatClock,
+  formatTimeControlValue,
   moveAnnotation,
   moveNumberOfPly,
+  moveTimes,
   nextPosition,
   opponentOf,
   outcomeFor,
@@ -32,6 +35,8 @@ function headerWith(overrides: Partial<GameHeader> = {}): GameHeader {
     whiteElo: null,
     blackElo: null,
     plies: 40,
+    timeControl: null,
+    timeClass: null,
     ...overrides,
   };
 }
@@ -310,5 +315,76 @@ describe('rankedPieces', () => {
     const ids = rankedPieces(pieces, 'w').map((piece) => piece.id);
     expect(ids).not.toContain('w-a2');
     expect(ids).not.toContain('b-g8');
+  });
+});
+
+describe('formatTimeControlValue', () => {
+  it('pasa segundos a minutos: "180+2" → "3+2"', () => {
+    expect(formatTimeControlValue('180+2')).toBe('3+2');
+  });
+
+  it('sin incremento también: "600" → "10+0"', () => {
+    expect(formatTimeControlValue('600')).toBe('10+0');
+  });
+
+  it('lo que no reconoce lo deja igual', () => {
+    expect(formatTimeControlValue('1/86400')).toBe('1/86400');
+    expect(formatTimeControlValue('40/7200:20/3600:900+30')).toBe(
+      '40/7200:20/3600:900+30'
+    );
+  });
+});
+
+describe('formatClock', () => {
+  it('quita la fracción de segundo', () => {
+    expect(formatClock('0:09:58.2')).toBe('9:58');
+  });
+
+  it('quita la hora cuando es cero', () => {
+    expect(formatClock('0:00:45')).toBe('0:45');
+  });
+
+  it('conserva la hora cuando la hay', () => {
+    expect(formatClock('1:02:15')).toBe('1:02:15');
+  });
+
+  it('sin reloj, cadena vacía', () => {
+    expect(formatClock(null)).toBe('');
+  });
+});
+
+describe('moveTimes', () => {
+  it('con el tiempo base, calcula también la primera jugada de cada color', () => {
+    // 180+2: blancas empiezan en 3:00, gastan 15s en la primera (quedan en
+    // 2:47 porque suman los 2s de incremento); negras gastan 10s.
+    const clocks = ['0:02:47', '0:02:52'];
+
+    expect(moveTimes(clocks, '180+2')).toEqual([15, 10]);
+  });
+
+  it('sin tiempo base conocido, la primera jugada de cada color queda sin dato', () => {
+    const clocks = ['0:02:47', '0:02:52', '0:02:30', '0:02:40'];
+
+    expect(moveTimes(clocks, null)).toEqual([null, null, 17, 12]);
+  });
+
+  it('una jugada sin reloj rompe la cadena solo de ese color, no la del rival', () => {
+    // Falta el reloj de la jugada 2 (negras): esa queda sin dato, y también
+    // la siguiente de negras (jugada 4) porque ya no hay un "antes" suyo. La
+    // cadena de blancas no se entera y sigue calculando normal.
+    const clocks = ['0:02:47', null, '0:02:30', '0:02:35'];
+
+    expect(moveTimes(clocks, '180+2')).toEqual([15, null, 19, null]);
+  });
+
+  it('un control compuesto (clásicas FIDE) no se clasifica, pero igual se calcula desde la segunda jugada', () => {
+    const clocks = ['1:59:50', '1:59:55', '1:59:20', '1:59:30'];
+
+    expect(moveTimes(clocks, '40/7200:20/3600:900+30')).toEqual([
+      null,
+      null,
+      30,
+      25,
+    ]);
   });
 });
