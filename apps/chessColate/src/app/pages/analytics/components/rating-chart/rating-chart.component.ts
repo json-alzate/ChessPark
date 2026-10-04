@@ -8,6 +8,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslocoPipe } from '@jsverse/transloco';
 
 import { Chart, ChartDataset, registerables } from 'chart.js';
 
@@ -45,12 +46,14 @@ const PLATFORM_DASH: Record<ChessPlatform, number[]> = {
  * Una línea por ritmo y plataforma —bullet, blitz, rápidas…—, como lo enseña
  * lichess: los ratings de bullet y clásicas no son comparables entre sí, así
  * que juntarlos en una sola línea por plataforma dibujaría saltos que el
- * usuario nunca dio. El color marca el ritmo; el trazo punteado, lichess.
+ * usuario nunca dio. El color marca el ritmo; el trazo continuo o punteado, la
+ * plataforma. La leyenda va aparte, una sola vez, en vez de repetir la
+ * plataforma en cada serie.
  */
 @Component({
   selector: 'app-rating-chart',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslocoPipe],
   templateUrl: './rating-chart.component.html',
   styleUrls: ['./rating-chart.component.scss'],
 })
@@ -61,6 +64,26 @@ export class RatingChartComponent implements AfterViewInit, OnChanges, OnDestroy
   @Input() points: RatingDataPoint[] = [];
 
   private chart: Chart | null = null;
+
+  /** Un ritmo por color, solo los que tienen partidas. */
+  get legendTimeClasses(): { label: string; color: string }[] {
+    const present = new Set(this.points.map((point) => point.timeClass));
+    return (Object.keys(TIME_CLASS_LABELS) as TimeClass[])
+      .filter((timeClass) => present.has(timeClass))
+      .map((timeClass) => ({
+        label: TIME_CLASS_LABELS[timeClass],
+        color: TIME_CLASS_COLORS[timeClass],
+      }));
+  }
+
+  /** Las plataformas con partidas, cada una con su trazo. */
+  get legendPlatforms(): { name: ChessPlatform; dashed: boolean }[] {
+    const present = new Set(this.points.map((point) => point.platform));
+    return [...present].map((platform) => ({
+      name: platform,
+      dashed: PLATFORM_DASH[platform].length > 0,
+    }));
+  }
   private viewReady = false;
 
   constructor() {
@@ -105,10 +128,7 @@ export class RatingChartComponent implements AfterViewInit, OnChanges, OnDestroy
         animation: false,
         interaction: { mode: 'nearest', intersect: false },
         plugins: {
-          legend: {
-            display: datasets.length > 1,
-            labels: { color: '#e5e7eb', boxWidth: 12 },
-          },
+          legend: { display: false },
           tooltip: {
             callbacks: {
               title: (items) => this.formatDate(Number(items[0].parsed.x)),

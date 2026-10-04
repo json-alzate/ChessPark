@@ -6,8 +6,11 @@ import { AlertController, IonContent, IonIcon } from '@ionic/angular/standalone'
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
 import {
+  chevronDownOutline,
+  filterOutline,
   homeOutline,
   refreshOutline,
+  settingsOutline,
   statsChartOutline,
   trashOutline,
   linkOutline,
@@ -56,8 +59,11 @@ import { OpeningsTableComponent } from './components/openings-table/openings-tab
 import { RatingChartComponent } from './components/rating-chart/rating-chart.component';
 
 addIcons({
+  chevronDownOutline,
+  filterOutline,
   homeOutline,
   refreshOutline,
+  settingsOutline,
   statsChartOutline,
   trashOutline,
   linkOutline,
@@ -201,11 +207,7 @@ export class AnalyticsPage implements OnInit {
     if (this.hasAccounts) {
       this.allGames = await this.gameAnalytics.loadStored(this.accounts, this.historyMonths);
       this.recalculate();
-
-      // Nada guardado todavía: la primera descarga tiene que salir sola
-      if (this.allGames.length === 0) {
-        void this.sync();
-      }
+      void this.sync();
     }
 
     this.loading = false;
@@ -214,6 +216,17 @@ export class AnalyticsPage implements OnInit {
       connected: this.connectedList.length,
       games_count: this.allGames.length,
     });
+  }
+
+  /**
+   * Al volver a la pantalla se busca lo nuevo sin esperar al botón. Es barato:
+   * los meses pasados salen del caché, y el mes en curso solo se vuelve a pedir
+   * si su copia tiene más de una hora.
+   */
+  ionViewWillEnter(): void {
+    if (!this.loading && this.hasAccounts) {
+      void this.sync();
+    }
   }
 
   // — Conectar ————————————————————————————————————————————————

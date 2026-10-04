@@ -641,6 +641,9 @@
     "ratingProgress": "Rating progress",
     "byColor": "As White and as Black",
     "statsTab": "Statistics",
+    "accountsAndHistory": "Accounts and download",
+    "chartTimeClassLabel": "Time control",
+    "chartPlatformLabel": "Platform",
     "range": "From {{from}} to {{to}}",
     "connect": {
       "title": "Connect your account",
@@ -653,7 +656,8 @@
       "privacy": "Your games are stored on this device only. Nothing is uploaded to any server."
     },
     "filters": {
-      "allPlatforms": "All"
+      "allPlatforms": "All",
+      "title": "Filters"
     },
     "timeClasses": {
       "bullet": "Bullet",

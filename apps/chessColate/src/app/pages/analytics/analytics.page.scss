@@ -1,2 +1,7 @@
 // Sin estilos propios: la pantalla se apoya en las utilidades del tema y en los
 // estilos de sus componentes (gráfica y mapa de actividad).
+
+// Safari pinta su propio triángulo en <details>; el de la flecha es el nuestro.
+summary::-webkit-details-marker {
+  display: none;
+}

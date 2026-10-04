@@ -641,6 +641,9 @@
     "ratingProgress": "Evolución del rating",
     "byColor": "Con blancas y con negras",
     "statsTab": "Estadísticas",
+    "accountsAndHistory": "Cuentas y descarga",
+    "chartTimeClassLabel": "Ritmo",
+    "chartPlatformLabel": "Plataforma",
     "range": "De {{from}} a {{to}}",
     "connect": {
       "title": "Conecta tu cuenta",
@@ -653,7 +656,8 @@
       "privacy": "Tus partidas se guardan solo en este dispositivo. No se sube nada a ningún servidor."
     },
     "filters": {
-      "allPlatforms": "Todas"
+      "allPlatforms": "Todas",
+      "title": "Filtros"
     },
     "timeClasses": {
       "bullet": "Bullet",

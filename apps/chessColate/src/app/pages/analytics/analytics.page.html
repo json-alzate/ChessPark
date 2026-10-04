@@ -95,6 +95,13 @@
           </section>
         } @else {
 
+          <details class="group mb-5">
+            <summary class="cursor-pointer flex items-center gap-2 text-xs font-bold uppercase tracking-wide opacity-60 mb-2">
+              <ion-icon name="settings-outline" class="text-base"></ion-icon>
+              {{ 'ANALYTICS.accountsAndHistory' | transloco }}
+              <ion-icon name="chevron-down-outline" class="text-base ml-auto transition-transform group-open:rotate-180"></ion-icon>
+            </summary>
+
           <!-- Cuentas conectadas -->
           <section class="mb-5">
             <h3 class="text-xs font-bold uppercase tracking-wide opacity-60 mb-2">
@@ -142,6 +149,7 @@
               </p>
             }
           </section>
+          </details>
 
           <!-- Descarga en curso -->
           @if (syncing) {
@@ -173,7 +181,12 @@
 
           @if (stats) {
             <!-- Filtros -->
-            <section class="mb-5">
+            <section class="mb-5 bg-base-200/40 border border-base-content/10 rounded-box p-3">
+              <div class="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide opacity-60 mb-2">
+                <ion-icon name="filter-outline" class="text-base"></ion-icon>
+                {{ 'ANALYTICS.filters.title' | transloco }}
+              </div>
+
               @if (availablePlatforms.length > 1) {
                 <div class="join w-full mb-2">
                   <button class="btn btn-xs join-item flex-1"
@@ -205,16 +218,19 @@
 
             <!-- Estadísticas / Aperturas / Partidas -->
             <section class="mb-6">
-              <div class="tabs tabs-boxed mb-3">
-                <button class="tab" [class.tab-active]="activeTab === 'stats'"
+              <div class="join w-full mb-3">
+                <button class="btn btn-sm join-item flex-1"
+                  [class.btn-primary]="activeTab === 'stats'"
                   (click)="setActiveTab('stats')">
                   {{ 'ANALYTICS.statsTab' | transloco }}
                 </button>
-                <button class="tab" [class.tab-active]="activeTab === 'openings'"
+                <button class="btn btn-sm join-item flex-1"
+                  [class.btn-primary]="activeTab === 'openings'"
                   (click)="setActiveTab('openings')">
                   {{ 'ANALYTICS.openings.title' | transloco }}
                 </button>
-                <button class="tab" [class.tab-active]="activeTab === 'games'"
+                <button class="btn btn-sm join-item flex-1"
+                  [class.btn-primary]="activeTab === 'games'"
                   (click)="setActiveTab('games')">
                   {{ 'ANALYTICS.gamesList.title' | transloco }} ({{ gamesList.length }})
                 </button>
