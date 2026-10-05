@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, IonContent, IonIcon } from '@ionic/angular/standalone';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
@@ -11,6 +11,7 @@ import {
   homeOutline,
   refreshOutline,
   settingsOutline,
+  shuffle,
   statsChartOutline,
   trashOutline,
   linkOutline,
@@ -19,6 +20,7 @@ import {
 import {
   ChessGame,
   ChessPlatform,
+  Plan,
   outcomeForUser,
   TimeClass,
 } from '@cpark/models';
@@ -38,13 +40,21 @@ import {
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 import { AnalyticsService } from '@services/analytics.service';
 import { GamesService } from '@services/games.service';
+import { AppService } from '@services/app.service';
+import { PlanService } from '@services/plan.service';
+import { CustomPlansService } from '@services/custom-plans.service';
+import { ProfileService } from '@services/profile.service';
+import { PlanFacadeService } from '@cpark/state';
 import {
   GameAnalyticsService,
   UnknownUsernameError,
 } from '@services/game-analytics.service';
 import {
   boardOrientation,
+  CatalogOpening,
   ConnectedAccounts,
+  PracticeOpening,
+  practiceOpenings,
   HISTORY_RANGES,
   HistoryRange,
   newestFirst,
@@ -64,6 +74,7 @@ addIcons({
   homeOutline,
   refreshOutline,
   settingsOutline,
+  shuffle,
   statsChartOutline,
   trashOutline,
   linkOutline,
@@ -80,6 +91,8 @@ const GAMES_PAGE_SIZE = 20;
  * dispositivo y solo después se va a la red: los números aparecen al instante
  * aunque la descarga tarde.
  */
+type PracticeColor = 'white' | 'black' | 'random';
+
 @Component({
   selector: 'app-analytics',
   templateUrl: './analytics.page.html',
@@ -104,6 +117,12 @@ export class AnalyticsPage implements OnInit {
   private analytics = inject(AnalyticsService);
   private gameAnalytics = inject(GameAnalyticsService);
   private gamesService = inject(GamesService);
+  private appService = inject(AppService);
+  private planService = inject(PlanService);
+  private route = inject(ActivatedRoute);
+  private customPlansService = inject(CustomPlansService);
+  private profileService = inject(ProfileService);
+  private planFacade = inject(PlanFacadeService);
 
   /** Formulario de conexión. */
   chesscomInput = '';
@@ -142,12 +161,24 @@ export class AnalyticsPage implements OnInit {
   shownGames = GAMES_PAGE_SIZE;
 
   /** Qué tab se ve en la sección de Estadísticas / Aperturas / Partidas. */
-  activeTab: 'stats' | 'openings' | 'games' = 'stats';
+  activeTab: 'stats' | 'openings' | 'games' = this.initialTab();
 
   readonly historyRanges = HISTORY_RANGES;
   readonly timeClasses = TIME_CLASSES;
   readonly platformLabel = platformLabel;
   readonly toPercent = toPercent;
+
+  get catalog(): CatalogOpening[] {
+    return this.appService.getOpeningsList;
+  }
+
+  colorPickerOpen = false;
+  private colorResolver: ((color: PracticeColor | null) => void) | null = null;
+
+  /** Aperturas tuyas donde peor te va y que tienen puzzles para practicarlas. */
+  get practiceOpenings(): PracticeOpening[] {
+    return practiceOpenings(this.openings, this.appService.getOpeningsList);
+  }
   readonly opponentOf = opponentOf;
   readonly outcomeForUser = outcomeForUser;
 
@@ -198,6 +229,10 @@ export class AnalyticsPage implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
+    if (!this.appService.getOpeningsList.length) {
+      void this.appService.loadOpenings();
+    }
+
     const settings = this.gameAnalytics.getSettings();
     this.accounts = settings.accounts;
     this.historyMonths = settings.historyMonths;
@@ -335,6 +370,81 @@ export class AnalyticsPage implements OnInit {
   }
 
   /** Cambiar el rango obliga a bajar los meses que aún no estén. */
+  practiceName(opening: CatalogOpening): string {
+    return this.transloco.getActiveLang() === 'es' ? opening.nameEs : opening.nameEn;
+  }
+
+  /** Arma una sesión de puzzles de esa apertura, con tu rating como nivel, y la empieza. */
+  /**
+   * Guarda una rutina por apertura —la misma que una rutina propia, para que
+   * tenga historial, gráficos y "repetir"— y la empieza. Repetir la práctica de
+   * una apertura reutiliza su rutina, así que el historial se acumula.
+   */
+  async practice(opening: CatalogOpening): Promise<void> {
+    const color = await this.chooseColor();
+    if (!color) {
+      return;
+    }
+
+    const uid = `practice-${opening.value}`;
+    const last = this.ratingPoints[this.ratingPoints.length - 1];
+    const plan: Plan = {
+      uid,
+      uidCustomPlan: uid,
+      title: this.practiceName(opening),
+      uidUser: this.profileService.getProfile?.uid ?? '',
+      createdAt: Date.now(),
+      planType: 'custom',
+      isPublic: false,
+      blocks: [
+        {
+          title: this.practiceName(opening),
+          time: 300,
+          puzzlesCount: 0,
+          theme: '',
+          openingFamily: opening.value,
+          elo: last?.rating ?? 1500,
+          color,
+          puzzleTimes: { total: 60, warningOn: 30, dangerOn: 10 },
+          puzzlesPlayed: [],
+          nextPuzzleImmediately: true,
+          showPuzzleSolution: true,
+          streamSolution: false,
+          showPuzzleElo: false,
+          goshPuzzle: false,
+        },
+      ],
+    };
+
+    await this.customPlansService.save(plan);
+    const planToPlay = await this.planService.makeCustomPlanForPlay(plan, last?.rating ?? 1500);
+    this.planFacade.clearPlan();
+    this.planFacade.setPlan(planToPlay);
+    void this.router.navigate(['/puzzles/training'], {
+      queryParams: { returnTo: '/analytics?tab=openings' },
+    });
+  }
+
+  /** Con qué color practicar; null si se cancela. */
+  private chooseColor(): Promise<PracticeColor | null> {
+    this.colorPickerOpen = true;
+    return new Promise((resolve) => {
+      this.colorResolver = resolve;
+    });
+  }
+
+  pickColor(color: PracticeColor | null): void {
+    this.colorPickerOpen = false;
+    this.colorResolver?.(color);
+    this.colorResolver = null;
+  }
+
+  /** La pestaña con la que se entra: la que pidió la ruta de vuelta, o Estadísticas. */
+  private initialTab(): 'stats' | 'openings' | 'games' {
+    const tab = this.route.snapshot.queryParamMap.get('tab');
+    return tab === 'openings' || tab === 'games' ? tab : 'stats';
+  }
+
   async setHistoryRange(months: HistoryRange): Promise<void> {
     if (months === this.historyMonths) {
       return;

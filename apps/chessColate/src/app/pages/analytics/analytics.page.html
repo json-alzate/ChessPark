@@ -2,6 +2,35 @@
   <div class="min-h-screen bg-base-100" data-theme="halloween">
     <app-navbar></app-navbar>
 
+    <!-- Con qué color practicar: antes de empezar la rutina -->
+    @if (colorPickerOpen) {
+      <div class="modal modal-open" role="dialog" aria-modal="true">
+        <div class="modal-box">
+          <h3 class="text-lg font-bold">{{ 'ANALYTICS.practice.colorTitle' | transloco }}</h3>
+          <div class="grid grid-cols-3 gap-2 mt-4">
+            <button class="btn btn-outline flex-col gap-1 h-auto py-3" (click)="pickColor('white')">
+              <img src="assets/images/king-white.svg" class="h-6 w-6" alt="" />
+              <span class="text-xs font-medium">{{ 'ANALYTICS.practice.colorWhite' | transloco }}</span>
+            </button>
+            <button class="btn btn-outline flex-col gap-1 h-auto py-3" (click)="pickColor('random')">
+              <ion-icon name="shuffle" class="text-lg"></ion-icon>
+              <span class="text-xs font-medium">{{ 'ANALYTICS.practice.colorBoth' | transloco }}</span>
+            </button>
+            <button class="btn btn-outline flex-col gap-1 h-auto py-3" (click)="pickColor('black')">
+              <img src="assets/images/king-black.svg" class="h-6 w-6" alt="" />
+              <span class="text-xs font-medium">{{ 'ANALYTICS.practice.colorBlack' | transloco }}</span>
+            </button>
+          </div>
+          <div class="modal-action">
+            <button class="btn btn-ghost" (click)="pickColor(null)">
+              {{ 'COMMON.actions.cancel' | transloco }}
+            </button>
+          </div>
+        </div>
+        <div class="modal-backdrop" (click)="pickColor(null)"></div>
+      </div>
+    }
+
     <!-- Mismo ancho que Historial de rutinas y Rutinas públicas -->
     <div class="container mx-auto px-2 pb-6 lg:px-6">
       <div class="lg:max-w-3xl lg:mx-auto">
@@ -307,8 +336,35 @@
                     </div>
                   </div>
                 </section>
+                <!-- Para practicar: puzzles de las aperturas donde peor te va -->
+                <section class="mt-6">
+                  <h3 class="text-xs font-bold uppercase tracking-wide opacity-60 mb-2">
+                    {{ 'ANALYTICS.practice.title' | transloco }}
+                  </h3>
+                  @if (practiceOpenings.length) {
+                    <ul class="flex flex-col divide-y divide-base-content/10
+                               bg-base-200/40 border border-base-content/10 rounded-box">
+                      @for (opening of practiceOpenings; track opening.value) {
+                        <li class="flex items-center justify-between gap-3 px-3 py-2">
+                          <div class="min-w-0">
+                            <div class="text-sm font-medium truncate">{{ practiceName(opening) }}</div>
+                            <div class="text-xs opacity-60">
+                              {{ 'ANALYTICS.practice.record' | transloco: { percent: toPercent(opening.winRate), games: opening.games } }}
+                            </div>
+                          </div>
+                          <button class="btn btn-sm btn-primary shrink-0" (click)="practice(opening)">
+                            {{ 'ANALYTICS.practice.action' | transloco }}
+                          </button>
+                        </li>
+                      }
+                    </ul>
+                    <p class="text-xs opacity-50 mt-2">{{ 'ANALYTICS.practice.hint' | transloco }}</p>
+                  } @else {
+                    <p class="text-sm opacity-60">{{ 'ANALYTICS.practice.empty' | transloco }}</p>
+                  }
+                </section>
               } @else if (activeTab === 'openings') {
-                <app-openings-table [openings]="openings"></app-openings-table>
+                <app-openings-table [openings]="openings" [catalog]="catalog" (practice)="practice($event)"></app-openings-table>
               } @else {
                 <p class="text-xs opacity-50 mb-2">{{ 'ANALYTICS.gamesList.hint' | transloco }}</p>
 

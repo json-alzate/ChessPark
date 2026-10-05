@@ -176,7 +176,6 @@
     },
     "viewBlocks": "What you train",
     "subtitle": "Choose a mode and start solving.",
-    "routineOf": "{{minutes}} min routine",
     "elo": "ELO",
     "allBlocks": "All blocks",
     "plans": {
@@ -701,6 +700,17 @@
       "unknownUserTitle": "User not found",
       "unknownUser": "{{platform}} does not know that user. Check the spelling.",
       "syncFailed": "Some games could not be downloaded. Check your connection and try again."
+    },
+    "practice": {
+      "title": "Practice",
+      "record": "{{percent}}% score in {{games}} games",
+      "action": "Practice",
+      "hint": "Puzzles from those openings, at your level.",
+      "empty": "Once you have at least 3 games in an opening that has puzzles, it will show up here.",
+      "colorTitle": "Which color do you want to practice?",
+      "colorWhite": "White",
+      "colorBlack": "Black",
+      "colorBoth": "Both"
     }
   },
   "STORAGE": {

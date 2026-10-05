@@ -11,7 +11,7 @@ import {
   ChessPlatform,
   TimeClass,
 } from '@cpark/models';
-import { RatingDataPoint } from '@chesspark/game-reporter';
+import { OpeningStats, RatingDataPoint } from '@chesspark/game-reporter';
 
 /** Una cuenta conectada por el usuario. */
 export interface ConnectedAccounts {
@@ -120,4 +120,57 @@ export function opponentOf(game: ChessGame): ChessGamePlayer {
  */
 export function boardOrientation(game: ChessGame): 'w' | 'b' {
   return game.userColor === 'white' ? 'w' : 'b';
+}
+
+/** Una apertura del catálogo de puzzles, con su nombre en cada idioma. */
+export interface CatalogOpening {
+  value: string;
+  nameEn: string;
+  nameEs: string;
+}
+
+/** Una apertura tuya donde te va mal y que tiene puzzles para practicarla. */
+export interface PracticeOpening extends CatalogOpening {
+  games: number;
+  winRate: number;
+}
+
+/** Lo que escriben igual el catálogo y la plataforma: sin mayúsculas, acentos ni signos. */
+function sameName(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/['’.]/g, '')
+    .replace(/[\s-]+/g, '_');
+}
+
+/**
+ * Las aperturas donde peor te va y que tienen puzzles: el nombre de la
+ * plataforma ('Sicilian Defense: Najdorf') se cruza con el catálogo sin
+ * importar mayúsculas ni apóstrofes. Solo cuentan aperturas con al menos
+ * `minGames` partidas, para no recomendar una que jugaste una vez.
+ */
+export function catalogOpeningFor(
+  row: OpeningStats,
+  catalog: CatalogOpening[]
+): CatalogOpening | null {
+  const name = sameName(row.name.split(':')[0]);
+  return catalog.find((item) => sameName(item.value) === name) ?? null;
+}
+
+export function practiceOpenings(
+  openings: OpeningStats[],
+  catalog: CatalogOpening[],
+  minGames = 3,
+  count = 3
+): PracticeOpening[] {
+  return openings
+    .filter((row) => row.games >= minGames)
+    .flatMap((row) => {
+      const item = catalogOpeningFor(row, catalog);
+      return item ? [{ ...item, games: row.games, winRate: row.winRate }] : [];
+    })
+    .sort((a, b) => a.winRate - b.winRate)
+    .slice(0, count);
 }

@@ -20,6 +20,11 @@
             <div class="text-xs opacity-60">
               {{ 'ANALYTICS.openings.gamesCount' | transloco: { count: row.games } }}
             </div>
+            @if (practiceFor(row); as opening) {
+              <button class="btn btn-xs btn-outline mt-1" (click)="practice.emit(opening)">
+                {{ 'ANALYTICS.practice.action' | transloco }}
+              </button>
+            }
           </div>
         </div>
 

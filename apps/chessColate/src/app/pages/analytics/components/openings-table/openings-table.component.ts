@@ -1,10 +1,14 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslocoPipe } from '@jsverse/transloco';
 
 import { OpeningStats } from '@chesspark/game-reporter';
 
-import { toPercent } from '@services/game-analytics.util';
+import {
+  CatalogOpening,
+  catalogOpeningFor,
+  toPercent,
+} from '@services/game-analytics.util';
 
 /** Cuántas filas se ven antes de pedir "ver más". */
 const PAGE_SIZE = 8;
@@ -26,6 +30,10 @@ export class OpeningsTableComponent implements OnChanges {
   @Input() openings: OpeningStats[] = [];
   /** Partidas mínimas para que una apertura aparezca. */
   @Input() minGames = 3;
+  /** Catálogo de puzzles: solo las aperturas que aparecen en él se pueden practicar. */
+  @Input() catalog: CatalogOpening[] = [];
+  /** La apertura que el usuario quiere practicar. */
+  @Output() practice = new EventEmitter<CatalogOpening>();
 
   rows: OpeningStats[] = [];
   visible = PAGE_SIZE;
@@ -43,6 +51,10 @@ export class OpeningsTableComponent implements OnChanges {
 
   get hasMore(): boolean {
     return this.visible < this.rows.length;
+  }
+
+  practiceFor(row: OpeningStats): CatalogOpening | null {
+    return catalogOpeningFor(row, this.catalog);
   }
 
   showMore(): void {

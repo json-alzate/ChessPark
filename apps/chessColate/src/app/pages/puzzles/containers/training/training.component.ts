@@ -6,7 +6,7 @@ import {
   OnDestroy,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { interval, Subject, Subscription } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -85,6 +85,9 @@ export class TrainingComponent implements OnInit, OnDestroy {
   private plansElosService = inject(PlansElosService);
   private planStorageService = inject(PlanStorageService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  /** Adónde volver al salir: la pantalla que empezó la sesión, o Inicio. */
+  private readonly returnUrl = this.route.snapshot.queryParamMap.get('returnTo') ?? '/home';
   appService = inject(AppService);
   private profileService = inject(ProfileService);
   private translocoService = inject(TranslocoService);
@@ -1075,7 +1078,7 @@ export class TrainingComponent implements OnInit, OnDestroy {
           handler: () => {
             // Cuando se cancela, sí se debe limpiar el plan
             this.cleanupResources();
-            this.router.navigate(['/home']);
+            void this.router.navigateByUrl(this.returnUrl);
           },
         },
       ],

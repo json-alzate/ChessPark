@@ -176,7 +176,6 @@
     },
     "viewBlocks": "Qué entrenas",
     "subtitle": "Elige un modo y empieza a resolver.",
-    "routineOf": "Rutina de {{minutes}} min",
     "elo": "ELO",
     "allBlocks": "Todos los bloques",
     "plans": {
@@ -701,6 +700,17 @@
       "unknownUserTitle": "No encontramos ese usuario",
       "unknownUser": "{{platform}} no conoce a ese usuario. Revisa cómo lo escribiste.",
       "syncFailed": "No se pudieron descargar todas las partidas. Revisa tu conexión e inténtalo otra vez."
+    },
+    "practice": {
+      "title": "Para practicar",
+      "record": "{{percent}}% de puntuación en {{games}} partidas",
+      "action": "Practicar",
+      "hint": "Puzzles de esas aperturas, a tu nivel. Se practican sin límite de tiempo por jugada.",
+      "empty": "Cuando tengas al menos 3 partidas de una misma apertura que tenga puzzles, aparecerá aquí.",
+      "colorTitle": "¿Con qué color quieres practicar?",
+      "colorWhite": "Blancas",
+      "colorBlack": "Negras",
+      "colorBoth": "Ambos"
     }
   },
   "STORAGE": {

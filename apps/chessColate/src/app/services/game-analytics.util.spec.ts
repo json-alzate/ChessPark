@@ -1,5 +1,5 @@
 import { ChessGame } from '@cpark/models';
-import { RatingDataPoint } from '@chesspark/game-reporter';
+import { OpeningStats, RatingDataPoint } from '@chesspark/game-reporter';
 
 import {
   boardOrientation,
@@ -7,6 +7,7 @@ import {
   newestFirst,
   opponentOf,
   platformLabel,
+  practiceOpenings,
   rangeStart,
   thinSeries,
   toPercent,
@@ -142,5 +143,55 @@ describe('boardOrientation', () => {
   it('ve el tablero desde el color con el que jugó el usuario', () => {
     expect(boardOrientation(buildGame({ userColor: 'white' }))).toBe('w');
     expect(boardOrientation(buildGame({ userColor: 'black' }))).toBe('b');
+  });
+});
+
+describe('practiceOpenings', () => {
+  const catalog = [
+    { value: 'Sicilian_Defense', nameEn: 'Sicilian Defense', nameEs: 'Defensa Siciliana' },
+    { value: 'Queens_Gambit_Declined', nameEn: "Queen's Gambit Declined", nameEs: 'Gambito de Dama Rehusado' },
+    { value: 'French_Defense', nameEn: 'French Defense', nameEs: 'Defensa Francesa' },
+  ];
+
+  const row = (name: string, games: number, winRate: number): OpeningStats => ({
+    eco: 'B20',
+    name,
+    games,
+    wins: 0,
+    losses: 0,
+    draws: 0,
+    winRate,
+    asWhite: 0,
+    asBlack: games,
+  });
+
+  it('cruza el nombre de la plataforma con el catálogo, ignorando la variante', () => {
+    const result = practiceOpenings([row('Sicilian Defense: Najdorf Variation', 5, 0.3)], catalog);
+
+    expect(result.map((item) => item.value)).toEqual(['Sicilian_Defense']);
+  });
+
+  it('reconoce apóstrofes y mayúsculas', () => {
+    const result = practiceOpenings([row("Queen's Gambit Declined", 4, 0.2)], catalog);
+
+    expect(result.map((item) => item.value)).toEqual(['Queens_Gambit_Declined']);
+  });
+
+  it('pone primero las aperturas donde peor te va', () => {
+    const result = practiceOpenings(
+      [row('French Defense', 4, 0.6), row('Sicilian Defense', 4, 0.2)],
+      catalog
+    );
+
+    expect(result.map((item) => item.value)).toEqual(['Sicilian_Defense', 'French_Defense']);
+  });
+
+  it('no recomienda aperturas con pocas partidas ni sin puzzles', () => {
+    const result = practiceOpenings(
+      [row('Sicilian Defense', 2, 0.1), row('Bird Opening', 9, 0.1)],
+      catalog
+    );
+
+    expect(result).toEqual([]);
   });
 });
