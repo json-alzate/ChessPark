@@ -790,17 +790,17 @@
     "channelName": "Recordatorios de entrenamiento",
     "prompt": {
       "title": "¿Entrenamos a tu hora?",
-      "message": "Sueles entrenar a eso de las {{time}}. Te avisamos a esa hora para que no pierdas el ritmo. Solo si aún no has entrenado ese día.",
-      "messageGeneric": "Te avisamos a las {{time}} para que no pierdas el ritmo. Solo si aún no has entrenado ese día. Con el tiempo ajustamos el aviso a tu hora habitual.",
+      "message": "Sueles entrenar a eso de las {{time}}. Te avisamos a esa hora, solo si aún no has entrenado ese día.",
+      "messageGeneric": "Te avisamos a las {{time}}, solo si aún no has entrenado ese día. Con el tiempo ajustamos el aviso a tu hora habitual.",
       "accept": "Avisarme",
       "later": "Ahora no"
     },
     "notifications": {
       "title": "Tu entrenamiento de hoy",
-      "generic1": "¿Listo para tu jugada del día? ♟️",
-      "generic2": "Es tu hora de entrenar. Vamos por un mate. ♟️",
-      "generic3": "3 ejercicios rápidos y listo. ¿Empezamos? ⚡",
-      "streak": "No pierdas tu racha de {{days}} días 🔥"
+      "generic1": "¿Listo para tu jugada del día?",
+      "generic2": "Es tu hora de entrenar. Vamos por un mate.",
+      "generic3": "3 ejercicios rápidos y listo. ¿Empezamos?",
+      "streak": "Llevas {{days}} días seguidos. ¿Un ejercicio para seguir?"
     }
   },
   "PUZZLE_SOLUTION": {
