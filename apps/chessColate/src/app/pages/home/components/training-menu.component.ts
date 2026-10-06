@@ -21,9 +21,9 @@ import { addIcons } from 'ionicons';
 import { eyeOffOutline, eyeOutline, playOutline, timeOutline } from 'ionicons/icons';
 
 // services
-import { BlockService } from '@services/block.service';
-import { PlanService } from '@services/plan.service';
-import { ProfileService } from '@services/profile.service';
+import { BlockService } from '@services/training/block.service';
+import { PlanService } from '@services/plans/plan.service';
+import { ProfileService } from '@services/account/profile.service';
 
 import { Block, Plan, PlanTypes } from '@cpark/models';
 import { Router } from '@angular/router';

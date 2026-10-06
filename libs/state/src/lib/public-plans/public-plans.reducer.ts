@@ -14,6 +14,8 @@ import {
     loadUserInteractions,
     loadUserInteractionsSuccess,
     loadUserInteractionsFailure,
+    loadInteractionPlansSuccess,
+    loadPlanInteractionSuccess,
     togglePlanLikeSuccess,
     togglePlanSavedSuccess,
     markPlanAsPlayedSuccess,
@@ -31,6 +33,7 @@ export const initialPublicPlansState: PublicPlansState =
         hasMore: true,
         interactions: [],
         loadingInteractions: false,
+        interactionPlans: {},
     });
 
 const _publicPlansReducer = createReducer(
@@ -163,6 +166,24 @@ const _publicPlansReducer = createReducer(
         ...state,
         loadingInteractions: false,
     })),
+    on(loadInteractionPlansSuccess, (state, { plans }) => {
+        const interactionPlans = { ...state.interactionPlans };
+        plans.forEach((plan) => {
+            interactionPlans[plan.uid] = plan;
+        });
+        return { ...state, interactionPlans };
+    }),
+    on(loadPlanInteractionSuccess, (state, { interaction }) => {
+        // Sin interacción en Firestore significa que el usuario no tiene like/guardado/jugado
+        if (!interaction) return state;
+        const exists = state.interactions.some((i) => i.planUid === interaction.planUid);
+        return {
+            ...state,
+            interactions: exists
+                ? state.interactions.map((i) => (i.planUid === interaction.planUid ? interaction : i))
+                : [...state.interactions, interaction],
+        };
+    }),
     on(togglePlanLikeSuccess, (state, { planUid, liked, interaction }) => {
         const plan = state.entities[planUid];
         if (!plan) return state;

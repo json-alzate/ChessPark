@@ -7,7 +7,7 @@ jest.mock('@chesspark/board', () => ({
 }));
 
 import { TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
+import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { of } from 'rxjs';
 
 import {
@@ -21,17 +21,17 @@ import { Block, Plan, Puzzle } from '@cpark/models';
 import { PlanFacadeService } from '@cpark/state';
 import { SoundsService, UidGeneratorService } from '@chesspark/common-utils';
 
-import { AppService } from '@services/app.service';
-import { BlockService } from '@services/block.service';
-import { InfinityPuzzlePoolService } from '@services/infinity-puzzle-pool.service';
-import { ProfileService } from '@services/profile.service';
-import { PlansElosService } from '@services/plans-elos.service';
-import { PlanStorageService } from '@services/plan-storage.service';
-import { PlanService } from '@services/plan.service';
-import { AnalyticsService } from '@services/analytics.service';
-import { TrainingReminderService } from '@services/training-reminder.service';
-import { Reto333StorageService } from '@services/reto333-storage.service';
-import { UserRecordsService } from '@services/user-records.service';
+import { AppService } from '@services/app/app.service';
+import { BlockService } from '@services/training/block.service';
+import { InfinityPuzzlePoolService } from '@services/training/infinity-puzzle-pool.service';
+import { ProfileService } from '@services/account/profile.service';
+import { PlansElosService } from '@services/plans/plans-elos.service';
+import { PlanStorageService } from '@services/plans/plan-storage.service';
+import { PlanService } from '@services/plans/plan.service';
+import { AnalyticsService } from '@services/analytics/analytics.service';
+import { TrainingReminderService } from '@services/training/training-reminder.service';
+import { Reto333StorageService } from '@services/training/reto333-storage.service';
+import { UserRecordsService } from '@services/progress/user-records.service';
 
 import { TrainingComponent } from './training.component';
 
@@ -122,6 +122,12 @@ describe('TrainingComponent · cronómetro del bloque', () => {
         { provide: AlertController, useValue: { create: jest.fn() } },
         { provide: LoadingController, useValue: { create: jest.fn() } },
         { provide: Router, useValue: { navigate: jest.fn() } },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: { queryParamMap: convertToParamMap({}) },
+          },
+        },
         {
           provide: PlanFacadeService,
           useValue: {

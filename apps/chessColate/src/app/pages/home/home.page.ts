@@ -21,16 +21,16 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Block, Plan, PlanTypes, Puzzle, Reto333Record, StreakRecord } from '@cpark/models';
 
 // Services
-import { BlockService } from '@services/block.service';
-import { PlanService } from '@services/plan.service';
+import { BlockService } from '@services/training/block.service';
+import { PlanService } from '@services/plans/plan.service';
 import { PuzzlesProvider } from '@chesspark/puzzles-provider';
-import { InfinityPuzzlePoolService } from '@services/infinity-puzzle-pool.service';
-import { StreakStorageService } from '@services/streak-storage.service';
-import { Reto333StorageService } from '@services/reto333-storage.service';
+import { InfinityPuzzlePoolService } from '@services/training/infinity-puzzle-pool.service';
+import { StreakStorageService } from '@services/progress/streak-storage.service';
+import { Reto333StorageService } from '@services/training/reto333-storage.service';
 
-import { ProfileService } from '@services/profile.service';
+import { ProfileService } from '@services/account/profile.service';
 
-import { AppService } from '@services/app.service';
+import { AppService } from '@services/app/app.service';
 
 // Components
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';

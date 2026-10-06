@@ -6,9 +6,9 @@ import { Chart, registerables } from 'chart.js';
 
 import { Profile, Plan, PlanElos } from '@cpark/models';
 
-import { AppService } from '@services/app.service';
-import { ProfileService } from '@services/profile.service';
-import { PlansElosService } from '@services/plans-elos.service';
+import { AppService } from '@services/app/app.service';
+import { ProfileService } from '@services/account/profile.service';
+import { PlansElosService } from '@services/plans/plans-elos.service';
 
 @Component({
   selector: 'app-plan-chart',

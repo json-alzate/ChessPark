@@ -23,8 +23,8 @@ import {
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 import { ReminderPermissionModalComponent } from '@shared/components/reminder-permission-modal/reminder-permission-modal.component';
 import { ManualReminderModalComponent } from '@shared/components/manual-reminder-modal/manual-reminder-modal.component';
-import { AnalyticsService } from '@services/analytics.service';
-import { TrainingReminderService } from '@services/training-reminder.service';
+import { AnalyticsService } from '@services/analytics/analytics.service';
+import { TrainingReminderService } from '@services/training/training-reminder.service';
 import {
   effectiveReminderTime,
   formatReminderTime,
@@ -33,7 +33,7 @@ import {
   TrainingReminderState,
   UpcomingNotification,
   WEEKDAYS_MON_FIRST,
-} from '@services/training-reminder.util';
+} from '@services/training/training-reminder.util';
 
 addIcons({
   homeOutline,

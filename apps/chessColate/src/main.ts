@@ -34,12 +34,14 @@ import {
 } from '@cpark/state';
 
 // Services
-import { AuthService } from './app/services/auth.service';
-import { ProfileService } from './app/services/profile.service';
-import { FirestoreService } from './app/services/firestore.service';
-import { LanguageService } from './app/services/language.service';
-import { AppService } from './app/services/app.service';
-import { CrashlyticsErrorHandler } from './app/services/crashlytics-error-handler';
+import { AuthService } from './app/services/account/auth.service';
+import { ProfileService } from './app/services/account/profile.service';
+import { CustomPlanRepository } from './app/services/firestore/custom-plan.repository';
+import { PlanElosRepository } from './app/services/firestore/plan-elos.repository';
+import { PublicPlansFirestoreAdapter } from './app/services/firestore/public-plans-firestore.adapter';
+import { LanguageService } from './app/services/app/language.service';
+import { AppService } from './app/services/app/app.service';
+import { CrashlyticsErrorHandler } from './app/services/analytics/crashlytics-error-handler';
 import { PuzzlesProvider } from '@chesspark/puzzles-provider';
 
 import { register } from 'swiper/element/bundle';
@@ -89,14 +91,13 @@ bootstrapApplication(AppComponent, {
     // Servicios de autenticación (DEBEN estar ANTES de los Effects)
     AuthService,
     ProfileService,
-    FirestoreService,
     LanguageService,
     AppService,
     { provide: AUTH_SERVICE_TOKEN, useExisting: AuthService },
     { provide: PROFILE_SERVICE_TOKEN, useExisting: ProfileService },
-    { provide: FIRESTORE_SERVICE_TOKEN, useExisting: FirestoreService },
-    { provide: CUSTOM_PLANS_FIRESTORE_TOKEN, useExisting: FirestoreService },
-    { provide: PUBLIC_PLANS_FIRESTORE_TOKEN, useExisting: FirestoreService },
+    { provide: FIRESTORE_SERVICE_TOKEN, useExisting: PlanElosRepository },
+    { provide: CUSTOM_PLANS_FIRESTORE_TOKEN, useExisting: CustomPlanRepository },
+    { provide: PUBLIC_PLANS_FIRESTORE_TOKEN, useExisting: PublicPlansFirestoreAdapter },
     // Puzzles Provider como singleton
     {
       provide: PuzzlesProvider,

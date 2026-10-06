@@ -16,8 +16,8 @@ import {
 import { GameCollectionInfo, GameHeader } from '@chesspark/games-provider';
 
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
-import { AnalyticsService } from '@services/analytics.service';
-import { GamesService } from '@services/games.service';
+import { AnalyticsService } from '@services/analytics/analytics.service';
+import { GamesService } from '@services/games/games.service';
 import {
   ColorFilter,
   EMPTY_FILTERS,
@@ -26,7 +26,7 @@ import {
   filterGames,
   opponentOf,
   outcomeFor,
-} from '@services/games.util';
+} from '@services/games/games.util';
 
 addIcons({
   homeOutline,

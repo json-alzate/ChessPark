@@ -11,10 +11,10 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
 import { Plan, Block } from '@cpark/models';
 
-import { CustomPlansService } from '@services/custom-plans.service';
-import { PlanService } from '@services/plan.service';
-import { ProfileService } from '@services/profile.service';
-import { AppService } from '@services/app.service';
+import { CustomPlansService } from '@services/plans/custom-plans.service';
+import { PlanService } from '@services/plans/plan.service';
+import { ProfileService } from '@services/account/profile.service';
+import { AppService } from '@services/app/app.service';
 import { PlanFacadeService, PlansElosFacadeService, CustomPlansFacadeService, getProfile, getIsInitialized, AppState, getCountAllCustomPlans } from '@cpark/state';
 import { SecondsToMinutesSecondsPipe } from '@chesspark/common-utils';
 

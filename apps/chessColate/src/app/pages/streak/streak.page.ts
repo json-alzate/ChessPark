@@ -36,18 +36,18 @@ import {
   UidGeneratorService,
 } from '@chesspark/common-utils';
 
-import { AppService } from '@services/app.service';
-import { AnalyticsService } from '@services/analytics.service';
-import { ProfileService } from '@services/profile.service';
-import { StreakService } from '@services/streak.service';
-import { StreakStorageService } from '@services/streak-storage.service';
-import { UserRecordsService } from '@services/user-records.service';
-import { TrainingReminderService } from '@services/training-reminder.service';
+import { AppService } from '@services/app/app.service';
+import { AnalyticsService } from '@services/analytics/analytics.service';
+import { ProfileService } from '@services/account/profile.service';
+import { StreakService } from '@services/progress/streak.service';
+import { StreakStorageService } from '@services/progress/streak-storage.service';
+import { UserRecordsService } from '@services/progress/user-records.service';
+import { TrainingReminderService } from '@services/training/training-reminder.service';
 import {
   DEFAULT_STREAK_CONFIG,
   isNewRecord,
   nextTargetElo,
-} from '@services/streak.util';
+} from '@services/progress/streak.util';
 
 /** En qué punto está la pantalla. */
 type StreakStatus = 'loading' | 'playing' | 'finished' | 'error';

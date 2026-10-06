@@ -13,15 +13,15 @@ import {
 } from 'ionicons/icons';
 
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
-import { AnalyticsService } from '@services/analytics.service';
+import { AnalyticsService } from '@services/analytics/analytics.service';
 import {
   PuzzleStorageService,
   StorageFileItem,
   StorageGroup,
-} from '@services/puzzle-storage.service';
-import { GamesService } from '@services/games.service';
-import { GameAnalyticsService } from '@services/game-analytics.service';
-import { platformLabel } from '@services/game-analytics.util';
+} from '@services/training/puzzle-storage.service';
+import { GamesService } from '@services/games/games.service';
+import { GameAnalyticsService } from '@services/analytics/game-analytics.service';
+import { platformLabel } from '@services/analytics/game-analytics.util';
 import { GameCollectionInfo } from '@chesspark/games-provider';
 import { AccountStorageSummary } from '@chesspark/game-reporter';
 

@@ -38,16 +38,14 @@ import { Puzzle } from '@cpark/models';
 // Utils
 import { SecondsToMinutesSecondsPipe, SoundsService } from '@chesspark/common-utils';
 
-// Stockfish
-import {
-  StockfishService,
-  StockfishAnalysisService,
-} from '@chesspark/stockfish-wasm';
+// Stockfish (el ciclo de vida del motor vive en el facade)
+import { StockfishEngineFacade } from '../stockfish-engine/stockfish-engine.facade';
 
 @Component({
   selector: 'lib-board-puzzle-solution',
   standalone: true,
   imports: [CommonModule, SecondsToMinutesSecondsPipe, TranslocoPipe, IonIcon],
+  providers: [StockfishEngineFacade],
   templateUrl: './board-puzzle-solution.component.html',
   styleUrls: ['./board-puzzle-solution.component.scss'],
 })
@@ -66,13 +64,16 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit, OnDe
   chessInstance = new Chess();
   closeCancelMoves = false;
 
-  // Stockfish
-  private stockfishService: StockfishService = inject(StockfishService);
-  private stockfishAnalysisService: StockfishAnalysisService = inject(StockfishAnalysisService);
+  // Stockfish: la UI guarda solo si está activo y la última jugada. El ciclo de vida del motor
+  // (init, terminate, reinicios y errores del worker) lo gestiona StockfishEngineFacade.
+  private engine = inject(StockfishEngineFacade);
   stockfishEnabled = false;
-  stockfishInitialized = false;
   bestMove: string | null = null;
-  private isAnalyzingPosition = false;
+
+  /** Motor listo para analizar. Se consulta al facade para no duplicar ese estado. */
+  get stockfishInitialized(): boolean {
+    return this.engine.isReady;
+  }
 
   currentMoveNumber = 0;
   arrayFenSolution: string[] = [];
@@ -115,34 +116,8 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit, OnDe
 
   async ngOnInit() {
     this.startTimer();
-    // Inicializar Stockfish
-    console.log('[Stockfish] Starting initialization...');
-    try {
-      // Asegurarse de que no haya un worker anterior activo
-      if (this.stockfishService.isReady) {
-        console.log('[Stockfish] Service already ready, terminating previous instance');
-        this.stockfishService.terminate();
-        await new Promise(resolve => setTimeout(resolve, 200));
-      }
-
-      await this.stockfishService.initialize({
-        depth: 15,
-        threads: 1,
-        hash: 16,
-        workerPath: 'assets/engine/stockfish-16.1-lite-single.js',
-      });
-      this.stockfishInitialized = true;
-      console.log('[Stockfish] Initialized successfully, isReady:', this.stockfishService.isReady);
-    } catch (error) {
-      console.error('[Stockfish] Failed to initialize:', error);
-      this.stockfishInitialized = false;
-      // Intentar limpiar en caso de error
-      try {
-        this.stockfishService.terminate();
-      } catch (e) {
-        console.error('[Stockfish] Error during cleanup:', e);
-      }
-    }
+    // El facade inicializa el worker y gestiona reintentos y errores
+    await this.engine.initialize();
   }
 
   ngAfterViewInit() {
@@ -156,7 +131,7 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit, OnDe
    * Activa o desactiva Stockfish
    */
   async startStockfish(event: { detail: { checked: boolean } }) {
-    if (!this.stockfishInitialized || !this.stockfishService.isReady) {
+    if (!this.stockfishInitialized) {
       console.warn('Stockfish not initialized');
       return;
     }
@@ -167,7 +142,7 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit, OnDe
     } else {
       this.stockfishEnabled = false;
       console.log('[Stockfish] Disabled');
-      this.stockfishService.stopAnalysis();
+      this.engine.cancel();
       this.removeAllStockfishIndicators();
       this.bestMove = null;
     }
@@ -182,101 +157,24 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit, OnDe
       return;
     }
 
-    // Evitar análisis concurrentes: si ya hay uno en curso, cancelarlo primero
-    if (this.isAnalyzingPosition) {
-      try {
-        this.stockfishService.stopAnalysis();
-      } catch (e) { /* ignorar */ }
-      return;
-    }
+    const outcome = await this.engine.getBestMove(this.chessInstance.fen());
 
-    if (!this.stockfishService.isReady || !this.stockfishInitialized) {
-      console.warn('[Stockfish] Analysis skipped - service not ready. isReady:', this.stockfishService.isReady, 'initialized:', this.stockfishInitialized);
+    if (outcome.kind === 'unavailable') {
+      // El motor no está disponible ni se pudo recuperar: se desactiva la opción en la UI
       this.stockfishEnabled = false;
       return;
     }
 
-    // Detener análisis anterior si existe
-    try {
-      this.stockfishService.stopAnalysis();
-    } catch (error) {
-      console.warn('[Stockfish] Error stopping previous analysis:', error);
-    }
-
-    this.isAnalyzingPosition = true;
-    try {
-      const fen = this.chessInstance.fen();
-      console.log('[Stockfish] Starting analysis for FEN:', fen);
-
-      // Obtener mejor movimiento
-      console.log('[Stockfish] Requesting best move with depth 15...');
-      const result = await this.stockfishAnalysisService.getBestMove(fen, {
-        depth: 15,
-      });
-
-      console.log('[Stockfish] Analysis result:', result);
-      if (result && result.move) {
-        this.bestMove = result.move;
-        console.log('[Stockfish] Best move found:', this.bestMove, 'length:', this.bestMove.length);
-
-        // Verificar que el tablero esté disponible
-        if (this.board) {
-          this.drawStockfishMarkers();
-          this.drawStockfishArrows();
-        } else {
-          console.warn('[Stockfish] Board not available, cannot draw indicators');
-        }
+    // Si el usuario desactivó Stockfish mientras se analizaba, no se dibuja la jugada
+    if (outcome.kind === 'best-move' && this.stockfishEnabled) {
+      this.bestMove = outcome.move;
+      // Verificar que el tablero esté disponible
+      if (this.board) {
+        this.drawStockfishMarkers();
+        this.drawStockfishArrows();
       } else {
-        console.warn('[Stockfish] No best move in result:', result);
+        console.warn('[Stockfish] Board not available, cannot draw indicators');
       }
-    } catch (error) {
-      console.error('[Stockfish] Error analyzing position:', error);
-      
-      // Si el error es que el worker no está inicializado, intentar reinicializar
-      if (error instanceof Error && error.message.includes('not initialized')) {
-        console.warn('[Stockfish] Worker lost, attempting to reinitialize...');
-        this.stockfishInitialized = false;
-        try {
-          // Terminar el worker anterior si existe
-          this.stockfishService.terminate();
-          await new Promise(resolve => setTimeout(resolve, 200));
-          
-          // Intentar reinicializar
-          await this.stockfishService.initialize({
-            depth: 15,
-            threads: 1,
-            hash: 16,
-            workerPath: 'assets/engine/stockfish-16.1-lite-single.js',
-          });
-          this.stockfishInitialized = true;
-          console.log('[Stockfish] Reinitialized successfully');
-
-          // Intentar el análisis de nuevo (resetear el guard antes de la llamada recursiva)
-          if (this.stockfishEnabled) {
-            this.isAnalyzingPosition = false;
-            await this.analyzeCurrentPosition();
-          }
-        } catch (reinitError) {
-          console.error('[Stockfish] Failed to reinitialize:', reinitError);
-          this.stockfishEnabled = false;
-          this.stockfishInitialized = false;
-        }
-        return;
-      }
-      
-      // Si hay un error crítico, desactivar Stockfish
-      if (error instanceof Error && (error.message.includes('memory') || error.message.includes('terminated'))) {
-        console.error('[Stockfish] Critical error, disabling Stockfish');
-        this.stockfishEnabled = false;
-        this.stockfishInitialized = false;
-        try {
-          this.stockfishService.terminate();
-        } catch (e) {
-          console.error('[Stockfish] Error terminating after critical error:', e);
-        }
-      }
-    } finally {
-      this.isAnalyzingPosition = false;
     }
   }
 
@@ -892,25 +790,8 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit, OnDe
   }
 
   ngOnDestroy() {
-    console.log('[Stockfish] Component destroying, cleaning up...');
-    // Detener análisis si está activo
-    if (this.stockfishEnabled) {
-      try {
-        this.stockfishService.stopAnalysis();
-      } catch (error) {
-        console.warn('[Stockfish] Error stopping analysis:', error);
-      }
-    }
-
-    // Limpiar recursos de Stockfish
-    try {
-      if (this.stockfishService) {
-        this.stockfishService.terminate();
-        console.log('[Stockfish] Worker terminated');
-      }
-    } catch (error) {
-      console.error('[Stockfish] Error terminating Stockfish:', error);
-    }
+    // El facade es dueño del worker: termina el motor y detiene cualquier análisis en curso
+    this.engine.dispose();
     this.stopTimer();
   }
 }

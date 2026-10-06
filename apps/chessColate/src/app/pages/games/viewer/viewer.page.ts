@@ -44,9 +44,9 @@ import {
   BoardPlayerInfoComponent,
 } from '@chesspark/board';
 
-import { AnalyticsService } from '@services/analytics.service';
-import { GamesService } from '@services/games.service';
-import { GameReviewService } from '@services/game-review.service';
+import { AnalyticsService } from '@services/analytics/analytics.service';
+import { GamesService } from '@services/games/games.service';
+import { GameReviewService } from '@services/games/game-review.service';
 import {
   PLAYBACK_SPEEDS,
   PlaybackSettings,
@@ -62,7 +62,7 @@ import {
   pieceSymbol,
   rankedPieces,
   ratingTone,
-} from '@services/games.util';
+} from '@services/games/games.util';
 
 addIcons({
   arrowBackOutline,

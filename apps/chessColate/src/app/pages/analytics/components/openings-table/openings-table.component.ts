@@ -8,7 +8,7 @@ import {
   CatalogOpening,
   catalogOpeningFor,
   toPercent,
-} from '@services/game-analytics.util';
+} from '@services/analytics/game-analytics.util';
 
 /** Cuántas filas se ven antes de pedir "ver más". */
 const PAGE_SIZE = 8;

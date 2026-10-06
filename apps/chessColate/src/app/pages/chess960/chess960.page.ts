@@ -14,7 +14,7 @@ import { TranslocoPipe } from '@jsverse/transloco';
 
 import { Chess960Board } from '@chesspark/board';
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
-import { AnalyticsService } from '@services/analytics.service';
+import { AnalyticsService } from '@services/analytics/analytics.service';
 
 addIcons({ homeOutline, refreshOutline, shuffleOutline });
 

@@ -11,6 +11,10 @@ export type PublicPlansState = EntityState<PublicPlan> & {
   hasMore: boolean;
   interactions: PlanInteraction[];
   loadingInteractions: boolean;
+  // Planes sueltos cargados por uid (likes, jugados y guardados). Van aparte de
+  // las entidades para no mezclarlos con el listado público que muestra la
+  // pestaña "Públicos".
+  interactionPlans: Record<string, PublicPlan>;
 };
 
 export const publicPlansStateAdapter: EntityAdapter<PublicPlan> =

@@ -30,7 +30,6 @@ import {
   Arrows,
 } from 'cm-chessboard/src/extensions/arrows/Arrows.js';
 import { PromotionDialog } from 'cm-chessboard/src/extensions/promotion-dialog/PromotionDialog.js';
-import { Chess } from 'chess.js';
 
 // rxjs
 import { interval, Subject, Observable, Subscription, merge } from 'rxjs';
@@ -51,6 +50,7 @@ import {
 
 // models
 import { Puzzle } from '@cpark/models';
+import { PuzzleEngine } from './puzzle-engine';
 
 interface UISettings {
   allowBackMove: boolean;
@@ -98,15 +98,13 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
   puzzle!: Puzzle;
   isPlaying = false;
 
-  currentMoveNumber = 0;
   // Token de identidad por puzzle: se incrementa en cada stopTimer() (cambio/parada
   // de puzzle). Las tareas async capturan su valor al entrar y abortan tras cada
   // await si ya no coincide, evitando que un callback de un puzzle anterior mute el
   // estado del puzzle actual (causa del desfase de currentMoveNumber en plan30).
   private puzzleGenerationId = 0;
-  arrayFenSolution: string[] = [];
-  arrayMovesSolution: string[] = [];
-  totalMoves = 0;
+  // Motor de puzzle: lógica pura (solución, validación, promoción, hints). Ver puzzle-engine.ts.
+  private engine = new PuzzleEngine();
   allowMoveArrows = false;
   fenToCompareAndPlaySound!: string;
 
@@ -125,7 +123,6 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
   goshPuzzleTime = 0;
   private showMoveHint = false;
   board!: Chessboard;
-  chessInstance = new Chess();
   isViewInitialized = false;
   pendingInit = false;
   boardId = 'boardPuzzle_' + Math.random().toString(36).substr(2, 9);
@@ -150,7 +147,7 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
   @Input() set triggerStreamSolution(value: boolean) {
-    if (value && !this.isStreaming && this.arrayFenSolution.length > 0) {
+    if (value && !this.isStreaming && this.engine.solutionLength > 0) {
       this.startStreamSolution();
     }
   }
@@ -224,29 +221,16 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
       await this.buildBoard(this.puzzle.fen);
     }
     console.log('puzzle: ', this.puzzle);
-    this.chessInstance.load(this.puzzle.fen);
+    // El motor construye la solución y deja el tablero en la posición inicial del puzzle
+    this.engine.load(this.puzzle);
     this.fenToCompareAndPlaySound = this.puzzle.fen;
     // Se cambia el color porque luego se realizara automáticamente la jugada inicial de la maquina
     // el fen del puzzle inicia siempre con el color contrario al del que le toc a jugar al usuario
-    this.turnRoundBoard(this.chessInstance.turn() === 'b' ? 'w' : 'b');
-    // eslint-disable-next-line max-len
-    this.currentMoveNumber = 0;
+    this.turnRoundBoard(this.engine.sideToMove === 'b' ? 'w' : 'b');
     this.allowMoveArrows = false;
     // Si un stream de solución quedó interrumpido por el cambio de puzzle, este
     // reset evita que el componente quede bloqueado y desbloquea triggerStreamSolution.
     this.isStreaming = false;
-
-    this.arrayFenSolution = [];
-    // se construye un arreglo con los fen de la solución
-    this.arrayMovesSolution = this.puzzle.moves.split(' ');
-    this.arrayFenSolution.push(this.chessInstance.fen());
-
-    for (const move of this.arrayMovesSolution) {
-      this.chessInstance.move(move);
-      const fen = this.chessInstance.fen();
-      this.arrayFenSolution.push(fen);
-    }
-    this.totalMoves = this.arrayFenSolution.length - 1;
 
     // ejecutar primera jugada
     this.puzzleMoveResponse();
@@ -300,29 +284,25 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Handler de input del tablero extraído a propiedad de clase (arrow para
   // preservar `this`) para poder rehabilitarlo desde initPuzzle() tras un stream.
+  // La validación de jugadas vive en PuzzleEngine; aquí solo se traduce cada
+  // resultado en acciones de tablero (marcadores, flechas y diálogo de promoción).
   private handleMoveInput = (event: any) => {
-    // handle user input here
     switch (event.type) {
-        case 'moveInputStarted':
-          this.board.removeMarkers();
-          this.showLastMove();
-          this.board.removeArrows();
+      case 'moveInputStarted':
+        this.board.removeMarkers();
+        this.showLastMove();
+        this.board.removeArrows();
 
-          // mostrar indicadores para donde se puede mover la pieza
-          if (
-            event.square &&
-            this.chessInstance.moves({ square: event.square as any }).length > 0
-          ) {
+        // mostrar indicadores para donde se puede mover la pieza
+        if (event.square) {
+          const possibleMoves = this.engine.movesFrom(event.square);
+          if (possibleMoves.length > 0) {
             // adiciona el marcador para la casilla seleccionada
             const markerSquareSelected = {
               class: 'marker-square-green',
               slice: 'markerSquare',
             };
             this.board.addMarker(markerSquareSelected, event.square);
-            const possibleMoves = this.chessInstance.moves({
-              square: event.square as any,
-              verbose: true,
-            });
             for (const move of possibleMoves) {
               const markerDotMove = {
                 class: 'marker-dot-green',
@@ -331,128 +311,86 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
               this.board.addMarker(markerDotMove, move.to);
             }
           }
-          return true;
-        case 'validateMoveInput':
-          if (
-            event.squareTo &&
-            event.piece &&
-            event.squareFrom &&
-            (event.squareTo.charAt(1) === '8' ||
-              event.squareTo.charAt(1) === '1') &&
-            event.piece.charAt(1) === 'p'
-          ) {
-            // Validar primero si el movimiento básico del peón es válido
-            try {
-              // Verificar que hay movimientos posibles desde la casilla de origen
-              const possibleMoves = this.chessInstance.moves({
-                square: event.squareFrom as any,
-                verbose: true,
-              });
-
-              const isValidPawnMove = possibleMoves.some(
-                (move) => move.to === event.squareTo
-              );
-
-              if (!isValidPawnMove) {
-                this.board.removeMarkers();
-                this.showLastMove();
-                return false;
-              }
-
-              const colorToShow =
-                event.piece.charAt(0) === 'w' ? COLOR.white : COLOR.black;
-              // Mostrar diálogo de promoción solo si el movimiento básico es válido
-              this.board.showPromotionDialog(
-                event.squareTo,
-                colorToShow,
-                (result) => {
-                  if (
-                    result &&
-                    result.piece &&
-                    event.squareFrom &&
-                    event.squareTo
-                  ) {
-                    const objectMovePromotion = {
-                      from: event.squareFrom,
-                      to: event.squareTo,
-                      promotion: result.piece.charAt(1),
-                    };
-
-                    // Validar primero con chess.js antes de actualizar el tablero
-                    try {
-                      const theMovePromotion =
-                        this.chessInstance.move(objectMovePromotion);
-
-                      if (theMovePromotion) {
-                        // Solo si el movimiento es válido, sincronizar el tablero con el estado de chess.js
-                        this.board.setPosition(this.chessInstance.fen(), false);
-
-                        this.board.removeArrows();
-                        this.showLastMove();
-                        this.validateMove();
-                      } else {
-                        this.board.setPosition(this.chessInstance.fen(), false);
-                        this.board.removeMarkers();
-                        this.showLastMove();
-                      }
-                    } catch (error) {
-                      this.board.setPosition(this.chessInstance.fen(), false);
-                      this.board.removeMarkers();
-                      this.showLastMove();
-                      console.log('Invalid promotion move:', error);
-                    }
-                  } else {
-                    this.board.setPosition(this.chessInstance.fen(), false);
-                    this.board.removeMarkers();
-                    this.showLastMove();
-                  }
-                }
-              );
-
-              // Retornar true para aceptar el movimiento pendiente de promoción
-              return true;
-            } catch (error) {
-              this.board.removeMarkers();
-              this.showLastMove();
-              return false;
-            }
-          }
-
-          if (event.squareFrom && event.squareTo) {
-            const objectMove = { from: event.squareFrom, to: event.squareTo };
-            try {
-              const theMove = this.chessInstance.move(objectMove);
-
-              if (theMove) {
-                this.board.removeArrows();
-                this.showLastMove();
-                this.validateMove();
-              } else {
-                this.board.removeMarkers();
-                this.showLastMove();
-              }
-              return theMove ? true : false;
-            } catch (error) {
-              this.board.removeMarkers();
-              this.showLastMove();
-              return false;
-            }
-          }
-          this.board.removeMarkers();
-          this.showLastMove();
-          return false;
-
-        case 'moveInputCanceled':
-          this.board.removeMarkers();
-          this.showLastMove();
-          this.board.removeArrows();
-          return true;
-        case 'moveInputFinished':
-          return true;
-        default:
-          return true;
-      }
+        }
+        return true;
+      case 'validateMoveInput':
+        if (
+          event.squareFrom &&
+          event.squareTo &&
+          event.piece &&
+          this.engine.isPromotionAttempt(event.piece, event.squareTo)
+        ) {
+          return this.handlePromotionAttempt(event.squareFrom, event.squareTo, event.piece);
+        }
+        if (event.squareFrom && event.squareTo) {
+          return this.handleUserMove(event.squareFrom, event.squareTo);
+        }
+        this.board.removeMarkers();
+        this.showLastMove();
+        return false;
+      case 'moveInputCanceled':
+        this.board.removeMarkers();
+        this.showLastMove();
+        this.board.removeArrows();
+        return true;
+      case 'moveInputFinished':
+        return true;
+      default:
+        return true;
+    }
   };
+
+  /**
+   * Jugada normal del usuario. Si el motor la acepta, el tablero conserva la pieza movida
+   * (se devuelve true) y se valida contra la solución. Si no es legal, cm-chessboard
+   * devuelve la pieza a su casilla.
+   */
+  private handleUserMove(from: string, to: string): boolean {
+    const accepted = this.engine.tryMove(from, to);
+    if (accepted) {
+      this.board.removeArrows();
+      this.showLastMove();
+      this.validateMove();
+    } else {
+      this.board.removeMarkers();
+      this.showLastMove();
+    }
+    return accepted;
+  }
+
+  /**
+   * Promoción de peón. Primero se comprueba que el peón pueda llegar a la casilla; si no, se
+   * rechaza sin abrir el diálogo. Si puede, el diálogo elige la pieza y la jugada se aplica al
+   * confirmar. Se devuelve true para que cm-chessboard espere la elección.
+   */
+  private handlePromotionAttempt(from: string, to: string, piece: string): boolean {
+    try {
+      if (!this.engine.isPawnPromotionLegal(from, to)) {
+        this.board.removeMarkers();
+        this.showLastMove();
+        return false;
+      }
+      const colorToShow = piece.charAt(0) === 'w' ? COLOR.white : COLOR.black;
+      this.board.showPromotionDialog(to, colorToShow, (result) => {
+        const accepted = !!result?.piece && this.engine.tryMove(from, to, result.piece.charAt(1));
+        // Sincroniza el tablero con el motor en ambos casos: si la jugada se rechaza, deshace el movimiento visual
+        this.board.setPosition(this.engine.fen, false);
+        if (accepted) {
+          this.board.removeArrows();
+          this.showLastMove();
+          this.validateMove();
+        } else {
+          this.board.removeMarkers();
+          this.showLastMove();
+        }
+      });
+      return true;
+    } catch (error) {
+      this.board.removeMarkers();
+      this.showLastMove();
+      return false;
+    }
+  }
 
   // Código de enableSquareSelect deshabilitado; se conserva como referencia.
   // let startSquare;
@@ -552,14 +490,10 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
   showLastMove(from?: string, to?: string) {
     this.board.removeMarkers();
     if (!from && !to) {
-      // eslint-disable-next-line max-len
-      from = this.chessInstance.history({ verbose: true }).slice(-1)[0]?.from;
-      to = this.chessInstance.history({ verbose: true }).slice(-1)[0]?.to;
-
-      if (!from || !to) {
-        from = this.arrayMovesSolution[this.currentMoveNumber - 1]?.slice(0, 2);
-        to = this.arrayMovesSolution[this.currentMoveNumber - 1]?.slice(2, 4);
-      }
+      // Sin argumentos: la última jugada del tablero o, si el historial está vacío, la de la solución
+      const last = this.engine.lastMove();
+      from = last?.from;
+      to = last?.to;
     }
     if (from && to) {
       const marker = {
@@ -599,15 +533,7 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
       if (this.puzzle?.times?.total) {
         this.time--;
         if (this.time === 0) {
-          this.puzzleEndByTime.emit({
-            ...this.puzzle,
-            timeUsed: this.timeUsed,
-            fenStartUserPuzzle: this.arrayFenSolution[1],
-            firstMoveSquaresHighlight: [
-              this.arrayMovesSolution[0].slice(0, 2),
-              this.arrayMovesSolution[0].slice(2, 4),
-            ],
-          });
+          this.puzzleEndByTime.emit(this.buildResultPayload());
           this.stopTimer();
           this.isPlaying = false;
         }
@@ -686,46 +612,41 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
+  /**
+   * Payload común de los eventos de resultado (completado, fallo o fin de tiempo).
+   * Incluye el FEN tras la primera jugada y sus casillas, que la vista de resultado usa
+   * para mostrar dónde empieza el usuario.
+   */
+  private buildResultPayload(): Puzzle {
+    const firstMove = PuzzleEngine.squaresOf(this.engine.solutionMoveAt(0));
+    return {
+      ...this.puzzle,
+      timeUsed: this.timeUsed,
+      fenStartUserPuzzle: this.engine.solutionFenAt(1),
+      firstMoveSquaresHighlight: [firstMove.from, firstMove.to],
+    };
+  }
+
+  /**
+   * Compara la jugada del usuario con la solución (lo decide el motor) y reacciona:
+   * si es correcta responde la máquina; si no, el puzzle falla y se detiene el timer.
+   */
   validateMove() {
-    const fenChessInstance = this.chessInstance.fen();
+    const fenChessInstance = this.engine.fen;
 
-    this.soundsService.determineChessMoveType(
-      this.fenToCompareAndPlaySound,
-      fenChessInstance
-    );
+    this.soundsService.determineChessMoveType(this.fenToCompareAndPlaySound, fenChessInstance);
 
-    this.currentMoveNumber++;
-    if (
-      fenChessInstance === this.arrayFenSolution[this.currentMoveNumber] ||
-      this.chessInstance.isCheckmate()
-    ) {
+    if (this.engine.evaluateUserMove() === 'correct') {
       this.puzzleMoveResponse();
     } else {
-      this.puzzleFailed.emit({
-        ...this.puzzle,
-        timeUsed: this.timeUsed,
-        fenStartUserPuzzle: this.arrayFenSolution[1],
-        firstMoveSquaresHighlight: [
-          this.arrayMovesSolution[0].slice(0, 2),
-          this.arrayMovesSolution[0].slice(2, 4),
-        ],
-      });
+      this.puzzleFailed.emit(this.buildResultPayload());
       this.stopTimer();
       this.isPlaying = false;
     }
 
     // Actualiza el tablero después de un movimiento de enroque
-    if (
-      this.chessInstance
-        .history({ verbose: true })
-        .slice(-1)[0]
-        ?.flags.includes('k') ||
-      this.chessInstance
-        .history({ verbose: true })
-        .slice(-1)[0]
-        ?.flags.includes('q')
-    ) {
-      this.board.setPosition(this.chessInstance.fen());
+    if (this.engine.lastMoveWasCastling()) {
+      this.board.setPosition(this.engine.fen);
     }
   }
 
@@ -739,20 +660,11 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
     // Identidad del puzzle en el momento de invocar; si cambia durante el delay
     // significa que entró otro puzzle y este callback debe descartarse.
     const gen = this.puzzleGenerationId;
-    this.currentMoveNumber++;
 
-    if (this.arrayFenSolution.length === this.currentMoveNumber) {
+    // El motor avanza a la jugada de la máquina; si ya no quedan jugadas, el puzzle está resuelto.
+    if (this.engine.advanceMachineMove()) {
       this.allowMoveArrows = true;
-      this.currentMoveNumber--;
-      this.puzzleCompleted.emit({
-        ...this.puzzle,
-        timeUsed: this.timeUsed,
-        fenStartUserPuzzle: this.arrayFenSolution[1],
-        firstMoveSquaresHighlight: [
-          this.arrayMovesSolution[0].slice(0, 2),
-          this.arrayMovesSolution[0].slice(2, 4),
-        ],
-      });
+      this.puzzleCompleted.emit(this.buildResultPayload());
       this.stopTimer();
       this.isPlaying = false;
     } else {
@@ -762,12 +674,8 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
         return;
       }
 
-      this.chessInstance.load(this.arrayFenSolution[this.currentMoveNumber]);
-      const fen = this.chessInstance.fen();
-      this.soundsService.determineChessMoveType(
-        this.fenToCompareAndPlaySound,
-        fen
-      );
+      const fen = this.engine.loadCurrentSolutionFen();
+      this.soundsService.determineChessMoveType(this.fenToCompareAndPlaySound, fen);
       this.fenToCompareAndPlaySound = fen;
       this.board.removeMarkers();
       this.board.removeArrows();
@@ -776,14 +684,7 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
       if (gen !== this.puzzleGenerationId) {
         return;
       }
-      const from = this.arrayMovesSolution[this.currentMoveNumber - 1].slice(
-        0,
-        2
-      );
-      const to = this.arrayMovesSolution[this.currentMoveNumber - 1].slice(
-        2,
-        4
-      );
+      const { from, to } = this.engine.lastSolutionMove();
       this.showLastMove(from, to);
       this.drawMoveHint();
     }
@@ -798,12 +699,12 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!this.showMoveHint || !this.board) {
       return;
     }
-    const nextUserMove = this.arrayMovesSolution[this.currentMoveNumber];
-    if (nextUserMove && nextUserMove.length >= 4) {
+    const hint = this.engine.hintSquares();
+    if (hint) {
       this.board.addArrow(
         { id: 'hintArrow', class: 'arrow-hint', headSize: 6, slice: 'arrowPointy' },
-        nextUserMove.slice(0, 2),
-        nextUserMove.slice(2, 4)
+        hint.from,
+        hint.to
       );
     }
   }
@@ -816,21 +717,21 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
     this.board.disableMoveInput();
 
     // Reset board to the correct position at currentMoveNumber (handles both fail and timeOut)
-    await this.board.setPosition(this.arrayFenSolution[this.currentMoveNumber], false);
+    await this.board.setPosition(this.engine.solutionFenAt(this.engine.currentMoveNumber), false);
     await this.delay(600);
     if (gen !== this.puzzleGenerationId) {
       return;
     }
 
-    for (let i = this.currentMoveNumber + 1; i < this.arrayFenSolution.length; i++) {
-      const prevFen = this.arrayFenSolution[i - 1];
-      await this.board.setPosition(this.arrayFenSolution[i], true);
+    for (let i = this.engine.currentMoveNumber + 1; i < this.engine.solutionLength; i++) {
+      const prevFen = this.engine.solutionFenAt(i - 1);
+      await this.board.setPosition(this.engine.solutionFenAt(i), true);
       if (gen !== this.puzzleGenerationId) {
         return;
       }
-      this.soundsService.determineChessMoveType(prevFen, this.arrayFenSolution[i]);
+      this.soundsService.determineChessMoveType(prevFen, this.engine.solutionFenAt(i));
 
-      const moveStr = this.arrayMovesSolution[i];
+      const moveStr = this.engine.solutionMoveAt(i);
       if (moveStr) {
         this.showLastMove(moveStr.slice(0, 2), moveStr.slice(2, 4));
       }

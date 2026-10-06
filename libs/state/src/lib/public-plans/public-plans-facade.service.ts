@@ -12,6 +12,8 @@ import {
   loadMorePublicPlans,
   setPublicPlansFilter,
   loadUserInteractions,
+  loadInteractionPlans,
+  loadPlanInteraction,
   togglePlanLike,
   togglePlanSaved,
   markPlanAsPlayed,
@@ -30,8 +32,22 @@ import {
   getUserPlayedPlans,
   getUserSavedPlans,
   getPublicPlan,
+  getInteractionPlans,
+  getUserInteractionByPlan,
 } from './public-plans.selectors';
 
+/**
+ * Fachada de la pantalla de planes públicos y sus interacciones (like, guardado,
+ * jugado). Es el único punto por el que los componentes leen o escriben estos
+ * datos; ningún componente consulta Firestore directamente.
+ *
+ * Métodos de lectura: listado público paginado, planes de la pestaña
+ * "Interacciones" (por uid), e interacción de un usuario con un plan.
+ * Métodos de escritura: loadPublicPlans, togglePlanLike/Saved, markPlanAsPlayed.
+ *
+ * Consumido por: PublicPlansComponent, PlanPlayedComponent, y los guards de
+ * public-plans (que cargan las interacciones del usuario al entrar).
+ */
 @Injectable({ providedIn: 'root' })
 export class PublicPlansFacadeService {
   constructor(private store: Store<AppState>) {}
@@ -63,6 +79,16 @@ export class PublicPlansFacadeService {
 
   markPlanAsPlayed(uidUser: string, planUid: string) {
     this.store.dispatch(markPlanAsPlayed({ uidUser, planUid }));
+  }
+
+  /** Carga planes por uid para la pestaña de interacciones (no toca el listado público). */
+  loadInteractionPlans(uids: string[]) {
+    this.store.dispatch(loadInteractionPlans({ uids }));
+  }
+
+  /** Carga la interacción del usuario con un plan (estado de like en el detalle). */
+  loadPlanInteraction(uidUser: string, planUid: string) {
+    this.store.dispatch(loadPlanInteraction({ uidUser, planUid }));
   }
 
   clearError() {
@@ -116,5 +142,13 @@ export class PublicPlansFacadeService {
 
   getPublicPlan$(uid: string) {
     return this.store.select(getPublicPlan(uid));
+  }
+
+  getInteractionPlans$(uids: string[]) {
+    return this.store.select(getInteractionPlans(uids));
+  }
+
+  getUserInteractionByPlan$(planUid: string) {
+    return this.store.select(getUserInteractionByPlan(planUid));
   }
 }

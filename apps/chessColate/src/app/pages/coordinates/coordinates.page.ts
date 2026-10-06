@@ -15,8 +15,8 @@ import { interval, Observable, Subject, takeUntil } from 'rxjs';
 import {
   StorageService,
   CoordinatesPuzzle,
-} from '@services/storage.service';
-import { AnalyticsService } from '@services/analytics.service';
+} from '@services/coordinates/storage.service';
+import { AnalyticsService } from '@services/analytics/analytics.service';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { ConfettiService, RandomFENService, SoundsService } from '@chesspark/common-utils';
@@ -34,7 +34,7 @@ import {
   BoardOrientationControlsComponent,
   SettingsSideMenuComponent,
   GameSettings,
-} from './components';
+} from './components/index';
 
 addIcons({ settingsOutline, homeOutline });
 

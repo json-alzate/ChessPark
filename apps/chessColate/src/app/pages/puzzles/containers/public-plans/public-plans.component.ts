@@ -2,8 +2,8 @@ import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { map, takeUntil, filter, take, switchMap } from 'rxjs/operators';
-import { Subject, from, combineLatest } from 'rxjs';
+import { map, takeUntil, filter, take, switchMap, tap } from 'rxjs/operators';
+import { Observable, Subject, combineLatest } from 'rxjs';
 
 import {
     IonContent,
@@ -17,12 +17,11 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
 import { PublicPlan, PublicPlanFilter, PlanInteraction } from '@cpark/models';
 
-import { PublicPlansService } from '@services/public-plans.service';
-import { PlanService } from '@services/plan.service';
-import { ProfileService } from '@services/profile.service';
-import { FirestoreService } from '@services/firestore.service';
-import { AnalyticsService } from '@services/analytics.service';
-import { minutesFromBlocks } from '@services/analytics-events.util';
+import { PublicPlansService } from '@services/plans/public-plans.service';
+import { PlanService } from '@services/plans/plan.service';
+import { ProfileService } from '@services/account/profile.service';
+import { AnalyticsService } from '@services/analytics/analytics.service';
+import { minutesFromBlocks } from '@services/analytics/analytics-events.util';
 import {
     PublicPlansFacadeService,
     getProfile,
@@ -58,7 +57,6 @@ export class PublicPlansComponent implements OnInit, OnDestroy {
     private planService = inject(PlanService);
     private profileService = inject(ProfileService);
     private planFacade = inject(PlanFacadeService);
-    private firestoreService = inject(FirestoreService);
     private router = inject(Router);
     private loadingController = inject(LoadingController);
     private translocoService = inject(TranslocoService);
@@ -104,83 +102,38 @@ export class PublicPlansComponent implements OnInit, OnDestroy {
                 );
             });
 
-        // Cargar planes de interacciones cuando cambian los UIDs
-        combineLatest([this.userLikedPlanUids$, this.userInteractions$])
-            .pipe(
-                switchMap(([planUids, interactions]: [string[], PlanInteraction[]]) => {
-                    if (planUids.length === 0) {
-                        return from([{ plans: [] as PublicPlan[], interactions }]);
-                    }
-                    return from(
-                        Promise.all(
-                            planUids.map((uid: string) => this.firestoreService.getPublicPlan(uid))
-                        )
-                    ).pipe(
-                        map((plans) => ({
-                            plans: plans.filter((p): p is PublicPlan => p !== null),
-                            interactions,
-                        }))
-                    );
-                }),
-                takeUntil(this.destroy$)
-            )
-            .subscribe(({ plans, interactions }: { plans: PublicPlan[]; interactions: PlanInteraction[] }) => {
-                this.enrichedLikedPlans = this.publicPlansService.enrichPlansWithInteractions(
-                    plans,
-                    interactions
-                );
-            });
+        // Pestañas de interacciones: los planes se piden al store por uid
+        this.bindInteractionTab(this.userLikedPlanUids$, (plans) => (this.enrichedLikedPlans = plans));
+        this.bindInteractionTab(this.userPlayedPlanUids$, (plans) => (this.enrichedPlayedPlans = plans));
+        this.bindInteractionTab(this.userSavedPlanUids$, (plans) => (this.enrichedSavedPlans = plans));
+    }
 
-        combineLatest([this.userPlayedPlanUids$, this.userInteractions$])
+    /**
+     * Mantiene una pestaña de interacciones (liked, played o saved) con sus planes
+     * enriquecidos. Cada vez que cambian los uids o las interacciones pide los
+     * planes al store, que los trae de Firestore. Así el componente no lee
+     * `public-plans` directamente y el listado público no se contamina.
+     */
+    private bindInteractionTab(
+        planUids$: Observable<string[]>,
+        assign: (plans: PublicPlan[]) => void
+    ): void {
+        combineLatest([planUids$, this.userInteractions$])
             .pipe(
-                switchMap(([planUids, interactions]: [string[], PlanInteraction[]]) => {
-                    if (planUids.length === 0) {
-                        return from([{ plans: [] as PublicPlan[], interactions }]);
+                tap(([planUids]) => {
+                    if (planUids.length > 0) {
+                        this.publicPlansFacade.loadInteractionPlans(planUids);
                     }
-                    return from(
-                        Promise.all(
-                            planUids.map((uid: string) => this.firestoreService.getPublicPlan(uid))
-                        )
-                    ).pipe(
-                        map((plans) => ({
-                            plans: plans.filter((p): p is PublicPlan => p !== null),
-                            interactions,
-                        }))
-                    );
                 }),
+                switchMap(([planUids, interactions]: [string[], PlanInteraction[]]) =>
+                    this.publicPlansFacade.getInteractionPlans$(planUids).pipe(
+                        map((plans) => ({ plans, interactions }))
+                    )
+                ),
                 takeUntil(this.destroy$)
             )
             .subscribe(({ plans, interactions }: { plans: PublicPlan[]; interactions: PlanInteraction[] }) => {
-                this.enrichedPlayedPlans = this.publicPlansService.enrichPlansWithInteractions(
-                    plans,
-                    interactions
-                );
-            });
-
-        combineLatest([this.userSavedPlanUids$, this.userInteractions$])
-            .pipe(
-                switchMap(([planUids, interactions]: [string[], PlanInteraction[]]) => {
-                    if (planUids.length === 0) {
-                        return from([{ plans: [] as PublicPlan[], interactions }]);
-                    }
-                    return from(
-                        Promise.all(
-                            planUids.map((uid: string) => this.firestoreService.getPublicPlan(uid))
-                        )
-                    ).pipe(
-                        map((plans) => ({
-                            plans: plans.filter((p): p is PublicPlan => p !== null),
-                            interactions,
-                        }))
-                    );
-                }),
-                takeUntil(this.destroy$)
-            )
-            .subscribe(({ plans, interactions }: { plans: PublicPlan[]; interactions: PlanInteraction[] }) => {
-                this.enrichedSavedPlans = this.publicPlansService.enrichPlansWithInteractions(
-                    plans,
-                    interactions
-                );
+                assign(this.publicPlansService.enrichPlansWithInteractions(plans, interactions));
             });
     }
 

@@ -15,7 +15,7 @@ import { Chart, ChartDataset, registerables } from 'chart.js';
 import { ChessPlatform, TimeClass } from '@cpark/models';
 import { RatingDataPoint } from '@chesspark/game-reporter';
 
-import { thinSeries } from '@services/game-analytics.util';
+import { thinSeries } from '@services/analytics/game-analytics.util';
 
 /** Color de cada ritmo, igual para las dos plataformas: así se compara a simple vista. */
 const TIME_CLASS_COLORS: Record<TimeClass, string> = {

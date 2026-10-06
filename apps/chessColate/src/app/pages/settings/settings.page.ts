@@ -20,12 +20,12 @@ import {
 import { Subscription } from 'rxjs';
 
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
-import { ProfileService } from '@services/profile.service';
-import { LanguageService, SupportedLang } from '@services/language.service';
-import { AnalyticsService } from '@services/analytics.service';
-import { PuzzleStorageService } from '@services/puzzle-storage.service';
-import { AppReviewService } from '@services/app-review.service';
-import { GamesService } from '@services/games.service';
+import { ProfileService } from '@services/account/profile.service';
+import { LanguageService, SupportedLang } from '@services/app/language.service';
+import { AnalyticsService } from '@services/analytics/analytics.service';
+import { PuzzleStorageService } from '@services/training/puzzle-storage.service';
+import { AppReviewService } from '@services/app/app-review.service';
+import { GamesService } from '@services/games/games.service';
 
 addIcons({
   languageOutline,

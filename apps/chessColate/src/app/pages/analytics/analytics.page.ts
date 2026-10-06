@@ -38,17 +38,17 @@ import {
 } from '@chesspark/game-reporter';
 
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
-import { AnalyticsService } from '@services/analytics.service';
-import { GamesService } from '@services/games.service';
-import { AppService } from '@services/app.service';
-import { PlanService } from '@services/plan.service';
-import { CustomPlansService } from '@services/custom-plans.service';
-import { ProfileService } from '@services/profile.service';
+import { AnalyticsService } from '@services/analytics/analytics.service';
+import { GamesService } from '@services/games/games.service';
+import { AppService } from '@services/app/app.service';
+import { PlanService } from '@services/plans/plan.service';
+import { CustomPlansService } from '@services/plans/custom-plans.service';
+import { ProfileService } from '@services/account/profile.service';
 import { PlanFacadeService } from '@cpark/state';
 import {
   GameAnalyticsService,
   UnknownUsernameError,
-} from '@services/game-analytics.service';
+} from '@services/analytics/game-analytics.service';
 import {
   boardOrientation,
   CatalogOpening,
@@ -62,7 +62,7 @@ import {
   platformLabel,
   TIME_CLASSES,
   toPercent,
-} from '@services/game-analytics.util';
+} from '@services/analytics/game-analytics.util';
 
 import { ActivityHeatmapComponent } from './components/activity-heatmap/activity-heatmap.component';
 import { OpeningsTableComponent } from './components/openings-table/openings-table.component';

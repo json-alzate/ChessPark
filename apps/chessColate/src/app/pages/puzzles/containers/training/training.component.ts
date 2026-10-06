@@ -23,19 +23,19 @@ import {
 } from '@ionic/angular/standalone';
 
 // services
-import { AppService } from '@services/app.service';
-import { BlockService } from '@services/block.service';
-import { InfinityPuzzlePoolService } from '@services/infinity-puzzle-pool.service';
-import { ProfileService } from '@services/profile.service';
+import { AppService } from '@services/app/app.service';
+import { BlockService } from '@services/training/block.service';
+import { InfinityPuzzlePoolService } from '@services/training/infinity-puzzle-pool.service';
+import { ProfileService } from '@services/account/profile.service';
 import { PlanFacadeService } from '@cpark/state';
-import { PlansElosService } from '@services/plans-elos.service';
-import { PlanStorageService } from '@services/plan-storage.service';
-import { PlanService } from '@services/plan.service';
-import { AnalyticsService } from '@services/analytics.service';
-import { routineMetaFromPlanType } from '@services/analytics-events.util';
-import { TrainingReminderService } from '@services/training-reminder.service';
-import { Reto333StorageService } from '@services/reto333-storage.service';
-import { UserRecordsService } from '@services/user-records.service';
+import { PlansElosService } from '@services/plans/plans-elos.service';
+import { PlanStorageService } from '@services/plans/plan-storage.service';
+import { PlanService } from '@services/plans/plan.service';
+import { AnalyticsService } from '@services/analytics/analytics.service';
+import { routineMetaFromPlanType } from '@services/analytics/analytics-events.util';
+import { TrainingReminderService } from '@services/training/training-reminder.service';
+import { Reto333StorageService } from '@services/training/reto333-storage.service';
+import { UserRecordsService } from '@services/progress/user-records.service';
 import { UidGeneratorService } from '@chesspark/common-utils';
 import { addIcons } from 'ionicons';
 import {
@@ -51,7 +51,7 @@ import {
 } from 'ionicons/icons';
 
 // models
-import { Block, Plan, PlanTypes, Puzzle, UserPuzzle } from '@cpark/models';
+import { Block, Plan, Puzzle } from '@cpark/models';
 
 import {
   BoardPuzzleComponent,
@@ -65,7 +65,40 @@ import {
   SoundsService,
   SecondsToMinutesSecondsPipe,
 } from '@chesspark/common-utils';
+import {
+  initialEloForCustomPlan,
+  initialEloForDefaultPlan,
+  InitialPlanElo,
+} from '@services/plans/plan-initial-elo.util';
+import {
+  RETO333_ELO_STEP,
+  RETO333_START_ELO,
+  summarizeReto333,
+} from '@services/training/reto333.util';
+import {
+  addPuzzlePlayedToPlan,
+  buildUserPuzzle,
+  PuzzleResult,
+} from '@services/training/user-puzzle.util';
 
+/**
+ * Orquestador de la pantalla de entrenamiento: decide qué mostrar y en qué
+ * orden ocurre cada paso de la sesión.
+ *
+ * Reparto de responsabilidades:
+ * - Dominio puro (sin Angular, testeable en aislamiento): cálculo del elo
+ *   inicial por tipo de rutina (`plan-initial-elo.util`), resumen y constantes
+ *   del Reto 333 (`reto333.util`), registro de cada puzzle jugado y
+ *   actualización del bloque (`user-puzzle.util`), color del jugador desde el
+ *   FEN (`player-color.util`).
+ * - Persistencia: la marca del Reto 333 vive en `Reto333StorageService`, el plan
+ *   en `PlanStorageService` y el estado en `PlanFacadeService`. Este componente
+ *   no toca `localStorage`.
+ * - Efectos de otros servicios: elo del perfil (`ProfileService`), elo de rutinas
+ *   personalizadas (`PlansElosService`), recordatorios, analítica y sonidos.
+ * - UI (aquí): cronómetros del bloque, presentaciones y soluciones en modal, y
+ *   el modal final del Reto 333.
+ */
 @Component({
   selector: 'app-training',
   imports: [
@@ -109,7 +142,7 @@ export class TrainingComponent implements OnInit, OnDestroy {
 
   // Properties for Reto 333
   reto333StartTime: number | null = null;
-  reto333EloLocal = 400;
+  reto333EloLocal = RETO333_START_ELO;
   showReto333DaisyModal = false;
   reto333AlertData: any = null;
 
@@ -230,7 +263,6 @@ export class TrainingComponent implements OnInit, OnDestroy {
         }
 
         this.plan = { ...plan };
-        console.log('Plan ', this.plan);
 
         // Guardar el máximo inicial si no está guardado (solo la primera vez que se carga el plan)
         if (
@@ -266,6 +298,8 @@ export class TrainingComponent implements OnInit, OnDestroy {
   private async saveInitialMaxElo() {
     if (!this.plan) return;
 
+    let initialElo: InitialPlanElo | null = null;
+
     if (
       this.plan.planType === 'custom' &&
       this.plan.uidCustomPlan &&
@@ -274,42 +308,22 @@ export class TrainingComponent implements OnInit, OnDestroy {
       const planElos = await this.plansElosService.getOnePlanElo(
         this.plan.uidCustomPlan
       );
-      const initialTotal = planElos?.total ?? 1500;
-      const initialMax = planElos?.maxTotal ?? initialTotal;
-      this.plan = {
-        ...this.plan,
-        initialMaxElo: initialMax,
-        initialTotalElo: initialTotal,
-      };
-      this.planFacade.updatePlan(this.plan);
+      initialElo = initialEloForCustomPlan(planElos);
     } else if (this.plan.planType !== 'custom') {
       const initialTotal = this.profileService.getEloTotalByPlanType(
         this.plan.planType
       );
-      const profile = this.profileService.getProfile;
-      const elos = profile?.elos;
-      if (elos) {
-        const maxTotalKey =
-          `${this.plan.planType}MaxTotal` as keyof typeof elos;
-        const maxTotal = elos[maxTotalKey];
-        const initialMax =
-          (typeof maxTotal === 'number' ? maxTotal : undefined) ??
-          initialTotal;
-        this.plan = {
-          ...this.plan,
-          initialMaxElo: initialMax,
-          initialTotalElo: initialTotal,
-        };
-        this.planFacade.updatePlan(this.plan);
-      } else {
-        this.plan = {
-          ...this.plan,
-          initialMaxElo: initialTotal,
-          initialTotalElo: initialTotal,
-        };
-        this.planFacade.updatePlan(this.plan);
-      }
+      initialElo = initialEloForDefaultPlan(
+        this.plan.planType,
+        this.profileService.getProfile?.elos,
+        initialTotal
+      );
     }
+
+    if (!initialElo) return;
+
+    this.plan = { ...this.plan, ...initialElo };
+    this.planFacade.updatePlan(this.plan);
   }
 
   playNextBlock() {
@@ -605,10 +619,7 @@ export class TrainingComponent implements OnInit, OnDestroy {
     this.timerUnsubscribe$.complete();
   }
 
-  onPuzzleCompleted(
-    puzzleCompleted: Puzzle,
-    puzzleStatus: 'good' | 'bad' | 'timeOut'
-  ) {
+  onPuzzleCompleted(puzzleCompleted: Puzzle, puzzleStatus: PuzzleResult) {
     // El cambio de bloque ya está en marcha (se acabó su tiempo y se está
     // abriendo la presentación del siguiente): este resultado llegó tarde. Si
     // se registrara, iría a parar al bloque equivocado y además abriría una
@@ -624,24 +635,14 @@ export class TrainingComponent implements OnInit, OnDestroy {
 
     this.countPuzzlesPlayedBlock++;
 
-    const userPuzzle: UserPuzzle = {
+    const userPuzzle = buildUserPuzzle({
+      puzzle: puzzleCompleted,
+      result: puzzleStatus,
       uid: this.uidGenerator.generateSimpleUid(),
       uidUser: this.profileService.getProfile?.uid ?? '',
-      uidPuzzle: puzzleCompleted.uid,
-      date: new Date().getTime(),
-      resolved: puzzleStatus === 'good',
-      failByTime: puzzleStatus === 'timeOut',
-      resolvedTime: puzzleCompleted.timeUsed ?? 0,
       currentEloUser: this.profileService.getProfile?.elo ?? 0,
-      eloPuzzle: puzzleCompleted.rating,
-      themes: puzzleCompleted.themes,
-      openingFamily: puzzleCompleted.openingFamily,
-      openingVariation: puzzleCompleted.openingVariation,
-      fenPuzzle: puzzleCompleted.fen,
-      fenStartUserPuzzle: puzzleCompleted.fenStartUserPuzzle,
-      firstMoveSquaresHighlight: puzzleCompleted.firstMoveSquaresHighlight,
-      rawPuzzle: puzzleCompleted,
-    };
+      date: new Date().getTime(),
+    });
 
     const completedMeta = routineMetaFromPlanType(this.plan.planType);
     void this.analyticsService.logEvent('puzzle_completed', {
@@ -654,25 +655,11 @@ export class TrainingComponent implements OnInit, OnDestroy {
       routine_minutes: completedMeta.minutes,
     });
 
-    // Crear una copia del bloque actual
-    const existingPuzzlesPlayed = currentBlock.puzzlesPlayed ?? [];
-    const updatedBlock = {
-      ...currentBlock,
-      puzzlesPlayed: [...existingPuzzlesPlayed, userPuzzle],
-    };
-
-    // Crear una nueva copia de todos los bloques
-    const newBlocks = [...this.plan.blocks];
-    // Reemplazar el bloque actual con la copia actualizada
-    newBlocks[this.currentIndexBlock] = updatedBlock;
-
-    // Ahora actualizar el plan con los nuevos bloques
-    this.plan = {
-      ...this.plan,
-      blocks: newBlocks,
-    };
-
-    console.log('Plan actualizado ', this.plan);
+    this.plan = addPuzzlePlayedToPlan(
+      this.plan,
+      this.currentIndexBlock,
+      userPuzzle
+    );
 
     if (
       this.plan.planType === 'custom' &&
@@ -703,7 +690,7 @@ export class TrainingComponent implements OnInit, OnDestroy {
     }
 
     if (this.plan.planType === 'reto333' && puzzleStatus === 'good') {
-      this.reto333EloLocal += 10;
+      this.reto333EloLocal += RETO333_ELO_STEP;
       this.plan.blocks[this.currentIndexBlock].elo = this.reto333EloLocal;
     }
 
@@ -801,46 +788,34 @@ export class TrainingComponent implements OnInit, OnDestroy {
     // Registrar la hora de la sesión y reprogramar el recordatorio
     this.trainingReminderService.onSessionCompleted(this.plan);
 
-    const currentBlock = this.plan.blocks?.[0];
-    const puzzlesPlayed = currentBlock?.puzzlesPlayed || [];
-    const solvedCount = puzzlesPlayed.filter(p => p.resolved).length;
-    
-    // Calcula el tiempo total invertido real desde el inicio
-    const timePlayedSec = this.reto333StartTime ? Math.floor((Date.now() - this.reto333StartTime) / 1000) : 0;
-    
-    const minutes = Math.floor(timePlayedSec / 60);
-    const seconds = Math.floor(timePlayedSec % 60);
-    const timeString = `${minutes}m ${seconds}s`;
-    
-    const completed = solvedCount >= 333;
+    const puzzlesPlayed = this.plan.blocks?.[0]?.puzzlesPlayed ?? [];
+    const summary = summarizeReto333(
+      puzzlesPlayed,
+      this.reto333StartTime,
+      Date.now()
+    );
 
     // La marca queda en el dispositivo (lectura inmediata) y, si hay sesión,
     // sube al perfil para que se vea también desde otro dispositivo
     const record = this.reto333Storage.saveAttempt(
-      {
-        score: solvedCount,
-        maxElo: this.reto333EloLocal,
-        timeSeconds: timePlayedSec,
-        timeString,
-        completed,
-      },
+      { ...summary, maxElo: this.reto333EloLocal },
       this.profileService.getProfile?.uid
     );
     this.userRecordsService.push();
 
     this.reto333AlertData = {
-      solvedCount,
-      timeString,
+      solvedCount: summary.score,
+      timeString: summary.timeString,
       elo: this.reto333EloLocal,
-      completed
+      completed: summary.completed,
     };
     this.showReto333DaisyModal = true;
 
     void this.analyticsService.logEvent('reto333_finished', {
-      solved_count: solvedCount,
-      time_seconds: timePlayedSec,
+      solved_count: summary.score,
+      time_seconds: summary.timeSeconds,
       elo: this.reto333EloLocal,
-      completed,
+      completed: summary.completed,
       best_score: record.bestScore,
     });
   }
@@ -970,11 +945,8 @@ export class TrainingComponent implements OnInit, OnDestroy {
         ...this.plan,
         uidUser: this.profileService.getProfile?.uid,
       };
-      // console.log('Plan finalizado ', JSON.stringify(this.plan));
       // this.planService.requestSavePlanAction(this.plan);
     }
-
-    console.log('Plan finalizado ', this.plan);
 
     // Actualizar el plan en Redux
     this.planFacade.updatePlan(this.plan);
@@ -1044,7 +1016,7 @@ export class TrainingComponent implements OnInit, OnDestroy {
 
     // Reto 333 cleanup
     this.reto333StartTime = null;
-    this.reto333EloLocal = 400;
+    this.reto333EloLocal = RETO333_START_ELO;
     this.showReto333DaisyModal = false;
     this.reto333AlertData = null;
 

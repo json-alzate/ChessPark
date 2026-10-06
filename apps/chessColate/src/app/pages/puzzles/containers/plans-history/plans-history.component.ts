@@ -13,9 +13,9 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
 import { Plan, Block } from '@cpark/models';
 
-import { PlanStorageService } from '@services/plan-storage.service';
+import { PlanStorageService } from '@services/plans/plan-storage.service';
 import { PlanFacadeService } from '@cpark/state';
-import { AppService } from '@services/app.service';
+import { AppService } from '@services/app/app.service';
 import { SecondsToMinutesSecondsPipe } from '@chesspark/common-utils';
 
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';

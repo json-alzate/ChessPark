@@ -54,6 +54,28 @@ export const loadUserInteractionsFailure = createAction(
   props<{ error: string }>()
 );
 
+// Load planes sueltos por uid (pestaña "Interacciones")
+export const loadInteractionPlans = createAction(
+  '[PublicPlans] Load Interaction Plans',
+  props<{ uids: string[] }>()
+);
+
+export const loadInteractionPlansSuccess = createAction(
+  '[PublicPlans] Load Interaction Plans Success',
+  props<{ plans: PublicPlan[] }>()
+);
+
+// Load la interacción de un usuario con un plan (estado de "me gusta" en el detalle)
+export const loadPlanInteraction = createAction(
+  '[PublicPlans] Load Plan Interaction',
+  props<{ uidUser: string; planUid: string }>()
+);
+
+export const loadPlanInteractionSuccess = createAction(
+  '[PublicPlans] Load Plan Interaction Success',
+  props<{ interaction: PlanInteraction | null }>()
+);
+
 // Toggle like
 export const togglePlanLike = createAction(
   '[PublicPlans] Toggle Plan Like',
