@@ -3,7 +3,6 @@ import {
   CUSTOM_ELEMENTS_SCHEMA,
   ChangeDetectorRef,
   ElementRef,
-  HostListener,
   ViewChild,
   inject,
   AfterViewInit,
@@ -14,9 +13,12 @@ import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 
 import {
+  IonIcon,
   IonRippleEffect,
   LoadingController,
 } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import { eyeOffOutline, eyeOutline, playOutline, timeOutline } from 'ionicons/icons';
 
 // services
 import { BlockService } from '@services/block.service';
@@ -29,7 +31,6 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {
   planImage,
   TRAINING_PLAN_PRESETS,
-  TrainingBlockPreset,
   TrainingPlanPreset,
 } from './training-plans.config';
 
@@ -39,7 +40,7 @@ interface SwiperEl extends HTMLElement {
 
 @Component({
   selector: 'app-training-menu',
-  imports: [CommonModule, IonRippleEffect, TranslocoPipe],
+  imports: [CommonModule, IonIcon, IonRippleEffect, TranslocoPipe],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './training-menu.component.html',
   styleUrl: './training-menu.component.scss',
@@ -55,12 +56,6 @@ export class TrainingMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
   readonly presets: TrainingPlanPreset[] = TRAINING_PLAN_PRESETS;
 
-  /** Bloques mostrados directamente en la tarjeta; el resto va al popover. */
-  readonly maxVisibleBlocks = 2;
-
-  /** Slots fijos de la lista (reservan alto para que todas las tarjetas midan igual). */
-  readonly blockSlots = Array.from({ length: this.maxVisibleBlocks }, (_, i) => i);
-
   /** Rutina recomendada por defecto: 10 min, el "daily driver" completo sin agotar. */
   readonly recommendedPlan = 10;
   readonly recommendedIndex = this.presets.findIndex(
@@ -70,12 +65,14 @@ export class TrainingMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   /** Índice de la tarjeta activa en el slider mobile (arranca en la recomendada). */
   activeSlide = this.recommendedIndex;
 
-  /** Plan cuyo detalle de bloques (+N) está abierto; null si ninguno. */
-  openBlocksPlan: number | null = null;
+  /** Plan cuya lista de bloques ("Qué entrenas") está revelada; null si ninguna. */
+  revealedPlan: number | null = null;
 
   @ViewChild('swiperRef') swiperRef?: ElementRef<SwiperEl>;
 
-  constructor(private loadingController: LoadingController) {}
+  constructor(private loadingController: LoadingController) {
+    addIcons({ eyeOutline, eyeOffOutline, playOutline, timeOutline });
+  }
 
   ngOnInit(): void {
     this.profileService.profile$
@@ -115,30 +112,13 @@ export class TrainingMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     return planImage(`plan${preset.plan}` as PlanTypes);
   }
 
-  hiddenBlocks(preset: TrainingPlanPreset): TrainingBlockPreset[] {
-    return preset.blocks.slice(this.maxVisibleBlocks);
-  }
+  // ---- Qué entrenas (revelar bloques sin iniciar la rutina) -----------------
 
-  // ---- Detalle de bloques (+N) ----------------------------------------------
-
-  /** Abre/cierra el detalle de bloques sin iniciar la rutina. */
+  /** Muestra/oculta la lista de bloques sin iniciar la rutina. */
   toggleBlocks(plan: number, event: Event): void {
     event.stopPropagation();
-    this.openBlocksPlan = this.openBlocksPlan === plan ? null : plan;
+    this.revealedPlan = this.revealedPlan === plan ? null : plan;
     this.cdr.markForCheck();
-  }
-
-  private closeBlocks(): void {
-    if (this.openBlocksPlan !== null) {
-      this.openBlocksPlan = null;
-      this.cdr.markForCheck();
-    }
-  }
-
-  /** Un clic en cualquier parte de la pantalla cierra el detalle abierto. */
-  @HostListener('document:click')
-  onDocumentClick(): void {
-    this.closeBlocks();
   }
 
   /** Duración en formato m:ss. */
@@ -181,12 +161,6 @@ export class TrainingMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   // ---- Creación de la rutina ------------------------------------------------
 
   async createPlan(planNumber: number) {
-    // Con un detalle de bloques abierto, un toque en la tarjeta solo lo cierra.
-    if (this.openBlocksPlan !== null) {
-      this.closeBlocks();
-      return;
-    }
-
     const planType = `plan${planNumber}` as PlanTypes;
 
     const loader = await this.loadingController.create({

@@ -175,6 +175,7 @@
       "loadingPuzzles": "Loading puzzles..."
     },
     "viewBlocks": "What you train",
+    "startRoutine": "Start routine",
     "subtitle": "Choose a mode and start solving.",
     "elo": "ELO",
     "allBlocks": "All blocks",
