@@ -116,10 +116,10 @@
       "trainNow": "Train now"
     },
     "loader": {
-      "creatingRoutine": "Creating session...",
-      "preparingRoutine": "Preparing session...",
-      "loadingPuzzles": "Loading exercises...",
-      "loadingPuzzlesProgress": "Loading exercises... {{loaded}}/{{total}}"
+      "creatingRoutine": "Creating session…",
+      "preparingRoutine": "Preparing session…",
+      "loadingPuzzles": "Loading exercises…",
+      "loadingPuzzlesProgress": "Loading exercises… {{loaded}}/{{total}}"
     },
     "colors": {
       "white": "White",
@@ -144,11 +144,11 @@
     },
     "descriptions": {
       "randomDescription": "A different topic every time you play",
-      "weaknessDescription": "The topic with the least elo available in the session"
+      "weaknessDescription": "The topic with the least ELO available in the session"
     },
     "help": {
       "gosh": "This exercise is blindfold. The pieces will disappear when the counter reaches zero (in",
-      "gosh2": "). You must solve the exercise without seeing the pieces.",
+      "gosh2": "). You'll have to solve the exercise without seeing the pieces.",
       "yourTurn": "Your turn",
       "findBestMoveWhite": "Find the best move for White.",
       "findBestMoveBlack": "Find the best move for Black.",
@@ -173,7 +173,7 @@
       "exercisesFree": "Exercises free",
       "loginToStart": "Log in to register your progress",
       "countPlansEnded": "plans completed in the last year",
-      "loadingPuzzles": "Loading exercises..."
+      "loadingPuzzles": "Loading exercises…"
     },
     "viewBlocks": "What you train",
     "startRoutine": "Start session",
@@ -297,7 +297,7 @@
       "cancel": "Cancel",
       "login": "Log in"
     },
-    "authRequired": "You must be authenticated to create a custom session.",
+    "authRequired": "Sign in to create a custom session.",
     "blocksLockedReason": "Blocks cannot be modified because this session has already been played."
   },
   "NEW_BLOCK": {
@@ -326,7 +326,7 @@
       "random": "Random",
       "weakness": "Weakness",
       "randomDescription": "A different topic every time you play",
-      "weaknessDescription": "The topic with the least elo available in the session",
+      "weaknessDescription": "The topic with the least ELO available in the session",
       "difficulty": "Difficulty"
     },
     "difficulty": {
@@ -355,7 +355,7 @@
       "rangeTimeVisible": "Visible time range",
       "all": "All",
       "weakness": "Weakness",
-      "rangeElo": "Elo range"
+      "rangeElo": "ELO range"
     }
   },
   "PLAN_PLAYED": {
@@ -448,7 +448,7 @@
       "likes": "Likes"
     },
     "play": "Play",
-    "loadingMore": "Loading more...",
+    "loadingMore": "Loading more…",
     "cannotLikeOwn": "You cannot like your own session"
   },
   "COORDINATES": {
@@ -775,7 +775,7 @@
     },
     "test": {
       "button": "Test now",
-      "body": "Test notification — everything works! ♟️",
+      "body": "Test notification. Everything works!",
       "sent": "Sent. It should appear in a few seconds.",
       "failed": "Couldn't send it. Check your notification permission."
     },
@@ -790,31 +790,31 @@
     "channelName": "Training reminders",
     "prompt": {
       "title": "Train at your usual time?",
-      "message": "You usually train around {{time}}. We'll remind you at that time so you keep the rhythm — only if you haven't trained that day.",
-      "messageGeneric": "We'll remind you at {{time}} so you keep the rhythm — only if you haven't trained that day. Over time we'll adjust it to your usual hour.",
+      "message": "You usually train around {{time}}. We'll remind you at that time, only if you haven't trained that day.",
+      "messageGeneric": "We'll remind you at {{time}}, only if you haven't trained that day. Over time we'll adjust it to your usual hour.",
       "accept": "Remind me",
       "later": "Not now"
     },
     "notifications": {
       "title": "Today's training",
-      "generic1": "Ready for today's move? ♟️",
-      "generic2": "It's your training time. Let's go find a mate. ♟️",
-      "generic3": "3 quick exercises and you're done. Shall we? ⚡",
-      "streak": "Don't lose your {{days}}-day streak 🔥"
+      "generic1": "Ready for today's move?",
+      "generic2": "It's your training time. Let's go find a mate.",
+      "generic3": "3 quick exercises and you're done. Shall we?",
+      "streak": "{{days}} days in a row. Want an exercise to keep going?"
     }
   },
   "PUZZLE_SOLUTION": {
     "game": {
       "turn": "Your turn",
       "findBestMove": "Find the best move for the",
-      "continue": "Continue..."
+      "continue": "Continue…"
     },
     "feedback": {
       "goodDone": "Good done!",
       "goodMove": "The best move!",
-      "continue": "Continue...",
+      "continue": "Continue…",
       "wrongMove": "Ups!, that's not the best move",
-      "tryAgain": "Try something different...",
+      "tryAgain": "Try something different…",
       "wrong": "Incorrect!",
       "excellent": "Excellent!"
     },
@@ -822,8 +822,8 @@
       "clue": "Ask a clue",
       "solution": "See the solution",
       "playAndClose": "Play and close",
-      "playing": "Playing...",
-      "closing": "Closing...",
+      "playing": "Playing…",
+      "closing": "Closing…",
       "close": "Close"
     },
     "themes": "Themes"
@@ -839,7 +839,7 @@
       "installApp": "Install App"
     },
     "components": {
-      "loading": "Loading...",
+      "loading": "Loading…",
       "donate": "Donate",
       "googleLogo": "Google Logo",
       "chessColateLogo": "ChessColate Logo",
@@ -899,7 +899,7 @@
       "description": "ChessColate is an independent project. Your donation helps us keep it <strong>ad-free</strong> and keep improving it.",
       "button": "Make a donation",
       "woodpeckerTitle": "New features on the way",
-      "comingSoon": "Coming soon..."
+      "comingSoon": "Coming soon…"
     }
   },
   "DOWNLOAD": {
@@ -920,7 +920,7 @@
     "description": "Solve 333 exercises in a row without making a single mistake.",
     "tryAgain": "Try Again",
     "acceptChallenge": "Accept Challenge",
-    "loading": "Starting Challenge 333...",
+    "loading": "Starting Challenge 333…",
     "completedTitle": "Challenge Completed!",
     "goodTry": "Good Try!",
     "puzzlesSolved": "Exercises solved",
