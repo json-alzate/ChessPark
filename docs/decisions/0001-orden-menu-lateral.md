@@ -54,3 +54,18 @@ separador encima de esa opción.
 - `apps/chessColate/src/app/app.component.ts` — array `menuOptions` e interfaz `MenuOption`
 - `apps/chessColate/src/app/app.component.html` — render del `@for` con `divider`
 - `docs/STYLE_GUIDE.md` — sección "Navegación / Menú lateral"
+
+## Revisión 2026-10-06
+
+El orden de grupos se mantiene, con estos cambios:
+
+- **Etiquetas de grupo**: cada grupo muestra un título pequeño (`section`).
+  Entrenar · Estudio · Práctica · App y cuenta.
+- **Nombres**: "Rutinas" pasa a "Sesiones" (ver [GUIA_DE_TONO.md](../GUIA_DE_TONO.md)).
+  "Análisis de mis partidas" va primero en Estudio para darle más peso, y
+  "Partidas históricas" queda debajo.
+- **Práctica** agrupa Racha con los modos de ejercicios. Antes Racha iba suelta
+  dentro del grupo de ejercicios, y "Estudio" no estaba documentado.
+
+Las decisiones de grupo anteriores siguen vigentes; esta revisión solo añade
+etiquetas y renombra.

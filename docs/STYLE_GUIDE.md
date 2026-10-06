@@ -546,11 +546,16 @@ Las opciones se organizan en **grupos lógicos**, separados visualmente con un
 `divider`. Toda opción nueva debe ubicarse en el grupo que le corresponda,
 respetando este orden:
 
-1. **Inicio** — Home.
-2. **Planes de puzzles** (núcleo de la app) — flujo descubrir → crear → revisar:
-   Planes públicos · Planes personalizados · Historial.
-3. **Ejercicios de entrenamiento** — Coordenadas · Recorrido del caballo · Chess960.
-4. **App y cuenta** — Ajustes · Donar (solo nativo).
+Cada grupo lleva una etiqueta pequeña (`section`, clave `MENU.sections.*`):
+
+1. **Inicio** — Home (sin etiqueta).
+2. **Entrenar** (núcleo de la app) — flujo descubrir → crear → revisar:
+   Sesiones públicas · Mis sesiones · Historial.
+3. **Estudio** — Análisis de mis partidas · Partidas históricas.
+4. **Práctica** — Racha · Coordenadas · Recorrido del caballo · Chess960.
+5. **App y cuenta** — Ajustes · Donar (solo nativo).
+
+Los nombres de las opciones siguen la [Guía de tono](GUIA_DE_TONO.md).
 
 > El razonamiento detrás de este orden está documentado en
 > [docs/decisions/0001-orden-menu-lateral.md](decisions/0001-orden-menu-lateral.md).

@@ -71,6 +71,8 @@ interface MenuOption {
   hideOnWeb?: boolean;
   /** Renderiza un separador visual encima de esta opción (inicio de grupo) */
   divider?: boolean;
+  /** Clave de traducción del título del grupo; se muestra encima de la opción */
+  section?: string;
 }
 
 interface Notification {
@@ -142,6 +144,7 @@ export class AppComponent implements OnInit, OnDestroy {
       route: '/puzzles/public-plans',
       enabled: true,
       divider: true,
+      section: 'MENU.sections.train',
     },
     {
       title: 'CUSTOM_PLANS.listTitle',
@@ -158,16 +161,17 @@ export class AppComponent implements OnInit, OnDestroy {
 
     // --- Estudio ---
     {
-      title: 'GAMES.title',
-      icon: 'library-outline',
-      route: '/games',
-      enabled: true,
-      divider: true,
-    },
-    {
       title: 'ANALYTICS.title',
       icon: 'stats-chart-outline',
       route: '/analytics',
+      enabled: true,
+      divider: true,
+      section: 'MENU.sections.study',
+    },
+    {
+      title: 'GAMES.title',
+      icon: 'library-outline',
+      route: '/games',
       enabled: true,
     },
 
@@ -178,6 +182,7 @@ export class AppComponent implements OnInit, OnDestroy {
       route: '/streak',
       enabled: true,
       divider: true,
+      section: 'MENU.sections.practice',
     },
     {
       title: 'MENU.navigation.coordinates',
@@ -205,6 +210,7 @@ export class AppComponent implements OnInit, OnDestroy {
       route: '/settings',
       enabled: true,
       divider: true,
+      section: 'MENU.sections.account',
     },
     // Los recordatorios se acceden desde Ajustes (fila bajo Idioma), no desde
     // el menú lateral, para no cargar la navegación principal.
