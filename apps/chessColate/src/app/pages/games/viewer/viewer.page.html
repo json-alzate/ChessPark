@@ -197,7 +197,8 @@
         <!-- Los controles de reproducción no pintan nada en el mapa de calor -->
         @if (!heatmapMode) {
           <!-- Controles de la partida -->
-          <div class="flex items-center justify-center gap-1 mt-3">
+          <!-- Repartidos a lo ancho: "ir al final" queda lejos de los pasos y no se toca por accidente -->
+          <div class="flex items-center justify-between px-2 mt-3">
             <button class="btn btn-ghost btn-circle" (click)="toStart()"
               [attr.aria-label]="'GAMES.controls.start' | transloco">
               <ion-icon name="play-skip-back-outline" class="text-xl"></ion-icon>
