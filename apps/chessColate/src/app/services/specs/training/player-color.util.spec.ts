@@ -1,4 +1,4 @@
-import { playerColorFromFen, resolvePlayerColor } from './player-color.util';
+import { playerColorFromFen, resolvePlayerColor } from '../../training/player-color.util';
 
 /** FEN de posición inicial con las blancas en turno. */
 const FEN_WHITE_TO_MOVE =
