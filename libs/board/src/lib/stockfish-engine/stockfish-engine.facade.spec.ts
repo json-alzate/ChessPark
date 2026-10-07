@@ -6,6 +6,18 @@ import {
 import { STOCKFISH_PUZZLE_CONFIG, StockfishEngineFacade } from './stockfish-engine.facade';
 
 const START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+const AFTER_E4_FEN = 'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1';
+const AFTER_D4_FEN = 'rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq - 0 1';
+
+/** Promesa que se resuelve a mano: simula la respuesta del motor cuando el test lo decide. */
+const deferred = <T>() => {
+  let resolve!: (value: T) => void;
+  const promise = new Promise<T>((r) => (resolve = r));
+  return { promise, resolve };
+};
+
+/** Deja correr las promesas pendientes (continuaciones del facade) antes de seguir. */
+const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
 
 describe('StockfishEngineFacade', () => {
   // Estado simulado del worker: `initialize` lo pone listo y `terminate` lo apaga,
@@ -152,15 +164,98 @@ describe('StockfishEngineFacade', () => {
       expect(facade.isReady).toBe(false);
     });
 
-    it('una petición mientras hay otra en curso cancela el análisis y no devuelve jugada', async () => {
-      analysis.getBestMove.mockReturnValueOnce(new Promise(() => undefined));
+    describe('una posición nueva mientras otra se analiza (gana la última)', () => {
+      it('detiene la búsqueda vieja, descarta su resultado y analiza la posición nueva', async () => {
+        const first = deferred<{ move: string }>();
+        const second = deferred<{ move: string }>();
+        analysis.getBestMove
+          .mockReturnValueOnce(first.promise)
+          .mockReturnValueOnce(second.promise);
 
-      void facade.getBestMove(START_FEN);
-      const second = await facade.getBestMove(START_FEN);
+        const firstOutcome = facade.getBestMove(START_FEN);
+        const secondOutcome = facade.getBestMove(AFTER_E4_FEN);
+        await flush();
 
-      expect(second).toEqual({ kind: 'no-move' });
-      expect(stockfish.stopAnalysis).toHaveBeenCalled();
-      expect(analysis.getBestMove).toHaveBeenCalledTimes(1);
+        // La búsqueda vieja se detiene, pero la nueva NO arranca todavía: hay que esperar
+        // a que el motor conteste al stop, o su bestmove rezagado caería en la petición nueva.
+        expect(stockfish.stopAnalysis).toHaveBeenCalled();
+        expect(analysis.getBestMove).toHaveBeenCalledTimes(1);
+
+        // El motor contesta al stop con la jugada de la posición VIEJA (búsqueda cortada).
+        first.resolve({ move: 'e2e4' });
+        await expect(firstOutcome).resolves.toEqual({ kind: 'no-move' });
+        await flush();
+
+        // Ahora sí se analiza la posición nueva.
+        expect(analysis.getBestMove).toHaveBeenCalledTimes(2);
+        expect(analysis.getBestMove).toHaveBeenLastCalledWith(
+          AFTER_E4_FEN,
+          expect.objectContaining({ depth: 15 })
+        );
+        second.resolve({ move: 'e7e5' });
+        await expect(secondOutcome).resolves.toEqual({ kind: 'best-move', move: 'e7e5' });
+      });
+
+      it('nunca devuelve la jugada de una posición vieja', async () => {
+        const first = deferred<{ move: string }>();
+        analysis.getBestMove
+          .mockReturnValueOnce(first.promise)
+          .mockResolvedValueOnce({ move: 'e7e5' });
+
+        const firstOutcome = facade.getBestMove(START_FEN);
+        const secondOutcome = facade.getBestMove(AFTER_E4_FEN);
+        first.resolve({ move: 'e2e4' });
+
+        const outcomes = await Promise.all([firstOutcome, secondOutcome]);
+
+        expect(outcomes).toEqual([{ kind: 'no-move' }, { kind: 'best-move', move: 'e7e5' }]);
+      });
+
+      it('con varias posiciones seguidas solo analiza la última', async () => {
+        const first = deferred<{ move: string }>();
+        analysis.getBestMove
+          .mockReturnValueOnce(first.promise)
+          .mockResolvedValueOnce({ move: 'g8f6' });
+
+        const a = facade.getBestMove(START_FEN);
+        const b = facade.getBestMove(AFTER_E4_FEN);
+        const c = facade.getBestMove(AFTER_D4_FEN);
+        first.resolve({ move: 'e2e4' });
+
+        const outcomes = await Promise.all([a, b, c]);
+
+        expect(outcomes).toEqual([
+          { kind: 'no-move' },
+          { kind: 'no-move' },
+          { kind: 'best-move', move: 'g8f6' },
+        ]);
+        // La posición intermedia nunca llega al motor
+        expect(analysis.getBestMove).toHaveBeenCalledTimes(2);
+        expect(analysis.getBestMove).toHaveBeenLastCalledWith(AFTER_D4_FEN, expect.anything());
+      });
+
+      it('una petición hecha cuando el motor ya está libre no espera ni detiene nada', async () => {
+        analysis.getBestMove.mockResolvedValue({ move: 'e2e4' });
+
+        await facade.getBestMove(START_FEN);
+        stockfish.stopAnalysis.mockClear();
+        const outcome = await facade.getBestMove(AFTER_E4_FEN);
+
+        expect(outcome).toEqual({ kind: 'best-move', move: 'e2e4' });
+        expect(stockfish.stopAnalysis).not.toHaveBeenCalled();
+      });
+
+      it('si el análisis falla, el motor queda libre para la siguiente petición', async () => {
+        analysis.getBestMove
+          .mockRejectedValueOnce(new Error('timeout'))
+          .mockResolvedValueOnce({ move: 'e2e4' });
+
+        await expect(facade.getBestMove(START_FEN)).resolves.toEqual({ kind: 'no-move' });
+        await expect(facade.getBestMove(AFTER_E4_FEN)).resolves.toEqual({
+          kind: 'best-move',
+          move: 'e2e4',
+        });
+      });
     });
   });
 
@@ -182,6 +277,33 @@ describe('StockfishEngineFacade', () => {
 
       expect(stockfish.terminate).toHaveBeenCalled();
       expect(facade.isReady).toBe(false);
+    });
+
+    it('cancel descarta el resultado de la petición en curso', async () => {
+      await facade.initialize();
+      const search = deferred<{ move: string }>();
+      analysis.getBestMove.mockReturnValueOnce(search.promise);
+
+      const outcome = facade.getBestMove(START_FEN);
+      await flush();
+      facade.cancel();
+      // El motor contesta al stop con la jugada de la búsqueda cortada
+      search.resolve({ move: 'e2e4' });
+
+      await expect(outcome).resolves.toEqual({ kind: 'no-move' });
+    });
+
+    it('dispose descarta el resultado de la petición en curso', async () => {
+      await facade.initialize();
+      const search = deferred<{ move: string }>();
+      analysis.getBestMove.mockReturnValueOnce(search.promise);
+
+      const outcome = facade.getBestMove(START_FEN);
+      await flush();
+      facade.dispose();
+      search.resolve({ move: 'e2e4' });
+
+      await expect(outcome).resolves.toEqual({ kind: 'no-move' });
     });
   });
 });

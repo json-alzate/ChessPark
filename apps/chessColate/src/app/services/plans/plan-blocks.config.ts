@@ -55,8 +55,6 @@ export interface BlockSpec {
   puzzlesCount: number;
   /** Cómo se elige el tema del bloque. */
   theme: ThemeRule;
-  /** Tema del que se lee el ELO del usuario. Si no se indica, se usa el mismo tema del bloque. */
-  eloTheme?: ThemeRule;
   /** Descripción del bloque que se muestra al usuario. */
   description?: DescriptionRule;
   /** Tiempos por puzzle. Si no se indica, el bloque no define tiempos por puzzle. */
@@ -377,13 +375,10 @@ export const PLAN_BLOCK_SPECS: Partial<Record<PlanTypes, PlanBlocksSpec>> = {
       },
       {
         // Enfriamiento (5 min): final de peón o de torre y peón.
-        // TODO: el tema mostrado y el ELO se sortean por separado (dos llamadas a
-        // Math.random), así que el ELO puede no corresponder al tema del bloque.
-        // Se mantiene por compatibilidad; unificarlo es una decisión de producto pendiente.
+        // El ELO se lee del mismo tema que se sortea aquí, no de otro sorteo aparte.
         time: 300,
         puzzlesCount: 0,
         theme: { strategy: 'oneOf', themes: ['endgame', 'pawnEndgame'] },
-        eloTheme: { strategy: 'oneOf', themes: ['endgame', 'pawnEndgame'] },
         puzzleTimes: { warningOn: 40, dangerOn: 20, total: 60 },
         nextPuzzleImmediately: true,
         showPuzzleSolution: true,

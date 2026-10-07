@@ -501,7 +501,9 @@ describe('BlockService (caracterización de generateBlocksForPlan)', () => {
           time: 300,
           puzzlesCount: 0,
           theme: 'endgame',
-          elo: 1535,
+          // ELO de 'endgame' en el fixture (1500 + 2 * 7). El ELO sale del mismo tema
+          // que se muestra; antes salía de otro sorteo y daba el de 'pawnEndgame' (1535).
+          elo: 1514,
           color: 'white',
           puzzleTimes: {
             warningOn: 40,
@@ -523,7 +525,7 @@ describe('BlockService (caracterización de generateBlocksForPlan)', () => {
           time: -1,
           puzzlesCount: 3,
           theme: 'mate',
-          elo: 1010,
+          elo: 860,
           color: 'white',
           puzzlesPlayed: [],
           nextPuzzleImmediately: true,
@@ -533,7 +535,7 @@ describe('BlockService (caracterización de generateBlocksForPlan)', () => {
           time: -1,
           puzzlesCount: 3,
           theme: 'mateIn2',
-          elo: 1010,
+          elo: 860,
           color: 'white',
           puzzlesPlayed: [],
           nextPuzzleImmediately: true,
@@ -543,7 +545,7 @@ describe('BlockService (caracterización de generateBlocksForPlan)', () => {
           time: -1,
           puzzlesCount: 3,
           theme: 'mateIn1',
-          elo: 1010,
+          elo: 860,
           color: 'white',
           puzzlesPlayed: [],
           nextPuzzleImmediately: true,
@@ -1004,7 +1006,7 @@ describe('BlockService (caracterización de generateBlocksForPlan)', () => {
           time: -1,
           puzzlesCount: 3,
           theme: 'mate',
-          elo: 1430,
+          elo: 980,
           color: 'black',
           puzzlesPlayed: [],
           nextPuzzleImmediately: true,
@@ -1014,7 +1016,7 @@ describe('BlockService (caracterización de generateBlocksForPlan)', () => {
           time: -1,
           puzzlesCount: 3,
           theme: 'mateIn2',
-          elo: 1430,
+          elo: 980,
           color: 'black',
           puzzlesPlayed: [],
           nextPuzzleImmediately: true,
@@ -1024,7 +1026,7 @@ describe('BlockService (caracterización de generateBlocksForPlan)', () => {
           time: -1,
           puzzlesCount: 3,
           theme: 'mateIn1',
-          elo: 1430,
+          elo: 980,
           color: 'black',
           puzzlesPlayed: [],
           nextPuzzleImmediately: true,
@@ -1080,11 +1082,39 @@ describe('BlockService (caracterización de generateBlocksForPlan)', () => {
       expect(blocks[0].color).toBe('black');
     });
 
-    it('backToCalm usa el extremo superior 1500 cuando Math.random se acerca a 1', async () => {
+    it('backToCalm usa el extremo superior 1000 cuando Math.random se acerca a 1', async () => {
       mockRandom(0.9, 0.9999);
       const blocks = await service.generateBlocksForPlan('backToCalm');
-      expect(blocks.map((b) => b.elo)).toEqual([1500, 1500, 1500]);
+      expect(blocks.map((b) => b.elo)).toEqual([1000, 1000, 1000]);
       expect(blocks[0].color).toBe('white');
+    });
+
+    it('backToCalm nunca sale del rango 800-1000, sea cual sea el sorteo', async () => {
+      for (const r of [0, 0.001, 0.25, 0.5, 0.75, 0.999, 0.9999]) {
+        jest.restoreAllMocks();
+        mockRandom(0.9, r);
+        const blocks = await service.generateBlocksForPlan('backToCalm');
+        expect(blocks[0].elo).toBeGreaterThanOrEqual(800);
+        expect(blocks[0].elo).toBeLessThanOrEqual(1000);
+      }
+    });
+
+    it('plan30: el ELO del enfriamiento corresponde siempre al tema que se muestra', async () => {
+      const plan30Elos = (profile as { elos: { plan30: Record<string, number> } }).elos.plan30;
+      // Se recorren varios sorteos para que salgan tanto 'endgame' como 'pawnEndgame'
+      const seen = new Set<string>();
+      for (const r of [0, 0.2, 0.49, 0.5, 0.51, 0.8, 0.99]) {
+        jest.restoreAllMocks();
+        mockRandom(0.8, 0.3, 0.6, 0.1, 0.9, r, r, r, r, r);
+        const blocks = await service.generateBlocksForPlan('plan30');
+        const cooldown = blocks[blocks.length - 1];
+        seen.add(cooldown.theme);
+        expect(['endgame', 'pawnEndgame']).toContain(cooldown.theme);
+        expect(cooldown.elo).toBe(plan30Elos[cooldown.theme]);
+      }
+      // Los dos temas tienen un ELO distinto en el fixture: si el test no ve ambos
+      // temas, no estaría comprobando nada.
+      expect(seen.size).toBe(2);
     });
 
     it('un plan sin configuracion rechaza con error claro en vez de quedar pendiente', async () => {

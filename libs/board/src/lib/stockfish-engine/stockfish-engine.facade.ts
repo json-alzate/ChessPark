@@ -20,8 +20,10 @@ export const STOCKFISH_PUZZLE_CONFIG: StockfishConfig = {
  * Resultado de pedir la mejor jugada para una posición.
  *
  * - `best-move`: Stockfish devolvió una jugada en notación UCI (p. ej. `e2e4`, `a7a8q`).
- * - `no-move`: no hay jugada que mostrar. Ocurre si una petición nueva canceló un análisis
- *   en curso, si el análisis falló de forma no crítica (p. ej. timeout) o si no vino jugada.
+ * - `no-move`: no hay jugada que mostrar. Ocurre si otra petición más reciente (o un
+ *   `cancel()`/`dispose()`) reemplazó a esta antes de que terminara, si el análisis falló
+ *   de forma no crítica (p. ej. timeout) o si no vino jugada. Nunca se devuelve una jugada
+ *   de una posición que ya no es la última pedida.
  * - `unavailable`: el motor no está listo y no se pudo recuperar. El llamador debe
  *   desactivar la función de análisis; el facade ya dejó el worker terminado.
  */
@@ -49,8 +51,11 @@ const WORKER_RESTART_DELAY_MS = 200;
  *   propio estado de análisis en curso. El motor subyacente (`StockfishService`) sigue siendo
  *   un singleton de root.
  * - `initialize()` se llama una vez al crear el componente.
- * - `getBestMove()` se llama cada vez que cambia la posición que se quiere analizar.
- * - `cancel()` detiene el análisis en curso sin apagar el motor (p. ej. al desactivar la opción).
+ * - `getBestMove()` se llama cada vez que cambia la posición que se quiere analizar. Si llega
+ *   una posición nueva mientras otra se analiza, gana la última: la búsqueda en curso se
+ *   detiene, su resultado se descarta y se analiza la posición nueva.
+ * - `cancel()` detiene el análisis en curso sin apagar el motor y descarta cualquier petición
+ *   pendiente (p. ej. al desactivar la opción).
  * - `dispose()` termina el worker. Se llama al destruir el componente.
  *
  * Nota: como `StockfishService` es singleton, `dispose()` y los reinicios afectan a cualquier
@@ -70,8 +75,19 @@ export class StockfishEngineFacade {
   private readonly stockfish = inject(StockfishService);
   private readonly analysis = inject(StockfishAnalysisService);
 
-  /** True mientras hay una petición `getBestMove` sin resolver (evita análisis concurrentes). */
-  private analyzing = false;
+  /**
+   * Número de la última petición hecha (o de la última invalidación por `cancel`/`dispose`).
+   * Una petición solo puede responder con jugada si su número sigue siendo este al terminar:
+   * si no, ya hay otra más nueva y su resultado corresponde a una posición vieja.
+   */
+  private latestRequestId = 0;
+
+  /**
+   * Búsqueda que está corriendo en el motor, o `null` si está libre. Nunca se rechaza
+   * (`askWithRecovery` no lanza). Se usa para esperar a que una búsqueda cancelada termine
+   * antes de lanzar la siguiente.
+   */
+  private inFlight: Promise<StockfishBestMoveOutcome> | null = null;
 
   /** True si el motor y su worker están listos para analizar. */
   get isReady(): boolean {
@@ -93,22 +109,38 @@ export class StockfishEngineFacade {
   }
 
   /**
-   * Pide la mejor jugada para una posición.
+   * Pide la mejor jugada para una posición. Gana siempre la última petición.
    *
-   * Si ya hay un análisis en curso, lo cancela y responde `no-move` sin analizar la posición nueva.
-   * Esto replica el comportamiento previo del componente; el llamador debe volver a pedir la
-   * posición cuando el análisis actual termine si la necesita.
+   * Si ya hay una búsqueda en curso, se detiene y se espera a que el motor responda a ese
+   * `stop` antes de lanzar la nueva. La espera es necesaria: el motor contesta al `stop` con un
+   * `bestmove` de la posición vieja, y `StockfishAnalysisService` no asocia cada respuesta a su
+   * FEN (toma "el próximo bestmove"). Si se lanzara la búsqueda nueva sin esperar, esa respuesta
+   * rezagada podría llegar a la petición nueva y dibujarse una jugada de la posición anterior.
    *
-   * Si el worker se perdió (error "not initialized"), lo reinicia y reintenta una sola vez
-   * con la misma posición. Si un error indica memoria agotada o worker terminado, apaga el motor.
+   * Resultados:
+   * - Si mientras esta petición espera o analiza llega otra más nueva (o se llama a `cancel` o
+   *   `dispose`), devuelve `no-move` y descarta lo que haya encontrado.
+   * - Si el worker se perdió (error "not initialized"), lo reinicia y reintenta una sola vez
+   *   con la misma posición. Si un error indica memoria agotada o worker terminado, apaga el motor.
+   *
+   * Limitación: la espera depende de que el motor conteste al `stop`. Si el worker queda
+   * colgado, la petición espera hasta el timeout del análisis (30 s por defecto en
+   * `StockfishAnalysisService`), igual que esa búsqueda.
    *
    * @param fen - Posición en notación FEN
    * @returns Resultado tipado; nunca lanza
    */
   async getBestMove(fen: string): Promise<StockfishBestMoveOutcome> {
-    if (this.analyzing) {
-      this.cancel();
-      return NO_MOVE;
+    const requestId = ++this.latestRequestId;
+
+    // Si el motor está ocupado, se detiene su búsqueda y se espera a que suelte el motor.
+    // Es un bucle porque, al despertar, otra petición podría haber vuelto a ocuparlo.
+    while (this.inFlight) {
+      this.stopEngine();
+      await this.inFlight;
+      if (requestId !== this.latestRequestId) {
+        return NO_MOVE; // llegó otra posición más nueva mientras esperaba
+      }
     }
 
     if (!this.stockfish.isReady) {
@@ -116,32 +148,48 @@ export class StockfishEngineFacade {
       return UNAVAILABLE;
     }
 
-    this.analyzing = true;
-    try {
-      return await this.askWithRecovery(fen, true);
-    } finally {
-      this.analyzing = false;
-    }
+    const search = this.askWithRecovery(fen, true).finally(() => {
+      if (this.inFlight === search) {
+        this.inFlight = null;
+      }
+    });
+    this.inFlight = search;
+    const outcome = await search;
+
+    // Si durante el análisis llegó una posición más nueva, esta jugada ya no corresponde
+    // al tablero actual: se descarta.
+    return requestId === this.latestRequestId ? outcome : NO_MOVE;
   }
 
   /**
-   * Detiene el análisis en curso sin terminar el worker. Si el motor no está analizando,
-   * la llamada no hace nada. Los errores al detener solo se registran.
+   * Detiene el análisis en curso sin terminar el worker y descarta las peticiones pendientes
+   * (devolverán `no-move`). Si el motor no está analizando, no hace nada más.
+   * Los errores al detener solo se registran.
    */
   cancel(): void {
+    this.latestRequestId++;
+    this.stopEngine();
+  }
+
+  /**
+   * Termina el worker y libera recursos, descartando las peticiones pendientes.
+   * Debe llamarse al destruir el componente que usa el facade.
+   */
+  dispose(): void {
+    this.latestRequestId++;
+    this.safeTerminate();
+  }
+
+  /**
+   * Envía `stop` al motor sin invalidar peticiones. Es lo que usa `getBestMove` para liberar el
+   * motor cuando llega una posición nueva (la petición nueva sigue siendo válida).
+   */
+  private stopEngine(): void {
     try {
       this.stockfish.stopAnalysis();
     } catch (error) {
       console.warn('[Stockfish] Error stopping analysis:', error);
     }
-  }
-
-  /**
-   * Termina el worker y libera recursos. Debe llamarse al destruir el componente
-   * que usa el facade.
-   */
-  dispose(): void {
-    this.safeTerminate();
   }
 
   /**
@@ -172,7 +220,9 @@ export class StockfishEngineFacade {
 
       if (message.includes('memory') || message.includes('terminated')) {
         console.error('[Stockfish] Critical error, shutting down the engine:', error);
-        this.dispose();
+        // safeTerminate y no dispose: dispose invalidaría esta misma petición y el llamador
+        // recibiría no-move en vez de unavailable, y no desactivaría la opción en la UI.
+        this.safeTerminate();
         return UNAVAILABLE;
       }
 

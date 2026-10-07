@@ -13,6 +13,7 @@ import { AppService } from '@services/app/app.service';
 import { PuzzlesProvider } from '@chesspark/puzzles-provider';
 import { PlansElosService } from '@services/plans/plans-elos.service';
 import { PLAN_ALLOWED_THEMES } from '../../plan-allowed-themes.config';
+import { RETO333_START_ELO } from './reto333.util';
 import {
   BlockSpec,
   DescriptionRule,
@@ -21,14 +22,24 @@ import {
   ThemeRule,
 } from '../plans/plan-blocks.config';
 
+/*
+ * ELO de partida de cada modo. No se unifican a propósito: cada modo tiene su
+ * propia razón para el valor que usa.
+ */
+
 /**
- * ELO de respaldo cuando el perfil no tiene dato para el tema.
- * Ver el TODO de eloFor sobre los fallbacks pendientes de unificar.
+ * ELO de respaldo de los planes de la tabla PLAN_BLOCK_SPECS (warmup, plan1... plan30):
+ * se usa cuando el perfil del usuario no tiene dato para el tema del bloque.
  */
 const DEFAULT_ELO = 1500;
-/** Rango del ELO aleatorio del plan backToCalm (extremos incluidos). */
+
+/**
+ * Rango del ELO aleatorio del plan backToCalm (extremos incluidos).
+ * Es la "vuelta a la calma" de una sesión: puzzles fáciles para terminar con
+ * aciertos, por eso el rango es bajo y no depende del perfil del usuario.
+ */
 const BACK_TO_CALM_MIN_ELO = 800;
-const BACK_TO_CALM_MAX_ELO = 1500;
+const BACK_TO_CALM_MAX_ELO = 1000;
 
 @Injectable({
   providedIn: 'root',
@@ -115,17 +126,14 @@ export class BlockService {
   private buildBlocksFromSpec(plan: PlanTypes, spec: PlanBlocksSpec): Block[] {
     const planColor = spec.color === 'side' ? this.pickSide() : 'random';
 
-    // Se sortean primero todos los temas, porque el ELO de un bloque puede depender
-    // de un tema que se sortea después (ver eloTheme en plan-blocks.config.ts).
+    // Se sortean primero todos los temas, en el orden de themeDrawOrder (o el de la
+    // lista), para que la secuencia de Math.random de cada plan sea estable.
+    // El ELO del bloque se lee después del mismo tema sorteado: así el nivel
+    // siempre corresponde al tema que se le muestra al usuario.
     const drawOrder = spec.themeDrawOrder ?? spec.blocks.map((_, index) => index);
     const themes: string[] = [];
-    const eloThemes: string[] = [];
     for (const index of drawOrder) {
-      const blockSpec = spec.blocks[index];
-      themes[index] = this.resolveTheme(plan, blockSpec.theme);
-      eloThemes[index] = blockSpec.eloTheme
-        ? this.resolveTheme(plan, blockSpec.eloTheme)
-        : themes[index];
+      themes[index] = this.resolveTheme(plan, spec.blocks[index].theme);
     }
 
     return spec.blocks.map((blockSpec, index) => {
@@ -135,26 +143,26 @@ export class BlockService {
       return this.toBlock(
         plan,
         { ...blockSpec, ...variant },
-        { theme: themes[index], eloTheme: eloThemes[index], color: planColor }
+        { theme: themes[index], color: planColor }
       );
     });
   }
 
   /**
-   * Arma un bloque con los valores ya sorteados (tema, ELO y color) y con los
-   * campos opcionales de su configuración. Solo incluye las claves que existen en
+   * Arma un bloque con los valores ya sorteados (tema y color), el ELO del usuario en
+   * ese tema y los campos opcionales de su configuración. Solo incluye las claves que existen en
    * la configuración, para que el objeto solo tenga las claves que define el plan.
    */
   private toBlock(
     plan: PlanTypes,
     blockSpec: BlockSpec,
-    drawn: { theme: string; eloTheme: string; color: Block['color'] }
+    drawn: { theme: string; color: Block['color'] }
   ): Block {
     const block: Block = {
       time: blockSpec.time,
       puzzlesCount: blockSpec.puzzlesCount,
       theme: drawn.theme,
-      elo: this.eloFor(plan, drawn.eloTheme),
+      elo: this.eloFor(plan, drawn.theme),
       color: drawn.color,
       puzzlesPlayed: [],
     };
@@ -242,11 +250,8 @@ export class BlockService {
 
   /**
    * ELO del usuario para un tema dentro de un plan.
-   * Si el perfil no tiene el dato, devuelve el valor de fallback.
-   *
-   * TODO: los fallbacks de ELO no están unificados. Aquí son 1500, reto333 usa 400 y
-   * backToCalm usa un rango aleatorio. Unificarlos es una decisión de producto pendiente,
-   * por ahora se mantienen tal cual.
+   * Si el perfil no tiene el dato, devuelve el valor de fallback (DEFAULT_ELO).
+   * Solo lo usan los planes de la tabla; reto333 y backToCalm definen su propio ELO.
    */
   private eloFor(plan: PlanTypes, theme: string, fallback = DEFAULT_ELO): number {
     return this.planElos(plan)?.[theme] || fallback;
@@ -288,9 +293,8 @@ export class BlockService {
   /**
    * Plan backToCalm: tres bloques de mates (mate, mate en 2 y mate en 1) de 3 puzzles
    * cada uno, con la solución visible y un mismo color.
-   * Todos los bloques comparten un ELO aleatorio entre 800 y 1500.
-   *
-   * TODO: el rango aleatorio es una excepción de los fallbacks de ELO (ver eloFor).
+   * Todos los bloques comparten un ELO aleatorio entre 800 y 1000
+   * (BACK_TO_CALM_MIN_ELO y BACK_TO_CALM_MAX_ELO).
    */
   private buildBackToCalmBlocks(): Block[] {
     const color = this.pickSide();
@@ -311,9 +315,8 @@ export class BlockService {
   }
 
   /**
-   * Plan reto333: 333 mates en 1 con un ELO fijo de 400, sin límite de tiempo.
-   *
-   * TODO: el ELO fijo de 400 es una excepción de los fallbacks de ELO (ver eloFor).
+   * Plan reto333: 333 mates en 1 que arrancan en RETO333_START_ELO, sin límite de tiempo.
+   * El ELO sube con una rampa a medida que se acierta (ver reto333.util).
    */
   private buildReto333Blocks(): Block[] {
     return [
@@ -322,7 +325,7 @@ export class BlockService {
         puzzlesCount: 333,
         theme: 'mateIn1',
         description: 'Mate en 1',
-        elo: 400,
+        elo: RETO333_START_ELO,
         color: 'random',
         puzzlesPlayed: [],
         nextPuzzleImmediately: true,
