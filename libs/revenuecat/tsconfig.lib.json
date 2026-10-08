@@ -6,7 +6,6 @@
     "declarationMap": true,
     "inlineSources": true,
     "types": [],
-    "composite": true,
     "skipLibCheck": true
   },
   "exclude": [
