@@ -19,17 +19,24 @@ Esta guía define los estándares de diseño y estructura para la aplicación Ch
 
 ## 🎨 Tema y Configuración
 
-### Tema Principal: Halloween
+### Tema: Halloween por defecto, elegible por el usuario
 
-La aplicación utiliza **DaisyUI** con el tema **Halloween** como tema por defecto. Este tema debe aplicarse en todos los contenedores principales.
+La aplicación utiliza **DaisyUI** y arranca con el tema **Halloween**. El usuario puede
+cambiarlo en Ajustes → Apariencia por cualquiera de los temas de `APP_THEMES`
+(`libs/models/src/lib/ui.model.ts`).
+
+El tema vive en `<html data-theme="...">` (lo pone `AppearanceService`), así que **las páginas
+y los modales ya no llevan `data-theme`**: un `data-theme="halloween"` fijo en un contenedor
+lo dejaría sin cambiar de tema.
 
 ```html
-<div class="main-container" data-theme="halloween">
+<div class="main-container">
   <!-- Contenido de la página -->
 </div>
 ```
 
-**Regla importante:** Todas las páginas deben incluir `data-theme="halloween"` en su contenedor principal.
+**Regla importante:** usa siempre colores semánticos de DaisyUI (`bg-base-100`, `text-primary`,
+`border-base-content/10`…). Un color fijo (`bg-white`, `#bf811c`) se vería mal en el resto de temas.
 
 ---
 
@@ -41,7 +48,7 @@ Todas las páginas deben seguir esta estructura base:
 
 ```html
 <ion-content [fullscreen]="true">
-  <div class="main-container" data-theme="halloween">
+  <div class="main-container">
     
     <!-- Navbar (si aplica) -->
     <app-navbar></app-navbar>
@@ -63,7 +70,7 @@ Todas las páginas deben seguir esta estructura base:
 ### Componentes de Página
 
 1. **Navbar**: Debe estar presente en todas las páginas principales (excepto modales)
-2. **Contenedor principal**: Usar `main-container` con `data-theme="halloween"`
+2. **Contenedor principal**: Usar `main-container` (el tema lo pone `<html>`)
 3. **Contenedor de contenido**: Usar `container mx-auto px-4 py-6` para el contenido principal
 
 ---
@@ -467,7 +474,7 @@ Para botones fijos en mobile:
 
 ```html
 <ion-content [fullscreen]="true">
-  <div class="main-container" data-theme="halloween">
+  <div class="main-container">
     
     <app-navbar></app-navbar>
     
@@ -584,7 +591,7 @@ Los nombres de las opciones siguen la [Guía de tono](GUIA_DE_TONO.md).
 
 Al crear una nueva página, verifica:
 
-- [ ] Incluye `data-theme="halloween"` en el contenedor principal
+- [ ] No lleva `data-theme` fijo: el tema lo pone `<html>` (usa solo colores semánticos de DaisyUI)
 - [ ] Usa la estructura base con `ion-content` y `main-container`
 - [ ] Incluye el navbar si corresponde
 - [ ] Usa los tamaños de título correctos (`text-2xl` para título principal)

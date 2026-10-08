@@ -24,6 +24,8 @@ describe('AppearanceService', () => {
 
   beforeEach(() => {
     localStorage.clear();
+    document.documentElement.removeAttribute('data-theme');
+    document.documentElement.classList.remove('ion-palette-dark');
     mockSet.mockClear();
     Object.assign(mockAppearance, { pieces: 'cburnett', board: 'chessboard-js' });
     profile$ = new BehaviorSubject<{ pieces?: string; board?: string } | null>(null);
@@ -107,5 +109,53 @@ describe('AppearanceService', () => {
     profile$.next({ pieces: 'fantasy', board: 'green' });
 
     expect(service.pieces()).toBe('staunty');
+  });
+
+  describe('tema de DaisyUI', () => {
+    it('arranca con halloween si no hay nada guardado', () => {
+      service.init();
+
+      expect(service.theme()).toBe('halloween');
+      expect(document.documentElement.getAttribute('data-theme')).toBe('halloween');
+    });
+
+    it('aplica el tema guardado en <html> y marca la paleta de Ionic según sea oscuro o claro', () => {
+      localStorage.setItem('chessColate_theme', 'light');
+      service.init();
+
+      expect(document.documentElement.getAttribute('data-theme')).toBe('light');
+      expect(document.documentElement.classList.contains('ion-palette-dark')).toBe(false);
+
+      service.setTheme('dracula');
+
+      expect(document.documentElement.getAttribute('data-theme')).toBe('dracula');
+      expect(document.documentElement.classList.contains('ion-palette-dark')).toBe(true);
+    });
+
+    it('ignora un tema guardado que ya no existe', () => {
+      localStorage.setItem('chessColate_theme', 'inventado');
+      service.init();
+
+      expect(service.theme()).toBe('halloween');
+    });
+
+    it('elegir un tema lo guarda en el dispositivo y lo pide al perfil', () => {
+      service.init();
+
+      service.setTheme('nord');
+
+      expect(localStorage.getItem('chessColate_theme')).toBe('nord');
+      expect(requestUpdateProfile).toHaveBeenCalledWith({ theme: 'nord' });
+    });
+
+    it('el tema del perfil predomina sobre el guardado en el dispositivo', () => {
+      localStorage.setItem('chessColate_theme', 'light');
+      service.init();
+
+      profile$.next({ theme: 'forest' } as never);
+
+      expect(service.theme()).toBe('forest');
+      expect(document.documentElement.getAttribute('data-theme')).toBe('forest');
+    });
   });
 });

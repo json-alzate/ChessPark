@@ -32,14 +32,22 @@
  * https://ionicframework.com/docs/theming/dark-mode
  */
 
-@import "@ionic/angular/css/palettes/dark.always.css";
-@import "@ionic/angular/css/palettes/dark.class.css"; 
-@import '@ionic/angular/css/palettes/dark.system.css';
+// La paleta oscura de Ionic se activa con la clase `ion-palette-dark` en <html>, que
+// AppearanceService pone o quita según el tema de DaisyUI elegido (ver index.html).
+@import "@ionic/angular/css/palettes/dark.class.css";
 
 /* Tailwind CSS */
 @import 'tailwindcss';
 @plugin "daisyui" {
   themes: all;
+}
+
+/* Ionic toma fondo y texto del tema de DaisyUI activo, para que modales, menús y
+   toasts (que viven fuera de las páginas) combinen con el resto de la app */
+:root,
+:root.ion-palette-dark {
+  --ion-background-color: var(--color-base-100);
+  --ion-text-color: var(--color-base-content);
 }
 
 /* Variables globales de marca (chessColate) */

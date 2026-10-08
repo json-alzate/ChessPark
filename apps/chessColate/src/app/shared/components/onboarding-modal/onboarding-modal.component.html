@@ -1,5 +1,5 @@
 <ion-content [scrollY]="false">
-  <div class="flex h-full flex-col bg-base-100 text-base-content" data-theme="halloween">
+  <div class="flex h-full flex-col bg-base-100 text-base-content">
 
     <!-- Botón saltar -->
     <div class="flex justify-end px-4 pt-4" style="padding-top: calc(env(safe-area-inset-top, 0px) + 1rem);">
@@ -50,16 +50,17 @@
             }
           </div>
           } @else if (slide.appearance) {
-          <!-- Slide de apariencia: piezas y tablero con vista previa -->
-          <div class="flex h-full w-full flex-col items-center justify-center gap-3 overflow-y-auto px-6 py-2 text-center">
-            <h2 class="max-w-sm text-2xl font-extrabold leading-tight tracking-tight">
+          <!-- Slide de apariencia: tema, piezas y tablero con vista previa. Sin scroll: el selector
+               reparte el alto que queda y el tablero de muestra toma lo que sobra -->
+          <div class="flex h-full w-full flex-col items-center gap-1 overflow-hidden px-6 pb-1 text-center">
+            <h2 class="max-w-sm text-xl font-extrabold leading-tight tracking-tight">
               {{ slide.titleKey | transloco }}
             </h2>
-            <p class="max-w-sm text-sm leading-relaxed text-base-content/60">
+            <p class="max-w-sm text-xs leading-snug text-base-content/60">
               {{ slide.descKey | transloco }}
             </p>
             <!-- swiper-no-swiping: así tocar y arrastrar sobre las opciones no cambia de slide -->
-            <div class="swiper-no-swiping w-full max-w-sm text-left">
+            <div class="swiper-no-swiping min-h-0 w-full max-w-sm flex-1 text-left">
               <app-appearance-picker [compact]="true"></app-appearance-picker>
             </div>
           </div>

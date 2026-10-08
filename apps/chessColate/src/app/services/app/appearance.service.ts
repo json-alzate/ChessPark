@@ -5,7 +5,14 @@ import {
   isPiecesStyle,
   setChessboardAppearance,
 } from '@chesspark/board';
-import { BoardStyle, PiecesStyle } from '@chesspark/models';
+import {
+  APP_THEMES,
+  AppTheme,
+  BoardStyle,
+  DARK_APP_THEMES,
+  DEFAULT_APP_THEME,
+  PiecesStyle,
+} from '@chesspark/models';
 import { distinctUntilChanged, map } from 'rxjs';
 
 import { ProfileService } from '@services/account/profile.service';
@@ -13,9 +20,14 @@ import { ProfileService } from '@services/account/profile.service';
 /** Claves de localStorage con la apariencia elegida (la que usan los invitados). */
 const PIECES_STORAGE_KEY = 'chessColate_pieces';
 const BOARD_STORAGE_KEY = 'chessColate_board';
+const THEME_STORAGE_KEY = 'chessColate_theme';
+
+function isAppTheme(value: unknown): value is AppTheme {
+  return APP_THEMES.includes(value as AppTheme);
+}
 
 /**
- * Estilo de piezas y color del tablero.
+ * Estilo de piezas, color del tablero y tema de DaisyUI de la app.
  *
  * Funciona como el idioma: se guarda en el dispositivo para que también lo tengan
  * los invitados y, si hay sesión, además en el perfil. Cuando llega el perfil, lo
@@ -29,6 +41,7 @@ export class AppearanceService {
 
   readonly pieces = computed(() => this.state().pieces);
   readonly board = computed(() => this.state().board);
+  readonly theme = signal<AppTheme>(DEFAULT_APP_THEME);
 
   /**
    * Aplica lo guardado en el dispositivo y queda atento al perfil. Se llama una vez
@@ -38,6 +51,7 @@ export class AppearanceService {
     this.apply({
       pieces: this.readStored(PIECES_STORAGE_KEY, isPiecesStyle),
       board: this.readStored(BOARD_STORAGE_KEY, isBoardStyle),
+      theme: this.readStored(THEME_STORAGE_KEY, isAppTheme) ?? DEFAULT_APP_THEME,
     });
 
     // Solo cuando cambia lo que trae el perfil: otras actualizaciones del perfil (un
@@ -47,9 +61,10 @@ export class AppearanceService {
         map((profile) => ({
           pieces: isPiecesStyle(profile?.pieces) ? profile.pieces : undefined,
           board: isBoardStyle(profile?.board) ? profile.board : undefined,
+          theme: isAppTheme(profile?.theme) ? profile.theme : undefined,
         })),
         distinctUntilChanged(
-          (a, b) => a.pieces === b.pieces && a.board === b.board
+          (a, b) => a.pieces === b.pieces && a.board === b.board && a.theme === b.theme
         )
       )
       .subscribe((fromProfile) => this.apply(fromProfile));
@@ -68,13 +83,35 @@ export class AppearanceService {
     this.profileService.requestUpdateProfile({ board });
   }
 
-  /** Aplica a los tableros, deja la señal al día y lo guarda en el dispositivo. */
-  private apply(next: { pieces?: PiecesStyle; board?: BoardStyle }): void {
+  setTheme(theme: AppTheme): void {
+    if (theme === this.theme()) return;
+    this.apply({ theme });
+    this.profileService.requestUpdateProfile({ theme });
+  }
+
+  /** Aplica a los tableros y al tema, deja las señales al día y lo guarda en el dispositivo. */
+  private apply(next: { pieces?: PiecesStyle; board?: BoardStyle; theme?: AppTheme }): void {
+    if (next.theme) {
+      this.applyTheme(next.theme);
+    }
     setChessboardAppearance(next);
     const applied = getChessboardAppearance();
     this.state.set(applied);
     this.store(PIECES_STORAGE_KEY, applied.pieces);
     this.store(BOARD_STORAGE_KEY, applied.board);
+  }
+
+  /**
+   * El tema va en <html>: así cubre también los modales y menús de Ionic, que viven
+   * fuera de las páginas. La clase de Ionic cambia sus colores propios a oscuro o claro
+   * según el tema.
+   */
+  private applyTheme(theme: AppTheme): void {
+    this.theme.set(theme);
+    this.store(THEME_STORAGE_KEY, theme);
+    const root = document.documentElement;
+    root.setAttribute('data-theme', theme);
+    root.classList.toggle('ion-palette-dark', DARK_APP_THEMES.includes(theme));
   }
 
   private readStored<T extends string>(

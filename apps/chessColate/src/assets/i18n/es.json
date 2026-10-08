@@ -266,7 +266,7 @@
       },
       "appearance": {
         "title": "Hazlo a tu gusto",
-        "description": "Elige cómo se ven las piezas y el tablero. Lo puedes cambiar luego en Ajustes."
+        "description": "Elige cómo se ve tu app. Siempre lo encuentras en Ajustes → Apariencia."
       },
       "habit": {
         "title": "Crea el hábito, disfruta el proceso",
@@ -536,6 +536,8 @@
     "support": "Apoya la app"
   },
   "APPEARANCE": {
+    "themeTab": "Tema",
+    "theme": "Tema de la app",
     "pieces": "Piezas",
     "board": "Tablero",
     "piecesNames": {

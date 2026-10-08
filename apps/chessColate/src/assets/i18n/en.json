@@ -266,7 +266,7 @@
       },
       "appearance": {
         "title": "Make it yours",
-        "description": "Pick how the pieces and the board look. You can change it later in Settings."
+        "description": "Pick how your app looks. You can always find it in Settings → Appearance."
       },
       "habit": {
         "title": "Build the habit, enjoy the ride",
@@ -536,6 +536,8 @@
     "support": "Support the app"
   },
   "APPEARANCE": {
+    "themeTab": "Theme",
+    "theme": "App theme",
     "pieces": "Pieces",
     "board": "Board",
     "piecesNames": {

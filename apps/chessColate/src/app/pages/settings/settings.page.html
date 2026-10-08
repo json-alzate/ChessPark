@@ -1,5 +1,5 @@
 <ion-content [fullscreen]="true">
-  <div class="min-h-screen bg-base-100" data-theme="halloween">
+  <div class="min-h-screen bg-base-100">
     <app-navbar></app-navbar>
 
     <div class="container mx-auto px-4 py-8 max-w-lg pb-16">
@@ -18,6 +18,40 @@
         </div>
         <h2 class="text-2xl font-bold">{{ 'SETTINGS.title' | transloco }}</h2>
       </div>
+
+      <!-- Notificaciones (solo nativo: en web no hay notificaciones locales) -->
+      @if (isNativePlatform) {
+        <section class="mb-8">
+          <div class="flex items-center gap-2 mb-3 opacity-80">
+            <ion-icon name="notifications-outline" class="text-xl"></ion-icon>
+            <h2 class="text-lg font-bold">{{ 'SETTINGS.notifications' | transloco }}</h2>
+          </div>
+
+          <ul class="menu bg-base-200/40 border border-base-content/10 w-full rounded-box gap-1 p-2">
+            <li>
+              <a (click)="goToReminders()" class="flex items-center justify-between py-3">
+                <div>
+                  <div class="text-base">{{ 'TRAINING_REMINDER.pageTitle' | transloco }}</div>
+                  <div class="text-xs opacity-60">{{ 'TRAINING_REMINDER.settingsRowDesc' | transloco }}</div>
+                </div>
+                <ion-icon name="chevron-forward-outline" class="text-xl opacity-60"></ion-icon>
+              </a>
+            </li>
+          </ul>
+        </section>
+      }
+
+      <!-- Apariencia: tema de la app, estilo de piezas y color del tablero -->
+      <section class="mb-8">
+        <div class="flex items-center gap-2 mb-3 opacity-80">
+          <ion-icon name="color-palette-outline" class="text-xl"></ion-icon>
+          <h2 class="text-lg font-bold">{{ 'SETTINGS.appearance' | transloco }}</h2>
+        </div>
+
+        <div class="bg-base-200/40 border border-base-content/10 w-full rounded-box p-4">
+          <app-appearance-picker></app-appearance-picker>
+        </div>
+      </section>
 
       <!-- Idioma -->
       <section class="mb-8">
@@ -42,39 +76,25 @@
         </ul>
       </section>
 
-      <!-- Apariencia: estilo de piezas y color del tablero -->
+      <!-- Apoya la app: calificar en la tienda (siempre disponible, sin cuota) -->
       <section class="mb-8">
         <div class="flex items-center gap-2 mb-3 opacity-80">
-          <ion-icon name="color-palette-outline" class="text-xl"></ion-icon>
-          <h2 class="text-lg font-bold">{{ 'SETTINGS.appearance' | transloco }}</h2>
+          <ion-icon name="star-outline" class="text-xl"></ion-icon>
+          <h2 class="text-lg font-bold">{{ 'SETTINGS.support' | transloco }}</h2>
         </div>
 
-        <div class="bg-base-200/40 border border-base-content/10 w-full rounded-box p-4">
-          <app-appearance-picker></app-appearance-picker>
-        </div>
+        <ul class="menu bg-base-200/40 border border-base-content/10 w-full rounded-box gap-1 p-2">
+          <li>
+            <a (click)="rateApp()" class="flex items-center justify-between py-3">
+              <div>
+                <div class="text-base">{{ 'APP_REVIEW.rateRowTitle' | transloco }} ⭐</div>
+                <div class="text-xs opacity-60">{{ 'APP_REVIEW.rateRowDesc' | transloco }}</div>
+              </div>
+              <ion-icon name="chevron-forward-outline" class="text-xl opacity-60"></ion-icon>
+            </a>
+          </li>
+        </ul>
       </section>
-
-      <!-- Notificaciones (solo nativo: en web no hay notificaciones locales) -->
-      @if (isNativePlatform) {
-        <section class="mb-8">
-          <div class="flex items-center gap-2 mb-3 opacity-80">
-            <ion-icon name="notifications-outline" class="text-xl"></ion-icon>
-            <h2 class="text-lg font-bold">{{ 'SETTINGS.notifications' | transloco }}</h2>
-          </div>
-
-          <ul class="menu bg-base-200/40 border border-base-content/10 w-full rounded-box gap-1 p-2">
-            <li>
-              <a (click)="goToReminders()" class="flex items-center justify-between py-3">
-                <div>
-                  <div class="text-base">{{ 'TRAINING_REMINDER.pageTitle' | transloco }}</div>
-                  <div class="text-xs opacity-60">{{ 'TRAINING_REMINDER.settingsRowDesc' | transloco }}</div>
-                </div>
-                <ion-icon name="chevron-forward-outline" class="text-xl opacity-60"></ion-icon>
-              </a>
-            </li>
-          </ul>
-        </section>
-      }
 
       <!-- Almacenamiento (también en web: el caché de puzzles vive en IndexedDB) -->
       <section class="mb-8">
@@ -101,27 +121,6 @@
           </li>
         </ul>
       </section>
-
-      <!-- Apoya la app: calificar en la tienda (siempre disponible, sin cuota) -->
-      <section class="mb-8">
-        <div class="flex items-center gap-2 mb-3 opacity-80">
-          <ion-icon name="star-outline" class="text-xl"></ion-icon>
-          <h2 class="text-lg font-bold">{{ 'SETTINGS.support' | transloco }}</h2>
-        </div>
-
-        <ul class="menu bg-base-200/40 border border-base-content/10 w-full rounded-box gap-1 p-2">
-          <li>
-            <a (click)="rateApp()" class="flex items-center justify-between py-3">
-              <div>
-                <div class="text-base">{{ 'APP_REVIEW.rateRowTitle' | transloco }} ⭐</div>
-                <div class="text-xs opacity-60">{{ 'APP_REVIEW.rateRowDesc' | transloco }}</div>
-              </div>
-              <ion-icon name="chevron-forward-outline" class="text-xl opacity-60"></ion-icon>
-            </a>
-          </li>
-        </ul>
-      </section>
-
 
     </div>
   </div>
