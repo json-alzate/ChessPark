@@ -23,6 +23,8 @@ import {
 import { BoardPuzzleComponent } from '@chesspark/board';
 import { Puzzle } from '@chesspark/models';
 
+import { AppearancePickerComponent } from '../appearance-picker/appearance-picker.component';
+
 /** Clave de localStorage que marca el onboarding como visto (solo invitados/local). */
 export const ONBOARDING_SEEN_KEY = 'chessColate_onboarding_seen';
 
@@ -57,6 +59,8 @@ interface OnboardingSlide {
   image?: string;
   /** Slide con el mate en 2 jugable. */
   interactive?: boolean;
+  /** Slide para elegir el estilo de piezas y tablero. */
+  appearance?: boolean;
 }
 
 /** Instancia de Swiper expuesta por el custom element `<swiper-container>`. */
@@ -79,6 +83,7 @@ interface SwiperEl extends HTMLElement {
     IonContent,
     IonIcon,
     BoardPuzzleComponent,
+    AppearancePickerComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './onboarding-modal.component.html',
@@ -104,6 +109,12 @@ export class OnboardingModalComponent {
       titleKey: 'ONBOARDING.slides.solve.title',
       descKey: 'ONBOARDING.slides.solve.description',
       interactive: true,
+    },
+    {
+      icon: '',
+      titleKey: 'ONBOARDING.slides.appearance.title',
+      descKey: 'ONBOARDING.slides.appearance.description',
+      appearance: true,
     },
     {
       icon: 'flame-outline',

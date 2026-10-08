@@ -264,6 +264,10 @@
         "description": "Follow the arrows and play the combination. Feel the click.",
         "solved": "That's it! That click is what you'll train every day."
       },
+      "appearance": {
+        "title": "Make it yours",
+        "description": "Pick how the pieces and the board look. You can change it later in Settings."
+      },
       "habit": {
         "title": "Build the habit, enjoy the ride",
         "description": "Streaks, ELO and challenges make training every day feel natural. Your chess ritual starts here."
@@ -530,6 +534,24 @@
     "notifications": "Notifications",
     "storage": "Storage",
     "support": "Support the app"
+  },
+  "APPEARANCE": {
+    "pieces": "Pieces",
+    "board": "Board",
+    "piecesNames": {
+      "cburnett": "Classic",
+      "fantasy": "Fantasy",
+      "staunty": "Staunty"
+    },
+    "boardsNames": {
+      "chessboard-js": "Wood",
+      "default": "Sand",
+      "default-contrast": "Sand contrast",
+      "chess-club": "Club",
+      "green": "Green",
+      "blue": "Blue",
+      "black-and-white": "Black & white"
+    }
   },
   "APP_REVIEW": {
     "rateRowTitle": "Rate us",

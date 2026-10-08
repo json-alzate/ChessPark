@@ -12,6 +12,7 @@ import {
 import { addIcons } from 'ionicons';
 import { trophy, informationCircle, checkmark, podium, medal } from 'ionicons/icons';
 import { TranslocoPipe } from '@jsverse/transloco';
+import { KingImagePipe } from '@shared/pipes/king-image.pipe';
 
 addIcons({ trophy, informationCircle, checkmark, podium, medal });
 
@@ -21,6 +22,7 @@ addIcons({ trophy, informationCircle, checkmark, podium, medal });
   styleUrls: ['./game-results-modal.component.scss'],
   standalone: true,
   imports: [
+    KingImagePipe,
     CommonModule,
     IonModal,
     IonTitle,

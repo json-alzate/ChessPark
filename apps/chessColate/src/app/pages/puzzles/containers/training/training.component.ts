@@ -92,6 +92,7 @@ import {
   buildUserPuzzle,
   PuzzleResult,
 } from '@services/training/user-puzzle.util';
+import { KingImagePipe } from '@shared/pipes/king-image.pipe';
 
 /**
  * Orquestador de la pantalla de entrenamiento: decide qué mostrar y en qué
@@ -130,6 +131,7 @@ import {
 @Component({
   selector: 'app-training',
   imports: [
+    KingImagePipe,
     CommonModule,
     BoardPuzzleComponent,
     SecondsToMinutesSecondsPipe,

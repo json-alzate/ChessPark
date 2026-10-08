@@ -15,11 +15,13 @@ import { AppService } from '@services/app/app.service';
 
 import { addIcons } from 'ionicons';
 import { close, shuffle, trendingDown, infiniteOutline } from 'ionicons/icons';
+import { KingImagePipe } from '@shared/pipes/king-image.pipe';
 
 @Component({
   selector: 'app-block-settings',
   standalone: true,
   imports: [
+    KingImagePipe,
     CommonModule,
     ReactiveFormsModule,
     TranslocoPipe,

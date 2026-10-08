@@ -1,13 +1,14 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslocoPipe } from '@jsverse/transloco';
+import { KingImagePipe } from '@shared/pipes/king-image.pipe';
 
 @Component({
   selector: 'app-king-avatar',
   templateUrl: './king-avatar.component.html',
   styleUrls: ['./king-avatar.component.scss'],
   standalone: true,
-  imports: [CommonModule, TranslocoPipe],
+  imports: [KingImagePipe, CommonModule, TranslocoPipe],
 })
 export class KingAvatarComponent {
   @Input() currentColorInBoard: 'white' | 'black' = 'white';

@@ -9,7 +9,7 @@
           <h3 class="text-lg font-bold">{{ 'ANALYTICS.practice.colorTitle' | transloco }}</h3>
           <div class="grid grid-cols-3 gap-2 mt-4">
             <button class="btn btn-outline flex-col gap-1 h-auto py-3" (click)="pickColor('white')">
-              <img src="assets/images/king-white.svg" class="h-6 w-6" alt="" />
+              <img [src]="'white' | kingImage" class="h-6 w-6" alt="" />
               <span class="text-xs font-medium">{{ 'ANALYTICS.practice.colorWhite' | transloco }}</span>
             </button>
             <button class="btn btn-outline flex-col gap-1 h-auto py-3" (click)="pickColor('random')">
@@ -17,7 +17,7 @@
               <span class="text-xs font-medium">{{ 'ANALYTICS.practice.colorBoth' | transloco }}</span>
             </button>
             <button class="btn btn-outline flex-col gap-1 h-auto py-3" (click)="pickColor('black')">
-              <img src="assets/images/king-black.svg" class="h-6 w-6" alt="" />
+              <img [src]="'black' | kingImage" class="h-6 w-6" alt="" />
               <span class="text-xs font-medium">{{ 'ANALYTICS.practice.colorBlack' | transloco }}</span>
             </button>
           </div>

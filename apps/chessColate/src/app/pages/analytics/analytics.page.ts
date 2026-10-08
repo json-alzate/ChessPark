@@ -67,6 +67,7 @@ import {
 import { ActivityHeatmapComponent } from './components/activity-heatmap/activity-heatmap.component';
 import { OpeningsTableComponent } from './components/openings-table/openings-table.component';
 import { RatingChartComponent } from './components/rating-chart/rating-chart.component';
+import { KingImagePipe } from '@shared/pipes/king-image.pipe';
 
 addIcons({
   chevronDownOutline,
@@ -99,6 +100,7 @@ type PracticeColor = 'white' | 'black' | 'random';
   styleUrls: ['./analytics.page.scss'],
   standalone: true,
   imports: [
+    KingImagePipe,
     CommonModule,
     FormsModule,
     TranslocoPipe,

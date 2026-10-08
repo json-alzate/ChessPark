@@ -379,7 +379,7 @@
               <!-- Fila de estado: turno · Elo + stats -->
               <div class="flex items-center justify-between gap-2">
                 <div class="flex items-center gap-2 min-w-0">
-                  <img [src]="'assets/images/king-' + playerColor + '.svg'" [alt]="playerColor"
+                  <img [src]="playerColor | kingImage" [alt]="playerColor"
                     class="h-7 w-7 md:h-8 md:w-8 shrink-0" />
                   <div class="flex flex-col min-w-0">
                     <span class="text-sm font-semibold leading-tight">{{ 'PUZZLES.help.yourTurn' | transloco }}</span>

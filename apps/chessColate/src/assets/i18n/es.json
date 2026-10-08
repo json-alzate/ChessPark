@@ -264,6 +264,10 @@
         "description": "Sigue las flechas y juega la combinación. Vas a sentir el clic.",
         "solved": "¡Eso! Ese clic es lo que vas a entrenar cada día."
       },
+      "appearance": {
+        "title": "Hazlo a tu gusto",
+        "description": "Elige cómo se ven las piezas y el tablero. Lo puedes cambiar luego en Ajustes."
+      },
       "habit": {
         "title": "Crea el hábito, disfruta el proceso",
         "description": "Rachas, ELO y retos hacen que entrenar cada día se sienta natural. Tu ritual de ajedrez empieza aquí."
@@ -530,6 +534,24 @@
     "notifications": "Notificaciones",
     "storage": "Almacenamiento",
     "support": "Apoya la app"
+  },
+  "APPEARANCE": {
+    "pieces": "Piezas",
+    "board": "Tablero",
+    "piecesNames": {
+      "cburnett": "Clásicas",
+      "fantasy": "Fantasía",
+      "staunty": "Staunty"
+    },
+    "boardsNames": {
+      "chessboard-js": "Madera",
+      "default": "Arena",
+      "default-contrast": "Arena contraste",
+      "chess-club": "Club",
+      "green": "Verde",
+      "blue": "Azul",
+      "black-and-white": "Blanco y negro"
+    }
   },
   "APP_REVIEW": {
     "rateRowTitle": "Califícanos",

@@ -3,7 +3,12 @@ import {
   buildChessboardConfig,
   CHESSBOARD_ASSETS_URL,
   createChessboard,
+  withChessboardAppearance,
 } from './create-chessboard';
+import {
+  resetChessboardAppearanceForTests,
+  setChessboardAppearance,
+} from '../chessboard-appearance/chessboard-appearance';
 
 // cm-chessboard es un módulo ESM que Jest no carga: se sustituye por un doble que
 // guarda con qué se construyó cada tablero.
@@ -15,6 +20,35 @@ jest.mock('cm-chessboard', () => ({
 }));
 
 const START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+
+describe('apariencia elegida por el usuario', () => {
+  afterEach(() => resetChessboardAppearanceForTests());
+
+  it('buildChessboardConfig usa el color y las piezas elegidos', () => {
+    setChessboardAppearance({ pieces: 'fantasy', board: 'green' });
+
+    const { style } = buildChessboardConfig({ position: START_FEN });
+
+    expect(style?.cssClass).toBe('green');
+    expect(style?.pieces?.file).toBe('pieces/fantasy.svg');
+  });
+
+  it('withChessboardAppearance reemplaza solo color y piezas de una configuración ya armada', () => {
+    setChessboardAppearance({ pieces: 'staunty', board: 'blue' });
+
+    const config = withChessboardAppearance({
+      position: START_FEN,
+      style: { cssClass: 'chessboard-js', showCoordinates: true, pieces: { file: 'pieces/standard.svg' } },
+    });
+
+    expect(config.position).toBe(START_FEN);
+    expect(config.style).toEqual({
+      cssClass: 'blue',
+      showCoordinates: true,
+      pieces: { file: 'pieces/staunty.svg' },
+    });
+  });
+});
 
 describe('buildChessboardConfig', () => {
   it('con solo la posición devuelve la configuración común, sin orientation ni extensions', () => {

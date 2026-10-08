@@ -1,13 +1,11 @@
 import { BORDER_TYPE, Chessboard, ChessboardConfig } from 'cm-chessboard';
+import {
+  CHESSBOARD_ASSETS_URL,
+  getChessboardAppearance,
+  PIECES_FILES,
+} from '../chessboard-appearance/chessboard-appearance';
 
-/** Carpeta de assets de cm-chessboard (piezas y estilos), copiada al build de las apps. */
-export const CHESSBOARD_ASSETS_URL = 'assets/cm-chessboard/assets/';
-
-/** Clase CSS con la que cm-chessboard viste al tablero en toda la app. */
-export const CHESSBOARD_CSS_CLASS = 'chessboard-js';
-
-/** Archivo de piezas dentro de los assets. */
-export const CHESSBOARD_PIECES_FILE = 'pieces/standard.svg';
+export { CHESSBOARD_ASSETS_URL };
 
 /** Extensión de cm-chessboard (Markers, Arrows, PromotionDialog...) tal como la espera su configuración. */
 export interface ChessboardExtension {
@@ -17,7 +15,8 @@ export interface ChessboardExtension {
 
 /**
  * Lo único que cambia de un tablero a otro. Todo lo demás (assets, estilo, piezas,
- * modo responsive) es común y lo fija `buildChessboardConfig`.
+ * modo responsive) es común y lo fija `buildChessboardConfig`; el color del tablero y
+ * el set de piezas salen de la apariencia que eligió el usuario.
  */
 export interface ChessboardOptions {
   /** Posición inicial en FEN. */
@@ -45,6 +44,7 @@ export interface ChessboardOptions {
  * clave ausente.
  */
 export function buildChessboardConfig(options: ChessboardOptions): ChessboardConfig {
+  const appearance = getChessboardAppearance();
   return {
     responsive: true,
     position: options.position,
@@ -52,11 +52,29 @@ export function buildChessboardConfig(options: ChessboardOptions): ChessboardCon
     assetsUrl: CHESSBOARD_ASSETS_URL,
     assetsCache: true,
     style: {
-      cssClass: CHESSBOARD_CSS_CLASS,
+      cssClass: appearance.board,
       borderType: BORDER_TYPE[options.border ?? 'thin'],
-      pieces: { file: CHESSBOARD_PIECES_FILE },
+      pieces: { file: PIECES_FILES[appearance.pieces] },
     },
     ...(options.extensions ? { extensions: options.extensions } : {}),
+  };
+}
+
+/**
+ * Pone en una configuración ya armada el color y las piezas que eligió el usuario.
+ *
+ * Es para los tableros que reciben su configuración completa desde fuera
+ * (`lib-board`, `lib-chess960-board`) y no pasan por `buildChessboardConfig`.
+ */
+export function withChessboardAppearance(config: ChessboardConfig): ChessboardConfig {
+  const appearance = getChessboardAppearance();
+  return {
+    ...config,
+    style: {
+      ...config.style,
+      cssClass: appearance.board,
+      pieces: { ...config.style?.pieces, file: PIECES_FILES[appearance.pieces] },
+    },
   };
 }
 

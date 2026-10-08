@@ -12,6 +12,7 @@ import { CommonModule } from '@angular/common';
 
 import { Chessboard, BOARD_TYPE, ChessboardConfig } from 'cm-chessboard';
 import { Markers } from 'cm-chessboard/src/extensions/markers/Markers.js';
+import { withChessboardAppearance } from '../chessboard-factory/create-chessboard';
 import { Chess, Move } from 'chess.js';
 
 @Component({
@@ -66,7 +67,7 @@ export class Chess960Board implements OnInit, AfterViewInit {
 
     this.board = await new Chessboard(
       this.boardContainer.nativeElement as HTMLElement,
-      this.config
+      withChessboardAppearance(this.config)
     );
     try {
       this.chess.load(this.config.position as string);

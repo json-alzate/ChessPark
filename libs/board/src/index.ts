@@ -7,3 +7,4 @@ export * from './lib/fen-board/fen-board.component';
 export * from './lib/chess960-board/chess960-board';
 export * from './lib/board-heatmap/board-heatmap.component';
 export * from './lib/board-heatmap/board-heatmap.util';
+export * from './lib/chessboard-appearance/chessboard-appearance';

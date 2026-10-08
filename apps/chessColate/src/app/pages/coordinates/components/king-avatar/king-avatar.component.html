@@ -5,7 +5,7 @@
       [ngClass]="[getRingSize(), getSizeClasses()]"
     >
       <img
-        [src]="currentColorInBoard === 'white' ? 'assets/images/king-white.svg' : 'assets/images/king-black.svg'"
+        [src]="currentColorInBoard | kingImage"
         [alt]="currentColorInBoard === 'white' ? 'Rey Blanco' : 'Rey Negro'"
         class="p-1"
       />

@@ -42,6 +42,18 @@
         </ul>
       </section>
 
+      <!-- Apariencia: estilo de piezas y color del tablero -->
+      <section class="mb-8">
+        <div class="flex items-center gap-2 mb-3 opacity-80">
+          <ion-icon name="color-palette-outline" class="text-xl"></ion-icon>
+          <h2 class="text-lg font-bold">{{ 'SETTINGS.appearance' | transloco }}</h2>
+        </div>
+
+        <div class="bg-base-200/40 border border-base-content/10 w-full rounded-box p-4">
+          <app-appearance-picker></app-appearance-picker>
+        </div>
+      </section>
+
       <!-- Notificaciones (solo nativo: en web no hay notificaciones locales) -->
       @if (isNativePlatform) {
         <section class="mb-8">
@@ -110,21 +122,6 @@
         </ul>
       </section>
 
-      <!-- Apariencia (próximamente: estilo de piezas y color de tablero) -->
-      <!--
-        Estos ajustes se implementarán más adelante. El modelo Profile ya tiene
-        los campos `pieces` y `board` y se persistirían con
-        profileService.requestUpdateProfile({ pieces }) / ({ board }).
-
-      <section class="mb-8">
-        <div class="flex items-center gap-2 mb-3 opacity-80">
-          <ion-icon name="color-palette-outline" class="text-xl"></ion-icon>
-          <h2 class="text-lg font-bold">{{ 'SETTINGS.appearance' | transloco }}</h2>
-        </div>
-        TODO: selector de piezas (ion-icon name="color-palette-outline")
-        TODO: selector de tablero (ion-icon name="grid-outline")
-      </section>
-      -->
 
     </div>
   </div>

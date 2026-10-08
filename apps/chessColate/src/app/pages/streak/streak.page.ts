@@ -48,6 +48,7 @@ import {
   isNewRecord,
   nextTargetElo,
 } from '@services/progress/streak.util';
+import { KingImagePipe } from '@shared/pipes/king-image.pipe';
 
 /** En qué punto está la pantalla. */
 type StreakStatus = 'loading' | 'playing' | 'finished' | 'error';
@@ -64,6 +65,7 @@ type StreakStatus = 'loading' | 'playing' | 'finished' | 'error';
   selector: 'app-streak',
   standalone: true,
   imports: [
+    KingImagePipe,
     CommonModule,
     TranslocoPipe,
     IonContent,

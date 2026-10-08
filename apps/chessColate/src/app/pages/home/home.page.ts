@@ -39,11 +39,13 @@ import { OnboardingModalComponent, ONBOARDING_SEEN_KEY } from '@shared/component
 import { BoardPuzzleComponent, BoardPuzzleSolutionComponent } from '@chesspark/board';
 import { PlanChartComponent } from '../puzzles/components/plan-chart/plan-chart.component';
 import { Capacitor } from '@capacitor/core';
+import { KingImagePipe } from '@shared/pipes/king-image.pipe';
 
 @Component({
   selector: 'app-home',
   standalone: true,
   imports: [
+    KingImagePipe,
     IonContent,
     IonModal,
     IonIcon,

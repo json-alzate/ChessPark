@@ -20,6 +20,7 @@ import {
 import { Subscription } from 'rxjs';
 
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
+import { AppearancePickerComponent } from '@shared/components/appearance-picker/appearance-picker.component';
 import { ProfileService } from '@services/account/profile.service';
 import { LanguageService, SupportedLang } from '@services/app/language.service';
 import { AnalyticsService } from '@services/analytics/analytics.service';
@@ -50,7 +51,14 @@ interface LanguageOption {
   templateUrl: './settings.page.html',
   styleUrls: ['./settings.page.scss'],
   standalone: true,
-  imports: [CommonModule, TranslocoPipe, IonContent, IonIcon, NavbarComponent],
+  imports: [
+    CommonModule,
+    TranslocoPipe,
+    IonContent,
+    IonIcon,
+    NavbarComponent,
+    AppearancePickerComponent,
+  ],
 })
 export class SettingsPage implements OnInit, OnDestroy {
   private languageService = inject(LanguageService);

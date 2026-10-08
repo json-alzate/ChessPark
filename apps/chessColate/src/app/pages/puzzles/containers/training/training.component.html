@@ -152,7 +152,7 @@
       <div class="flex flex-col gap-2 p-4 lg:p-0 lg:pt-2 lg:w-[360px] lg:flex-shrink-0">
         <div class="flex items-center gap-3">
           <img
-            [src]="'assets/images/king-' + playerColor + '.svg'"
+            [src]="playerColor | kingImage"
             [alt]="playerColor"
             class="h-8 w-8"
           />

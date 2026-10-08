@@ -36,7 +36,7 @@
         </div>
         <div>
           <img
-            [src]="score.color === 'w' ? 'assets/images/king-white.svg' : 'assets/images/king-black.svg'"
+            [src]="score.color | kingImage"
             [alt]="score.color === 'w' ? 'Rey Blanco' : 'Rey Negro'"
             class="size-8 rounded-box drop-shadow-sm"
           />

@@ -17,6 +17,7 @@ import {
   MarkerType,
 } from 'cm-chessboard';
 import { Markers } from 'cm-chessboard/src/extensions/markers/Markers.js';
+import { withChessboardAppearance } from '../chessboard-factory/create-chessboard';
 
 @Component({
   selector: 'lib-board',
@@ -64,7 +65,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
 
     this.board = await new Chessboard(
       this.boardContainer.nativeElement as HTMLElement,
-      this.config
+      withChessboardAppearance(this.config)
     );
 
     // Agregar evento de clic en casillas usando enableSquareSelect

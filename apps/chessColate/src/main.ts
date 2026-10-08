@@ -41,6 +41,7 @@ import { PlanElosRepository } from './app/services/firestore/plan-elos.repositor
 import { PublicPlansFirestoreAdapter } from './app/services/firestore/public-plans-firestore.adapter';
 import { LanguageService } from './app/services/app/language.service';
 import { AppService } from './app/services/app/app.service';
+import { AppearanceService } from './app/services/app/appearance.service';
 import { CrashlyticsErrorHandler } from './app/services/analytics/crashlytics-error-handler';
 import { PuzzlesProvider } from '@chesspark/puzzles-provider';
 
@@ -56,6 +57,9 @@ async function initializeApp(): Promise<void> {
   const languageService = inject(LanguageService);
   const appService = inject(AppService);
   const puzzlesProvider = inject(PuzzlesProvider);
+
+  // Estilo de piezas y tablero antes de que se dibuje el primer tablero
+  inject(AppearanceService).init();
 
   // Inicializar el idioma primero (esto cargará y esperará las traducciones)
   await languageService.initializeLanguage();

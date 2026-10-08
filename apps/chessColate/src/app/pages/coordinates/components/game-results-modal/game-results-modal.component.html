@@ -35,7 +35,7 @@
                         <div class="flex items-center gap-3 mt-2">
                             <div class="avatar">
                                 <div class="w-14 rounded-full ring ring-primary ring-offset-base-100 ring-offset-4 shadow-lg">
-                                    <img [src]="currentColorInBoard === 'white' ? 'assets/images/king-white.svg' : 'assets/images/king-black.svg'" />
+                                    <img [src]="currentColorInBoard | kingImage" />
                                 </div>
                             </div>
                             <div class="text-left">
