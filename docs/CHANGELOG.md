@@ -15,6 +15,36 @@ y el versionado sigue [SemVer](https://semver.org/lang/es/) para `versionName`.
 
 ---
 
+## [2.1.0] — 2026-10-08 · `versionCode 23`
+
+### Añadido
+- **Personalizar la apariencia** (Ajustes y onboarding): estilo de piezas (11 sets), color
+  del tablero (12) y **tema de toda la app** (los 35 de DaisyUI). Se guarda en el dispositivo
+  y en la cuenta. Piezas y tableros adicionales tomados de Lichess — ver
+  [CREDITOS_PIEZAS.md](CREDITOS_PIEZAS.md).
+- **Jaque resaltado**: la casilla del rey en jaque se pinta de rojo, como en chess.com.
+- **El ELO sube con animación** al terminar una rutina y en el historial, con un ícono de
+  gráfico en lugar del «+».
+- **Análisis de partidas** de chess.com y lichess, calculado en el dispositivo: estadísticas,
+  mapa de actividad, aperturas (con práctica de puzzles por apertura), lista de tus partidas
+  y reproductor con info de jugadores, ritmo y tiempo por jugada.
+- **Reproductor de partidas y modo TV** con catálogo de campeones del mundo; mapa de calor de
+  por dónde se movió una pieza y valoración del 1 al 10 de cada pieza con Stockfish.
+- **Modo Racha** con dificultad creciente y récord personal. Los récords del Reto 333 y de
+  la Racha se **sincronizan con la cuenta**.
+- **Recordatorios de entrenamiento**: diario y manuales por día (solo apps nativas).
+- **Invitación a calificar la app** tras una buena rutina, y fila para calificar en Ajustes.
+- **Almacenamiento**: pantalla para ver y borrar los puzzles descargados.
+
+### Cambiado
+- **Ajustes reordenado**: Notificaciones, Apariencia, Idioma, Apoya la app y Almacenamiento.
+- Menú con etiquetas de grupo y vocabulario de «sesiones» y «ejercicios»; tarjetas de rutina
+  con panel «Qué entrenas».
+- El onboarding incluye un paso para elegir piezas, tablero y tema.
+- El tema ya no está fijo en cada página: vive en `<html>` y cubre también modales y menús.
+
+---
+
 ## [2.0.5] — 2026-07-14 · `versionCode 22`
 
 ### Añadido
