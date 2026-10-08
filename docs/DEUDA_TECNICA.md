@@ -53,11 +53,13 @@ El código activo está en buena forma arquitectónica de base (Angular standalo
 4. **Red de seguridad inexistente**: cobertura de tests real ~10-15 %, e2e no-op, **y CI eliminado por completo** (ya no hay ni siquiera el gate débil que había en julio).
 5. **Límites de módulo sin aplicar**: la regla de Nx `enforce-module-boundaries` está configurada de forma que no restringe nada entre libs, y conviven dos scopes de paquete (`@chesspark/*` y `@cpark/*`).
 
-Al 2026-10-07 los focos 1 y 3 están en gran parte resueltos (ver «Avances»); siguen abiertos el 2, el 4 y el 5.
+Al 2026-10-07 (ver «Avances»): el foco 1 (god-objects) está resuelto salvo `training.component.ts`; el 3 (bypass de la capa de datos) está resuelto; el 2 (duplicación) está resuelto en `libs/board` y sigue abierto en los providers (P1.7); en el 5 (límites de módulo) el scope está unificado y faltan las restricciones reales; el 4 (red de seguridad) sigue abierto.
 
 Ninguno bloquea el desarrollo hoy, pero elevan el coste de cada cambio y el riesgo de regresión.
 
 ### Panorama cuantitativo (solo código activo)
+
+> *Medición del 2026-10-01, sin actualizar tras los cambios del 2026-10-07. Por ejemplo, la app pasó de 9 a 28 specs, así que el dato de specs con un solo caso ya no es válido.*
 
 | Métrica | Valor |
 |---|---|
@@ -93,6 +95,8 @@ Prioridad = impacto × frecuencia de cambio × riesgo. Cada hallazgo incluye ref
 > - `firestore.service.ts` (915 líneas) se eliminó. Hay un repositorio por agregado en `services/firestore/`: `profile`, `user-puzzle`, `plan`, `plan-elos`, `custom-plan`, `public-plan` y `plan-interaction`, más `firestore-connection` y `firestore-serialize`. El mayor que queda es `public-plan.repository.ts` (347 líneas).
 > - Los ELO de partida de cada modo se dejaron separados a propósito y documentados como constantes: 1500 en los planes de la tabla, `RETO333_START_ELO` en el Reto 333 y 800–1000 en `backToCalm`. El ELO del bloque de enfriamiento de `plan30` se lee ahora del mismo tema que se muestra.
 
+*Lo que sigue es la descripción original del hallazgo, previa a estos cambios.*
+
 - `apps/chessColate/src/app/services/block.service.ts:68-767` — `generateBlocksForPlan()` es **un único método de ~700 líneas** con ramas copy-paste casi idénticas por tamaño de plan (plan3/5/10/20/30), cada una repitiendo `getRandomTheme` / `getWeaknessInPlan` (`:172, :217, :274, :372, :535`). Complejidad ciclomática muy alta, imposible de testear por unidad. Mezcla generación de bloques, selección de temas/aperturas, cálculo de debilidades y consulta de puzzles.
 - `apps/chessColate/src/app/services/firestore.service.ts` (915 líneas) — repositorio monolítico con ~30 métodos públicos: perfiles, nicknames, coordinates, user puzzles, planes, plan-elos, custom plans, public plans, interacciones y stats.
 
@@ -107,6 +111,8 @@ Prioridad = impacto × frecuencia de cambio × riesgo. Cada hallazgo incluye ref
 > - **`training.component.ts` 🟡:** se extrajeron `TrainingSessionService` (flujo de bloques), `TrainingTimerService` (cronómetro) y utils puras (`block-presentation`, `training-analytics`, `player-color`, además de las de ELO y Reto 333), con 58 tests. **El componente no se achicó** (1113 → 1111 líneas): los getters que delegan en los servicios y su documentación ocupan lo que ocupaban los campos. Para bajarlo hay que eliminar esos getters y que la plantilla use los servicios directamente.
 > - Los `console.log('Plan ', …)` que volcaban el plan ya no existen.
 
+*Lo que sigue es la descripción original del hallazgo, previa a estos cambios.*
+
 - `apps/chessColate/src/app/pages/puzzles/containers/training/training.component.ts:76` (953 líneas): cálculo de ELO por tipo de plan (`saveInitialMaxElo` `:221-255`), **persistencia directa a `localStorage`** con `JSON.parse`/`try-catch` inline (`showReto333Alert` `:656-715`), parseo de FEN en un getter (`playerColor` `:122-135`), y `onPuzzleCompleted` `:515-627` que mezcla dominio, sonidos y UI.
 - `libs/board/src/lib/board-puzzle-solution/board-puzzle-solution.component.ts:54` (917 líneas): un componente de UI gestiona **todo el ciclo de vida de Stockfish** (init/terminate/reintentos/errores de worker) `:116-281`.
 - `libs/board/src/lib/board-puzzle/board-puzzle.component.ts:90` (871 líneas): motor de puzzle completo (validación, promoción, timers, hints) dentro del componente.
@@ -119,6 +125,8 @@ Prioridad = impacto × frecuencia de cambio × riesgo. Cada hallazgo incluye ref
 > - `public-plans` y `plan-played` leen por el store: `libs/state/public-plans` ganó acciones, efectos y selectores para las interacciones.
 > - Ningún archivo bajo `pages/` ni `shared/` inyecta repositorios de Firestore, y una regla de lint (`no-restricted-imports` en `apps/chessColate/eslint.config.mjs`) lo impide.
 > - Excepción deliberada: `CustomPlansService` escribe en Firestore con `await` y luego actualiza el store, para que un error llegue al formulario que guarda. Pasarlo a efectos del store cambiaría ese comportamiento sin beneficio visible.
+
+*Lo que sigue es la descripción original del hallazgo, previa a estos cambios.*
 
 Existe infraestructura de facades (`plan-facade.service.ts`, `public-plans-facade.service.ts`) pero varios componentes la eluden, creando **dos caminos de datos** (Store vs Firestore directo):
 
@@ -152,6 +160,8 @@ Existe infraestructura de facades (`plan-facade.service.ts`, `public-plans-facad
 > - ✅ **Red de seguridad:** `move-input-behavior.spec.ts` (26 tests) ejecuta los mismos escenarios contra `BoardPuzzleComponent` y `BoardPuzzleSolutionComponent` y fija la secuencia exacta de llamadas al tablero. Se escribió y pasó contra el código original antes de refactorizar; confirmó además que los dos manejadores ya se comportaban igual.
 > - ⏳ **Lo que sigue duplicado:** la construcción de la solución (`getMoves` en `board-puzzle-solution` frente a `PuzzleEngine.load`) y `puzzleMoveResponse`, que difieren de verdad entre los dos.
 > - ℹ️ **Decisión:** el informe proponía migrar `board-puzzle-solution` al `PuzzleEngine`; **no se hizo porque no encaja**. El motor modela *resolver* un puzzle contra las respuestas de la máquina; el componente de solución es un visor que navega una lista de posiciones (atrás, adelante, inicio, fin, reproducción automática, pista y modo libre al terminar). Forzarlo habría exigido añadir al motor navegación y movimientos libres, sin quitar duplicación real.
+
+*Lo que sigue es la descripción original del hallazgo, previa a estos cambios.*
 
 El handler `enableMoveInput` (~120 líneas, incl. bloque de promoción de peón) está **duplicado casi literal** entre:
 - `libs/board/src/lib/board-puzzle/board-puzzle.component.ts:303-455`
@@ -188,6 +198,8 @@ También duplicados: `showLastMove`, `removeMarkerNotLastMove`, `turnRoundBoard`
 > - ⏳ Siguen: `prettier ^2.6.2` (la v3 cambia los valores por defecto de formato, así que se deja para decidirlo aparte) y las copias de `nx@21.6.10` bajo `@nx/plugin` y `@nxext/stencil`.
 > - ⏳ Convención del lock: hay que decidir si se genera siempre con `--legacy-peer-deps` (como asume el informe) o sin ella; hoy se alterna y el lock sin commitear arrastra ~75 paquetes peer.
 
+*Lo que sigue es la descripción original del hallazgo, previa a estos cambios.*
+
 - `@lichess-org/chessground ^9.3.1` — **0 usos**; todo el código usa `cm-chessboard`. Peso muerto.
 - `libs/widgets` (`@cpark/widgets`) — **no la importa nadie**; lib huérfana.
 - `@ngrx/signals` y `@ngrx/component-store` — instaladas pero **0 usos** (solo NgRx clásico). Restos de una migración iniciada y nunca ejecutada.
@@ -208,6 +220,8 @@ Adicional (auditoría 2026-10-01): `chess-extension` **no tiene ningún `*.spec.
 > - ✅ El scope quedó unificado: `models`, `state` y `widgets` pasaron de `@cpark/*` a `@chesspark/*` (`tsconfig.base.json`, `apps/chessColate/tsconfig.json`, `libs/models/package.json`, 106 archivos `.ts`, las plantillas del generador de NgRx y la documentación). Los nombres de proyecto Nx no cambian.
 > - ⏳ Siguen abiertos los tags coherentes y los `depConstraints` que restrinjan de verdad.
 
+*Lo que sigue es la descripción original del hallazgo, previa a estos cambios.*
+
 `eslint.base.config.mjs` configura `depConstraints: [{ sourceTag: '*', onlyDependOnLibsWithTags: ['*'] }]` — cualquier tag puede depender de cualquier tag, es una regla "de adorno" sin efecto real. Los tags en sí son inconsistentes entre `project.json` de cada lib: `board` usa `["board"]`; `models`, `common-utils`, `revenuecat`, `state`, `stockfish-wasm` usan `scope:shared`/`type:*`; `chess-com-provider`, `lichess-provider`, `games-provider`, `puzzles-provider` y `game-reporter` tienen `tags: []` (vacío); `widgets` tiene `tags: ["type:state", "scope:shared"]` — copiado por error, `widgets` no es estado.
 
 A esto se suma un **scope de paquete inconsistente**: `tsconfig.base.json` mapea la mayoría de libs a `@chesspark/*`, pero `models`, `state` y `widgets` usan `@cpark/*` (confirmado en sus `package.json`, ej. `libs/models/package.json` → `"name": "@cpark/models"`). Deuda de naming que nadie notará hasta que alguien copie el patrón equivocado.
@@ -222,6 +236,8 @@ Ambas libs implementan casi línea por línea la misma cola de throttling de pet
 
 > **Estado 2026-10-07 — ✅ Resuelto.** `libs/widgets` se eliminó, junto a sus alias en `tsconfig.base.json` y `apps/chessColate/tsconfig.json`. Nadie la importaba; esas dos líneas eran sus únicas referencias en el repositorio.
 
+*Lo que sigue es la descripción original del hallazgo, previa a estos cambios.*
+
 38 líneas: un componente Angular (`lib-widgets`) generado por `nx g library` y nunca completado. Ningún archivo en `apps/` ni en otras `libs/` lo importa, y no tiene target `build` configurado (igual que `state`). Ya señalada como dependencia muerta en P1.4 — se repite aquí porque además arrastra el tag incorrecto de P1.6. Candidata directa a eliminar.
 
 ---
@@ -231,6 +247,8 @@ Ambas libs implementan casi línea por línea la misma cola de throttling de pet
 #### P2.1 — Suscripciones y timers sin teardown (fugas potenciales)
 
 > **Estado 2026-10-07 — ⏳ Abierto en lo sistemático** (sigue habiendo 0 usos de `takeUntilDestroyed`), con dos avances puntuales: el cronómetro de `training` vive ahora en `TrainingTimerService`, con teardown garantizado y un test que verifica que no queden timers vivos; y `closeDropdown()` guarda y cancela su `setTimeout`. Los `setTimeout` de `board-puzzle-solution` y `knight-tour` no se tocaron.
+
+*Lo que sigue es la descripción original del hallazgo, previa a estos cambios.*
 
 - `subscribe()` sin `takeUntil`/`takeUntilDestroyed`: `block-settings.component.ts` (**6**), `login.component.ts` (2), `plan-chart.component.ts` (1), `chess960.page.ts` (1).
 - **`setTimeout` recursivos no cancelables en `ngOnDestroy`** en `board-puzzle-solution.component.ts` (`showClue` `:734`, `rollBackMove` `:635`, `startMoves` `:780/792`) y `knight-tour.page.ts` (`:114/247/712`): si se cierra el modal a mitad, los timeouts siguen vivos y tocan `this.board` ya destruido.
@@ -254,6 +272,8 @@ Ambas libs implementan casi línea por línea la misma cola de throttling de pet
 > - ⚠️ La app tiene 8 suites que no compilan o no arrancan (`fetch` no definido con Firebase, módulo `chess960` ausente, `IonicModule`, JSON inválido en `plan-played`) y 2 tests `should create` que fallan (`BlockPresentationComponent`, `TrainingMenuComponent`). `libs/board` tiene 4 suites en la misma situación.
 > - ⚠️ **Nuevo:** 11 de las 12 suites de `libs/state` no compilan. Los specs de `plan` y `plansElos` se escribieron contra un estado generado que nunca se actualizó (`Property 'error' does not exist on type 'PlansElosState'`, entre otros).
 
+*Lo que sigue es la descripción original del hallazgo, previa a estos cambios.*
+
 - **78 % de los specs** tienen ≤1 caso y ese caso es el `should create` autogenerado.
 - La app en producción (`chessColate`) tiene **9 specs**, casi todos boilerplate; `training.component.spec.ts` está **vacío (0 bytes)**.
 - Cypress y `@nx/cypress` instalados y en CI, pero **no existe ningún `cypress.config.ts` ni `*.cy.ts`**: el target `e2e` es no-op.
@@ -273,6 +293,8 @@ Ambas libs implementan casi línea por línea la misma cola de throttling de pet
 
 > **Estado 2026-10-07 — 🟡 Parcial.** Los `console.log('Plan ', …)` de `training.component.ts` ya no existen. Sigue abierto lo demás: no hay logger con niveles ni regla `no-console`.
 
+*Lo que sigue es la descripción original del hallazgo, previa a estos cambios.*
+
 - 234 `console.*` en producción, sin logger con niveles. Algunos vuelcan datos de usuario: `console.log('Plan ', this.plan)` en `training.component.ts:190, :563, :823`.
 - `libs/stockfish-wasm` concentra ~48 `console.log`/`console.error` entre sus 4 archivos, siempre activos (no hay flag de debug/verbose). Además, `stockfish-worker.service.ts:65` detecta memoria corrupta del engine con matching de string (`error.message.includes('memory access out of bounds')`) en vez de un manejo tipado — frágil si el mensaje de error cambia entre versiones del wasm. `stockfish-analysis.service.ts` (491 líneas) gestiona suscripciones RxJS manualmente con múltiples `.subscribe({...})`/`unsubscribe()` repetidos en vez de operadores (`take(1)`, `firstValueFrom`, `timeout`), patrón propenso a fugas si un path de error no limpia la suscripción.
 - Existe `crashlytics-error-handler.ts` en `chessColate`, pero solo reporta errores — no hay logger informativo, de ahí que `console.log` se use como sustituto informal en todo el repo.
@@ -282,6 +304,8 @@ Ambas libs implementan casi línea por línea la misma cola de throttling de pet
 #### P2.6 — Dato personal commiteado
 
 > **Estado 2026-10-07 — 🟡 Parcial.** El PGN se sacó del seguimiento de git (la copia local se conserva) y `test_data/` está en `.gitignore`. **Sigue en el historial de git y en el remoto**: quitarlo del todo exige reescribir el historial (`git filter-repo` y push forzado), una decisión que afecta a todas las ramas y clones.
+
+*Lo que sigue es la descripción original del hallazgo, previa a estos cambios.*
 
 - `test_data/lichess_Json_alzate_2026-03-06.pgn` — **1.65 MB de PGN real de una cuenta Lichess personal** en el repo. Conviene moverlo a fixtures anonimizadas o eliminarlo del historial.
 
