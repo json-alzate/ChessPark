@@ -34,6 +34,8 @@ import {
   flame,
   flameOutline,
 } from 'ionicons/icons';
+import { CountUpComponent } from '@shared/components/count-up/count-up.component';
+import { EloDeltaComponent } from '@shared/components/elo-delta/elo-delta.component';
 
 @Component({
   selector: 'app-plans-history',
@@ -45,6 +47,8 @@ import {
     IonIcon,
     NavbarComponent,
     SecondsToMinutesSecondsPipe,
+    EloDeltaComponent,
+    CountUpComponent,
   ],
   templateUrl: './plans-history.component.html',
   styleUrl: './plans-history.component.scss',
@@ -243,6 +247,18 @@ export class PlansHistoryComponent implements OnInit, OnDestroy {
   /**
    * Calcula el número total de puzzles jugados en un plan
    */
+  /**
+   * Puntos de ELO que subió la rutina, o `null` si no subió (o no hay con qué comparar:
+   * las rutinas viejas no guardaron el ELO de arranque).
+   */
+  getEloGain(plan: Plan): number | null {
+    if (typeof plan.eloTotal !== 'number' || typeof plan.initialTotalElo !== 'number') {
+      return null;
+    }
+    const gain = plan.eloTotal - plan.initialTotalElo;
+    return gain > 0 ? gain : null;
+  }
+
   getTotalPuzzlesPlayed(plan: Plan): number {
     return plan.blocks.reduce((total, block) => {
       return total + (block.puzzlesPlayed?.length || 0);

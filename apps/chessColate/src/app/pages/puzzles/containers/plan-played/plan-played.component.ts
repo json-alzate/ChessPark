@@ -46,6 +46,8 @@ import {
 } from 'ionicons/icons';
 import { Subject, Subscription } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { CountUpComponent } from '@shared/components/count-up/count-up.component';
+import { EloDeltaComponent } from '@shared/components/elo-delta/elo-delta.component';
 
 @Component({
   selector: 'app-plan-played',
@@ -58,6 +60,8 @@ import { takeUntil } from 'rxjs/operators';
     IonContent,
     IonIcon,
     NavbarComponent,
+    CountUpComponent,
+    EloDeltaComponent,
   ],
   templateUrl: './plan-played.component.html',
   styleUrl: './plan-played.component.scss',
