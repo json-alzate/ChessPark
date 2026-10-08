@@ -541,7 +541,15 @@
     "piecesNames": {
       "cburnett": "Clásicas",
       "fantasy": "Fantasía",
-      "staunty": "Staunty"
+      "staunty": "Staunty",
+      "spatial": "Espacial",
+      "celtic": "Celta",
+      "chessnut": "Chessnut",
+      "rhosgfx": "RhosGFX",
+      "kiwen-suwi": "Kiwen Suwi",
+      "firi": "Firi",
+      "totoy": "Totoy",
+      "papercut": "Papercut"
     },
     "boardsNames": {
       "chessboard-js": "Madera",
@@ -550,7 +558,12 @@
       "chess-club": "Club",
       "green": "Verde",
       "blue": "Azul",
-      "black-and-white": "Blanco y negro"
+      "black-and-white": "Blanco y negro",
+      "blue-classic": "Azul clásico",
+      "green-classic": "Verde clásico",
+      "royal": "Azul real",
+      "purple": "Morado",
+      "sage": "Salvia"
     }
   },
   "APP_REVIEW": {

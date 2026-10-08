@@ -1,9 +1,12 @@
 import {
+  BOARD_STYLE_OPTIONS,
   CHESSBOARD_SPRITE_WRAPPER_ID,
   DEFAULT_CHESSBOARD_APPEARANCE,
   getChessboardAppearance,
   isBoardStyle,
   isPiecesStyle,
+  PIECES_FILES,
+  PIECES_STYLE_OPTIONS,
   resetChessboardAppearanceForTests,
   setChessboardAppearance,
 } from './chessboard-appearance';
@@ -18,6 +21,16 @@ describe('chessboard-appearance', () => {
   it('arranca con la apariencia que la app tenía antes de poder elegirla', () => {
     expect(getChessboardAppearance()).toEqual({ pieces: 'cburnett', board: 'chessboard-js' });
     expect(getChessboardAppearance()).toEqual(DEFAULT_CHESSBOARD_APPEARANCE);
+  });
+
+  it('cada set de piezas ofrecido tiene su sprite, y no hay sprites sin ofrecer', () => {
+    expect([...PIECES_STYLE_OPTIONS].sort()).toEqual(Object.keys(PIECES_FILES).sort());
+    PIECES_STYLE_OPTIONS.forEach((name) => expect(PIECES_FILES[name]).toMatch(/^pieces\/[a-z-]+\.svg$/));
+  });
+
+  it('los temas de tablero no se repiten', () => {
+    const names = BOARD_STYLE_OPTIONS.map((option) => option.name);
+    expect(new Set(names).size).toBe(names.length);
   });
 
   it('valida los nombres que llegan de fuera (perfil, localStorage)', () => {

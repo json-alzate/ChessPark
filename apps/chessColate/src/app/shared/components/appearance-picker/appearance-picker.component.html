@@ -1,52 +1,57 @@
-<div class="flex flex-col gap-5">
+<div class="flex flex-col gap-4">
 
   <!-- Tablero de muestra: cambia al instante con cada elección -->
   <div class="mx-auto w-full" [class.max-w-[220px]]="compact()" [class.max-w-[280px]]="!compact()">
     <lib-fen-board [fen]="previewFen"></lib-fen-board>
   </div>
 
-  <!-- Piezas -->
+  <!-- Piezas: tira horizontal con la elegida centrada y más grande -->
   <div>
-    <h3 class="mb-2 text-sm font-semibold text-base-content/70">{{ 'APPEARANCE.pieces' | transloco }}</h3>
-    <div class="grid grid-cols-3 gap-2">
+    <h3 class="mb-1 text-center text-sm font-semibold text-base-content/70">
+      {{ 'APPEARANCE.pieces' | transloco }}
+      <span class="font-normal text-base-content/50">· {{ 'APPEARANCE.piecesNames.' + appearance.pieces() | transloco }}</span>
+    </h3>
+    <div #piecesStrip class="strip relative flex snap-x snap-mandatory items-center gap-3 overflow-x-auto py-4"
+      style="padding-inline: calc(50% - 2.5rem);">
       @for (option of piecesOptions; track option.name) {
       <button type="button"
-        class="relative flex flex-col items-center gap-1 rounded-box border bg-base-200/40 px-2 py-2 transition-colors"
-        [class]="appearance.pieces() === option.name ? 'border-primary bg-primary/10' : 'border-base-content/10'"
+        class="flex h-20 w-20 shrink-0 snap-center items-center justify-center rounded-box border bg-base-200/40 transition-transform duration-200"
+        [class]="appearance.pieces() === option.name
+          ? 'z-10 scale-125 border-primary bg-primary/10 shadow-lg'
+          : 'scale-90 border-base-content/10 opacity-70'"
         [attr.aria-pressed]="appearance.pieces() === option.name"
+        [attr.aria-label]="'APPEARANCE.piecesNames.' + option.name | transloco"
         (click)="selectPieces(option.name)">
-        <img [src]="option.sample" alt="" class="h-12 w-12" draggable="false" />
-        <span class="text-xs">{{ 'APPEARANCE.piecesNames.' + option.name | transloco }}</span>
-        @if (appearance.pieces() === option.name) {
-        <ion-icon name="checkmark-circle" class="absolute right-1 top-1 text-base text-primary"></ion-icon>
-        }
+        <img [src]="option.sample" alt="" class="h-14 w-14" draggable="false" />
       </button>
       }
     </div>
   </div>
 
-  <!-- Tablero -->
+  <!-- Tablero: misma tira -->
   <div>
-    <h3 class="mb-2 text-sm font-semibold text-base-content/70">{{ 'APPEARANCE.board' | transloco }}</h3>
-    <div class="grid grid-cols-4 gap-2">
+    <h3 class="mb-1 text-center text-sm font-semibold text-base-content/70">
+      {{ 'APPEARANCE.board' | transloco }}
+      <span class="font-normal text-base-content/50">· {{ 'APPEARANCE.boardsNames.' + appearance.board() | transloco }}</span>
+    </h3>
+    <div #boardStrip class="strip relative flex snap-x snap-mandatory items-center gap-3 overflow-x-auto py-4"
+      style="padding-inline: calc(50% - 2rem);">
       @for (option of boardOptions; track option.name) {
       <button type="button"
-        class="relative flex flex-col items-center gap-1 rounded-box border bg-base-200/40 px-1 py-2 transition-colors"
-        [class]="appearance.board() === option.name ? 'border-primary bg-primary/10' : 'border-base-content/10'"
+        class="flex h-16 w-16 shrink-0 snap-center items-center justify-center rounded-box border bg-base-200/40 transition-transform duration-200"
+        [class]="appearance.board() === option.name
+          ? 'z-10 scale-125 border-primary bg-primary/10 shadow-lg'
+          : 'scale-90 border-base-content/10 opacity-70'"
         [attr.aria-pressed]="appearance.board() === option.name"
         [attr.aria-label]="'APPEARANCE.boardsNames.' + option.name | transloco"
         (click)="selectBoard(option.name)">
         <!-- Muestra 2x2 con las casillas clara y oscura del tema -->
-        <span class="grid h-10 w-10 grid-cols-2 overflow-hidden rounded-sm">
+        <span class="grid h-11 w-11 grid-cols-2 overflow-hidden rounded-sm">
           <span [style.background-color]="option.light"></span>
           <span [style.background-color]="option.dark"></span>
           <span [style.background-color]="option.dark"></span>
           <span [style.background-color]="option.light"></span>
         </span>
-        <span class="text-[10px] leading-tight">{{ 'APPEARANCE.boardsNames.' + option.name | transloco }}</span>
-        @if (appearance.board() === option.name) {
-        <ion-icon name="checkmark-circle" class="absolute right-1 top-1 text-sm text-primary"></ion-icon>
-        }
       </button>
       }
     </div>

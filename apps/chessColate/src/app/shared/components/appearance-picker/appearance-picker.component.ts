@@ -1,8 +1,5 @@
-import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, effect, inject, input, viewChild } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { addIcons } from 'ionicons';
-import { checkmarkCircle } from 'ionicons/icons';
-import { IonIcon } from '@ionic/angular/standalone';
 import {
   BOARD_STYLE_OPTIONS,
   FenBoardComponent,
@@ -23,8 +20,18 @@ const PREVIEW_FEN = 'r1bq1rk1/pp2bppp/2n1pn2/3p4/2PP4/2N2NP1/PP2PPBP/R1BQ1RK1 w 
 @Component({
   selector: 'app-appearance-picker',
   standalone: true,
-  imports: [TranslocoPipe, IonIcon, FenBoardComponent],
+  imports: [TranslocoPipe, FenBoardComponent],
   templateUrl: './appearance-picker.component.html',
+  styles: [
+    `
+      .strip {
+        scrollbar-width: none;
+      }
+      .strip::-webkit-scrollbar {
+        display: none;
+      }
+    `,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppearancePickerComponent {
@@ -40,8 +47,32 @@ export class AppearancePickerComponent {
   }));
   readonly boardOptions = BOARD_STYLE_OPTIONS;
 
+  private readonly piecesStrip = viewChild<ElementRef<HTMLElement>>('piecesStrip');
+  private readonly boardStrip = viewChild<ElementRef<HTMLElement>>('boardStrip');
+
   constructor() {
-    addIcons({ checkmarkCircle });
+    // Mantiene centrada la opción elegida (al abrir y cuando cambia desde fuera)
+    effect(() => {
+      const piecesStrip = this.piecesStrip()?.nativeElement;
+      const boardStrip = this.boardStrip()?.nativeElement;
+      this.appearance.pieces();
+      this.appearance.board();
+      // Espera a que el DOM refleje la opción elegida
+      setTimeout(() => {
+        if (piecesStrip) this.centerSelected(piecesStrip);
+        if (boardStrip) this.centerSelected(boardStrip);
+      });
+    });
+  }
+
+  /** Desplaza la tira, sin tocar la página, para dejar la opción elegida al centro. */
+  private centerSelected(strip: HTMLElement): void {
+    const selected = strip.querySelector<HTMLElement>('[aria-pressed="true"]');
+    if (!selected) return;
+    strip.scrollTo({
+      left: selected.offsetLeft - (strip.clientWidth - selected.offsetWidth) / 2,
+      behavior: 'smooth',
+    });
   }
 
   selectPieces(name: PiecesStyle): void {

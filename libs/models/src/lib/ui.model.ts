@@ -1,3 +1,25 @@
-export type PiecesStyle = 'cburnett' | 'fantasy' | 'staunty';
-export type BoardStyle = 'default' | 'default-contrast' | 'blue' | 'green' | 'chess-club' | 'chessboard-js' | 'black-and-white';
-
+export type PiecesStyle =
+    | 'cburnett'
+    | 'fantasy'
+    | 'staunty'
+    | 'spatial'
+    | 'celtic'
+    | 'chessnut'
+    | 'rhosgfx'
+    | 'kiwen-suwi'
+    | 'firi'
+    | 'totoy'
+    | 'papercut';
+export type BoardStyle =
+    | 'default'
+    | 'default-contrast'
+    | 'blue'
+    | 'green'
+    | 'chess-club'
+    | 'chessboard-js'
+    | 'black-and-white'
+    | 'blue-classic'
+    | 'green-classic'
+    | 'royal'
+    | 'purple'
+    | 'sage';

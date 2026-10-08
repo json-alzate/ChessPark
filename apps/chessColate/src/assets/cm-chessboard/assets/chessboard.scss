@@ -94,3 +94,23 @@
                 "black-and-white", // name
                 #ffffff, #9c9c9c // squares
 );
+@include cm-chessboard-theme(
+                "blue-classic", // name
+                #dee3e6, #8ca2ad // squares
+);
+@include cm-chessboard-theme(
+                "green-classic", // name
+                #ffffdd, #86a666 // squares
+);
+@include cm-chessboard-theme(
+                "royal", // name
+                #bbcfff, #5477ca // squares
+);
+@include cm-chessboard-theme(
+                "purple", // name
+                #9f90b0, #7d4a8d // squares
+);
+@include cm-chessboard-theme(
+                "sage", // name
+                #ececec, #c1c18e // squares
+);

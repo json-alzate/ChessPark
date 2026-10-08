@@ -23,6 +23,14 @@ export const PIECES_FILES: Record<PiecesStyle, string> = {
   cburnett: 'pieces/standard.svg',
   fantasy: 'pieces/fantasy.svg',
   staunty: 'pieces/staunty.svg',
+  spatial: 'pieces/spatial.svg',
+  celtic: 'pieces/celtic.svg',
+  chessnut: 'pieces/chessnut.svg',
+  rhosgfx: 'pieces/rhosgfx.svg',
+  'kiwen-suwi': 'pieces/kiwen-suwi.svg',
+  firi: 'pieces/firi.svg',
+  totoy: 'pieces/totoy.svg',
+  papercut: 'pieces/papercut.svg',
 };
 
 /** Una opción de color de tablero, con las casillas que se muestran en su muestra. */
@@ -44,10 +52,28 @@ export const BOARD_STYLE_OPTIONS: readonly BoardStyleOption[] = [
   { name: 'green', light: '#e0ddcc', dark: '#4c946a' },
   { name: 'blue', light: '#d8ecfb', dark: '#86afcf' },
   { name: 'black-and-white', light: '#ffffff', dark: '#9c9c9c' },
+  // Colores de los tableros planos de Lichess
+  { name: 'blue-classic', light: '#dee3e6', dark: '#8ca2ad' },
+  { name: 'green-classic', light: '#ffffdd', dark: '#86a666' },
+  { name: 'royal', light: '#bbcfff', dark: '#5477ca' },
+  { name: 'purple', light: '#9f90b0', dark: '#7d4a8d' },
+  { name: 'sage', light: '#ececec', dark: '#c1c18e' },
 ];
 
 /** Set de piezas disponibles, en el orden en que se ofrecen. */
-export const PIECES_STYLE_OPTIONS: readonly PiecesStyle[] = ['cburnett', 'fantasy', 'staunty'];
+export const PIECES_STYLE_OPTIONS: readonly PiecesStyle[] = [
+  'cburnett',
+  'fantasy',
+  'staunty',
+  'spatial',
+  'celtic',
+  'chessnut',
+  'rhosgfx',
+  'kiwen-suwi',
+  'firi',
+  'totoy',
+  'papercut',
+];
 
 export function isPiecesStyle(value: unknown): value is PiecesStyle {
   return typeof value === 'string' && value in PIECES_FILES;

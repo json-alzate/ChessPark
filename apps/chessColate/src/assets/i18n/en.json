@@ -541,7 +541,15 @@
     "piecesNames": {
       "cburnett": "Classic",
       "fantasy": "Fantasy",
-      "staunty": "Staunty"
+      "staunty": "Staunty",
+      "spatial": "Spatial",
+      "celtic": "Celtic",
+      "chessnut": "Chessnut",
+      "rhosgfx": "RhosGFX",
+      "kiwen-suwi": "Kiwen Suwi",
+      "firi": "Firi",
+      "totoy": "Totoy",
+      "papercut": "Papercut"
     },
     "boardsNames": {
       "chessboard-js": "Wood",
@@ -550,7 +558,12 @@
       "chess-club": "Club",
       "green": "Green",
       "blue": "Blue",
-      "black-and-white": "Black & white"
+      "black-and-white": "Black & white",
+      "blue-classic": "Classic blue",
+      "green-classic": "Classic green",
+      "royal": "Royal blue",
+      "purple": "Purple",
+      "sage": "Sage"
     }
   },
   "APP_REVIEW": {
