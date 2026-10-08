@@ -5,7 +5,7 @@ import {
   outcomeForUser,
   TimeClass,
   userRating,
-} from '@cpark/models';
+} from '@chesspark/models';
 
 import {
   ActivityDay,
@@ -62,6 +62,7 @@ export function getRatingProgress(games: ChessGame[]): RatingDataPoint[] {
       date: game.playedAt,
       rating: userRating(game),
       platform: game.source,
+      timeClass: game.timeClass,
     }))
     .sort((a, b) => a.date - b.date);
 }

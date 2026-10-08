@@ -19,15 +19,15 @@ import {
 
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
-import { Plan, Block } from '@cpark/models';
+import { Plan, Block } from '@chesspark/models';
 import { UidGeneratorService, SecondsToMinutesSecondsPipe } from '@chesspark/common-utils';
 
-import { CustomPlansService } from '@services/custom-plans.service';
-import { PlanService } from '@services/plan.service';
-import { AppService } from '@services/app.service';
-import { ProfileService } from '@services/profile.service';
-import { PlanFacadeService, CustomPlansFacadeService, PlansElosFacadeService, getProfile, getIsInitialized } from '@cpark/state';
-import { AppState } from '@cpark/state';
+import { CustomPlansService } from '@services/plans/custom-plans.service';
+import { PlanService } from '@services/plans/plan.service';
+import { AppService } from '@services/app/app.service';
+import { ProfileService } from '@services/account/profile.service';
+import { PlanFacadeService, CustomPlansFacadeService, PlansElosFacadeService, getProfile, getIsInitialized } from '@chesspark/state';
+import { AppState } from '@chesspark/state';
 
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 import { BlockSettingsComponent } from '@pages/puzzles/components/block-settings/block-settings.component';

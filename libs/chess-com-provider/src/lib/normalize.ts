@@ -3,7 +3,7 @@ import {
   ChessGameOpening,
   GameResult,
   timeClassFor,
-} from '@cpark/models';
+} from '@chesspark/models';
 
 import { ChessComGame } from './types';
 

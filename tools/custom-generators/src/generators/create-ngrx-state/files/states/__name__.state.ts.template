@@ -1,6 +1,6 @@
 import { createFeatureSelector } from '@ngrx/store';
 <% if (createModel) { %>
-import { <%= classifyName %> } from '@cpark/models';
+import { <%= classifyName %> } from '@chesspark/models';
 <% } %>
 
 <% if (entityType === 'list') { %>

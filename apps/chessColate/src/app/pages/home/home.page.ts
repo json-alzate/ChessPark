@@ -14,23 +14,23 @@ import { addIcons } from 'ionicons';
 import { arrowForward, statsChartOutline, eye, close, flash, flame, heart, trophy, logoGooglePlaystore, logoApple, optionsOutline, globeOutline, chevronForwardOutline } from 'ionicons/icons';
 import { Subscription } from 'rxjs';
 import { Store, select } from '@ngrx/store';
-import { AuthState, getIsInitialized } from '@cpark/state';
+import { AuthState, getIsInitialized } from '@chesspark/state';
 
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
-import { Block, Plan, PlanTypes, Puzzle, Reto333Record, StreakRecord } from '@cpark/models';
+import { Block, Plan, PlanTypes, Puzzle, Reto333Record, StreakRecord } from '@chesspark/models';
 
 // Services
-import { BlockService } from '@services/block.service';
-import { PlanService } from '@services/plan.service';
+import { BlockService } from '@services/training/block.service';
+import { PlanService } from '@services/plans/plan.service';
 import { PuzzlesProvider } from '@chesspark/puzzles-provider';
-import { InfinityPuzzlePoolService } from '@services/infinity-puzzle-pool.service';
-import { StreakStorageService } from '@services/streak-storage.service';
-import { Reto333StorageService } from '@services/reto333-storage.service';
+import { InfinityPuzzlePoolService } from '@services/training/infinity-puzzle-pool.service';
+import { StreakStorageService } from '@services/progress/streak-storage.service';
+import { Reto333StorageService } from '@services/training/reto333-storage.service';
 
-import { ProfileService } from '@services/profile.service';
+import { ProfileService } from '@services/account/profile.service';
 
-import { AppService } from '@services/app.service';
+import { AppService } from '@services/app/app.service';
 
 // Components
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
@@ -39,11 +39,13 @@ import { OnboardingModalComponent, ONBOARDING_SEEN_KEY } from '@shared/component
 import { BoardPuzzleComponent, BoardPuzzleSolutionComponent } from '@chesspark/board';
 import { PlanChartComponent } from '../puzzles/components/plan-chart/plan-chart.component';
 import { Capacitor } from '@capacitor/core';
+import { KingImagePipe } from '@shared/pipes/king-image.pipe';
 
 @Component({
   selector: 'app-home',
   standalone: true,
   imports: [
+    KingImagePipe,
     IonContent,
     IonModal,
     IonIcon,

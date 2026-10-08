@@ -1,6 +1,6 @@
 import { Injectable, Inject, InjectionToken } from '@angular/core';
 import { Actions, ofType, createEffect } from '@ngrx/effects';
-import { from } from 'rxjs';
+import { EMPTY, from } from 'rxjs';
 import { switchMap, mergeMap, catchError, map } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
 
@@ -14,6 +14,10 @@ import {
   loadUserInteractions,
   loadUserInteractionsSuccess,
   loadUserInteractionsFailure,
+  loadInteractionPlans,
+  loadInteractionPlansSuccess,
+  loadPlanInteraction,
+  loadPlanInteractionSuccess,
   togglePlanLike,
   togglePlanLikeSuccess,
   togglePlanLikeFailure,
@@ -24,7 +28,7 @@ import {
   markPlanAsPlayedSuccess,
   markPlanAsPlayedFailure,
 } from './public-plans.actions';
-import { PublicPlan, PlanInteraction, PublicPlanFilter } from '@cpark/models';
+import { PublicPlan, PlanInteraction, PublicPlanFilter } from '@chesspark/models';
 import { getPublicPlansState } from './public-plans.state';
 import { AppState } from '../app.state';
 
@@ -50,6 +54,7 @@ export interface IPublicPlansFirestore {
     uidUser: string,
     planUid: string
   ): Promise<PlanInteraction | null>;
+  getPublicPlan(planUid: string): Promise<PublicPlan | null>;
 }
 
 export const PUBLIC_PLANS_FIRESTORE_TOKEN = new InjectionToken<IPublicPlansFirestore>(
@@ -61,6 +66,8 @@ export class PublicPlansEffects {
   loadPublicPlans$;
   loadMorePublicPlans$;
   loadUserInteractions$;
+  loadInteractionPlans$;
+  loadPlanInteraction$;
   togglePlanLike$;
   togglePlanSaved$;
   markPlanAsPlayed$;
@@ -160,6 +167,44 @@ export class PublicPlansEffects {
                   error: error.message || 'Error loading user interactions',
                 }),
               ];
+            })
+          )
+        )
+      )
+    );
+
+    // Usa mergeMap y no switchMap: la pestaña carga liked, played y saved con
+    // la misma acción y una petición nueva no debe cancelar la anterior.
+    this.loadInteractionPlans$ = createEffect(() =>
+      this.actions$.pipe(
+        ofType(loadInteractionPlans),
+        mergeMap(({ uids }) =>
+          from(
+            Promise.all(uids.map((uid) => this.firestore.getPublicPlan(uid)))
+          ).pipe(
+            map((plans) =>
+              loadInteractionPlansSuccess({
+                plans: plans.filter((p): p is PublicPlan => p !== null),
+              })
+            ),
+            catchError((error) => {
+              console.error('Error loading interaction plans', error);
+              return EMPTY;
+            })
+          )
+        )
+      )
+    );
+
+    this.loadPlanInteraction$ = createEffect(() =>
+      this.actions$.pipe(
+        ofType(loadPlanInteraction),
+        switchMap(({ uidUser, planUid }) =>
+          from(this.firestore.getPlanInteraction(uidUser, planUid)).pipe(
+            map((interaction) => loadPlanInteractionSuccess({ interaction })),
+            catchError((error) => {
+              console.error('Error loading plan interaction', error);
+              return EMPTY;
             })
           )
         )

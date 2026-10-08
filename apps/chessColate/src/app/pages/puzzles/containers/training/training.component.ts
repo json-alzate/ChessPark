@@ -6,9 +6,9 @@ import {
   OnDestroy,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
-import { interval, Subject, Subscription } from 'rxjs';
+import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 // Transloco
@@ -23,19 +23,23 @@ import {
 } from '@ionic/angular/standalone';
 
 // services
-import { AppService } from '@services/app.service';
-import { BlockService } from '@services/block.service';
-import { InfinityPuzzlePoolService } from '@services/infinity-puzzle-pool.service';
-import { ProfileService } from '@services/profile.service';
-import { PlanFacadeService } from '@cpark/state';
-import { PlansElosService } from '@services/plans-elos.service';
-import { PlanStorageService } from '@services/plan-storage.service';
-import { PlanService } from '@services/plan.service';
-import { AnalyticsService } from '@services/analytics.service';
-import { routineMetaFromPlanType } from '@services/analytics-events.util';
-import { TrainingReminderService } from '@services/training-reminder.service';
-import { Reto333StorageService } from '@services/reto333-storage.service';
-import { UserRecordsService } from '@services/user-records.service';
+import { AppService } from '@services/app/app.service';
+import { BlockService } from '@services/training/block.service';
+import { InfinityPuzzlePoolService } from '@services/training/infinity-puzzle-pool.service';
+import { ProfileService } from '@services/account/profile.service';
+import { PlanFacadeService } from '@chesspark/state';
+import { PlansElosService } from '@services/plans/plans-elos.service';
+import { PlanStorageService } from '@services/plans/plan-storage.service';
+import { PlanService } from '@services/plans/plan.service';
+import { AnalyticsService } from '@services/analytics/analytics.service';
+import { TrainingReminderService } from '@services/training/training-reminder.service';
+import { Reto333StorageService } from '@services/training/reto333-storage.service';
+import {
+  TrainingSessionNextStep,
+  TrainingSessionService,
+} from '@services/training/training-session.service';
+import { TrainingTimerService } from '@services/training/training-timer.service';
+import { UserRecordsService } from '@services/progress/user-records.service';
 import { UidGeneratorService } from '@chesspark/common-utils';
 import { addIcons } from 'ionicons';
 import {
@@ -51,7 +55,7 @@ import {
 } from 'ionicons/icons';
 
 // models
-import { Block, Plan, PlanTypes, Puzzle, UserPuzzle } from '@cpark/models';
+import { Block, Plan, Puzzle } from '@chesspark/models';
 
 import {
   BoardPuzzleComponent,
@@ -60,21 +64,85 @@ import {
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 
 import { BlockPresentationComponent } from '../../components/block-presentation/block-presentation.component';
-import { resolvePlayerColor } from './player-color.util';
+import {
+  BlockPresentationSources,
+  buildBlockPresentation,
+} from '@services/training/block-presentation.util';
+import { resolvePlayerColor } from '@services/training/player-color.util';
+import {
+  puzzleCompletedPayload,
+  puzzleStartedPayload,
+  reto333FinishedPayload,
+} from '@services/training/training-analytics.util';
 import {
   SoundsService,
   SecondsToMinutesSecondsPipe,
 } from '@chesspark/common-utils';
+import {
+  initialEloForCustomPlan,
+  initialEloForDefaultPlan,
+  InitialPlanElo,
+} from '@services/plans/plan-initial-elo.util';
+import {
+  RETO333_ELO_STEP,
+  RETO333_START_ELO,
+  summarizeReto333,
+} from '@services/training/reto333.util';
+import {
+  buildUserPuzzle,
+  PuzzleResult,
+} from '@services/training/user-puzzle.util';
+import { KingImagePipe } from '@shared/pipes/king-image.pipe';
 
+/**
+ * Orquestador de la pantalla de entrenamiento: decide qué mostrar y en qué
+ * orden ocurre cada paso de la sesión.
+ *
+ * Reparto de responsabilidades:
+ * - Flujo de sesión (`TrainingSessionService`, propio de esta pantalla): plan
+ *   en curso, bloque actual, contadores del bloque y la decisión de si tras un
+ *   ejercicio toca otro, el bloque siguiente o el fin del plan. Este componente
+ *   ejecuta esa decisión y le da el único dato que no es suyo: si venció el
+ *   tiempo del bloque.
+ * - Cronómetro del bloque (`TrainingTimerService`, propio de esta pantalla):
+ *   cuenta atrás en segundos y aviso de vencimiento. Aquí se decide qué hacer
+ *   al vencer (esperar a que se cierre una solución o cambiar de bloque) y se
+ *   gobierna el reloj del tablero con `forceStopTimerInPuzzleBoard`.
+ * - Derivaciones puras de esta pantalla (en `services/training/`, sin Angular):
+ *   textos e imagen con los que se presenta un bloque
+ *   (`block-presentation.util`), parámetros de cada evento de analítica
+ *   (`training-analytics.util`) y color del jugador desde el FEN
+ *   (`player-color.util`).
+ * - Dominio puro compartido (`services/`): elo inicial por tipo de rutina
+ *   (`plan-initial-elo.util`), resumen y constantes del Reto 333
+ *   (`reto333.util`) y registro de cada puzzle jugado (`user-puzzle.util`).
+ * - Persistencia: la marca del Reto 333 vive en `Reto333StorageService`, el plan
+ *   en `PlanStorageService` y el estado en `PlanFacadeService`. Este componente
+ *   no toca `localStorage`.
+ * - Efectos de otros servicios: elo del perfil (`ProfileService`), elo de rutinas
+ *   personalizadas (`PlansElosService`), recordatorios, analítica y sonidos.
+ *
+ * Lo que conserva el componente es la coreografía: el orden de los efectos
+ * tras cada resultado (registro, analítica, elo, sonido y decisión), cuándo se
+ * abre cada modal (presentación del bloque, solución, resumen del Reto 333),
+ * el acoplamiento con el tablero (`puzzleToPlay`, `forceStopTimerInPuzzleBoard`,
+ * `streamSolutionActive`), la persistencia al cerrar la rutina y la navegación.
+ */
 @Component({
   selector: 'app-training',
   imports: [
+    KingImagePipe,
     CommonModule,
     BoardPuzzleComponent,
     SecondsToMinutesSecondsPipe,
     TranslocoPipe,
     IonIcon,
   ],
+  // La sesión y el cronómetro se proveen aquí y no en root: cada pantalla
+  // arranca con una sesión limpia y un reloj propio que mueren con ella, y dos
+  // instancias de la pantalla (posible con `returnTo` bajo el outlet de Ionic)
+  // no comparten índice, contadores ni cuenta atrás.
+  providers: [TrainingSessionService, TrainingTimerService],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './training.component.html',
   styleUrl: './training.component.scss',
@@ -85,6 +153,9 @@ export class TrainingComponent implements OnInit, OnDestroy {
   private plansElosService = inject(PlansElosService);
   private planStorageService = inject(PlanStorageService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  /** Adónde volver al salir: la pantalla que empezó la sesión, o Inicio. */
+  private readonly returnUrl = this.route.snapshot.queryParamMap.get('returnTo') ?? '/home';
   appService = inject(AppService);
   private profileService = inject(ProfileService);
   private translocoService = inject(TranslocoService);
@@ -97,35 +168,107 @@ export class TrainingComponent implements OnInit, OnDestroy {
   private trainingReminderService = inject(TrainingReminderService);
   private reto333Storage = inject(Reto333StorageService);
   private userRecordsService = inject(UserRecordsService);
+  /** Flujo de la sesión: plan, bloque actual, contadores y decisión tras cada ejercicio. */
+  private session = inject(TrainingSessionService);
+  /** Cuenta atrás del bloque: segundos restantes y aviso de vencimiento. */
+  private blockTimer = inject(TrainingTimerService);
+
+  /**
+   * Catálogos y traductor con los que se deriva la presentación de un bloque.
+   * La derivación es pura y no conoce `AppService` ni Transloco; este
+   * adaptador es lo único que los une. Va después de las inyecciones porque
+   * las usa al construirse.
+   */
+  private readonly presentationSources: BlockPresentationSources = {
+    themeName: (theme) => this.appService.getNameThemePuzzleByValue(theme),
+    themeDescription: (theme) =>
+      this.appService.getDescriptionThemePuzzleByValue(theme),
+    openingName: (opening) => this.appService.getNameOpeningByValue(opening),
+    openingDescription: (opening) =>
+      this.appService.getDescriptionOpeningByValue(opening),
+    translate: (key) => this.translocoService.translate(key),
+  };
 
   // Subject para gestionar suscripciones
   private destroy$ = new Subject<void>();
   private isInitialized = false;
-  private isProcessingBlock = false;
   private isLoadingPlan = false;
 
   // Properties for Reto 333
   reto333StartTime: number | null = null;
-  reto333EloLocal = 400;
+  reto333EloLocal = RETO333_START_ELO;
   showReto333DaisyModal = false;
   reto333AlertData: any = null;
 
   showBlockTimer = false;
 
-  currentIndexBlock = -1; // -1 para que al iniciar se seleccione el primer bloque sumando ++ y queda en 0
-  plan!: Plan;
+  /**
+   * Estado de la sesión que la plantilla pinta y que la persistencia completa
+   * (elo inicial, usuario, terminado) con copias nuevas del plan. Vive en
+   * `TrainingSessionService`; aquí solo se delega. Los setters existen para
+   * montar un estado concreto (pruebas); el flujo normal avanza por las
+   * transiciones de la sesión.
+   *
+   * `plan` se tipa como `Plan` aunque sea `null` hasta que llega el primero:
+   * la plantilla y `ngOnInit` ya contemplan ese hueco con `plan?.`.
+   */
+  get plan(): Plan {
+    return this.session.plan as Plan;
+  }
+
+  set plan(plan: Plan) {
+    this.session.plan = plan;
+  }
+
+  get currentIndexBlock(): number {
+    return this.session.currentIndexBlock;
+  }
+
+  set currentIndexBlock(index: number) {
+    this.session.currentIndexBlock = index;
+  }
+
+  get countPuzzlesPlayedBlock(): number {
+    return this.session.countPuzzlesPlayedBlock;
+  }
+
+  set countPuzzlesPlayedBlock(count: number) {
+    this.session.countPuzzlesPlayedBlock = count;
+  }
+
+  get totalPuzzlesInBlock(): number {
+    return this.session.totalPuzzlesInBlock;
+  }
+
+  set totalPuzzlesInBlock(total: number) {
+    this.session.totalPuzzlesInBlock = total;
+  }
+
+  /**
+   * Hay un cambio de bloque a medias (presentación abierta). Mientras dure, un
+   * resultado del tablero pertenece al bloque anterior y se descarta, y no se
+   * arranca otro plan ni otro cambio encima.
+   */
+  private get isProcessingBlock(): boolean {
+    return this.session.isChangingBlock;
+  }
 
   puzzleToPlay!: Puzzle;
-  timerUnsubscribe$ = new Subject<void>();
 
-  timeLeftBlock = 0;
   /**
-   * Suscripción viva del cronómetro del bloque. Es una sola referencia (y no un
-   * Subject de cancelación) a propósito: al reemplazar el Subject, la
-   * suscripción anterior quedaba corriendo y el tiempo del bloque bajaba al
-   * doble de velocidad, saltándose bloques enteros.
+   * Segundos que quedan del bloque, tal y como los pinta la plantilla. Viven
+   * en `TrainingTimerService`; aquí solo se delega. El setter existe para
+   * montar un estado concreto (pruebas) y para dejarlos a cero al cerrar la
+   * sesión; el flujo normal los mueve el reloj.
    */
-  private blockTimerSub: Subscription | null = null;
+  get timeLeftBlock(): number {
+    return this.blockTimer.timeLeft;
+  }
+
+  set timeLeftBlock(seconds: number) {
+    this.blockTimer.timeLeft = seconds;
+  }
+
   /**
    * El bloque actual ya agotó su tiempo y falta hacer el cambio. Evita que un
    * tic tardío vuelva a pedir el siguiente bloque.
@@ -137,18 +280,17 @@ export class TrainingComponent implements OnInit, OnDestroy {
    * fallado y solo después se pasa al bloque siguiente.
    */
   private isSolutionOpen = false;
-  countPuzzlesPlayedBlock = 0;
-  totalPuzzlesInBlock = 0;
   forceStopTimerInPuzzleBoard = false;
   streamSolutionActive = false;
 
   isGoshHelperShow = false;
   isDropdownOpen = false;
+  private closeDropdownTimeout: ReturnType<typeof setTimeout> | null = null;
 
   /** Color con el que juega el usuario en el puzzle actual (blancas o negras) */
   get playerColor(): 'white' | 'black' {
     return resolvePlayerColor(
-      this.plan?.blocks?.[this.currentIndexBlock]?.color,
+      this.session.currentBlock?.color,
       this.puzzleToPlay?.fen
     );
   }
@@ -189,6 +331,14 @@ export class TrainingComponent implements OnInit, OnDestroy {
       trophy,
       closeCircle
     });
+
+    // El reloj solo avisa; qué hacer al vencer (esperar a que se cierre una
+    // solución o cambiar de bloque) se decide aquí. Se escucha desde el
+    // constructor y no desde ngOnInit porque el cronómetro puede arrancar sin
+    // pasar por el arranque del store (reanudaciones, pruebas).
+    this.blockTimer.timeUp$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => this.onBlockTimeUp());
   }
 
   ngOnInit() {
@@ -226,8 +376,9 @@ export class TrainingComponent implements OnInit, OnDestroy {
           return;
         }
 
-        this.plan = { ...plan };
-        console.log('Plan ', this.plan);
+        // Plan nuevo: la sesión queda antes del primer bloque. Es una copia
+        // para que las reasignaciones de cierre no toquen el objeto del store.
+        this.session.start({ ...plan });
 
         // Guardar el máximo inicial si no está guardado (solo la primera vez que se carga el plan)
         if (
@@ -263,6 +414,8 @@ export class TrainingComponent implements OnInit, OnDestroy {
   private async saveInitialMaxElo() {
     if (!this.plan) return;
 
+    let initialElo: InitialPlanElo | null = null;
+
     if (
       this.plan.planType === 'custom' &&
       this.plan.uidCustomPlan &&
@@ -271,42 +424,22 @@ export class TrainingComponent implements OnInit, OnDestroy {
       const planElos = await this.plansElosService.getOnePlanElo(
         this.plan.uidCustomPlan
       );
-      const initialTotal = planElos?.total ?? 1500;
-      const initialMax = planElos?.maxTotal ?? initialTotal;
-      this.plan = {
-        ...this.plan,
-        initialMaxElo: initialMax,
-        initialTotalElo: initialTotal,
-      };
-      this.planFacade.updatePlan(this.plan);
+      initialElo = initialEloForCustomPlan(planElos);
     } else if (this.plan.planType !== 'custom') {
       const initialTotal = this.profileService.getEloTotalByPlanType(
         this.plan.planType
       );
-      const profile = this.profileService.getProfile;
-      const elos = profile?.elos;
-      if (elos) {
-        const maxTotalKey =
-          `${this.plan.planType}MaxTotal` as keyof typeof elos;
-        const maxTotal = elos[maxTotalKey];
-        const initialMax =
-          (typeof maxTotal === 'number' ? maxTotal : undefined) ??
-          initialTotal;
-        this.plan = {
-          ...this.plan,
-          initialMaxElo: initialMax,
-          initialTotalElo: initialTotal,
-        };
-        this.planFacade.updatePlan(this.plan);
-      } else {
-        this.plan = {
-          ...this.plan,
-          initialMaxElo: initialTotal,
-          initialTotalElo: initialTotal,
-        };
-        this.planFacade.updatePlan(this.plan);
-      }
+      initialElo = initialEloForDefaultPlan(
+        this.plan.planType,
+        this.profileService.getProfile?.elos,
+        initialTotal
+      );
     }
+
+    if (!initialElo) return;
+
+    this.plan = { ...this.plan, ...initialElo };
+    this.planFacade.updatePlan(this.plan);
   }
 
   playNextBlock() {
@@ -315,29 +448,23 @@ export class TrainingComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.isProcessingBlock = true;
     // El bloque anterior queda cerrado: ningún contador suyo debe seguir vivo
     // ni volver a dispararse.
     this.stopBlockTimer();
     this.blockTimeExpired = false;
-    this.currentIndexBlock++;
 
-    // se valida si se ha llegado al final del plan
-    if (this.currentIndexBlock === this.plan.blocks.length) {
-      this.isProcessingBlock = false;
+    // La sesión avanza de bloque (cuota y contador del nuevo) o avisa de que
+    // ya no quedan bloques.
+    if (this.session.advanceToNextBlock() === 'plan-finished') {
       this.endPlan();
       return;
     }
 
-    this.totalPuzzlesInBlock =
-      this.plan.blocks[this.currentIndexBlock].puzzlesCount;
-
-    this.countPuzzlesPlayedBlock = 0;
     this.showBlockTimer = false;
-    this.pausePlanTimer();
 
     if (this.plan.planType === 'infinity') {
-      this.isProcessingBlock = false;
+      // Sin presentación: el bloque está listo en el acto.
+      this.session.blockReady();
       this.forceStopTimerInPuzzleBoard = false;
       this.selectPuzzleToPlay();
       this.showBlockTimer = false;
@@ -351,81 +478,29 @@ export class TrainingComponent implements OnInit, OnDestroy {
   }
 
   async showBlockPresentation() {
+    const currentBlock = this.plan.blocks[this.currentIndexBlock];
+
     this.forceStopTimerInPuzzleBoard = true;
-    if (this.plan.blocks[this.currentIndexBlock].time !== -1) {
+    if (currentBlock.time !== -1) {
       this.pauseBlockTimer();
     }
 
-    this.totalPuzzlesInBlock =
-      this.plan.blocks[this.currentIndexBlock].puzzlesCount;
-
-    const currentBlock = this.plan.blocks[this.currentIndexBlock];
-    const themeName = currentBlock.theme;
-    const openingFamily = currentBlock.openingFamily;
-    const blockDescription = currentBlock.description;
-    const blockTitle = currentBlock.title;
-    const blockColor = currentBlock.color;
-
-    const themeOrOpeningName = themeName
-      ? this.appService.getNameThemePuzzleByValue(themeName)
-      : this.appService.getNameOpeningByValue(openingFamily || '');
-
-    const whiteColorText = this.translocoService.translate(
-      'PUZZLES.colors.white'
-    );
-    const blackColorText = this.translocoService.translate(
-      'PUZZLES.colors.black'
-    );
-    const colorText =
-      blockColor === 'white'
-        ? whiteColorText
-        : blockColor === 'black'
-        ? blackColorText
-        : null;
-
-    const isDescriptionJustColor =
-      blockDescription === whiteColorText ||
-      blockDescription === blackColorText;
-
-    let title: string;
-    if (blockTitle) {
-      title = blockTitle;
-    } else if (themeOrOpeningName && colorText) {
-      const withPrefix = this.translocoService.translate('PUZZLES.with');
-      title = `${themeOrOpeningName}${withPrefix}${colorText}`;
-    } else {
-      title = themeOrOpeningName;
-    }
-
-    let image = '/assets/images/puzzle-themes/opening.svg';
-    if (themeName) {
-      if (themeName.includes('mateIn')) {
-        image = '/assets/images/puzzle-themes/mate.svg';
-      } else {
-        image = `/assets/images/puzzle-themes/${themeName}.svg`;
-      }
-    }
-
-    const description =
-      blockDescription && !isDescriptionJustColor
-        ? blockDescription
-        : themeName
-        ? this.appService.getDescriptionThemePuzzleByValue(themeName)
-        : this.appService.getDescriptionOpeningByValue(openingFamily || '');
+    this.totalPuzzlesInBlock = currentBlock.puzzlesCount;
 
     const modal = await this.modalController.create({
       component: BlockPresentationComponent,
-      componentProps: {
-        title,
-        description,
-        image,
-      },
+      componentProps: buildBlockPresentation(
+        currentBlock,
+        this.presentationSources
+      ),
     });
 
     await modal.present();
 
-    modal.onDidDismiss().then((data) => {
-      this.isProcessingBlock = false;
+    modal.onDidDismiss().then(() => {
+      // Con la presentación cerrada la sesión vuelve a aceptar resultados;
+      // el tablero se libera antes de recibir el puzzle nuevo.
+      this.session.blockReady();
       this.forceStopTimerInPuzzleBoard = false;
       this.selectPuzzleToPlay();
       if (this.plan.blocks[this.currentIndexBlock].time !== -1) {
@@ -439,25 +514,16 @@ export class TrainingComponent implements OnInit, OnDestroy {
   }
 
   async selectPuzzleToPlay() {
-    // se valida si se ha llegado al final del plan
-    if (this.currentIndexBlock === this.plan.blocks.length) {
-      this.endPlan();
-      return;
-    }
-
-    // se valida si el bloque es por cantidad de puzzles y si ya se jugaron todos
-    if (
-      this.plan.blocks[this.currentIndexBlock]?.puzzlesCount !== 0 &&
-      this.countPuzzlesPlayedBlock ===
-        this.plan.blocks[this.currentIndexBlock]?.puzzlesCount
-    ) {
-      this.playNextBlock();
-      return;
-    }
-
-    const currentBlock = this.plan.blocks?.[this.currentIndexBlock];
+    // Aquí también llegan los cierres de solución y de presentación, que no
+    // pasan por continueAfterPuzzle: se vuelve a comprobar que quede bloque y
+    // que su cuota no esté completa antes de servir nada.
+    const currentBlock = this.session.currentBlock;
     if (!currentBlock) {
       this.endPlan();
+      return;
+    }
+    if (this.session.isBlockQuotaReached) {
+      this.playNextBlock();
       return;
     }
 
@@ -517,39 +583,25 @@ export class TrainingComponent implements OnInit, OnDestroy {
       puzzle.goshPuzzleTime && puzzle.goshPuzzleTime > 0
     );
 
-    const startMeta = routineMetaFromPlanType(this.plan.planType);
-    void this.analyticsService.logEvent('puzzle_started', {
-      routine_kind: startMeta.kind,
-      routine_minutes: startMeta.minutes,
-      // El tema del bloque cuando lo hay (el resto de planes filtra por él, así
-      // que describe al puzzle). Infinity no tiene tema de bloque: ahí se reporta
-      // el del puzzle servido en vez de un tema inventado.
-      theme: currentBlock.theme || puzzle.themes?.[0] || '',
-      puzzle_elo: puzzle.rating ?? 0,
-    });
+    void this.analyticsService.logEvent(
+      'puzzle_started',
+      puzzleStartedPayload({
+        planType: this.plan.planType,
+        blockTheme: currentBlock.theme,
+        puzzle,
+      })
+    );
   }
 
+  /**
+   * Arranca la cuenta atrás del bloque desde `timeBlock` segundos. El reloj
+   * apaga antes cualquier cuenta atrás anterior, que es lo único que garantiza
+   * que nunca haya dos restando a la vez sobre el mismo tiempo; el bloque
+   * nuevo empieza sin vencimiento pendiente.
+   */
   initTimeToEndBlock(timeBlock: number) {
-    // Apagar siempre lo anterior: es lo único que garantiza que nunca haya dos
-    // cuentas atrás restando a la vez sobre el mismo tiempo.
-    this.stopBlockTimer();
-
-    this.timeLeftBlock = Math.max(timeBlock, 0);
     this.blockTimeExpired = false;
-
-    if (this.timeLeftBlock === 0) {
-      return;
-    }
-
-    this.blockTimerSub = interval(1000)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {
-        if (this.timeLeftBlock > 0) {
-          this.timeLeftBlock--;
-        } else {
-          this.onBlockTimeUp();
-        }
-      });
+    this.blockTimer.start(timeBlock);
   }
 
   /**
@@ -562,6 +614,8 @@ export class TrainingComponent implements OnInit, OnDestroy {
       return;
     }
     this.blockTimeExpired = true;
+    // El reloj ya se apaga solo al vencer; se apaga también aquí para que un
+    // vencimiento forzado desde fuera del reloj deje el mismo estado.
     this.stopBlockTimer();
     // El bloque terminó: el tablero deja de contar el tiempo del ejercicio.
     this.forceStopTimerInPuzzleBoard = true;
@@ -573,39 +627,22 @@ export class TrainingComponent implements OnInit, OnDestroy {
     this.playNextBlock();
   }
 
+  /** Congela el tiempo del bloque mientras hay una presentación o una solución en pantalla. */
   pauseBlockTimer() {
-    this.stopBlockTimer();
+    this.blockTimer.pause();
   }
 
+  /** Sigue desde el tiempo congelado; sin tiempo restante no arranca nada. */
   resumeBlockTimer() {
-    // Sin tiempo restante no hay nada que reanudar: arrancar aquí creaba un
-    // contador que expiraba al primer segundo y forzaba un cambio de bloque.
-    if (this.timeLeftBlock <= 0) {
-      return;
-    }
-    this.initTimeToEndBlock(this.timeLeftBlock);
+    this.blockTimer.resume();
   }
 
+  /** Apaga el reloj del bloque conservando el tiempo restante. */
   stopBlockTimer() {
-    this.blockTimerSub?.unsubscribe();
-    this.blockTimerSub = null;
+    this.blockTimer.stop();
   }
 
-  pausePlanTimer() {
-    this.timerUnsubscribe$.next();
-  }
-
-  stopPlanTimer() {
-    this.stopBlockTimer();
-    // this.showEndPlan = true;
-    this.timerUnsubscribe$.next();
-    this.timerUnsubscribe$.complete();
-  }
-
-  onPuzzleCompleted(
-    puzzleCompleted: Puzzle,
-    puzzleStatus: 'good' | 'bad' | 'timeOut'
-  ) {
+  onPuzzleCompleted(puzzleCompleted: Puzzle, puzzleStatus: PuzzleResult) {
     // El cambio de bloque ya está en marcha (se acabó su tiempo y se está
     // abriendo la presentación del siguiente): este resultado llegó tarde. Si
     // se registrara, iría a parar al bloque equivocado y además abriría una
@@ -614,62 +651,32 @@ export class TrainingComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const currentBlock = this.plan.blocks?.[this.currentIndexBlock];
-    if (!currentBlock) {
+    if (!this.session.currentBlock) {
       return;
     }
 
-    this.countPuzzlesPlayedBlock++;
-
-    const userPuzzle: UserPuzzle = {
+    const userPuzzle = buildUserPuzzle({
+      puzzle: puzzleCompleted,
+      result: puzzleStatus,
       uid: this.uidGenerator.generateSimpleUid(),
       uidUser: this.profileService.getProfile?.uid ?? '',
-      uidPuzzle: puzzleCompleted.uid,
-      date: new Date().getTime(),
-      resolved: puzzleStatus === 'good',
-      failByTime: puzzleStatus === 'timeOut',
-      resolvedTime: puzzleCompleted.timeUsed ?? 0,
       currentEloUser: this.profileService.getProfile?.elo ?? 0,
-      eloPuzzle: puzzleCompleted.rating,
-      themes: puzzleCompleted.themes,
-      openingFamily: puzzleCompleted.openingFamily,
-      openingVariation: puzzleCompleted.openingVariation,
-      fenPuzzle: puzzleCompleted.fen,
-      fenStartUserPuzzle: puzzleCompleted.fenStartUserPuzzle,
-      firstMoveSquaresHighlight: puzzleCompleted.firstMoveSquaresHighlight,
-      rawPuzzle: puzzleCompleted,
-    };
-
-    const completedMeta = routineMetaFromPlanType(this.plan.planType);
-    void this.analyticsService.logEvent('puzzle_completed', {
-      result: puzzleStatus === 'timeOut' ? 'timeout' : puzzleStatus,
-      puzzle_elo: puzzleCompleted.rating ?? 0,
-      user_elo: this.profileService.getProfile?.elo ?? 0,
-      resolved_time: puzzleCompleted.timeUsed ?? 0,
-      first_theme: puzzleCompleted.themes?.[0] ?? '',
-      routine_kind: completedMeta.kind,
-      routine_minutes: completedMeta.minutes,
+      date: new Date().getTime(),
     });
 
-    // Crear una copia del bloque actual
-    const existingPuzzlesPlayed = currentBlock.puzzlesPlayed ?? [];
-    const updatedBlock = {
-      ...currentBlock,
-      puzzlesPlayed: [...existingPuzzlesPlayed, userPuzzle],
-    };
+    void this.analyticsService.logEvent(
+      'puzzle_completed',
+      puzzleCompletedPayload({
+        planType: this.plan.planType,
+        puzzle: puzzleCompleted,
+        result: puzzleStatus,
+        userElo: this.profileService.getProfile?.elo,
+      })
+    );
 
-    // Crear una nueva copia de todos los bloques
-    const newBlocks = [...this.plan.blocks];
-    // Reemplazar el bloque actual con la copia actualizada
-    newBlocks[this.currentIndexBlock] = updatedBlock;
-
-    // Ahora actualizar el plan con los nuevos bloques
-    this.plan = {
-      ...this.plan,
-      blocks: newBlocks,
-    };
-
-    console.log('Plan actualizado ', this.plan);
+    // El registro va después de la analítica a propósito: el evento describe
+    // el estado previo (plan sin este ejercicio, elo sin recalcular).
+    this.session.registerPuzzleResult(userPuzzle);
 
     if (
       this.plan.planType === 'custom' &&
@@ -700,7 +707,7 @@ export class TrainingComponent implements OnInit, OnDestroy {
     }
 
     if (this.plan.planType === 'reto333' && puzzleStatus === 'good') {
-      this.reto333EloLocal += 10;
+      this.reto333EloLocal += RETO333_ELO_STEP;
       this.plan.blocks[this.currentIndexBlock].elo = this.reto333EloLocal;
     }
 
@@ -741,24 +748,35 @@ export class TrainingComponent implements OnInit, OnDestroy {
 
   /**
    * Qué hacer cuando el ejercicio ya se cerró (resuelto, fallado, o con su
-   * solución vista). Es el único punto que decide entre seguir en el bloque o
-   * cambiar de bloque, para que el fin de tiempo nunca se cuele por su cuenta.
+   * solución vista). La sesión decide entre otro ejercicio, el bloque
+   * siguiente o el fin del plan; aquí solo se le aporta si el tiempo del
+   * bloque venció, para que el fin de tiempo nunca se cuele por su cuenta.
    */
   private continueAfterPuzzle() {
-    if (this.blockTimeExpired) {
-      this.playNextBlock();
-      return;
-    }
-    this.selectPuzzleToPlay();
+    this.follow(this.session.nextStepAfterPuzzle(this.blockTimeExpired));
   }
 
-  async showSolutionAndAlertReto333() {
-    this.isSolutionOpen = true;
-    this.forceStopTimerInPuzzleBoard = true;
-    if (this.plan.blocks[this.currentIndexBlock].time !== -1) {
-      this.pauseBlockTimer();
+  /** Ejecuta la decisión de la sesión con el efecto que le corresponde. */
+  private follow(step: TrainingSessionNextStep) {
+    switch (step) {
+      case 'plan-finished':
+        this.endPlan();
+        break;
+      case 'next-block':
+        this.playNextBlock();
+        break;
+      case 'next-puzzle':
+        this.selectPuzzleToPlay();
+        break;
     }
+  }
 
+  /**
+   * Abre la solución del puzzle en curso y la devuelve ya presentada, para que
+   * quien llama decida qué pasa al cerrarse. Los temas van traducidos porque
+   * el modal del tablero vive en una librería sin acceso al catálogo.
+   */
+  private async openSolutionModal() {
     const themesTranslated = this.puzzleToPlay.themes.map((theme) =>
       this.appService.getNameThemePuzzleByValue(theme)
     );
@@ -773,6 +791,17 @@ export class TrainingComponent implements OnInit, OnDestroy {
     });
 
     await modal.present();
+    return modal;
+  }
+
+  async showSolutionAndAlertReto333() {
+    this.isSolutionOpen = true;
+    this.forceStopTimerInPuzzleBoard = true;
+    if (this.plan.blocks[this.currentIndexBlock].time !== -1) {
+      this.pauseBlockTimer();
+    }
+
+    const modal = await this.openSolutionModal();
 
     modal.onDidDismiss().then(() => {
       this.isSolutionOpen = false;
@@ -783,7 +812,6 @@ export class TrainingComponent implements OnInit, OnDestroy {
 
   async showReto333Alert() {
     this.plan = { ...this.plan, isFinished: true };
-    this.stopPlanTimer();
     this.stopBlockTimer();
     this.forceStopTimerInPuzzleBoard = true;
 
@@ -798,48 +826,37 @@ export class TrainingComponent implements OnInit, OnDestroy {
     // Registrar la hora de la sesión y reprogramar el recordatorio
     this.trainingReminderService.onSessionCompleted(this.plan);
 
-    const currentBlock = this.plan.blocks?.[0];
-    const puzzlesPlayed = currentBlock?.puzzlesPlayed || [];
-    const solvedCount = puzzlesPlayed.filter(p => p.resolved).length;
-    
-    // Calcula el tiempo total invertido real desde el inicio
-    const timePlayedSec = this.reto333StartTime ? Math.floor((Date.now() - this.reto333StartTime) / 1000) : 0;
-    
-    const minutes = Math.floor(timePlayedSec / 60);
-    const seconds = Math.floor(timePlayedSec % 60);
-    const timeString = `${minutes}m ${seconds}s`;
-    
-    const completed = solvedCount >= 333;
+    const puzzlesPlayed = this.plan.blocks?.[0]?.puzzlesPlayed ?? [];
+    const summary = summarizeReto333(
+      puzzlesPlayed,
+      this.reto333StartTime,
+      Date.now()
+    );
 
     // La marca queda en el dispositivo (lectura inmediata) y, si hay sesión,
     // sube al perfil para que se vea también desde otro dispositivo
     const record = this.reto333Storage.saveAttempt(
-      {
-        score: solvedCount,
-        maxElo: this.reto333EloLocal,
-        timeSeconds: timePlayedSec,
-        timeString,
-        completed,
-      },
+      { ...summary, maxElo: this.reto333EloLocal },
       this.profileService.getProfile?.uid
     );
     this.userRecordsService.push();
 
     this.reto333AlertData = {
-      solvedCount,
-      timeString,
+      solvedCount: summary.score,
+      timeString: summary.timeString,
       elo: this.reto333EloLocal,
-      completed
+      completed: summary.completed,
     };
     this.showReto333DaisyModal = true;
 
-    void this.analyticsService.logEvent('reto333_finished', {
-      solved_count: solvedCount,
-      time_seconds: timePlayedSec,
-      elo: this.reto333EloLocal,
-      completed,
-      best_score: record.bestScore,
-    });
+    void this.analyticsService.logEvent(
+      'reto333_finished',
+      reto333FinishedPayload({
+        summary,
+        elo: this.reto333EloLocal,
+        bestScore: record.bestScore,
+      })
+    );
   }
 
   closeReto333Modal() {
@@ -908,21 +925,7 @@ export class TrainingComponent implements OnInit, OnDestroy {
       this.pauseBlockTimer();
     }
 
-    // Calcular temas traducidos
-    const themesTranslated = this.puzzleToPlay.themes.map((theme) =>
-      this.appService.getNameThemePuzzleByValue(theme)
-    );
-
-    const modal = await this.modalController.create({
-      component: BoardPuzzleSolutionComponent,
-      cssClass: 'puzzle-solution-modal',
-      componentProps: {
-        puzzle: this.puzzleToPlay,
-        themesTranslated,
-      },
-    });
-
-    await modal.present();
+    const modal = await this.openSolutionModal();
 
     modal.onDidDismiss().then(() => {
       this.isSolutionOpen = false;
@@ -944,9 +947,8 @@ export class TrainingComponent implements OnInit, OnDestroy {
   }
 
   endPlan() {
-    // this.showEndPlan = true;
     this.plan = { ...this.plan, isFinished: true };
-    this.stopPlanTimer();
+    this.stopBlockTimer();
     this.forceStopTimerInPuzzleBoard = true;
     if (
       this.plan.planType !== 'custom' &&
@@ -967,11 +969,8 @@ export class TrainingComponent implements OnInit, OnDestroy {
         ...this.plan,
         uidUser: this.profileService.getProfile?.uid,
       };
-      // console.log('Plan finalizado ', JSON.stringify(this.plan));
       // this.planService.requestSavePlanAction(this.plan);
     }
-
-    console.log('Plan finalizado ', this.plan);
 
     // Actualizar el plan en Redux
     this.planFacade.updatePlan(this.plan);
@@ -998,50 +997,51 @@ export class TrainingComponent implements OnInit, OnDestroy {
 
     // NO limpiar el plan aquí, ya que plan-played lo necesita
     // Solo detener timers y limpiar recursos del componente
-    this.stopPlanTimer();
     this.stopBlockTimer();
     this.forceStopTimerInPuzzleBoard = true;
     this.showBlockTimer = false;
     this.isGoshHelperShow = false;
     this.isDropdownOpen = false;
-    this.isProcessingBlock = false;
     this.blockTimeExpired = false;
     this.isSolutionOpen = false;
-    this.currentIndexBlock = -1;
     this.timeLeftBlock = 0;
-    this.countPuzzlesPlayedBlock = 0;
-    this.totalPuzzlesInBlock = 0;
     this.eloChanges = [];
     this.isInitialized = false;
+    // La sesión vuelve a antes del primer bloque conservando el plan, que
+    // plan-played sigue leyendo.
+    this.session.reset();
 
     // Navegar a la pantalla de plan jugado
     this.router.navigate(['/puzzles/plan-played']);
   }
 
   private cleanupResources() {
-    // Detener todos los timers
-    this.stopPlanTimer();
+    // Detener el cronómetro del bloque
     this.stopBlockTimer();
+
+    // Cancelar el cierre diferido del dropdown, si lo hay
+    if (this.closeDropdownTimeout) {
+      clearTimeout(this.closeDropdownTimeout);
+      this.closeDropdownTimeout = null;
+    }
 
     // Limpiar flags
     this.forceStopTimerInPuzzleBoard = true;
     this.showBlockTimer = false;
     this.isGoshHelperShow = false;
     this.isDropdownOpen = false;
-    this.isProcessingBlock = false;
     this.blockTimeExpired = false;
     this.isSolutionOpen = false;
 
-    // Resetear variables del componente
-    this.currentIndexBlock = -1;
+    // Resetear variables del componente y la posición de la sesión (el plan
+    // se conserva: así un null posterior del store no manda a inicio)
+    this.session.reset();
     this.timeLeftBlock = 0;
-    this.countPuzzlesPlayedBlock = 0;
-    this.totalPuzzlesInBlock = 0;
     this.eloChanges = [];
 
     // Reto 333 cleanup
     this.reto333StartTime = null;
-    this.reto333EloLocal = 400;
+    this.reto333EloLocal = RETO333_START_ELO;
     this.showReto333DaisyModal = false;
     this.reto333AlertData = null;
 
@@ -1075,7 +1075,7 @@ export class TrainingComponent implements OnInit, OnDestroy {
           handler: () => {
             // Cuando se cancela, sí se debe limpiar el plan
             this.cleanupResources();
-            this.router.navigate(['/home']);
+            void this.router.navigateByUrl(this.returnUrl);
           },
         },
       ],
@@ -1084,8 +1084,16 @@ export class TrainingComponent implements OnInit, OnDestroy {
     await alert.present();
   }
 
+  /**
+   * Cierra el dropdown con una pequeña espera para que el clic que lo cierra
+   * no se propague al elemento de debajo. El handle se guarda para poder
+   * cancelarlo en cleanupResources: si la pantalla se destruye dentro de esos
+   * 200 ms, el timeout no debe tocar un componente ya destruido.
+   */
   closeDropdown() {
-    setTimeout(() => {
+    if (this.closeDropdownTimeout) clearTimeout(this.closeDropdownTimeout);
+    this.closeDropdownTimeout = setTimeout(() => {
+      this.closeDropdownTimeout = null;
       this.isDropdownOpen = false;
     }, 200);
   }
@@ -1094,12 +1102,7 @@ export class TrainingComponent implements OnInit, OnDestroy {
     // Asegurar limpieza completa al salir del componente
     this.forceStopTimerInPuzzleBoard = true;
 
-    // Detener timers
-    if (this.timerUnsubscribe$ && !this.timerUnsubscribe$.closed) {
-      this.timerUnsubscribe$.next();
-      this.timerUnsubscribe$.complete();
-    }
-
+    // Detener el cronómetro del bloque (el tiempo restante se conserva)
     this.stopBlockTimer();
 
     // Limpiar flags

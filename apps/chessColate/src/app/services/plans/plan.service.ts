@@ -1,0 +1,132 @@
+import { inject, Injectable } from '@angular/core';
+import { Plan, Block, PlanTypes } from '@chesspark/models';
+import { UidGeneratorService } from '@chesspark/common-utils';
+import { PlanFacadeService } from '@chesspark/state';
+
+// services
+import { PlanRepository } from '@services/firestore/plan.repository';
+import { BlockService } from '@services/training/block.service';
+import { ProfileService } from '@services/account/profile.service';
+import { PlansElosService } from '@services/plans/plans-elos.service';
+import { AnalyticsService } from '@services/analytics/analytics.service';
+import { routineMetaFromPlanType, minutesFromBlocks } from '@services/analytics/analytics-events.util';
+import { TrainingReminderService } from '@services/training/training-reminder.service';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class PlanService {
+
+  private planRepository = inject(PlanRepository);
+  private blockService = inject(BlockService);
+  private profileService = inject(ProfileService);
+  private plansElosService = inject(PlansElosService);
+  private uidGenerator = inject(UidGeneratorService);
+  private planFacade = inject(PlanFacadeService);
+  private analyticsService = inject(AnalyticsService);
+  private trainingReminderService = inject(TrainingReminderService);
+
+  /**
+   * Prepara un plan personalizado para jugar: resuelve temas (all/weakness), carga puzzles
+   * por bloque y devuelve un plan con uid nuevo listo para setPlan y navegar a training.
+   * @param onProgress callback opcional para reportar progreso (loaded, total)
+   */
+  async makeCustomPlanForPlay(
+    plan: Plan,
+    eloToStart = 1500,
+    onProgress?: (loaded: number, total: number) => void
+  ): Promise<Plan> {
+    const uid = plan.uidCustomPlan ?? plan.uid;
+    const planElos = await this.plansElosService.getOnePlanElo(uid);
+    const eloBase = planElos?.total ?? eloToStart;
+
+    const blockUpdatedToAdd: Block[] = [];
+    const total = plan.blocks.length;
+    for (let i = 0; i < plan.blocks.length; i++) {
+      const b = plan.blocks[i];
+      let theme = b.theme;
+      if (b.theme === 'weakness') {
+        const weakness = planElos?.themes ? this.plansElosService.getWeakness(planElos.themes) : null;
+        theme = weakness ?? this.blockService.getRandomTheme();
+      } else if (b.theme === 'all') {
+        theme = this.blockService.getRandomTheme();
+      }
+      const eloForBlock = (b.eloMin !== undefined && b.eloMax !== undefined)
+        ? b.eloMin + Math.floor(Math.random() * (b.eloMax - b.eloMin + 1))
+        : (planElos?.themes?.[theme] ?? planElos?.total ?? eloToStart);
+      const blockWithTheme = { ...b, theme, elo: eloForBlock };
+      const puzzles = await this.blockService.getPuzzlesForBlock(blockWithTheme);
+      blockUpdatedToAdd.push({
+        ...blockWithTheme,
+        puzzles,
+        puzzlesPlayed: [],
+      });
+      onProgress?.(i + 1, total);
+    }
+
+    void this.analyticsService.logEvent('routine_started', {
+      routine_kind: 'custom',
+      routine_minutes: minutesFromBlocks(blockUpdatedToAdd),
+      routine_category: '',
+      routine_name: plan.title ?? 'Personalizada',
+      routine_uid: plan.uid,
+      blocks_count: blockUpdatedToAdd.length,
+    });
+
+    // No molestar con el recordatorio en mitad de la sesión que empieza
+    this.trainingReminderService.onSessionStarted();
+
+    return {
+      ...plan,
+      uid: this.uidGenerator.generateSimpleUid(),
+      uidCustomPlan: plan.uid,
+      planType: 'custom',
+      blocks: blockUpdatedToAdd,
+      createdAt: Date.now(),
+    };
+  }
+
+  /**
+   * @param blocks
+   * @param time in seconds (-1 for infinite)
+   */
+  newPlan(blocks: Block[], planType: PlanTypes): Promise<Plan> {
+    // Limpiar el plan anterior antes de crear uno nuevo
+    this.planFacade.clearPlan();
+    this.planFacade.loadPlan();
+    return new Promise((resolve, reject) => {
+      try {
+        const plan: Plan = {
+          uid: this.uidGenerator.generateSimpleUid(),
+          blocks,
+          planType,
+          createdAt: new Date().getTime(),
+        };
+        this.planFacade.setPlan(plan);
+        const meta = routineMetaFromPlanType(planType);
+        void this.analyticsService.logEvent('routine_started', {
+          routine_kind: meta.kind,
+          routine_minutes: meta.minutes,
+          routine_category: meta.category,
+          routine_name: meta.name,
+          blocks_count: blocks.length,
+        });
+        // No molestar con el recordatorio en mitad de la sesión que empieza
+        this.trainingReminderService.onSessionStarted();
+        resolve(plan);
+      } catch (error) {
+        const message =
+          error instanceof Error ? error.message : 'No se pudo crear el plan';
+        this.planFacade.setPlanError(message);
+        reject(error);
+      }
+    });
+  }
+
+  /**
+   * Save the plan
+   */
+  savePlan(plan: Plan) {
+    return this.planRepository.savePlan(plan);
+  }
+}

@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { PlanElos } from '@cpark/models';
+import { PlanElos } from '@chesspark/models';
 import { Update } from '@ngrx/entity';
 
 export const requestLoadPlansElos = createAction(

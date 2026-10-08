@@ -16,7 +16,8 @@ import { CommonModule } from '@angular/common';
 import { Subject, interval } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
-import { Chessboard, BORDER_TYPE } from 'cm-chessboard';
+import { Chessboard } from 'cm-chessboard';
+import { createChessboard } from '../chessboard-factory/create-chessboard';
 import { Markers } from 'cm-chessboard/src/extensions/markers/Markers.js';
 
 import { SoundsService } from '@chesspark/common-utils';
@@ -104,17 +105,10 @@ export class BoardGamePlayerComponent
       return;
     }
 
-    this.board = await new Chessboard(this.boardContainer.nativeElement, {
-      responsive: true,
+    this.board = await createChessboard(this.boardContainer.nativeElement, {
+      highlightCheck: true,
       position: this.fens[0],
       orientation: this.orientation,
-      assetsUrl: 'assets/cm-chessboard/assets/',
-      assetsCache: true,
-      style: {
-        cssClass: 'chessboard-js',
-        borderType: BORDER_TYPE.thin,
-        pieces: { file: 'pieces/standard.svg' },
-      },
       extensions: [{ class: Markers }],
     });
 

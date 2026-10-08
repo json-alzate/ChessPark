@@ -83,14 +83,15 @@ Decisiones a cerrar antes de mover nada:
 
 ## 3. Roadmap de features siguientes 🔴
 
-Orden acordado (ver docs de diseño en [features/](./features/)):
+Ya implementadas: Notificaciones de Entrenamiento (F02) y Game Analytics (F12). Lo que sigue, en orden
+(diseños en [features/](./features/)):
 
-1. **Notificaciones de Entrenamiento** — [features/NOTIFICACIONES_ENTRENAMIENTO.md](./features/NOTIFICACIONES_ENTRENAMIENTO.md). Siguiente en la fila (mayor ROI de retención; sus métricas ya se pueden medir con la observabilidad recién montada).
-2. **Game Analytics** (chess.com/lichess) — [features/GAME_ANALYTICS.md](./features/GAME_ANALYTICS.md). Autocontenido, sin backend.
-3. **Puzzle Feed** — [features/PUZZLE_FEED.md](./features/PUZZLE_FEED.md).
-4. **Chess Runner** — [features/CHESS_RUNNER.md](./features/CHESS_RUNNER.md). Requiere assets pixel-art + cerrar decisiones abiertas del doc.
-5. **Puzzle Geo Hunt** — [features/PUZZLE_GEO_HUNT.md](./features/PUZZLE_GEO_HUNT.md).
-6. **Cuadros de Conquista** — [features/CUADROS_DE_CONQUISTA.md](./features/CUADROS_DE_CONQUISTA.md). El más complejo; necesita un *design spike* que cierre poderes/economía/matchmaking antes de codificar.
+1. **Método del Pájaro Carpintero** — [features/METODO_PAJARO_CARPINTERO.md](./features/METODO_PAJARO_CARPINTERO.md). Siguiente en la fila; no depende de otra feature (genera y congela su set desde el catálogo).
+2. **Rutina con BD de Puzzles Personalizada (PGN)** — [features/RUTINA_PGN_PERSONALIZADA.md](./features/RUTINA_PGN_PERSONALIZADA.md). Reutiliza el set congelado del Pájaro Carpintero.
+3. **Analizador de Partidas** — [features/ANALIZADOR_PARTIDAS.md](./features/ANALIZADOR_PARTIDAS.md).
+4. **Puzzle Feed** — [features/PUZZLE_FEED.md](./features/PUZZLE_FEED.md).
+5. **Chess Runner** — [features/CHESS_RUNNER.md](./features/CHESS_RUNNER.md). Requiere assets pixel-art + cerrar decisiones abiertas del doc.
+6. Después: Sparring Personalizado, Cuadros de Conquista (necesita un *design spike* antes de codificar), Puzzle Racer, Puzzle Geo Hunt y Jugar en Lichess.
 
 > El orden vivo está en [features/README.md](./features/README.md), que es el que se
 > mantiene al día conforme salen features.

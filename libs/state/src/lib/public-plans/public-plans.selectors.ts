@@ -3,7 +3,7 @@ import {
   getPublicPlansState,
   publicPlansStateAdapter,
 } from './public-plans.state';
-import { PublicPlan, PlanInteraction } from '@cpark/models';
+import { PublicPlan, PlanInteraction } from '@chesspark/models';
 
 export const {
   selectAll: getAllPublicPlans,
@@ -41,6 +41,21 @@ export const getPublicPlan = (uid: string) =>
     if (!plans) return null;
     return plans.find((p) => p.uid === uid) ?? null;
   });
+
+/** Planes cargados por uid, en el orden de `uids`; omite los que aún no llegaron. */
+export const getInteractionPlans = (uids: string[]) =>
+  createSelector(getPublicPlansState, (state) =>
+    uids
+      .map((uid) => state?.interactionPlans?.[uid])
+      .filter((p): p is PublicPlan => !!p)
+  );
+
+/** Interacción del usuario actual con un plan, o null si no tiene ninguna. */
+export const getUserInteractionByPlan = (planUid: string) =>
+  createSelector(
+    getPublicPlansState,
+    (state) => state?.interactions?.find((i) => i.planUid === planUid) ?? null
+  );
 
 export const getUserInteractions = createSelector(
   getPublicPlansState,

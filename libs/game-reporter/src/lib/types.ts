@@ -1,4 +1,4 @@
-import { ArchiveMonth, ChessGame, ChessPlatform, TimeClass } from '@cpark/models';
+import { ArchiveMonth, ChessGame, ChessPlatform, TimeClass } from '@chesspark/models';
 
 /**
  * Lo que hace falta saber de un conector para poder alimentar el archivo.
@@ -81,6 +81,8 @@ export interface RatingDataPoint {
   date: number;
   rating: number;
   platform: ChessPlatform;
+  /** Bullet, blitz, rápidas… para que la gráfica pueda separar una línea por ritmo. */
+  timeClass: TimeClass;
 }
 
 /** El desglose de una serie de partidas. */

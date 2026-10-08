@@ -1,0 +1,358 @@
+/**
+ * Lógica pura de la pantalla de Partidas (sin Angular ni plugins):
+ * ajustes de reproducción, filtros de la lista y orden del modo TV.
+ */
+
+import { GameHeader } from '@chesspark/games-provider';
+import {
+  MoveClassification,
+  PieceKind,
+  PieceRating,
+  TrackedPiece,
+} from '@chesspark/game-reporter';
+
+/** Velocidades ofrecidas, en milisegundos por jugada. */
+export const PLAYBACK_SPEEDS = [500, 1000, 2000, 3000, 5000] as const;
+
+export interface PlaybackSettings {
+  msPerMove: number;
+  soundEnabled: boolean;
+  /** Modo TV: al terminar una partida, pasar a la siguiente. */
+  autoNextGame: boolean;
+  shuffle: boolean;
+  loopCollection: boolean;
+}
+
+export const DEFAULT_PLAYBACK_SETTINGS: PlaybackSettings = {
+  msPerMove: 2000,
+  soundEnabled: true,
+  autoNextGame: true,
+  shuffle: false,
+  loopCollection: true,
+};
+
+/** Filtros de la lista de partidas de un jugador. */
+export type ResultFilter = 'all' | 'won' | 'drawn' | 'lost';
+export type ColorFilter = 'all' | 'white' | 'black';
+
+export interface GameFilters {
+  /** Texto libre sobre el nombre del rival. */
+  opponent: string;
+  result: ResultFilter;
+  color: ColorFilter;
+}
+
+export const EMPTY_FILTERS: GameFilters = {
+  opponent: '',
+  result: 'all',
+  color: 'all',
+};
+
+/**
+ * Con qué color jugó el dueño de la colección. Se decide por el apellido,
+ * porque los PGN escriben 'Petrosian, Tigran V' y el id del paquete es
+ * 'petrosian'.
+ */
+export function playedColor(
+  header: GameHeader,
+  playerId: string
+): 'white' | 'black' | null {
+  const id = playerId.toLowerCase();
+  if (surnameOf(header.white).includes(id)) {
+    return 'white';
+  }
+  if (surnameOf(header.black).includes(id)) {
+    return 'black';
+  }
+  return null;
+}
+
+/** Apellido en minúsculas y sin acentos: 'Petrosian, Tigran V' → 'petrosian'. */
+function surnameOf(name: string): string {
+  return name
+    .split(',')[0]
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '');
+}
+
+/** El rival del dueño de la colección en una partida. */
+export function opponentOf(header: GameHeader, playerId: string): string {
+  return playedColor(header, playerId) === 'white'
+    ? header.black
+    : header.white;
+}
+
+/** Cómo le fue al dueño de la colección: ganó, empató o perdió. */
+export function outcomeFor(
+  header: GameHeader,
+  playerId: string
+): 'won' | 'drawn' | 'lost' | null {
+  if (header.result === '1/2-1/2') {
+    return 'drawn';
+  }
+  const color = playedColor(header, playerId);
+  if (!color || (header.result !== '1-0' && header.result !== '0-1')) {
+    return null;
+  }
+  const whiteWon = header.result === '1-0';
+  return (color === 'white') === whiteWon ? 'won' : 'lost';
+}
+
+/** Aplica los filtros de la pantalla del jugador. */
+export function filterGames(
+  headers: ReadonlyArray<GameHeader>,
+  playerId: string,
+  filters: GameFilters
+): GameHeader[] {
+  const search = filters.opponent.trim().toLowerCase();
+
+  return headers.filter((header) => {
+    if (search && !opponentOf(header, playerId).toLowerCase().includes(search)) {
+      return false;
+    }
+    if (filters.color !== 'all' && playedColor(header, playerId) !== filters.color) {
+      return false;
+    }
+    if (filters.result !== 'all' && outcomeFor(header, playerId) !== filters.result) {
+      return false;
+    }
+    return true;
+  });
+}
+
+/**
+ * Orden en que el modo TV recorre las partidas. Con aleatorio activado se
+ * baraja una vez al arrancar, no en cada salto: así "anterior" devuelve a la
+ * partida que se acaba de ver, que es lo que espera cualquiera.
+ */
+export function buildPlayOrder(
+  headers: ReadonlyArray<GameHeader>,
+  shuffle: boolean
+): number[] {
+  const order = headers.map((header) => header.index);
+  if (!shuffle) {
+    return order;
+  }
+
+  for (let i = order.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  return order;
+}
+
+/**
+ * Siguiente posición dentro del recorrido del TV. `null` cuando se acabó la
+ * colección y la repetición está apagada.
+ */
+export function nextPosition(
+  position: number,
+  total: number,
+  loop: boolean
+): number | null {
+  if (total === 0) {
+    return null;
+  }
+  if (position + 1 < total) {
+    return position + 1;
+  }
+  return loop ? 0 : null;
+}
+
+/** Tamaño legible: '1,1 MB'. Mismo criterio que la pantalla de Almacenamiento. */
+export function formatBytes(bytes: number): string {
+  if (bytes <= 0) {
+    return '0 KB';
+  }
+  const mb = bytes / (1024 * 1024);
+  if (mb >= 1) {
+    return `${mb.toFixed(1).replace('.', ',')} MB`;
+  }
+  return `${Math.round(bytes / 1024)} KB`;
+}
+
+// — Mapa de calor de una pieza ————————————————————————————————
+
+const WHITE_SYMBOLS: Record<PieceKind, string> = {
+  k: '♔',
+  q: '♕',
+  r: '♖',
+  b: '♗',
+  n: '♘',
+  p: '♙',
+};
+
+const BLACK_SYMBOLS: Record<PieceKind, string> = {
+  k: '♚',
+  q: '♛',
+  r: '♜',
+  b: '♝',
+  n: '♞',
+  p: '♟',
+};
+
+/** El símbolo de la pieza con la que empezó, para el selector. */
+export function pieceSymbol(piece: Pick<TrackedPiece, 'color' | 'type'>): string {
+  return (piece.color === 'w' ? WHITE_SYMBOLS : BLACK_SYMBOLS)[piece.type];
+}
+
+/** El número de jugada de una media jugada: la 1 y la 2 son la jugada 1. */
+export function moveNumberOfPly(ply: number): number {
+  return Math.ceil(ply / 2);
+}
+
+/**
+ * La pieza que se enseña al abrir el mapa: la dama de ese color, que es la
+ * que más se mueve y la del ejemplo de siempre; si no hay dama (una posición
+ * de partida propia), la primera que haya.
+ */
+export function defaultHeatmapPiece(
+  pieces: TrackedPiece[],
+  color: 'w' | 'b'
+): TrackedPiece | null {
+  const own = pieces.filter((piece) => piece.color === color);
+  return own.find((piece) => piece.type === 'q') ?? own[0] ?? null;
+}
+
+/**
+ * Cómo se dibuja la pieza en el tablero, con el código de cm-chessboard: un
+ * peón que coronó se dibuja como la pieza en la que se convirtió.
+ */
+export function boardPieceCode(piece: TrackedPiece): string {
+  return `${piece.color}${piece.promotedTo ?? piece.type}`;
+}
+
+// — Valoración de las piezas ——————————————————————————————————
+
+/**
+ * La marca clásica de una jugada en la lista: '?!' imprecisión, '?' error y
+ * '??' error grave. Las buenas no llevan marca.
+ */
+export function moveAnnotation(classification: MoveClassification): string {
+  switch (classification) {
+    case 'inaccuracy':
+      return '?!';
+    case 'mistake':
+      return '?';
+    case 'blunder':
+      return '??';
+    default:
+      return '';
+  }
+}
+
+/** El tono de una nota, como en las fichas de fútbol: verde, amarillo o rojo. */
+export function ratingTone(rating: number): 'high' | 'mid' | 'low' {
+  if (rating >= 7) {
+    return 'high';
+  }
+  if (rating >= 5.5) {
+    return 'mid';
+  }
+  return 'low';
+}
+
+/** Las piezas con nota de un color, de la mejor a la peor; a igual nota, la que más jugó. */
+export function rankedPieces(
+  pieces: PieceRating[],
+  color: 'w' | 'b'
+): PieceRating[] {
+  return pieces
+    .filter((piece) => piece.color === color && piece.rating !== null)
+    .sort(
+      (a, b) =>
+        (b.rating as number) - (a.rating as number) || b.moves - a.moves
+    );
+}
+
+// — Ritmo y reloj de la partida ————————————————————————————————
+
+/**
+ * El 'timeControl' en bruto ('180+2', '600+0'…) a minutos: '3+2', '10+0'.
+ * Lo compuesto (clásicas FIDE a varias fases) y lo que no se entiende se
+ * enseña tal cual llegó.
+ */
+export function formatTimeControlValue(raw: string): string {
+  const simple = /^(\d+)(?:\+(\d+))?$/.exec(raw);
+  if (!simple) {
+    return raw;
+  }
+  const minutes = Math.round(Number(simple[1]) / 60);
+  const increment = Number(simple[2] ?? 0);
+  return `${minutes}+${increment}`;
+}
+
+/**
+ * El reloj de una jugada ('0:09:58.2') a algo corto para la lista de jugadas:
+ * sin fracción de segundo, y sin la hora cuando es cero.
+ */
+export function formatClock(raw: string | null): string {
+  if (!raw) {
+    return '';
+  }
+  const match = /^(\d+):(\d{2}):(\d{2})(?:\.\d+)?$/.exec(raw);
+  if (!match) {
+    return raw;
+  }
+  const hours = Number(match[1]);
+  return hours > 0 ? `${hours}:${match[2]}:${match[3]}` : `${Number(match[2])}:${match[3]}`;
+}
+
+/** Un reloj ('0:09:58.2') a segundos; null si no tiene esa forma. */
+function parseClockSeconds(raw: string | null): number | null {
+  if (!raw) {
+    return null;
+  }
+  const match = /^(\d+):(\d{2}):(\d{2}(?:\.\d+)?)$/.exec(raw);
+  if (!match) {
+    return null;
+  }
+  return Number(match[1]) * 3600 + Number(match[2]) * 60 + Number(match[3]);
+}
+
+/** El 'timeControl' en bruto ('180+2') a segundos; null en formas compuestas o sin tag. */
+function parseTimeControlSeconds(
+  raw: string | null
+): { baseSeconds: number; incrementSeconds: number } | null {
+  const match = raw ? /^(\d+)(?:\+(\d+))?$/.exec(raw) : null;
+  return match
+    ? { baseSeconds: Number(match[1]), incrementSeconds: Number(match[2] ?? 0) }
+    : null;
+}
+
+/**
+ * Cuánto se pensó cada jugada: el reloj de antes de esa jugada menos el de
+ * después, más el incremento —como lo enseña chess.com bajo la lista de
+ * jugadas—. La primera jugada de cada color necesita el tiempo base del
+ * control para tener un "antes"; si no se conoce, esa jugada queda sin dato,
+ * pero las siguientes de ese color sí se calculan, porque ya hay un reloj
+ * previo real del que partir.
+ */
+export function moveTimes(
+  clocks: ReadonlyArray<string | null>,
+  timeControl: string | null
+): (number | null)[] {
+  const parsed = parseTimeControlSeconds(timeControl);
+  const incrementSeconds = parsed?.incrementSeconds ?? 0;
+  let prevWhite = parsed?.baseSeconds ?? null;
+  let prevBlack = parsed?.baseSeconds ?? null;
+
+  return clocks.map((raw, i) => {
+    const isWhite = (i + 1) % 2 === 1;
+    const current = parseClockSeconds(raw);
+    const prev = isWhite ? prevWhite : prevBlack;
+    const spent =
+      current !== null && prev !== null
+        ? Math.max(prev - current + incrementSeconds, 0)
+        : null;
+
+    if (isWhite) {
+      prevWhite = current;
+    } else {
+      prevBlack = current;
+    }
+    return spent;
+  });
+}

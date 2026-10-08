@@ -6,20 +6,22 @@ import { ModalController, IonContent, IonIcon } from '@ionic/angular/standalone'
 
 import { TranslocoPipe } from '@jsverse/transloco';
 
-import { Block } from '@cpark/models';
-import { PuzzleThemesGroup } from '@cpark/models';
+import { Block } from '@chesspark/models';
+import { PuzzleThemesGroup } from '@chesspark/models';
 import { SecondsToMinutesSecondsPipe } from '@chesspark/common-utils';
 
 import { TranslocoService } from '@jsverse/transloco';
-import { AppService } from '@services/app.service';
+import { AppService } from '@services/app/app.service';
 
 import { addIcons } from 'ionicons';
 import { close, shuffle, trendingDown, infiniteOutline } from 'ionicons/icons';
+import { KingImagePipe } from '@shared/pipes/king-image.pipe';
 
 @Component({
   selector: 'app-block-settings',
   standalone: true,
   imports: [
+    KingImagePipe,
     CommonModule,
     ReactiveFormsModule,
     TranslocoPipe,

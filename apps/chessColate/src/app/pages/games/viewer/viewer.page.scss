@@ -1,3 +1,18 @@
 :host {
   display: block;
 }
+
+// La cabecera es propia de la pantalla (no usa app-navbar ni ion-header),
+// así que tiene que respetar ella misma el notch en iOS; el pie necesita lo
+// mismo con la barra de gestos de abajo.
+.viewer-header {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.container {
+  // calc() en vez de solo env(): una declaración de padding-bottom pisa a la
+  // otra entera, así que hay que sumar aquí el pb-16 (4rem) de la plantilla
+  // en vez de dejar que esta regla, más específica, lo reemplace por el solo
+  // valor del notch —que en un dispositivo sin notch sería 0.
+  padding-bottom: calc(4rem + env(safe-area-inset-bottom, 0px));
+}

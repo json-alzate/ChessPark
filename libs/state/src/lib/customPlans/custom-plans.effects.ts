@@ -4,7 +4,7 @@ import { from } from 'rxjs';
 import { switchMap, mergeMap, catchError } from 'rxjs/operators';
 
 import { loadCustomPlans, addCustomPlans } from './custom-plans.actions';
-import { Plan } from '@cpark/models';
+import { Plan } from '@chesspark/models';
 
 export interface ICustomPlansFirestore {
   getCustomPlans(uidUser: string): Promise<Plan[]>;

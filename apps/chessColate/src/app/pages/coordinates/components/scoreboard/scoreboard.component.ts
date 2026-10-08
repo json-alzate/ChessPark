@@ -4,6 +4,7 @@ import { IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { trophyOutline, timeOutline } from 'ionicons/icons';
 import { TranslocoPipe } from '@jsverse/transloco';
+import { KingImagePipe } from '@shared/pipes/king-image.pipe';
 
 addIcons({ trophyOutline, timeOutline });
 
@@ -12,7 +13,7 @@ addIcons({ trophyOutline, timeOutline });
   templateUrl: './scoreboard.component.html',
   styleUrls: ['./scoreboard.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonIcon, TranslocoPipe],
+  imports: [KingImagePipe, CommonModule, IonIcon, TranslocoPipe],
 })
 export class ScoreboardComponent {
   @Input() bestScores: Array<{

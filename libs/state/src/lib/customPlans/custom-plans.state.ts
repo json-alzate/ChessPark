@@ -1,7 +1,7 @@
 import { createFeatureSelector } from '@ngrx/store';
 import { EntityState, EntityAdapter, createEntityAdapter } from '@ngrx/entity';
 
-import { Plan } from '@cpark/models';
+import { Plan } from '@chesspark/models';
 
 export type CustomPlansState = EntityState<Plan> & {
   loading: boolean;

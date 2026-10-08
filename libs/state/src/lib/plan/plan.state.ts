@@ -1,5 +1,5 @@
 import { createFeatureSelector } from '@ngrx/store';
-import { Plan } from '@cpark/models';
+import { Plan } from '@chesspark/models';
 
 export interface PlanState {
   plan: Plan | null;

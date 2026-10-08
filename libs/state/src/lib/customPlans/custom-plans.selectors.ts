@@ -3,7 +3,7 @@ import {
   getCustomPlansState,
   customPlansStateAdapter,
 } from './custom-plans.state';
-import { Plan } from '@cpark/models';
+import { Plan } from '@chesspark/models';
 
 export const {
   selectAll: getAllCustomPlans,

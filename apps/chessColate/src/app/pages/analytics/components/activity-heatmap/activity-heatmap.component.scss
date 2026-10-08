@@ -1,32 +1,6 @@
-// Cinco tonos del naranja del tema: el nivel 0 es un hueco apenas visible y el
-// 4 el color pleno. Se define aquí y no con clases de Tailwind porque el nivel
-// se calcula en tiempo de ejecución y Tailwind solo genera las clases que ve.
-.heatmap-cell {
-  width: 10px;
-  height: 10px;
-  border-radius: 2px;
-  flex-shrink: 0;
-  background-color: rgba(255, 255, 255, 0.07);
-
-  &[data-level='1'] {
-    background-color: rgba(242, 140, 24, 0.3);
-  }
-
-  &[data-level='2'] {
-    background-color: rgba(242, 140, 24, 0.5);
-  }
-
-  &[data-level='3'] {
-    background-color: rgba(242, 140, 24, 0.75);
-  }
-
-  &[data-level='4'] {
-    background-color: rgba(242, 140, 24, 1);
-  }
-}
-
-// Un año son cincuenta y dos columnas: en un móvil no caben, así que se
-// desplaza en horizontal en vez de encogerlas hasta que no se distingan.
-.heatmap-scroll {
-  scrollbar-width: thin;
+// Chart.js necesita un contenedor con posición relativa para medir el ancho
+// disponible; la altura sale de la proporción 5:1 del propio gráfico.
+.chart-container {
+  position: relative;
+  width: 100%;
 }

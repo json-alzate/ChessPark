@@ -14,7 +14,7 @@ import { map } from 'rxjs/operators';
 
 // Models
 <% if (createModel) { %>
-import { <%= classifyName %> } from '@cpark/models';
+import { <%= classifyName %> } from '@chesspark/models';
 <% } %>
 
 @Injectable({ providedIn: 'root' })
@@ -66,7 +66,7 @@ import {
 import { get<%= classifyName %>State } from './<%= name %>.state';
 import { map } from 'rxjs/operators';
 <% if (createModel) { %>
-import { <%= classifyName %> } from '@cpark/models';
+import { <%= classifyName %> } from '@chesspark/models';
 <% } %>
 
 @Injectable({ providedIn: 'root' })

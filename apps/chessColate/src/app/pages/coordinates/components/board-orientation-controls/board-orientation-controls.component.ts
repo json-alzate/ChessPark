@@ -6,13 +6,14 @@ import { shuffleOutline } from 'ionicons/icons';
 
 addIcons({ shuffleOutline });
 import { TranslocoPipe } from '@jsverse/transloco';
+import { KingImagePipe } from '@shared/pipes/king-image.pipe';
 
 @Component({
   selector: 'app-board-orientation-controls',
   templateUrl: './board-orientation-controls.component.html',
   styleUrls: ['./board-orientation-controls.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonIcon, TranslocoPipe],
+  imports: [KingImagePipe, CommonModule, IonIcon, TranslocoPipe],
 })
 export class BoardOrientationControlsComponent {
   @Input() boardOrientation: 'random' | 'white' | 'black' = 'random';

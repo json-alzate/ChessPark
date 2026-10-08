@@ -11,20 +11,19 @@ import {
 
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
-import { Plan, Puzzle, UserPuzzle, Block, PlanTypes } from '@cpark/models';
-import { PlanFacadeService, PublicPlansFacadeService } from '@cpark/state';
+import { Plan, Puzzle, UserPuzzle, Block, PlanTypes } from '@chesspark/models';
+import { PlanFacadeService, PublicPlansFacadeService } from '@chesspark/state';
 
-import { AppService } from '@services/app.service';
-import { ProfileService } from '@services/profile.service';
-import { PlansElosService } from '@services/plans-elos.service';
-import { FirestoreService } from '@services/firestore.service';
-import { BlockService } from '@services/block.service';
-import { PlanService } from '@services/plan.service';
-import { PlanStorageService } from '@services/plan-storage.service';
-import { AnalyticsService } from '@services/analytics.service';
-import { TrainingReminderService } from '@services/training-reminder.service';
-import { AppReviewService } from '@services/app-review.service';
-import { routineAccuracy } from '@services/app-review.util';
+import { AppService } from '@services/app/app.service';
+import { ProfileService } from '@services/account/profile.service';
+import { PlansElosService } from '@services/plans/plans-elos.service';
+import { BlockService } from '@services/training/block.service';
+import { PlanService } from '@services/plans/plan.service';
+import { PlanStorageService } from '@services/plans/plan-storage.service';
+import { AnalyticsService } from '@services/analytics/analytics.service';
+import { TrainingReminderService } from '@services/training/training-reminder.service';
+import { AppReviewService } from '@services/app/app-review.service';
+import { routineAccuracy } from '@services/app/app-review.util';
 import { LoadingController } from '@ionic/angular/standalone';
 
 import { BoardPuzzleSolutionComponent } from '@chesspark/board';
@@ -47,6 +46,8 @@ import {
 } from 'ionicons/icons';
 import { Subject, Subscription } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { CountUpComponent } from '@shared/components/count-up/count-up.component';
+import { EloDeltaComponent } from '@shared/components/elo-delta/elo-delta.component';
 
 @Component({
   selector: 'app-plan-played',
@@ -59,6 +60,8 @@ import { takeUntil } from 'rxjs/operators';
     IonContent,
     IonIcon,
     NavbarComponent,
+    CountUpComponent,
+    EloDeltaComponent,
   ],
   templateUrl: './plan-played.component.html',
   styleUrl: './plan-played.component.scss',
@@ -72,7 +75,6 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
   private profileService = inject(ProfileService);
   private plansElosService = inject(PlansElosService);
   private publicPlansFacade = inject(PublicPlansFacadeService);
-  private firestoreService = inject(FirestoreService);
   private blockService = inject(BlockService);
   private planService = inject(PlanService);
   private planStorageService = inject(PlanStorageService);
@@ -104,6 +106,7 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
   // null cuando el plan no guardó el ELO inicial (planes antiguos del historial).
   eloDelta: number | null = null;
   isLiked: boolean = false;
+  private likeStatusSub?: Subscription;
   isLoadingLike: boolean = false;
   isLoadingToPlay: boolean = false;
   isNewRecord: boolean = false;
@@ -339,18 +342,25 @@ export class PlanPlayedComponent implements OnInit, OnDestroy {
     return this.isPublicPlan && this.plan?.uidUser !== profile?.uid;
   }
 
+  /**
+   * Refleja en el botón de like el estado de la interacción en el store. Se
+   * suscribe en vez de leer una vez, para que el botón siga a los cambios que
+   * el usuario hace desde esta pantalla. El store ya guarda la interacción
+   * cuando la carga, así que la vista nunca consulta Firestore directamente.
+   */
   async checkLikeStatus(): Promise<void> {
     if (!this.plan || !this.profileService.getProfile?.uid) return;
 
-    try {
-      const interaction = await this.firestoreService.getPlanInteraction(
-        this.profileService.getProfile.uid,
-        this.plan.uid
-      );
-      this.isLiked = interaction?.liked ?? false;
-    } catch (error) {
-      console.error('Error checking like status', error);
-    }
+    const uidUser = this.profileService.getProfile.uid;
+    const planUid = this.plan.uid;
+    this.likeStatusSub?.unsubscribe();
+    this.likeStatusSub = this.publicPlansFacade
+      .getUserInteractionByPlan$(planUid)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((interaction) => {
+        this.isLiked = interaction?.liked ?? false;
+      });
+    this.publicPlansFacade.loadPlanInteraction(uidUser, planUid);
   }
 
   async onToggleLike(): Promise<void> {

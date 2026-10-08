@@ -12,7 +12,7 @@
  * las debilidades del usuario; aquí solo se comunica la estructura.
  */
 
-import { PlanTypes } from '@cpark/models';
+import { PlanTypes } from '@chesspark/models';
 
 export type ChessTimeCategory = 'bullet' | 'blitz' | 'rapid' | 'classical';
 

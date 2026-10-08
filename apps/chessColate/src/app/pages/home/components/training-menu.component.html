@@ -1,6 +1,6 @@
 <!-- Mobile: slider horizontal de tarjetas (se asoma la siguiente) -->
 <div class="lg:hidden">
-    <swiper-container #swiperRef slides-per-view="1.15" centered-slides="true" space-between="10" auto-height="true"
+    <swiper-container #swiperRef slides-per-view="1.15" centered-slides="true" space-between="10"
         [attr.initial-slide]="recommendedIndex" class="slider-fade block"
         (swiperslidechange)="onSlideChange($event)">
         @for (preset of presets; track preset.plan) {
@@ -30,92 +30,85 @@
 
 <!-- Tarjeta de rutina (compartida mobile/desktop) -->
 <ng-template #cardTpl let-preset>
-    <div class="card bg-base-100 border border-base-300 rounded-2xl shadow-sm w-full flex flex-col lg:h-full">
+    <div class="card bg-base-100 border border-base-300 rounded-2xl shadow-sm w-full h-full flex flex-col">
 
-        <!-- Área clickeable: inicia la rutina -->
-        <div class="ion-activatable ripple-parent relative flex-1 cursor-pointer overflow-hidden rounded-t-2xl p-4 hover:bg-base-200/30 transition-colors"
+        <!-- Cabecera (siempre visible, también con "Qué entrenas" abierto): icono + nombre · ELO -->
+        <div class="ion-activatable ripple-parent relative flex items-start justify-between gap-2 cursor-pointer overflow-hidden rounded-t-2xl p-4 hover:bg-base-200/30 transition-colors"
             role="button" tabindex="0" (click)="createPlan(preset.plan)"
             (keydown.enter)="createPlan(preset.plan)">
             <ion-ripple-effect></ion-ripple-effect>
 
-            <!-- Cabecera: categoría + duración + ELO -->
-            <div class="flex items-start justify-between gap-2">
-                <div class="flex items-center gap-3 min-w-0">
-                    <div class="flex h-10 w-10 items-center justify-center shrink-0">
-                        <img [src]="imageFor(preset)" [alt]="preset.titleKey | transloco"
-                            class="h-10 w-10 object-contain" />
-                    </div>
-                    <div class="min-w-0">
-                        <div class="font-bold leading-tight">
-                            {{ preset.titleKey | transloco }}
-                        </div>
-                        <div class="text-xs text-base-content/50">
-                            {{ 'TRAINING.routineOf' | transloco: { minutes: preset.minutes } }}
-                        </div>
-                    </div>
+            <div class="flex items-center gap-3 min-w-0">
+                <div class="flex h-10 w-10 items-center justify-center shrink-0">
+                    <img [src]="imageFor(preset)" [alt]="preset.titleKey | transloco"
+                        class="h-10 w-10 object-contain" />
                 </div>
-                <div class="text-right shrink-0" [class.opacity-50]="isEloProvisional(preset.plan)">
-                    <div class="text-xl font-extrabold leading-none text-primary">
-                        {{ getEloDisplayForPlan(preset.plan) }}
-                    </div>
-                    <div class="mt-0.5 text-[10px] font-bold uppercase tracking-wide text-[var(--cc-elo)]">
-                        {{ 'TRAINING.elo' | transloco }}
-                    </div>
+                <div class="font-bold leading-tight">
+                    {{ preset.titleKey | transloco }}
                 </div>
             </div>
-
-            <!-- Descripción con inicio resaltado (2 líneas en mobile, completa en desktop) -->
-            <p class="mt-3 line-clamp-2 min-h-[2.4rem] text-sm font-semibold leading-snug text-base-content/80 lg:line-clamp-none">
-                <span class="text-primary">{{ preset.leadKey | transloco }}</span>
-                {{ preset.summaryKey | transloco }}
-            </p>
+            <div class="text-right shrink-0" [class.opacity-50]="isEloProvisional(preset.plan)">
+                <div class="text-xl font-extrabold leading-none text-primary">
+                    {{ getEloDisplayForPlan(preset.plan) }}
+                </div>
+            </div>
         </div>
 
-        <!-- Lista de bloques (también inicia la rutina); el "+N" abre el detalle -->
-        <div class="cursor-pointer rounded-b-2xl px-4 pb-4 transition-colors hover:bg-base-200/30"
-            (click)="createPlan(preset.plan)">
-            <div class="mb-1.5 text-[10px] uppercase tracking-wide text-base-content/50">
-                {{ 'TRAINING.viewBlocks' | transloco }}
-            </div>
-            <div class="flex flex-col gap-1.5">
-                @for (slot of blockSlots; track slot) {
-                @if (preset.blocks[slot]; as block) {
-                <ng-container
-                    [ngTemplateOutlet]="blockRow" [ngTemplateOutletContext]="{ $implicit: block }"></ng-container>
-                } @else {
-                <div class="h-4" aria-hidden="true"></div>
-                }
-                }
+        <!-- Cuerpo: el título inicia la rutina; el panel "Qué entrenas" lo cubre (la cabecera queda libre) -->
+        <div class="relative flex flex-1 flex-col">
+            <div class="ion-activatable ripple-parent relative flex-1 cursor-pointer overflow-hidden px-4 pt-4 pb-2 hover:bg-base-200/30 transition-colors"
+                role="button" tabindex="0" (click)="createPlan(preset.plan)"
+                (keydown.enter)="createPlan(preset.plan)">
+                <ion-ripple-effect></ion-ripple-effect>
 
-                <!-- Slot del "+N": altura fija en todas las tarjetas → mismo alto -->
-                <div class="flex h-6 items-center">
-                    @if (hiddenBlocks(preset).length > 0) {
-                    <!-- Detalle completo: popover controlado (cierra al tocar fuera) -->
-                    <div class="relative">
-                        <button type="button"
-                            class="inline-flex items-center py-1 pr-6 text-xs font-semibold text-primary"
-                            [attr.aria-expanded]="openBlocksPlan === preset.plan"
-                            (click)="toggleBlocks(preset.plan, $event)">
-                            +{{ hiddenBlocks(preset).length }}
-                        </button>
-                        @if (openBlocksPlan === preset.plan) {
-                        <div class="absolute bottom-full left-0 z-20 mb-1 w-64 rounded-xl border border-base-300 bg-base-100 p-3 shadow-lg"
-                            (click)="$event.stopPropagation()">
-                            <div class="px-1 pb-1.5 text-[10px] uppercase tracking-wide text-base-content/50">
-                                {{ 'TRAINING.allBlocks' | transloco }}
-                            </div>
-                            <div class="flex flex-col gap-1.5">
-                                @for (block of preset.blocks; track block.labelKey) {
-                                <ng-container [ngTemplateOutlet]="blockRow"
-                                    [ngTemplateOutletContext]="{ $implicit: block }"></ng-container>
-                                }
-                            </div>
-                        </div>
-                        }
-                    </div>
+                <!-- Título protagonista: inicio resaltado + descripción -->
+                <p class="text-center text-lg font-bold leading-snug text-base-content">
+                    <span class="text-primary">{{ preset.leadKey | transloco }}</span>
+                    {{ preset.summaryKey | transloco }}
+                </p>
+            </div>
+
+            <!-- Pie: duración (reloj) + icono discreto que abre "Qué entrenas" -->
+            <div class="flex items-center justify-between px-4 pb-3">
+                <span class="inline-flex items-center gap-1 text-sm font-semibold tabular-nums text-base-content/60">
+                    <ion-icon name="time-outline" aria-hidden="true"></ion-icon>
+                    {{ preset.minutes }}
+                </span>
+                <button type="button" class="btn btn-soft btn-circle btn-sm text-base-content/70"
+                    [attr.aria-label]="'TRAINING.viewBlocks' | transloco"
+                    (click)="toggleBlocks(preset.plan, $event)">
+                    <ion-icon name="eye-outline" aria-hidden="true"></ion-icon>
+                </button>
+            </div>
+
+            <!-- Qué entrenas: panel sobre el cuerpo (no empuja el contenido ni tapa la cabecera) -->
+            @if (revealedPlan === preset.plan) {
+            <div class="absolute inset-0 z-10 flex flex-col overflow-y-auto rounded-b-2xl bg-base-100 p-4">
+                <div class="mb-3 flex items-center justify-between">
+                    <span class="text-[10px] font-semibold uppercase tracking-wide text-base-content/50">
+                        {{ 'TRAINING.viewBlocks' | transloco }}
+                    </span>
+                    <button type="button" class="btn btn-soft btn-circle btn-sm text-base-content/70"
+                        [attr.aria-label]="'TRAINING.viewBlocks' | transloco"
+                        (click)="toggleBlocks(preset.plan, $event)">
+                        <ion-icon name="eye-off-outline" aria-hidden="true"></ion-icon>
+                    </button>
+                </div>
+                <div class="flex flex-col gap-2">
+                    @for (block of preset.blocks; track block.labelKey) {
+                    <ng-container [ngTemplateOutlet]="blockRow"
+                        [ngTemplateOutletContext]="{ $implicit: block }"></ng-container>
                     }
                 </div>
+
+                <!-- Iniciar desde el panel: no hace falta cerrarlo para jugar -->
+                <button type="button" class="btn btn-sm btn-soft btn-primary mt-auto w-full"
+                    (click)="createPlan(preset.plan)">
+                    <ion-icon name="play-outline" aria-hidden="true"></ion-icon>
+                    {{ 'TRAINING.startRoutine' | transloco }}
+                </button>
             </div>
+            }
         </div>
     </div>
 </ng-template>

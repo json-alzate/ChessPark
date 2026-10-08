@@ -28,16 +28,20 @@ Debajo, la nota de que nada sale del dispositivo.
 - **Cuatro cifras de cabecera**: partidas, puntuación, el desglose
   ganadas / tablas / perdidas y el rating medio del rival.
 - **Evolución del rating**, una línea por plataforma.
-- **Mapa de actividad** al estilo del de GitHub: una columna por semana, un
-  cuadro por día.
+- **Mapa de actividad** del último año, con el mismo gráfico que tenía la app
+  anterior (matriz de Chart.js): una columna por semana, un cuadro por día y la
+  semana empezando en lunes, repartido en todo el ancho sin desplazamiento. Al
+  pasar por encima de un día se ve la fecha y cuántas partidas hubo.
 - **Con blancas y con negras**, para ver de qué lado se juega mejor.
 - **Tabla de aperturas** con la barra de ganadas / tablas / perdidas a escala.
+- **Tus partidas**, de la más reciente a la más antigua, de 20 en 20: rival y su
+  rating, resultado, control de tiempo, plataforma, fecha y apertura. Tocando
+  una se abre en el reproductor (ver [Ver una partida](#ver-una-partida)).
 
-Arriba de todo, filtros por plataforma y por control de tiempo; los reportes se
+Arriba de todo, las cuentas conectadas —cada una con su botón de desconectar—,
+el selector de historial con el periodo que cubre lo descargado y los filtros
+por plataforma y por control de tiempo. Los reportes y la lista de partidas se
 recalculan al instante porque **las partidas ya están en memoria**.
-
-Al final, las cuentas conectadas —cada una con su botón de desconectar— y el
-selector de historial, por si se quiere ampliar el periodo.
 
 ---
 
@@ -59,7 +63,7 @@ lichess API    →  lichess-provider    ─┘   (archivo + reportes)
 
 El modelo canónico
 [`ChessGame`](../../libs/models/src/lib/chess-game.model.ts) vive en
-`@cpark/models`, con los ayudantes que necesitan todos: el resultado visto desde
+`@chesspark/models`, con los ayudantes que necesitan todos: el resultado visto desde
 el color del usuario, su rating en la partida y la clasificación del control de
 tiempo.
 
@@ -167,11 +171,145 @@ conservando el primer y el último punto, que son los que marcan la tendencia.
 
 ---
 
+## Ver una partida
+
+La lista reutiliza tal cual el
+[reproductor de partidas](./REPRODUCTOR_PARTIDAS_FLOW.md). Al tocar una fila,
+las partidas de la lista —con sus filtros y en su orden— se abren como un
+paquete más, igual que un PGN propio, y el visor carga la que se tocó. Al salir,
+el botón de volver regresa a Análisis.
+
+Dos diferencias con las partidas de los campeones:
+
+- **El tablero se ve desde tu color.** El visor acepta el lado desde el que
+  empezar y Análisis le pasa el color con el que jugaste; los campeones siguen
+  con las blancas abajo.
+- **`game_opened` lleva `source: analytics`**, para distinguir estas partidas de
+  las del catálogo y del modo TV.
+
+Los PGN de chess.com y lichess llevan el reloj como comentario tras cada jugada
+(`{ [%clk 0:02:59] }`). El contador de jugadas del lector de PGN los contaba
+como jugadas; ahora los ignora, lo que también arregla los PGN de esas
+plataformas que se pegan en Partidas.
+
+---
+
+## Mapa de calor de una pieza
+
+Dentro del reproductor, unas pestañas **Partida / Mapa de calor** cambian el
+tablero para enseñar por dónde se movió una pieza concreta en esa partida. Sirve
+para las partidas propias y para las de los campeones; no aparece en modo TV.
+
+- **Qué cuenta:** las casillas a las que llegó. Cada jugada de la pieza suma uno
+  en su casilla de destino; no cuentan las casillas que atraviesa ni el tiempo
+  que pasa en cada una. El número va escrito encima de la casilla y la
+  intensidad del color es relativa a la casilla más visitada de esa pieza.
+- **Qué pieza:** una concreta, identificada por su casilla inicial ("Caballo de
+  g1"). Al abrir se elige la dama del color del usuario —o blancas, en las
+  partidas de campeones— y un selector deja cambiar a las piezas del rival.
+- **Para comprobarlo:** la casilla inicial va enmarcada en azul, la pieza se
+  dibuja donde terminó (no se dibuja si la capturaron) y en la lista de jugadas
+  van resaltadas las suyas.
+
+El cálculo está en
+[`piece-heatmap.ts`](../../libs/game-reporter/src/lib/piece-heatmap.ts), junto
+al resto de reportes, y el tablero en
+[`board-heatmap`](../../libs/board/src/lib/board-heatmap/), que solo recibe las
+cuentas ya hechas. Tres jugadas mueven o quitan una pieza que no es la que dice
+la jugada, y se tratan aparte:
+
+- **Enroque:** también llega la torre, y cuenta como jugada suya.
+- **Captura al paso:** el peón capturado no está en la casilla de destino.
+- **Coronación:** la pieza sigue siendo el mismo peón; se anota a qué coronó.
+
+Como el id de cada pieza es su casilla inicial, sumar el mapa de muchas
+partidas —la siguiente fase: por apertura, en las que se gana o se pierde— será
+sumar las cuentas de las piezas con el mismo id.
+
+---
+
+## Valoración de las piezas
+
+La tercera pestaña del reproductor, **Valoración**, pone nota del 1 al 10 a cada
+pieza, como las fichas de un partido de fútbol, y elige la mejor y la peor de
+cada color. Tampoco aparece en modo TV.
+
+### Cómo se calcula
+
+Se puntúan las **jugadas**, no las piezas quietas: lo que hace una pieza en la
+partida son sus jugadas.
+
+1. **Stockfish evalúa cada posición una vez**: la inicial y la que queda tras
+   cada media jugada. Son unas 80 evaluaciones en una partida de 40 jugadas.
+2. **Cada evaluación se pasa a probabilidad de ganar**, con la curva que publica
+   lichess. Así perder un peón con la partida igualada pesa mucho y perderlo
+   con nueve de ventaja casi nada.
+3. **Cada jugada se valora por lo que perdió quien movió**: su probabilidad de
+   ganar antes menos la de después. De ahí salen su precisión (fórmula de
+   lichess) y su clase: excelente, buena, imprecisión (desde 5 puntos), error
+   (desde 10) o error grave (desde 15), con los cortes de lichess.
+4. **Cada jugada se apunta a la pieza que la hizo**, con el mismo seguimiento
+   del mapa de calor. En el enroque cuenta para el rey y para la torre.
+5. **La nota de la pieza** sale de la media armónica de sus precisiones,
+   llevada a la escala del 1 al 10. Se usa la armónica y no la media normal
+   porque una sola mala jugada la hunde, igual que un error que acaba en gol
+   hunde la nota de un defensa aunque haya hecho bien todo lo demás.
+6. **Mejor y peor pieza:** optan las que hicieron al menos 2 jugadas. Si
+   ninguna llega, todas las que tienen nota. Si un color solo tiene una pieza
+   con nota, no hay "peor".
+
+Para comprobarlo, en la lista de jugadas cada una lleva su marca clásica (`?!`
+imprecisión, `?` error, `??` error grave) y cada fila de la clasificación dice
+cuántas tuvo esa pieza.
+
+### Detalles que importan
+
+- **La puntuación de Stockfish viene desde el lado que mueve**, no desde las
+  blancas: se le da la vuelta cuando mueven negras. Sin eso, las jugadas de
+  negras saldrían valoradas al revés.
+- **Las posiciones terminadas no se preguntan a Stockfish**: el mate lo gana
+  quien no está al turno y las tablas valen cero. El servicio del motor no
+  devuelve evaluación para una posición sin jugadas.
+- **Si una evaluación falla**, las dos jugadas que la tocan se quedan sin
+  valorar; el resto de la partida sigue valiendo.
+- **Profundidad 12**, la velocidad media: el motor de la app es la versión
+  ligera de Stockfish con un solo hilo, y va posición a posición. El evento
+  `game_review_completed` mide cuánto tarda de verdad para poder ajustarla.
+- **Se guarda en el dispositivo** el análisis de las últimas 30 partidas: volver
+  a abrir la valoración de una partida ya vista es instantáneo.
+- **Se cancela** al cambiar de partida o salir del reproductor: no se pide
+  ninguna posición más y el resultado se descarta. La posición que el motor ya
+  tenía termina sola, porque el servicio de Stockfish no la para, y un análisis
+  nuevo espera a que acabe; si no, tomaría esa respuesta como la de su primera
+  posición y todas sus evaluaciones quedarían desplazadas una.
+
+### Límites
+
+- **Una pieza que no se mueve no tiene nota**, como un suplente que no juega.
+  Una torre que defiende quieta toda la partida no recibe mérito, aunque
+  sostuviera la posición.
+- **Una captura se apunta a la pieza que captura**, y dejar una pieza colgada, a
+  la que movió y la dejó así, no a la que capturan.
+- **La nota es tan buena como el análisis**: con profundidad 12 alguna jugada
+  brillante puede salir como error.
+
+La idea de quitar una pieza y ver cuánto cambia la evaluación se descartó como
+nota principal —mide cuánto vale la pieza, no cómo jugó, y deja posiciones
+ilegales—, pero puede servir más adelante para medir la importancia de una
+pieza quieta en momentos concretos.
+
+---
+
 ## Rendimiento y espacio
 
 Al abrir la pantalla se pinta **primero lo que ya está en el dispositivo** y solo
 después se va a la red: los números aparecen al instante aunque la descarga
 tarde. Si no hay nada guardado, la primera descarga arranca sola.
+
+**Al abrir solo se enseña lo que cae dentro del rango elegido.** En el
+dispositivo puede haber más, si antes se eligió un historial más largo; sin este
+corte, la pantalla diría 24 meses con el selector en 6. Lo de fuera se queda
+guardado, así que volver a ampliar el rango no lo descarga otra vez.
 
 Lo descargado aparece en **Ajustes → Almacenamiento**, cuenta por cuenta, con su
 número de partidas y su tamaño, y se puede borrar desde ahí igual que los

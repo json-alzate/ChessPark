@@ -1,5 +1,5 @@
 import { User } from './user.model';
-import { PiecesStyle, BoardStyle } from './ui.model';
+import { PiecesStyle, BoardStyle, AppTheme } from './ui.model';
 import { StreakRecord } from './streak.model';
 import { Reto333Record } from './reto333.model';
 
@@ -20,6 +20,8 @@ export interface Profile extends User {
     lang: string;
     pieces?: PiecesStyle;
     board?: BoardStyle;
+    /** Tema de DaisyUI de toda la app. */
+    theme?: AppTheme;
     /** Récords sincronizados entre dispositivos. */
     records?: UserRecords;
 }

@@ -20,7 +20,7 @@
       "blacks": "Blacks",
       "block": "Block",
       "blocks": "Blocks",
-      "puzzles": "Puzzles",
+      "puzzles": "Exercises",
       "total": "Total",
       "start": "Start",
       "score": "Score",
@@ -86,6 +86,7 @@
     "divider": "OR"
   },
   "MENU": {
+    "sections": {"train": "Train", "study": "Study", "practice": "Practice", "account": "App and account"},
     "navigation": {
       "home": "Home",
       "training": "Training",
@@ -102,7 +103,7 @@
       "history": "History"
     },
     "general": {
-      "puzzles": "Puzzles",
+      "puzzles": "Exercises",
       "total": "Total",
       "start": "Start",
       "score": "Score",
@@ -111,14 +112,14 @@
       "panel": "Panel",
       "continueTraining": "Continue training",
       "continuousTraining": "Continuous training",
-      "resolveUnlimited": "Solve unlimited puzzles",
+      "resolveUnlimited": "Solve unlimited exercises",
       "trainNow": "Train now"
     },
     "loader": {
-      "creatingRoutine": "Creating routine...",
-      "preparingRoutine": "Preparing routine...",
-      "loadingPuzzles": "Loading puzzles...",
-      "loadingPuzzlesProgress": "Loading puzzles... {{loaded}}/{{total}}"
+      "creatingRoutine": "Creating session…",
+      "preparingRoutine": "Preparing session…",
+      "loadingPuzzles": "Loading exercises…",
+      "loadingPuzzlesProgress": "Loading exercises… {{loaded}}/{{total}}"
     },
     "colors": {
       "white": "White",
@@ -143,11 +144,11 @@
     },
     "descriptions": {
       "randomDescription": "A different topic every time you play",
-      "weaknessDescription": "The topic with the least elo available in the routine"
+      "weaknessDescription": "The topic with the least ELO available in the session"
     },
     "help": {
-      "gosh": "This puzzle is blindfold. The pieces will disappear when the counter reaches zero (in",
-      "gosh2": "). You must solve the puzzle without seeing the pieces.",
+      "gosh": "This exercise is blindfold. The pieces will disappear when the counter reaches zero (in",
+      "gosh2": "). You'll have to solve the exercise without seeing the pieces.",
       "yourTurn": "Your turn",
       "findBestMoveWhite": "Find the best move for White.",
       "findBestMoveBlack": "Find the best move for Black.",
@@ -172,11 +173,11 @@
       "exercisesFree": "Exercises free",
       "loginToStart": "Log in to register your progress",
       "countPlansEnded": "plans completed in the last year",
-      "loadingPuzzles": "Loading puzzles..."
+      "loadingPuzzles": "Loading exercises…"
     },
     "viewBlocks": "What you train",
+    "startRoutine": "Start session",
     "subtitle": "Choose a mode and start solving.",
-    "routineOf": "{{minutes}} min routine",
     "elo": "ELO",
     "allBlocks": "All blocks",
     "plans": {
@@ -207,7 +208,7 @@
       },
       "plan10": {
         "title": "Rapid",
-        "lead": "Full routine",
+        "lead": "Full session",
         "summary": "to warm up, attack weaknesses and finish with speed.",
         "phases": {
           "p1": "Warmup",
@@ -256,12 +257,16 @@
       },
       "easy": {
         "title": "ChessColate makes it easy",
-        "description": "Pick a ready-made routine or create your own, for your level and the time you have. Open the app and you're already solving."
+        "description": "Pick a ready-made session or create your own, for your level and the time you have. Open the app and you're already solving."
       },
       "solve": {
         "title": "Try it: solve the mate",
         "description": "Follow the arrows and play the combination. Feel the click.",
         "solved": "That's it! That click is what you'll train every day."
+      },
+      "appearance": {
+        "title": "Make it yours",
+        "description": "Pick how your app looks. You can always find it in Settings → Appearance."
       },
       "habit": {
         "title": "Build the habit, enjoy the ride",
@@ -271,8 +276,8 @@
   },
   "CUSTOM_TRAINING": {
     "form": {
-      "title": "Create your training routine",
-      "description1": "A routine consists of up to 5 blocks.",
+      "title": "Create your training session",
+      "description1": "A session consists of up to 5 blocks.",
       "description2": "Each block can contain a series of exercises with the adjustments you define."
     },
     "colors": {
@@ -281,7 +286,7 @@
       "anyColor": "Any color"
     },
     "fields": {
-      "nameLabel": "Name of the routine"
+      "nameLabel": "Name of the session"
     },
     "errors": {
       "nameRequired": "The name is required",
@@ -296,8 +301,8 @@
       "cancel": "Cancel",
       "login": "Log in"
     },
-    "authRequired": "You must be authenticated to create a custom routine.",
-    "blocksLockedReason": "Blocks cannot be modified because this routine has already been played."
+    "authRequired": "Sign in to create a custom session.",
+    "blocksLockedReason": "Blocks cannot be modified because this session has already been played."
   },
   "NEW_BLOCK": {
     "form": {
@@ -307,16 +312,16 @@
     },
     "fields": {
       "minSec": "min:sec",
-      "puzzles": "Puzzles",
+      "puzzles": "Exercises",
       "time": "time",
       "unlimited": "Unlimited",
-      "puzzlesCount": "Number of puzzles",
-      "timeByPuzzle": "Time by puzzle"
+      "puzzlesCount": "Number of exercises",
+      "timeByPuzzle": "Time by exercise"
     },
     "options": {
       "showSolution": "Show solution",
       "stream": "Stream",
-      "showElo": "Show puzzle ELO",
+      "showElo": "Show exercise ELO",
       "blind": "Blindfold",
       "timeVisible": "Time visible"
     },
@@ -325,7 +330,7 @@
       "random": "Random",
       "weakness": "Weakness",
       "randomDescription": "A different topic every time you play",
-      "weaknessDescription": "The topic with the least elo available in the routine",
+      "weaknessDescription": "The topic with the least ELO available in the session",
       "difficulty": "Difficulty"
     },
     "difficulty": {
@@ -350,28 +355,28 @@
     "ariaLabels": {
       "rangeTime": "Time range",
       "rangeCount": "Count range",
-      "rangeTimePuzzles": "Puzzles time range",
+      "rangeTimePuzzles": "Exercises time range",
       "rangeTimeVisible": "Visible time range",
       "all": "All",
       "weakness": "Weakness",
-      "rangeElo": "Elo range"
+      "rangeElo": "ELO range"
     }
   },
   "PLAN_PLAYED": {
     "totalElo": "Total ELO",
     "loginToSeeElo": "Log in to see your ELO",
     "record": "Record",
-    "puzzlesPlayed": "Puzzles played",
-    "statistics": "Statistics of the routine",
+    "puzzlesPlayed": "Exercises played",
+    "statistics": "Statistics of the session",
     "playPlan": "Go to home",
     "loadMore": "Load more",
     "like": "Like",
     "unlike": "Unlike",
-    "repeatPlan": "Repeat routine",
-    "selectRoutine": "Select another routine",
+    "repeatPlan": "Repeat session",
+    "selectRoutine": "Select another session",
     "loginRequired": {
       "title": "Sign in to view your statistics",
-      "message": "By signing in, you'll be able to view and track your progress in real time. Your statistics will be automatically saved every time you complete a routine.",
+      "message": "By signing in, you'll be able to view and track your progress in real time. Your statistics will be automatically saved every time you complete a session.",
       "loginButton": "Sign in"
     }
   },
@@ -383,13 +388,13 @@
     "list": "List"
   },
   "PLANS_HISTORY": {
-    "title": "Routines history",
+    "title": "History",
     "more": "All history",
     "empty": "No saved plans",
     "emptyDescription": "Plans you complete will be automatically saved here",
     "viewDetails": "View details",
     "delete": "Delete",
-    "puzzlesPlayed": "Puzzles played",
+    "puzzlesPlayed": "Exercises played",
     "elo": "ELO",
     "blocks": "Blocks",
     "successRate": "Success rate",
@@ -401,26 +406,26 @@
     "daysAgo": "{{ days }} days ago"
   },
   "CUSTOM_PLANS": {
-    "listTitle": "Custom training",
+    "listTitle": "My sessions",
     "shortTitle": "Custom",
-    "cardSubtitle": "Create your own routines",
-    "empty": "You haven't created any custom routines yet.",
-    "createFirst": "Create my first routine",
+    "cardSubtitle": "Create your own sessions",
+    "empty": "You haven't created any custom sessions yet.",
+    "createFirst": "Create my first session",
     "untitled": "Untitled",
     "public": "Public",
     "edit": "Edit",
     "play": "Play",
-    "create": "Create routine",
-    "isPublic": "Public routine (visible to others)",
+    "create": "Create session",
+    "isPublic": "Public session (visible to others)",
     "saveOnly": "Save and go back",
     "elo": "ELO",
     "timesPlayed": "Times played",
-    "authRequired": "Log in to create and manage your custom routines"
+    "authRequired": "Log in to create and manage your custom sessions"
   },
   "PUBLIC_PLANS": {
-    "title": "Public training",
+    "title": "Public sessions",
     "shortTitle": "Public",
-    "cardSubtitle": "Routines ready to play",
+    "cardSubtitle": "Sessions ready to play",
     "tabs": {
       "public": "Public",
       "myInteractions": "My interactions"
@@ -436,7 +441,7 @@
       "saved": "Saved",
       "empty": "You have no interactions in this category"
     },
-    "empty": "No public routines available",
+    "empty": "No public sessions available",
     "untitled": "Untitled",
     "viewBlocks": "View blocks",
     "block": "Block",
@@ -447,8 +452,8 @@
       "likes": "Likes"
     },
     "play": "Play",
-    "loadingMore": "Loading more...",
-    "cannotLikeOwn": "You cannot like your own routine"
+    "loadingMore": "Loading more…",
+    "cannotLikeOwn": "You cannot like your own session"
   },
   "COORDINATES": {
     "title": "Chess Coordinates",
@@ -530,12 +535,45 @@
     "storage": "Storage",
     "support": "Support the app"
   },
+  "APPEARANCE": {
+    "themeTab": "Theme",
+    "theme": "App theme",
+    "pieces": "Pieces",
+    "board": "Board",
+    "piecesNames": {
+      "cburnett": "Classic",
+      "fantasy": "Fantasy",
+      "staunty": "Staunty",
+      "spatial": "Spatial",
+      "celtic": "Celtic",
+      "chessnut": "Chessnut",
+      "rhosgfx": "RhosGFX",
+      "kiwen-suwi": "Kiwen Suwi",
+      "firi": "Firi",
+      "totoy": "Totoy",
+      "papercut": "Papercut"
+    },
+    "boardsNames": {
+      "chessboard-js": "Wood",
+      "default": "Sand",
+      "default-contrast": "Sand contrast",
+      "chess-club": "Club",
+      "green": "Green",
+      "blue": "Blue",
+      "black-and-white": "Black & white",
+      "blue-classic": "Classic blue",
+      "green-classic": "Classic green",
+      "royal": "Royal blue",
+      "purple": "Purple",
+      "sage": "Sage"
+    }
+  },
   "APP_REVIEW": {
     "rateRowTitle": "Rate us",
     "rateRowDesc": "Leave a review on the store: it helps more people find ChessColate"
   },
   "GAMES": {
-    "title": "Games",
+    "title": "Historical games",
     "subtitle": "World champion collections to watch move by move",
     "onDevice": "On your device",
     "worldChampions": "World champions",
@@ -586,10 +624,49 @@
       "end": "Go to end",
       "flip": "Flip the board",
       "sound": "Sound"
+    },
+    "heatmap": {
+      "tabGame": "Game",
+      "tabHeatmap": "Heatmap",
+      "yourPieces": "Your pieces",
+      "opponent": "Opponent",
+      "white": "White",
+      "black": "Black",
+      "pieceName": "{{piece}} from {{square}}",
+      "pieces": {
+        "k": "King",
+        "q": "Queen",
+        "r": "Rook",
+        "b": "Bishop",
+        "n": "Knight",
+        "p": "Pawn"
+      },
+      "noMoves": "did not move",
+      "oneMove": "1 move",
+      "movesCount": "{{count}} moves",
+      "promoted": "promoted: {{piece}}",
+      "captured": "captured on move {{move}}",
+      "hint": "Each number is how many times it landed on that square, and the blue frame is where it started. Its moves are highlighted in the list."
+    },
+    "review": {
+      "tab": "Rating",
+      "analyzing": "Analysing the game with Stockfish…",
+      "analyzingHint": "The first time takes a while; after that it is saved and shows up instantly.",
+      "failed": "The game could not be analysed.",
+      "retry": "Retry",
+      "best": "Best piece",
+      "worst": "Worst piece",
+      "ranking": "Ranking",
+      "unrated": "No rating, did not move",
+      "legend": "Ratings go from 1 to 10 and come from the quality of each piece's moves according to Stockfish: one blunder weighs more than several good moves. In the list, ?! is an inaccuracy, ? a mistake and ?? a blunder."
+    },
+    "moveTimes": {
+      "title": "Time per move",
+      "hint": "The taller the bar, the longer that move was thought over."
     }
   },
   "ANALYTICS": {
-    "title": "Game analytics",
+    "title": "Analysis of my games",
     "subtitle": "Connect your account and see how you really play",
     "refresh": "Refresh games",
     "syncing": "Downloading your games…",
@@ -601,6 +678,10 @@
     "disconnectMessage": "This deletes {{username}}'s games on {{platform}} stored on this device. You can connect it again whenever you want.",
     "ratingProgress": "Rating progress",
     "byColor": "As White and as Black",
+    "statsTab": "Statistics",
+    "accountsAndHistory": "Accounts and download",
+    "chartTimeClassLabel": "Time control",
+    "chartPlatformLabel": "Platform",
     "range": "From {{from}} to {{to}}",
     "connect": {
       "title": "Connect your account",
@@ -613,7 +694,8 @@
       "privacy": "Your games are stored on this device only. Nothing is uploaded to any server."
     },
     "filters": {
-      "allPlatforms": "All"
+      "allPlatforms": "All",
+      "title": "Filters"
     },
     "timeClasses": {
       "bullet": "Bullet",
@@ -630,8 +712,9 @@
     },
     "activity": {
       "title": "Activity",
-      "less": "Less",
-      "more": "More"
+      "gamesLastYear": "{{count}} games in the last year:",
+      "oneGame": "1 game",
+      "gamesCount": "{{count}} games"
     },
     "openings": {
       "title": "Openings",
@@ -641,25 +724,47 @@
       "showMore": "Show more",
       "empty": "No opening reaches {{min}} games yet."
     },
+    "gamesList": {
+      "title": "Games",
+      "hint": "Tap a game to replay it move by move.",
+      "vs": "vs {{name}}",
+      "showMore": "Show more",
+      "outcome": {
+        "win": "Won",
+        "draw": "Draw",
+        "loss": "Lost"
+      }
+    },
     "errors": {
       "unknownUserTitle": "User not found",
       "unknownUser": "{{platform}} does not know that user. Check the spelling.",
       "syncFailed": "Some games could not be downloaded. Check your connection and try again."
+    },
+    "practice": {
+      "title": "Practice",
+      "record": "{{percent}}% score in {{games}} games",
+      "action": "Practice",
+      "hint": "Exercises from those openings, at your level.",
+      "empty": "Once you have at least 3 games in an opening that has exercises, it will show up here.",
+      "colorTitle": "Which color do you want to practice?",
+      "colorWhite": "White",
+      "colorBlack": "Black",
+      "colorBoth": "Both"
     }
   },
   "STORAGE": {
-    "pageTitle": "Downloaded puzzles",
+    "pageTitle": "Downloaded exercises",
     "settingsRowTitle": "Manage downloads",
-    "settingsRowDesc": "See how much space downloaded puzzles take and free it up",
+    "settingsRowDesc": "See how much space downloaded exercises take and free it up",
     "summary": "{{files}} files · {{size}}",
     "loading": "Calculating…",
-    "empty": "You have no downloaded puzzles. They download on their own as you train.",
-    "intro": "Puzzles are stored on your device so they don't have to be downloaded again. Deleting them doesn't affect your progress or your ELO.",
+    "empty": "You have no downloaded exercises. They download on their own as you train.",
+    "intro": "Exercises are stored on your device so they don't have to be downloaded again. Deleting them doesn't affect your progress or your ELO.",
     "openings": "Openings",
     "otherFiles": "Other files",
     "filesCount": "{{count}} files",
     "oneFile": "1 file",
-    "puzzlesCount": "{{count}} puzzles",
+    "puzzlesCount": "{{count}} exercises",
     "deleteAll": "Delete all",
     "confirm": {
       "delete": "Delete",
@@ -707,7 +812,7 @@
     },
     "test": {
       "button": "Test now",
-      "body": "Test notification — everything works! ♟️",
+      "body": "Test notification. Everything works!",
       "sent": "Sent. It should appear in a few seconds.",
       "failed": "Couldn't send it. Check your notification permission."
     },
@@ -722,31 +827,31 @@
     "channelName": "Training reminders",
     "prompt": {
       "title": "Train at your usual time?",
-      "message": "You usually train around {{time}}. We'll remind you at that time so you keep the rhythm — only if you haven't trained that day.",
-      "messageGeneric": "We'll remind you at {{time}} so you keep the rhythm — only if you haven't trained that day. Over time we'll adjust it to your usual hour.",
+      "message": "You usually train around {{time}}. We'll remind you at that time, only if you haven't trained that day.",
+      "messageGeneric": "We'll remind you at {{time}}, only if you haven't trained that day. Over time we'll adjust it to your usual hour.",
       "accept": "Remind me",
       "later": "Not now"
     },
     "notifications": {
       "title": "Today's training",
-      "generic1": "Ready for today's move? ♟️",
-      "generic2": "It's your training time. Let's go find a mate. ♟️",
-      "generic3": "3 quick puzzles and you're done. Shall we? ⚡",
-      "streak": "Don't lose your {{days}}-day streak 🔥"
+      "generic1": "Ready for today's move?",
+      "generic2": "It's your training time. Let's go find a mate.",
+      "generic3": "3 quick exercises and you're done. Shall we?",
+      "streak": "{{days}} days in a row. Want an exercise to keep going?"
     }
   },
   "PUZZLE_SOLUTION": {
     "game": {
       "turn": "Your turn",
       "findBestMove": "Find the best move for the",
-      "continue": "Continue..."
+      "continue": "Continue…"
     },
     "feedback": {
       "goodDone": "Good done!",
       "goodMove": "The best move!",
-      "continue": "Continue...",
+      "continue": "Continue…",
       "wrongMove": "Ups!, that's not the best move",
-      "tryAgain": "Try something different...",
+      "tryAgain": "Try something different…",
       "wrong": "Incorrect!",
       "excellent": "Excellent!"
     },
@@ -754,8 +859,8 @@
       "clue": "Ask a clue",
       "solution": "See the solution",
       "playAndClose": "Play and close",
-      "playing": "Playing...",
-      "closing": "Closing...",
+      "playing": "Playing…",
+      "closing": "Closing…",
       "close": "Close"
     },
     "themes": "Themes"
@@ -771,7 +876,7 @@
       "installApp": "Install App"
     },
     "components": {
-      "loading": "Loading...",
+      "loading": "Loading…",
       "donate": "Donate",
       "googleLogo": "Google Logo",
       "chessColateLogo": "ChessColate Logo",
@@ -831,7 +936,7 @@
       "description": "ChessColate is an independent project. Your donation helps us keep it <strong>ad-free</strong> and keep improving it.",
       "button": "Make a donation",
       "woodpeckerTitle": "New features on the way",
-      "comingSoon": "Coming soon..."
+      "comingSoon": "Coming soon…"
     }
   },
   "DOWNLOAD": {
@@ -849,13 +954,13 @@
     "time": "Time",
     "crowned": "Challenge Crowned!",
     "title": "The Ultimate Challenge",
-    "description": "Solve 333 puzzles in a row without making a single mistake.",
+    "description": "Solve 333 exercises in a row without making a single mistake.",
     "tryAgain": "Try Again",
     "acceptChallenge": "Accept Challenge",
-    "loading": "Starting Challenge 333...",
+    "loading": "Starting Challenge 333…",
     "completedTitle": "Challenge Completed!",
     "goodTry": "Good Try!",
-    "puzzlesSolved": "Puzzles solved",
+    "puzzlesSolved": "Exercises solved",
     "totalTime": "Total time",
     "eloReached": "ELO Reached",
     "backToHome": "Back to Home",
@@ -865,39 +970,39 @@
     "title": "Streak",
     "suddenDeath": "Sudden death",
     "record": "Best",
-    "puzzleElo": "Puzzle rating",
+    "puzzleElo": "Exercise rating",
     "toBeatRecord": "To beat your best",
     "beatingRecord": "You're beating your best!",
     "rules": "No clock: take all the time you need. Every solve nudges the difficulty up, and a single mistake ends the streak.",
     "homeCard": {
-      "description": "Chain puzzles that get harder and harder. One mistake and it's over.",
+      "description": "Chain exercises that get harder and harder. One mistake and it's over.",
       "lastRun": "last run"
     },
     "actions": {
       "start": "Start streak",
       "retry": "New streak",
-      "skip": "Skip puzzle",
+      "skip": "Skip exercise",
       "backToHome": "Back to home"
     },
     "result": {
       "title": "Streak over",
       "newRecord": "New best!",
-      "solvedInARow": "puzzles in a row",
+      "solvedInARow": "exercises in a row",
       "maxElo": "Top difficulty"
     },
     "exit": {
       "title": "Leave the streak?",
-      "message": "You're on {{score}} puzzles in a row. Leaving ends the streak here.",
+      "message": "You're on {{score}} exercises in a row. Leaving ends the streak here.",
       "cancel": "Keep playing",
       "confirm": "Leave"
     },
     "error": {
-      "title": "We couldn't load the puzzle",
+      "title": "We couldn't load the exercise",
       "message": "Check your connection and try again."
     }
   },
   "KNIGHT_TOUR": {
-    "title": "Knight Tour",
+    "title": "Knight tour",
     "restart": "Restart",
     "visitedSquares": "Visited squares",
     "time": "Time",

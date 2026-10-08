@@ -1,4 +1,12 @@
 /**
+ * A qué ritmo corresponde un control de tiempo. Mismos valores que el
+ * `TimeClass` de `@chesspark/models` (los proveedores clasifican igual), pero
+ * declarado aparte para no acoplar este parser genérico de PGN a los modelos
+ * de las plataformas externas.
+ */
+export type TimeClass = 'bullet' | 'blitz' | 'rapid' | 'classical' | 'daily';
+
+/**
  * Una colección de partidas del catálogo, tal como viene en el índice remoto.
  * Ver el repositorio chesscolate_pngs_packs.
  */
@@ -44,6 +52,13 @@ export interface GameHeader {
   blackElo: number | null;
   /** Jugadas (medias jugadas) de la partida. */
   plies: number;
+  /**
+   * Control de tiempo en bruto ('600+0', '1/86400'…), tal como lo trae el
+   * PGN; null cuando no viene (normal en partidas históricas sin reloj).
+   */
+  timeControl: string | null;
+  /** A qué ritmo corresponde `timeControl`; null si no se pudo clasificar. */
+  timeClass: TimeClass | null;
 }
 
 /** Casillas de origen y destino de una jugada, para resaltarla en el tablero. */
@@ -61,6 +76,12 @@ export interface ParsedGame {
   fens: string[];
   /** Casillas de cada jugada, en el mismo orden que sanMoves. */
   moveSquares: MoveSquares[];
+  /**
+   * Reloj del jugador tras cada jugada ('0:09:58'), sacado de los comentarios
+   * '{[%clk …]}' que meten chess.com y lichess; null donde el PGN no lo trae.
+   * Mismo orden y longitud que sanMoves.
+   */
+  clocks: (string | null)[];
 }
 
 /** Un paquete guardado en el dispositivo. */

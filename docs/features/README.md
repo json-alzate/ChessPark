@@ -21,8 +21,8 @@ la feature se implemente o cambie de posición. Por eso los IDs se leen salteado
 | ✅ | F05 | [Calificar la App (In-App Review)](../implementado/CALIFICAR_APP_FLOW.md) | Alto (negocio) | Bajo | `@capacitor-community/in-app-review` |
 | ✅ | F06 | [Reproductor / TV de Partidas](../implementado/REPRODUCTOR_PARTIDAS_FLOW.md) | Alto | Medio-Alto | — (estrenó el lector de PGN y el catálogo de partidas) |
 | ✅ | F12 | [Análisis de Partidas (Game Analytics)](../implementado/GAME_ANALYTICS_FLOW.md) | Alto | Alto | APIs externas (chess.com/lichess) |
-| ⬜ | F07 | [Rutina con BD de Puzzles Personalizada (PGN)](./RUTINA_PGN_PERSONALIZADA.md) | Alto | Medio | F06 (lector de PGN, ya hecho) |
-| ⬜ | F08 | [Método del Pájaro Carpintero](./METODO_PAJARO_CARPINTERO.md) | Alto | Medio | F07 (set congelado) |
+| ⬜ | F08 | [Método del Pájaro Carpintero](./METODO_PAJARO_CARPINTERO.md) | Alto | Medio | — (estrena el set congelado; usa solo el catálogo de puzzles que ya existe) |
+| ⬜ | F07 | [Rutina con BD de Puzzles Personalizada (PGN)](./RUTINA_PGN_PERSONALIZADA.md) | Alto | Medio | F06 (lector de PGN, ya hecho); reutiliza el set congelado de F08 |
 | ⬜ | F09 | [Analizador de Partidas (capas de dibujo)](./ANALIZADOR_PARTIDAS.md) | Alto (estudio) | Alto | F06 (lector de PGN + reproducción, ya hechos) |
 | ⬜ | F10 | [Puzzle Feed](./PUZZLE_FEED.md) | Alto (engagement) | Medio-Alto | — |
 | ⬜ | F11 | [Chess Runner](./CHESS_RUNNER.md) | Medio | Medio | — |
@@ -30,6 +30,7 @@ la feature se implemente o cambie de posición. Por eso los IDs se leen salteado
 | ⬜ | F14 | [Cuadros de Conquista](./CUADROS_DE_CONQUISTA.md) | Alto | Muy Alto | Backend + matchmaking |
 | ⬜ | F15 | [Puzzle Racer (Multijugador)](./PUZZLE_RACER.md) | Alto (competitivo/viral) | Alto | RTDB + matchmaking (sin backend propio) |
 | ⬜ | F16 | [Puzzle Geo Hunt](./PUZZLE_GEO_HUNT.md) | Medio (nicho) | Muy Alto | GPS + AR + permisos |
+| ⬜ | F17 | [Jugar en Lichess (Board API)](./JUGAR_EN_LICHESS.md) | Alto (adquisición) | Alto | OAuth lichess (Board API) + `@chesspark/board` |
 
 > ✅ = ya implementado (detalle en [Ya implementado](#ya-implementado)) · ⬜ = pendiente.
 > **Regla del ID:** una feature nueva toma el siguiente número libre (F17, F18, …) y se
@@ -39,14 +40,14 @@ la feature se implemente o cambie de posición. Por eso los IDs se leen salteado
 
 ## Por qué este orden
 
-### F07 · [Rutina con BD de Puzzles Personalizada (PGN)](./RUTINA_PGN_PERSONALIZADA.md)
-**Reutiliza el lector de PGN que ya dejó F06** y estrena el patrón de **"set de puzzles congelado y persistido"** (en vez de re-pedirlo al catálogo). Alto valor para entrenadores y estudio dirigido.
-
 ### F08 · [Método del Pájaro Carpintero](./METODO_PAJARO_CARPINTERO.md)
-**Reutiliza el "set congelado" de F07** y le añade **vueltas + timing decreciente + comparación entre pasadas**. Al llegar después de F07, gran parte de la persistencia y del juego por set ya está resuelta.
+**No depende de nada pendiente.** Genera su set una sola vez con los puzzles que ya se descargan del catálogo ([`PuzzlesProvider`](../../libs/puzzles-provider/src/lib/puzzles-provider.ts) / `getPuzzlesForBlock`), lo **congela y lo persiste** (`WoodpeckerSet`), y encima añade **vueltas + timing decreciente + comparación entre pasadas**. Estrena el patrón de **"set de puzzles congelado y persistido"** que antes se le atribuía a F07.
+
+### F07 · [Rutina con BD de Puzzles Personalizada (PGN)](./RUTINA_PGN_PERSONALIZADA.md)
+Va **después de F08**: reutiliza el lector de PGN que dejó F06 y, en vez de inventar su propio `CustomPuzzleSet`, se apoya en el set congelado de F08 cambiando solo la **fuente** (un archivo PGN en lugar del catálogo). Es también la "2ª iteración" prevista de F08 (set del Pájaro Carpintero armado desde un PGN propio). Alto valor para entrenadores y estudio dirigido.
 
 ### F09 · [Analizador de Partidas (capas de dibujo)](./ANALIZADOR_PARTIDAS.md)
-**La versión activa de F06 (ya implementado)**: donde el reproductor deja mirar la partida, el analizador deja intervenirla — ramificar en variantes, comentar posiciones y dibujar encima del tablero (varias "láminas" por posición, alternables). Comparte con F06 el lector de PGN y la navegación, que ya están hechos; va tras el bloque de estudio (F07–F08) porque es **claramente el más caro de los cuatro**: árbol de variantes, persistencia propia y motor de dibujo sobre `canvas`.
+**La versión activa de F06 (ya implementado)**: donde el reproductor deja mirar la partida, el analizador deja intervenirla — ramificar en variantes, comentar posiciones y dibujar encima del tablero (varias "láminas" por posición, alternables). Comparte con F06 el lector de PGN y la navegación, que ya están hechos; va tras el bloque de estudio (F08–F07) porque es **claramente el más caro de los cuatro**: árbol de variantes, persistencia propia y motor de dibujo sobre `canvas`.
 
 ### F10 · [Puzzle Feed](./PUZZLE_FEED.md)
 **Motor de engagement** estilo TikTok/Reels sobre puzzles. Reutiliza [`board-puzzle`](../../libs/board/src/lib/board-puzzle/board-puzzle.component.ts) y el catálogo; el algoritmo de recomendación puede empezar **local** (ELO + temas + historial) sin backend. Alto potencial de uso, independiente de F06–F09.
@@ -66,16 +67,19 @@ la feature se implemente o cambie de posición. Por eso los IDs se leen salteado
 ### F16 · [Puzzle Geo Hunt](./PUZZLE_GEO_HUNT.md)
 **GPS + AR + permisos de cámara/ubicación.** El más caro en hardware/plataforma y el más de nicho. Último, como apuesta diferenciadora una vez consolidado el núcleo.
 
+### F17 · [Jugar en Lichess (Board API)](./JUGAR_EN_LICHESS.md)
+**Apoyarse en la audiencia de lichess en vez de construir matchmaking propio**: conecta la cuenta de lichess del usuario (OAuth) y lo empareja con rivales reales vía `POST /api/board/seek`, jugando la partida con el tablero propio de ChessColate. No requiere backend (el "servidor" de la partida es lichess), pero sí OAuth con manejo de tokens, deep links en Capacitor y aislar por completo el Stockfish embebido de esta pantalla (fair play de lichess). Independiente del resto del roadmap — puede paralelizarse igual que F12.
+
 ---
 
 ## Bloques compartidos (construir una vez, reutilizar)
 
 Conviene tratarlos como piezas transversales, no re-implementarlas por feature:
 
-- **Lector de PGN** (`chess.js`) → **ya existe**: lo estrenó F06 en [`libs/games-provider`](../../libs/games-provider/src/lib/pgn.ts), con lectura en dos pasos (cabeceras primero, posiciones al abrir una partida). Lo reutilizan F07, F08 y F09.
-- **Set de puzzles congelado y persistido por id** → patrón común de F07 y F08 (y posible fuente de sets en F08). Evita el _strip_ actual de `puzzles` al guardar planes.
+- **Lector de PGN** (`chess.js`) → **ya existe**: lo estrenó F06 en [`libs/games-provider`](../../libs/games-provider/src/lib/pgn.ts), con lectura en dos pasos (cabeceras primero, posiciones al abrir una partida). Lo reutilizan F07 y F09 (F08 no lo necesita: su set sale del catálogo).
+- **Set de puzzles congelado y persistido por id** → lo estrena F08 (`WoodpeckerSet`) y lo reutiliza F07 con otra fuente (PGN propio). Evita el _strip_ actual de `puzzles` al guardar planes.
 - **Motor de reproducción de jugadas** (tablero + secuencia de posiciones + controles) → **ya existe**: [`board-game-player`](../../libs/board/src/lib/board-game-player/board-game-player.component.ts), tablero de solo mirar con su propio reloj. F09 lo extiende con el árbol de variantes.
-- **Board de puzzles** [`board-puzzle`](../../libs/board/src/lib/board-puzzle/board-puzzle.component.ts) → ya existe; lo consumen la Racha, F07, F08, F10, F11, F15 y F16.
+- **Board de puzzles** [`board-puzzle`](../../libs/board/src/lib/board-puzzle/board-puzzle.component.ts) → ya existe; lo consumen la Racha, F08, F07, F10, F11, F15 y F16.
 - **Catálogo descargable con índice remoto** (un archivo por jugador, índice en el CDN, caché propia en IndexedDB) → **ya existe**: lo estrenó F06 en [`libs/games-provider`](../../libs/games-provider/). A diferencia del de puzzles, su índice se descarga, así que publicar contenido nuevo no exige sacar versión.
 - **Metadata del caché de puzzles** (tema + rango de ELO + tamaño por archivo descargado) → **ya existe**: la estrenó la [Gestión de Descargas](../implementado/GESTION_DESCARGAS_PUZZLES_FLOW.md) y deja medible cuánto espacio ocupa la app.
 - **RTDB + matchmaking client-side** (canal efímero de tiempo real, transacciones de lobby, `onDisconnect`) → lo estrena F15 y lo puede reutilizar F14 (Cuadros de Conquista) para su capa PvP. RTDB no está cableada hoy (solo Firestore).

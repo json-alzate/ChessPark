@@ -1,6 +1,6 @@
 import { Chess } from 'chess.js';
 
-import { GameHeader, MoveSquares, ParsedGame } from './types';
+import { GameHeader, MoveSquares, ParsedGame, TimeClass } from './types';
 
 /**
  * Lectura de archivos PGN con muchas partidas.
@@ -65,11 +65,16 @@ export function splitHeadersAndMoves(gameText: string): {
  * Cuenta las jugadas del texto de movimientos. PGN Mentor pega el número a la
  * jugada ('1.d4 Nf6 2.Nf3'), así que se le quita el número a cada trozo y lo
  * que quede con contenido cuenta como jugada.
+ *
+ * Los comentarios se quitan antes de trocear: chess.com y lichess meten el
+ * reloj tras cada jugada ('{ [%clk 0:02:59] }'), a veces con espacios dentro,
+ * y cada trozo del comentario contaría como una jugada más.
  */
 export function countPlies(movetext: string): number {
   let count = 0;
+  const withoutComments = movetext.replace(/\{[^}]*\}/g, ' ');
 
-  for (const raw of movetext.split(/\s+/)) {
+  for (const raw of withoutComments.split(/\s+/)) {
     if (!raw) {
       continue;
     }
@@ -104,9 +109,61 @@ function parseYear(date: string | undefined): number | null {
   return Number.isFinite(year) && year > 0 ? year : null;
 }
 
+/**
+ * Lee el tag '[TimeControl "600+0"]'. Solo se clasifica el ritmo en las
+ * formas simples —'segundos' o 'segundos+incremento', que es lo que mandan
+ * chess.com y lichess—; las compuestas (p.ej. clásicas FIDE a varias fases,
+ * '40/7200:20/3600:900+30') se guardan tal cual pero sin clasificar, y las
+ * partidas históricas sin reloj no traen el tag.
+ */
+function parseTimeControl(raw: string | undefined): {
+  timeControl: string | null;
+  timeClass: TimeClass | null;
+} {
+  if (!raw || raw === '-' || raw === '?') {
+    return { timeControl: null, timeClass: null };
+  }
+
+  if (/^1\/\d+$/.test(raw)) {
+    return { timeControl: raw, timeClass: 'daily' };
+  }
+
+  const simple = /^(\d+)(?:\+(\d+))?$/.exec(raw);
+  if (simple) {
+    const baseSeconds = Number(simple[1]);
+    const incrementSeconds = Number(simple[2] ?? 0);
+    return { timeControl: raw, timeClass: classifyTimeControl(baseSeconds, incrementSeconds) };
+  }
+
+  return { timeControl: raw, timeClass: null };
+}
+
+/**
+ * Mismo criterio que `timeClassFor` de `@chesspark/models` —tiempo base más
+ * cuarenta jugadas de incremento—, para que una partida clasifique igual
+ * venga del PGN (catálogo) o del propio conector (partidas propias).
+ */
+function classifyTimeControl(
+  baseSeconds: number,
+  incrementSeconds: number
+): TimeClass {
+  const estimated = baseSeconds + 40 * incrementSeconds;
+  if (estimated < 180) {
+    return 'bullet';
+  }
+  if (estimated < 480) {
+    return 'blitz';
+  }
+  if (estimated < 1500) {
+    return 'rapid';
+  }
+  return 'classical';
+}
+
 /** Cabecera de una partida suelta. */
 export function parseGameHeader(gameText: string, index: number): GameHeader {
   const { headers, movetext } = splitHeadersAndMoves(gameText);
+  const { timeControl, timeClass } = parseTimeControl(headers['TimeControl']);
 
   return {
     index,
@@ -119,6 +176,8 @@ export function parseGameHeader(gameText: string, index: number): GameHeader {
     whiteElo: parseElo(headers['WhiteElo']),
     blackElo: parseElo(headers['BlackElo']),
     plies: countPlies(movetext),
+    timeControl,
+    timeClass,
   };
 }
 
@@ -155,10 +214,13 @@ export function buildGame(gameText: string, header: GameHeader): ParsedGame | nu
     return null;
   }
 
+  const clockByFen = clocksByFen(chess.getComments());
+
   // Se rebobina hasta el principio para ir anotando la posición tras cada jugada
   // y las casillas que se tocaron, que son las que se resaltan en el tablero.
   const fens: string[] = [];
   const moveSquares: MoveSquares[] = [];
+  const clocks: (string | null)[] = [];
   const replay = new Chess(startingFen(gameText));
   fens.push(replay.fen());
 
@@ -170,7 +232,9 @@ export function buildGame(gameText: string, header: GameHeader): ParsedGame | nu
       break;
     }
     moveSquares.push({ from: move.from, to: move.to });
-    fens.push(replay.fen());
+    const fen = replay.fen();
+    fens.push(fen);
+    clocks.push(clockByFen.get(fen) ?? null);
   }
 
   // Si alguna jugada no se pudo repetir, se recorta a lo que sí se pudo.
@@ -181,7 +245,27 @@ export function buildGame(gameText: string, header: GameHeader): ParsedGame | nu
     sanMoves: sanMoves.slice(0, playable),
     fens,
     moveSquares: moveSquares.slice(0, playable),
+    clocks: clocks.slice(0, playable),
   };
+}
+
+const CLOCK_COMMENT = /\[%clk\s+([\d:.]+)]/;
+
+/**
+ * Mapa fen → reloj, de los comentarios '{[%clk 0:09:58]}' que chess.com y
+ * lichess dejan pegados justo después de la jugada a la que corresponden.
+ */
+function clocksByFen(
+  comments: { fen: string; comment: string }[]
+): Map<string, string> {
+  const map = new Map<string, string>();
+  for (const { fen, comment } of comments) {
+    const match = CLOCK_COMMENT.exec(comment);
+    if (match) {
+      map.set(fen, match[1]);
+    }
+  }
+  return map;
 }
 
 /** Posición de partida: la del tag FEN si la partida no empieza en la inicial. */

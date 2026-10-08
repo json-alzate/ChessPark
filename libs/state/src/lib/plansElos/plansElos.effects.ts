@@ -11,7 +11,7 @@ import {
   updatePlanElos,
   requestUpdatePlanElos,
 } from './plansElos.actions';
-import { PlanElos } from '@cpark/models';
+import { PlanElos } from '@chesspark/models';
 
 /**
  * Interface para el servicio de Firestore que debe ser proporcionado por la app

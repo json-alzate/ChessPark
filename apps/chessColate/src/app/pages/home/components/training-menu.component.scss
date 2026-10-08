@@ -13,6 +13,13 @@
   mask-image: linear-gradient(to right, rgba(0, 0, 0, 0.55), #000 9%, #000 91%, rgba(0, 0, 0, 0.55));
 }
 
+/* Todas las tarjetas del slider miden lo mismo: sin auto-height, cada slide se
+   estira a la altura de la más alta (así desplegar "Qué entrenas" no recorta
+   ni desigualan las tarjetas). */
+.slider-fade swiper-slide {
+  height: auto;
+}
+
 // Solo en desktop el host llena la celda del grid para que las tarjetas ocupen
 // toda la altura de la fila (sin hueco bajo el menú). En mobile el alto es
 // natural para no estirar el slider ni empujar los botones fuera de vista.

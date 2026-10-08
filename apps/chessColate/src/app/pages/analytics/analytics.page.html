@@ -1,8 +1,39 @@
 <ion-content [fullscreen]="true">
-  <div class="min-h-screen bg-base-100" data-theme="halloween">
+  <div class="min-h-screen bg-base-100">
     <app-navbar></app-navbar>
 
-    <div class="container mx-auto px-4 py-8 max-w-lg pb-16">
+    <!-- Con qué color practicar: antes de empezar la rutina -->
+    @if (colorPickerOpen) {
+      <div class="modal modal-open" role="dialog" aria-modal="true">
+        <div class="modal-box">
+          <h3 class="text-lg font-bold">{{ 'ANALYTICS.practice.colorTitle' | transloco }}</h3>
+          <div class="grid grid-cols-3 gap-2 mt-4">
+            <button class="btn btn-outline flex-col gap-1 h-auto py-3" (click)="pickColor('white')">
+              <img [src]="'white' | kingImage" class="h-6 w-6" alt="" />
+              <span class="text-xs font-medium">{{ 'ANALYTICS.practice.colorWhite' | transloco }}</span>
+            </button>
+            <button class="btn btn-outline flex-col gap-1 h-auto py-3" (click)="pickColor('random')">
+              <ion-icon name="shuffle" class="text-lg"></ion-icon>
+              <span class="text-xs font-medium">{{ 'ANALYTICS.practice.colorBoth' | transloco }}</span>
+            </button>
+            <button class="btn btn-outline flex-col gap-1 h-auto py-3" (click)="pickColor('black')">
+              <img [src]="'black' | kingImage" class="h-6 w-6" alt="" />
+              <span class="text-xs font-medium">{{ 'ANALYTICS.practice.colorBlack' | transloco }}</span>
+            </button>
+          </div>
+          <div class="modal-action">
+            <button class="btn btn-ghost" (click)="pickColor(null)">
+              {{ 'COMMON.actions.cancel' | transloco }}
+            </button>
+          </div>
+        </div>
+        <div class="modal-backdrop" (click)="pickColor(null)"></div>
+      </div>
+    }
+
+    <!-- Mismo ancho que Historial de rutinas y Rutinas públicas -->
+    <div class="container mx-auto px-2 pb-6 lg:px-6">
+      <div class="lg:max-w-3xl lg:mx-auto">
 
       <!-- Header -->
       <div class="mb-6">
@@ -93,6 +124,62 @@
           </section>
         } @else {
 
+          <details class="group mb-5">
+            <summary class="cursor-pointer flex items-center gap-2 text-xs font-bold uppercase tracking-wide opacity-60 mb-2">
+              <ion-icon name="settings-outline" class="text-base"></ion-icon>
+              {{ 'ANALYTICS.accountsAndHistory' | transloco }}
+              <ion-icon name="chevron-down-outline" class="text-base ml-auto transition-transform group-open:rotate-180"></ion-icon>
+            </summary>
+
+          <!-- Cuentas conectadas -->
+          <section class="mb-5">
+            <h3 class="text-xs font-bold uppercase tracking-wide opacity-60 mb-2">
+              {{ 'ANALYTICS.accounts' | transloco }}
+            </h3>
+            <ul class="flex flex-col gap-2">
+              @for (account of connectedList; track account.platform) {
+                <li class="bg-base-200/40 border border-base-content/10 rounded-box p-3
+                           flex items-center justify-between gap-3">
+                  <div class="min-w-0">
+                    <div class="text-sm font-bold truncate">{{ account.username }}</div>
+                    <div class="text-xs opacity-60">{{ platformLabel(account.platform) }}</div>
+                  </div>
+                  <button class="btn btn-ghost btn-sm btn-circle text-error"
+                    (click)="disconnect(account.platform, account.username)"
+                    [attr.aria-label]="'ANALYTICS.disconnect' | transloco">
+                    <ion-icon name="trash-outline" class="text-lg"></ion-icon>
+                  </button>
+                </li>
+              }
+            </ul>
+          </section>
+
+          <!-- Cuánto historial: arriba, porque cambia todo lo que se ve debajo -->
+          <section class="mb-5">
+            <span class="label-text text-xs opacity-70 mb-2 block">
+              {{ 'ANALYTICS.connect.historyLabel' | transloco }}
+            </span>
+            <div class="join w-full">
+              @for (range of historyRanges; track range) {
+                <button class="btn btn-sm join-item flex-1"
+                  [class.btn-primary]="historyMonths === range"
+                  [disabled]="syncing"
+                  (click)="setHistoryRange(range)">
+                  {{ 'ANALYTICS.connect.months' | transloco: { count: range } }}
+                </button>
+              }
+            </div>
+            @if (!allGamesEmpty) {
+              <p class="text-xs opacity-50 mt-2">
+                {{ 'ANALYTICS.range' | transloco: {
+                     from: formatDate(downloadedFrom),
+                     to: formatDate(downloadedTo)
+                   } }}
+              </p>
+            }
+          </section>
+          </details>
+
           <!-- Descarga en curso -->
           @if (syncing) {
             <div class="bg-base-200/40 border border-base-content/10 rounded-box p-4 mb-4">
@@ -123,7 +210,12 @@
 
           @if (stats) {
             <!-- Filtros -->
-            <section class="mb-5">
+            <section class="mb-5 bg-base-200/40 border border-base-content/10 rounded-box p-3">
+              <div class="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide opacity-60 mb-2">
+                <ion-icon name="filter-outline" class="text-base"></ion-icon>
+                {{ 'ANALYTICS.filters.title' | transloco }}
+              </div>
+
               @if (availablePlatforms.length > 1) {
                 <div class="join w-full mb-2">
                   <button class="btn btn-xs join-item flex-1"
@@ -153,132 +245,193 @@
               </div>
             </section>
 
-            <!-- Cifras generales -->
-            <section class="grid grid-cols-2 gap-2 mb-6">
-              <div class="bg-base-200/40 border border-base-content/10 rounded-box p-3">
-                <div class="text-xs opacity-60">{{ 'ANALYTICS.stats.games' | transloco }}</div>
-                <div class="text-2xl font-bold font-mono">{{ stats.games }}</div>
-              </div>
-              <div class="bg-base-200/40 border border-base-content/10 rounded-box p-3">
-                <div class="text-xs opacity-60">{{ 'ANALYTICS.stats.score' | transloco }}</div>
-                <div class="text-2xl font-bold font-mono">{{ toPercent(stats.winRate) }}%</div>
-              </div>
-              <div class="bg-base-200/40 border border-base-content/10 rounded-box p-3">
-                <div class="text-xs opacity-60">{{ 'ANALYTICS.stats.record' | transloco }}</div>
-                <div class="text-base font-bold font-mono">
-                  <span class="text-success">{{ stats.wins }}</span> /
-                  <span class="opacity-70">{{ stats.draws }}</span> /
-                  <span class="text-error">{{ stats.losses }}</span>
-                </div>
-              </div>
-              <div class="bg-base-200/40 border border-base-content/10 rounded-box p-3">
-                <div class="text-xs opacity-60">{{ 'ANALYTICS.stats.avgOpponent' | transloco }}</div>
-                <div class="text-2xl font-bold font-mono">{{ stats.averageOpponentRating || '—' }}</div>
-              </div>
-            </section>
-
-            <!-- Progreso de rating -->
+            <!-- Estadísticas / Aperturas / Partidas -->
             <section class="mb-6">
-              <h3 class="text-xs font-bold uppercase tracking-wide opacity-60 mb-2">
-                {{ 'ANALYTICS.ratingProgress' | transloco }}
-              </h3>
-              @if (ratingPoints.length > 1) {
-                <div class="bg-base-200/40 border border-base-content/10 rounded-box p-3">
-                  <app-rating-chart [points]="ratingPoints"></app-rating-chart>
-                </div>
-              } @else {
-                <p class="text-sm opacity-60">{{ 'ANALYTICS.notEnoughData' | transloco }}</p>
-              }
-            </section>
-
-            <!-- Mapa de actividad -->
-            <section class="mb-6">
-              <h3 class="text-xs font-bold uppercase tracking-wide opacity-60 mb-2">
-                {{ 'ANALYTICS.activity.title' | transloco }}
-              </h3>
-              <div class="bg-base-200/40 border border-base-content/10 rounded-box p-3">
-                <app-activity-heatmap [days]="activityDays"></app-activity-heatmap>
-              </div>
-            </section>
-
-            <!-- Con blancas y con negras -->
-            <section class="mb-6">
-              <h3 class="text-xs font-bold uppercase tracking-wide opacity-60 mb-2">
-                {{ 'ANALYTICS.byColor' | transloco }}
-              </h3>
-              <div class="grid grid-cols-2 gap-2">
-                <div class="bg-base-200/40 border border-base-content/10 rounded-box p-3">
-                  <div class="text-xs opacity-60">{{ 'GAMES.filters.white' | transloco }}</div>
-                  <div class="text-xl font-bold font-mono">{{ toPercent(stats.byColor.white.winRate) }}%</div>
-                  <div class="text-xs opacity-50">
-                    {{ 'ANALYTICS.openings.gamesCount' | transloco: { count: stats.byColor.white.games } }}
-                  </div>
-                </div>
-                <div class="bg-base-200/40 border border-base-content/10 rounded-box p-3">
-                  <div class="text-xs opacity-60">{{ 'GAMES.filters.black' | transloco }}</div>
-                  <div class="text-xl font-bold font-mono">{{ toPercent(stats.byColor.black.winRate) }}%</div>
-                  <div class="text-xs opacity-50">
-                    {{ 'ANALYTICS.openings.gamesCount' | transloco: { count: stats.byColor.black.games } }}
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <!-- Aperturas -->
-            <section class="mb-6">
-              <h3 class="text-xs font-bold uppercase tracking-wide opacity-60 mb-2">
-                {{ 'ANALYTICS.openings.title' | transloco }}
-              </h3>
-              <app-openings-table [openings]="openings"></app-openings-table>
-            </section>
-
-            <p class="text-xs opacity-50 mb-6">
-              {{ 'ANALYTICS.range' | transloco: {
-                   from: formatDate(stats.firstPlayedAt),
-                   to: formatDate(stats.lastPlayedAt)
-                 } }}
-            </p>
-          }
-
-          <!-- Cuentas conectadas -->
-          <section>
-            <h3 class="text-xs font-bold uppercase tracking-wide opacity-60 mb-2">
-              {{ 'ANALYTICS.accounts' | transloco }}
-            </h3>
-            <ul class="flex flex-col gap-2 mb-4">
-              @for (account of connectedList; track account.platform) {
-                <li class="bg-base-200/40 border border-base-content/10 rounded-box p-3
-                           flex items-center justify-between gap-3">
-                  <div class="min-w-0">
-                    <div class="text-sm font-bold truncate">{{ account.username }}</div>
-                    <div class="text-xs opacity-60">{{ platformLabel(account.platform) }}</div>
-                  </div>
-                  <button class="btn btn-ghost btn-sm btn-circle text-error"
-                    (click)="disconnect(account.platform, account.username)"
-                    [attr.aria-label]="'ANALYTICS.disconnect' | transloco">
-                    <ion-icon name="trash-outline" class="text-lg"></ion-icon>
-                  </button>
-                </li>
-              }
-            </ul>
-
-            <span class="label-text text-xs opacity-70 mb-2 block">
-              {{ 'ANALYTICS.connect.historyLabel' | transloco }}
-            </span>
-            <div class="join w-full">
-              @for (range of historyRanges; track range) {
+              <div class="join w-full mb-3">
                 <button class="btn btn-sm join-item flex-1"
-                  [class.btn-primary]="historyMonths === range"
-                  [disabled]="syncing"
-                  (click)="setHistoryRange(range)">
-                  {{ 'ANALYTICS.connect.months' | transloco: { count: range } }}
+                  [class.btn-primary]="activeTab === 'stats'"
+                  (click)="setActiveTab('stats')">
+                  {{ 'ANALYTICS.statsTab' | transloco }}
                 </button>
+                <button class="btn btn-sm join-item flex-1"
+                  [class.btn-primary]="activeTab === 'openings'"
+                  (click)="setActiveTab('openings')">
+                  {{ 'ANALYTICS.openings.title' | transloco }}
+                </button>
+                <button class="btn btn-sm join-item flex-1"
+                  [class.btn-primary]="activeTab === 'games'"
+                  (click)="setActiveTab('games')">
+                  {{ 'ANALYTICS.gamesList.title' | transloco }} ({{ gamesList.length }})
+                </button>
+              </div>
+
+              @if (activeTab === 'stats') {
+                <!-- Cifras generales -->
+                <section class="grid grid-cols-2 gap-2 mb-6">
+                  <div class="bg-base-200/40 border border-base-content/10 rounded-box p-3">
+                    <div class="text-xs opacity-60">{{ 'ANALYTICS.stats.games' | transloco }}</div>
+                    <div class="text-2xl font-bold font-mono">{{ stats.games }}</div>
+                  </div>
+                  <div class="bg-base-200/40 border border-base-content/10 rounded-box p-3">
+                    <div class="text-xs opacity-60">{{ 'ANALYTICS.stats.score' | transloco }}</div>
+                    <div class="text-2xl font-bold font-mono">{{ toPercent(stats.winRate) }}%</div>
+                  </div>
+                  <div class="bg-base-200/40 border border-base-content/10 rounded-box p-3">
+                    <div class="text-xs opacity-60">{{ 'ANALYTICS.stats.record' | transloco }}</div>
+                    <div class="text-base font-bold font-mono">
+                      <span class="text-success">{{ stats.wins }}</span> /
+                      <span class="opacity-70">{{ stats.draws }}</span> /
+                      <span class="text-error">{{ stats.losses }}</span>
+                    </div>
+                  </div>
+                  <div class="bg-base-200/40 border border-base-content/10 rounded-box p-3">
+                    <div class="text-xs opacity-60">{{ 'ANALYTICS.stats.avgOpponent' | transloco }}</div>
+                    <div class="text-2xl font-bold font-mono">{{ stats.averageOpponentRating || '—' }}</div>
+                  </div>
+                </section>
+
+                <!-- Progreso de rating -->
+                <section class="mb-6">
+                  <h3 class="text-xs font-bold uppercase tracking-wide opacity-60 mb-2">
+                    {{ 'ANALYTICS.ratingProgress' | transloco }}
+                  </h3>
+                  @if (ratingPoints.length > 1) {
+                    <div class="bg-base-200/40 border border-base-content/10 rounded-box p-3">
+                      <app-rating-chart [points]="ratingPoints"></app-rating-chart>
+                    </div>
+                  } @else {
+                    <p class="text-sm opacity-60">{{ 'ANALYTICS.notEnoughData' | transloco }}</p>
+                  }
+                </section>
+
+                <!-- Mapa de actividad -->
+                <section class="mb-6">
+                  <h3 class="text-xs font-bold uppercase tracking-wide opacity-60 mb-2">
+                    {{ 'ANALYTICS.activity.title' | transloco }}
+                  </h3>
+                  <div class="bg-base-200/40 border border-base-content/10 rounded-box p-3">
+                    <app-activity-heatmap [days]="activityDays"></app-activity-heatmap>
+                  </div>
+                </section>
+
+                <!-- Con blancas y con negras -->
+                <section>
+                  <h3 class="text-xs font-bold uppercase tracking-wide opacity-60 mb-2">
+                    {{ 'ANALYTICS.byColor' | transloco }}
+                  </h3>
+                  <div class="grid grid-cols-2 gap-2">
+                    <div class="bg-base-200/40 border border-base-content/10 rounded-box p-3">
+                      <div class="text-xs opacity-60">{{ 'GAMES.filters.white' | transloco }}</div>
+                      <div class="text-xl font-bold font-mono">{{ toPercent(stats.byColor.white.winRate) }}%</div>
+                      <div class="text-xs opacity-50">
+                        {{ 'ANALYTICS.openings.gamesCount' | transloco: { count: stats.byColor.white.games } }}
+                      </div>
+                    </div>
+                    <div class="bg-base-200/40 border border-base-content/10 rounded-box p-3">
+                      <div class="text-xs opacity-60">{{ 'GAMES.filters.black' | transloco }}</div>
+                      <div class="text-xl font-bold font-mono">{{ toPercent(stats.byColor.black.winRate) }}%</div>
+                      <div class="text-xs opacity-50">
+                        {{ 'ANALYTICS.openings.gamesCount' | transloco: { count: stats.byColor.black.games } }}
+                      </div>
+                    </div>
+                  </div>
+                </section>
+                <!-- Para practicar: puzzles de las aperturas donde peor te va -->
+                <section class="mt-6">
+                  <h3 class="text-xs font-bold uppercase tracking-wide opacity-60 mb-2">
+                    {{ 'ANALYTICS.practice.title' | transloco }}
+                  </h3>
+                  @if (practiceOpenings.length) {
+                    <ul class="flex flex-col divide-y divide-base-content/10
+                               bg-base-200/40 border border-base-content/10 rounded-box">
+                      @for (opening of practiceOpenings; track opening.value) {
+                        <li class="flex items-center justify-between gap-3 px-3 py-2">
+                          <div class="min-w-0">
+                            <div class="text-sm font-medium truncate">{{ practiceName(opening) }}</div>
+                            <div class="text-xs opacity-60">
+                              {{ 'ANALYTICS.practice.record' | transloco: { percent: toPercent(opening.winRate), games: opening.games } }}
+                            </div>
+                          </div>
+                          <button class="btn btn-sm btn-primary shrink-0" (click)="practice(opening)">
+                            {{ 'ANALYTICS.practice.action' | transloco }}
+                          </button>
+                        </li>
+                      }
+                    </ul>
+                    <p class="text-xs opacity-50 mt-2">{{ 'ANALYTICS.practice.hint' | transloco }}</p>
+                  } @else {
+                    <p class="text-sm opacity-60">{{ 'ANALYTICS.practice.empty' | transloco }}</p>
+                  }
+                </section>
+              } @else if (activeTab === 'openings') {
+                <app-openings-table [openings]="openings" [catalog]="catalog" (practice)="practice($event)"></app-openings-table>
+              } @else {
+                <p class="text-xs opacity-50 mb-2">{{ 'ANALYTICS.gamesList.hint' | transloco }}</p>
+
+                <ul class="flex flex-col divide-y divide-base-content/10
+                           bg-base-200/40 border border-base-content/10 rounded-box">
+                  @for (game of pagedGames; track game.source + game.id) {
+                    <li>
+                      <button class="w-full text-left py-3 px-3 flex items-center gap-3"
+                        (click)="openGame(game)">
+                        <!-- Color con el que jugó el usuario -->
+                        <span class="w-3 h-3 rounded-full shrink-0 border border-base-content/40"
+                          [class.bg-white]="game.userColor === 'white'"
+                          [class.bg-black]="game.userColor === 'black'"
+                          [attr.title]="(game.userColor === 'white' ? 'GAMES.filters.white' : 'GAMES.filters.black') | transloco">
+                        </span>
+
+                        <div class="min-w-0 flex-1">
+                          <div class="text-sm font-medium truncate">
+                            {{ 'ANALYTICS.gamesList.vs' | transloco: { name: opponentOf(game).username } }}
+                            @if (opponentOf(game).rating) {
+                              <span class="opacity-60">({{ opponentOf(game).rating }})</span>
+                            }
+                          </div>
+                          <div class="text-xs opacity-60 mt-0.5 truncate">
+                            {{ 'ANALYTICS.timeClasses.' + game.timeClass | transloco }}
+                            · {{ platformLabel(game.source) }}
+                            · {{ formatDate(game.playedAt) }}
+                            @if (game.opening?.name) {
+                              · {{ game.opening?.name }}
+                            }
+                          </div>
+                        </div>
+
+                        @switch (outcomeForUser(game)) {
+                          @case ('win') {
+                            <span class="badge badge-success badge-sm shrink-0">
+                              {{ 'ANALYTICS.gamesList.outcome.win' | transloco }}
+                            </span>
+                          }
+                          @case ('loss') {
+                            <span class="badge badge-error badge-sm shrink-0">
+                              {{ 'ANALYTICS.gamesList.outcome.loss' | transloco }}
+                            </span>
+                          }
+                          @default {
+                            <span class="badge badge-ghost badge-sm shrink-0">
+                              {{ 'ANALYTICS.gamesList.outcome.draw' | transloco }}
+                            </span>
+                          }
+                        }
+                      </button>
+                    </li>
+                  }
+                </ul>
+
+                @if (hasMoreGames) {
+                  <button class="btn btn-ghost btn-sm btn-block mt-2" (click)="showMoreGames()">
+                    {{ 'ANALYTICS.gamesList.showMore' | transloco }}
+                  </button>
+                }
               }
-            </div>
-          </section>
+            </section>
+          }
         }
       }
 
+      </div>
     </div>
   </div>
 </ion-content>

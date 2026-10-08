@@ -1,4 +1,4 @@
-import { ChessGame } from '@cpark/models';
+import { ChessGame } from '@chesspark/models';
 
 import { applyFilters } from './filters';
 import {
@@ -41,8 +41,8 @@ describe('getRatingProgress', () => {
     ];
 
     expect(getRatingProgress(games)).toEqual([
-      { date: BASE, rating: 1500, platform: 'lichess' },
-      { date: BASE + DAY, rating: 1520, platform: 'lichess' },
+      { date: BASE, rating: 1500, platform: 'lichess', timeClass: 'blitz' },
+      { date: BASE + DAY, rating: 1520, platform: 'lichess', timeClass: 'blitz' },
     ]);
   });
 

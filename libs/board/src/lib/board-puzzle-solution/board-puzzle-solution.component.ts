@@ -6,11 +6,12 @@ import { interval, Subject, Observable } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 import {
-  COLOR,
-  Chessboard,
-  BORDER_TYPE
+  Chessboard
 } from 'cm-chessboard';
-import { Chess } from 'chess.js';
+import { createChessboard } from '../chessboard-factory/create-chessboard';
+import { createMoveInputHandler, MoveInputHost } from '../move-input/move-input-handler';
+import { drawLastMove, removeMarkersExceptLastMove, turnBoard } from '../move-input/board-markers';
+import { Chess, Square } from 'chess.js';
 import { Markers } from 'cm-chessboard/src/extensions/markers/Markers.js';
 import { Arrows } from 'cm-chessboard/src/extensions/arrows/Arrows.js';
 import { PromotionDialog } from 'cm-chessboard/src/extensions/promotion-dialog/PromotionDialog.js';
@@ -33,21 +34,19 @@ import {
 import { TranslocoPipe } from '@jsverse/transloco';
 
 // models
-import { Puzzle } from '@cpark/models';
+import { Puzzle } from '@chesspark/models';
 
 // Utils
 import { SecondsToMinutesSecondsPipe, SoundsService } from '@chesspark/common-utils';
 
-// Stockfish
-import {
-  StockfishService,
-  StockfishAnalysisService,
-} from '@chesspark/stockfish-wasm';
+// Stockfish (el ciclo de vida del motor vive en el facade)
+import { StockfishEngineFacade } from '../stockfish-engine/stockfish-engine.facade';
 
 @Component({
   selector: 'lib-board-puzzle-solution',
   standalone: true,
   imports: [CommonModule, SecondsToMinutesSecondsPipe, TranslocoPipe, IonIcon],
+  providers: [StockfishEngineFacade],
   templateUrl: './board-puzzle-solution.component.html',
   styleUrls: ['./board-puzzle-solution.component.scss'],
 })
@@ -64,15 +63,44 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit, OnDe
 
   board!: Chessboard;
   chessInstance = new Chess();
+
+  /**
+   * Cómo el manejador de movimientos compartido (ver move-input/move-input-handler.ts) consulta
+   * y modifica este componente. Aquí el estado de ajedrez es `chessInstance`, y al empezar o
+   * cancelar una jugada se usa `removeArrows()` del componente para conservar las flechas de
+   * Stockfish si están activas.
+   */
+  private readonly moveInputHost: MoveInputHost = {
+    board: () => this.board,
+    destinationsFrom: (square) =>
+      this.chessInstance.moves({ square: square as Square, verbose: true }).map((move) => move.to),
+    tryMove: (from, to, promotion) => {
+      try {
+        const move = promotion
+          ? this.chessInstance.move({ from, to, promotion })
+          : this.chessInstance.move({ from, to });
+        return !!move;
+      } catch {
+        return false;
+      }
+    },
+    fen: () => this.chessInstance.fen(),
+    showLastMove: () => this.showLastMove(),
+    clearArrows: () => this.removeArrows(),
+    onMoveAccepted: () => this.validateMove(),
+  };
   closeCancelMoves = false;
 
-  // Stockfish
-  private stockfishService: StockfishService = inject(StockfishService);
-  private stockfishAnalysisService: StockfishAnalysisService = inject(StockfishAnalysisService);
+  // Stockfish: la UI guarda solo si está activo y la última jugada. El ciclo de vida del motor
+  // (init, terminate, reinicios y errores del worker) lo gestiona StockfishEngineFacade.
+  private engine = inject(StockfishEngineFacade);
   stockfishEnabled = false;
-  stockfishInitialized = false;
   bestMove: string | null = null;
-  private isAnalyzingPosition = false;
+
+  /** Motor listo para analizar. Se consulta al facade para no duplicar ese estado. */
+  get stockfishInitialized(): boolean {
+    return this.engine.isReady;
+  }
 
   currentMoveNumber = 0;
   arrayFenSolution: string[] = [];
@@ -115,34 +143,8 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit, OnDe
 
   async ngOnInit() {
     this.startTimer();
-    // Inicializar Stockfish
-    console.log('[Stockfish] Starting initialization...');
-    try {
-      // Asegurarse de que no haya un worker anterior activo
-      if (this.stockfishService.isReady) {
-        console.log('[Stockfish] Service already ready, terminating previous instance');
-        this.stockfishService.terminate();
-        await new Promise(resolve => setTimeout(resolve, 200));
-      }
-
-      await this.stockfishService.initialize({
-        depth: 15,
-        threads: 1,
-        hash: 16,
-        workerPath: 'assets/engine/stockfish-16.1-lite-single.js',
-      });
-      this.stockfishInitialized = true;
-      console.log('[Stockfish] Initialized successfully, isReady:', this.stockfishService.isReady);
-    } catch (error) {
-      console.error('[Stockfish] Failed to initialize:', error);
-      this.stockfishInitialized = false;
-      // Intentar limpiar en caso de error
-      try {
-        this.stockfishService.terminate();
-      } catch (e) {
-        console.error('[Stockfish] Error during cleanup:', e);
-      }
-    }
+    // El facade inicializa el worker y gestiona reintentos y errores
+    await this.engine.initialize();
   }
 
   ngAfterViewInit() {
@@ -156,7 +158,7 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit, OnDe
    * Activa o desactiva Stockfish
    */
   async startStockfish(event: { detail: { checked: boolean } }) {
-    if (!this.stockfishInitialized || !this.stockfishService.isReady) {
+    if (!this.stockfishInitialized) {
       console.warn('Stockfish not initialized');
       return;
     }
@@ -167,7 +169,7 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit, OnDe
     } else {
       this.stockfishEnabled = false;
       console.log('[Stockfish] Disabled');
-      this.stockfishService.stopAnalysis();
+      this.engine.cancel();
       this.removeAllStockfishIndicators();
       this.bestMove = null;
     }
@@ -182,101 +184,24 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit, OnDe
       return;
     }
 
-    // Evitar análisis concurrentes: si ya hay uno en curso, cancelarlo primero
-    if (this.isAnalyzingPosition) {
-      try {
-        this.stockfishService.stopAnalysis();
-      } catch (e) { /* ignorar */ }
-      return;
-    }
+    const outcome = await this.engine.getBestMove(this.chessInstance.fen());
 
-    if (!this.stockfishService.isReady || !this.stockfishInitialized) {
-      console.warn('[Stockfish] Analysis skipped - service not ready. isReady:', this.stockfishService.isReady, 'initialized:', this.stockfishInitialized);
+    if (outcome.kind === 'unavailable') {
+      // El motor no está disponible ni se pudo recuperar: se desactiva la opción en la UI
       this.stockfishEnabled = false;
       return;
     }
 
-    // Detener análisis anterior si existe
-    try {
-      this.stockfishService.stopAnalysis();
-    } catch (error) {
-      console.warn('[Stockfish] Error stopping previous analysis:', error);
-    }
-
-    this.isAnalyzingPosition = true;
-    try {
-      const fen = this.chessInstance.fen();
-      console.log('[Stockfish] Starting analysis for FEN:', fen);
-
-      // Obtener mejor movimiento
-      console.log('[Stockfish] Requesting best move with depth 15...');
-      const result = await this.stockfishAnalysisService.getBestMove(fen, {
-        depth: 15,
-      });
-
-      console.log('[Stockfish] Analysis result:', result);
-      if (result && result.move) {
-        this.bestMove = result.move;
-        console.log('[Stockfish] Best move found:', this.bestMove, 'length:', this.bestMove.length);
-
-        // Verificar que el tablero esté disponible
-        if (this.board) {
-          this.drawStockfishMarkers();
-          this.drawStockfishArrows();
-        } else {
-          console.warn('[Stockfish] Board not available, cannot draw indicators');
-        }
+    // Si el usuario desactivó Stockfish mientras se analizaba, no se dibuja la jugada
+    if (outcome.kind === 'best-move' && this.stockfishEnabled) {
+      this.bestMove = outcome.move;
+      // Verificar que el tablero esté disponible
+      if (this.board) {
+        this.drawStockfishMarkers();
+        this.drawStockfishArrows();
       } else {
-        console.warn('[Stockfish] No best move in result:', result);
+        console.warn('[Stockfish] Board not available, cannot draw indicators');
       }
-    } catch (error) {
-      console.error('[Stockfish] Error analyzing position:', error);
-      
-      // Si el error es que el worker no está inicializado, intentar reinicializar
-      if (error instanceof Error && error.message.includes('not initialized')) {
-        console.warn('[Stockfish] Worker lost, attempting to reinitialize...');
-        this.stockfishInitialized = false;
-        try {
-          // Terminar el worker anterior si existe
-          this.stockfishService.terminate();
-          await new Promise(resolve => setTimeout(resolve, 200));
-          
-          // Intentar reinicializar
-          await this.stockfishService.initialize({
-            depth: 15,
-            threads: 1,
-            hash: 16,
-            workerPath: 'assets/engine/stockfish-16.1-lite-single.js',
-          });
-          this.stockfishInitialized = true;
-          console.log('[Stockfish] Reinitialized successfully');
-
-          // Intentar el análisis de nuevo (resetear el guard antes de la llamada recursiva)
-          if (this.stockfishEnabled) {
-            this.isAnalyzingPosition = false;
-            await this.analyzeCurrentPosition();
-          }
-        } catch (reinitError) {
-          console.error('[Stockfish] Failed to reinitialize:', reinitError);
-          this.stockfishEnabled = false;
-          this.stockfishInitialized = false;
-        }
-        return;
-      }
-      
-      // Si hay un error crítico, desactivar Stockfish
-      if (error instanceof Error && (error.message.includes('memory') || error.message.includes('terminated'))) {
-        console.error('[Stockfish] Critical error, disabling Stockfish');
-        this.stockfishEnabled = false;
-        this.stockfishInitialized = false;
-        try {
-          this.stockfishService.terminate();
-        } catch (e) {
-          console.error('[Stockfish] Error terminating after critical error:', e);
-        }
-      }
-    } finally {
-      this.isAnalyzingPosition = false;
     }
   }
 
@@ -418,152 +343,17 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit, OnDe
     this.chessInstance.load(this.puzzle.fen);
     this.piecePathKingTurn = this.chessInstance.turn() === 'b' ? 'wK.svg' : 'bK.svg';
 
-    this.board = await new Chessboard(document.getElementById('boardPuzzleSolution') as HTMLElement, {
-      responsive: true,
+    this.board = await createChessboard(document.getElementById('boardPuzzleSolution') as HTMLElement, {
+      highlightCheck: true,
       position: fen,
-      assetsUrl: 'assets/cm-chessboard/assets/',
-      assetsCache: true,
-      style: {
-        cssClass: 'chessboard-js',
-        borderType: BORDER_TYPE.thin,
-        pieces: {
-          file: 'pieces/standard.svg',
-        }
-      },
       extensions: [
         { class: Markers },
         { class: Arrows },
-        { class: PromotionDialog }
-      ]
+        { class: PromotionDialog },
+      ],
     });
 
-    this.board.enableMoveInput((event) => {
-      // handle user input here
-      switch (event.type) {
-
-        case 'moveInputStarted':
-          this.board.removeMarkers();
-          this.showLastMove();
-          this.removeArrows();
-
-          // mostrar indicadores para donde se puede mover la pieza
-          if (event.square && this.chessInstance.moves({ square: event.square as any }).length > 0) {
-            // adiciona el marcador para la casilla seleccionada
-            const markerSquareSelected = { class: 'marker-square-green', slice: 'markerSquare' };
-            this.board.addMarker(markerSquareSelected, event.square);
-            const possibleMoves = this.chessInstance.moves({ square: event.square as any, verbose: true });
-            for (const move of possibleMoves) {
-              const markerDotMove = { class: 'marker-dot-green', slice: 'markerDot' };
-              this.board.addMarker(markerDotMove, move.to);
-            }
-          }
-          return true;
-
-        case 'validateMoveInput':
-          // Aplicar correcciones de board-puzzle.component.ts para promoción de peones
-          if (event.squareTo && event.piece && event.squareFrom &&
-            (event.squareTo.charAt(1) === '8' || event.squareTo.charAt(1) === '1') &&
-            event.piece.charAt(1) === 'p') {
-
-            // Validar primero si el movimiento básico del peón es válido
-            try {
-              // Verificar que hay movimientos posibles desde la casilla de origen
-              const possibleMoves = this.chessInstance.moves({
-                square: event.squareFrom as any,
-                verbose: true
-              });
-
-              const isValidPawnMove = possibleMoves.some(move => move.to === event.squareTo);
-
-              if (!isValidPawnMove) {
-                this.board.removeMarkers();
-                this.showLastMove();
-                return false;
-              }
-
-              const colorToShow = event.piece.charAt(0) === 'w' ? COLOR.white : COLOR.black;
-              // Mostrar diálogo de promoción solo si el movimiento básico es válido
-              this.board.showPromotionDialog(event.squareTo, colorToShow, (result) => {
-                if (result && result.piece && event.squareFrom && event.squareTo) {
-                  const objectMovePromotion = {
-                    from: event.squareFrom,
-                    to: event.squareTo,
-                    promotion: result.piece.charAt(1)
-                  };
-
-                  // Validar primero con chess.js antes de actualizar el tablero
-                  try {
-                    const theMovePromotion = this.chessInstance.move(objectMovePromotion);
-
-                    if (theMovePromotion) {
-                      // Solo si el movimiento es válido, sincronizar el tablero con el estado de chess.js
-                      this.board.setPosition(this.chessInstance.fen(), false);
-
-                      this.board.removeArrows();
-                      this.showLastMove();
-                      this.validateMove();
-                    } else {
-                      this.board.setPosition(this.chessInstance.fen(), false);
-                      this.board.removeMarkers();
-                      this.showLastMove();
-                    }
-                  } catch (error) {
-                    this.board.setPosition(this.chessInstance.fen(), false);
-                    this.board.removeMarkers();
-                    this.showLastMove();
-                    console.log('Invalid promotion move:', error);
-                  }
-                } else {
-                  this.board.setPosition(this.chessInstance.fen(), false);
-                  this.board.removeMarkers();
-                  this.showLastMove();
-                }
-              });
-
-              // Retornar true para aceptar el movimiento pendiente de promoción
-              return true;
-            } catch (error) {
-              this.board.removeMarkers();
-              this.showLastMove();
-              return false;
-            }
-          }
-
-          if (event.squareFrom && event.squareTo) {
-            const objectMove = { from: event.squareFrom, to: event.squareTo };
-            try {
-              const theMove = this.chessInstance.move(objectMove);
-
-              if (theMove) {
-                this.board.removeArrows();
-                this.showLastMove();
-                this.validateMove();
-              } else {
-                this.board.removeMarkers();
-                this.showLastMove();
-              }
-              return theMove ? true : false;
-            } catch (error) {
-              this.board.removeMarkers();
-              this.showLastMove();
-              return false;
-            }
-          }
-          this.board.removeMarkers();
-          this.showLastMove();
-          return false;
-
-        case 'moveInputCanceled':
-          this.board.removeMarkers();
-          this.showLastMove();
-          this.removeArrows();
-          return true;
-        case 'moveInputFinished':
-          return true;
-        default:
-          return true;
-      }
-    });
+    this.board.enableMoveInput(createMoveInputHandler(this.moveInputHost));
 
     this.turnRoundBoard(this.chessInstance.turn() === 'b' ? 'w' : 'b');
     this.fenToCompareAndPlaySound = this.puzzle.fen;
@@ -736,28 +526,13 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit, OnDe
 
   /** Elimina todos los marcadores del tablero excepto los de última jugada (lastMove). */
   removeMarkerNotLastMove(square?: string) {
-    const markersToProcess = square
-      ? this.board.getMarkers(undefined, square)
-      : this.board.getMarkers();
-    markersToProcess.forEach((marker: { type: { id?: string }; square?: string }) => {
-      if (marker.type?.id !== 'lastMove') {
-        this.board.removeMarkers(marker.type, square ?? marker.square);
-      }
-    });
+    removeMarkersExceptLastMove(this.board, square);
   }
 
   // Board controls -----------------------------------
 
   turnRoundBoard(orientation?: 'w' | 'b') {
-    if (orientation) {
-      this.board.setOrientation(orientation);
-    } else {
-      if (this.board.getOrientation() === 'w') {
-        this.board.setOrientation('b');
-      } else {
-        this.board.setOrientation('w');
-      }
-    }
+    turnBoard(this.board, orientation);
   }
 
   async startMoves() {
@@ -795,22 +570,18 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit, OnDe
   }
 
   showLastMove(from?: string, to?: string) {
-    this.board.removeMarkers();
     if (!from && !to) {
-      // eslint-disable-next-line max-len
-      from = this.chessInstance.history({ verbose: true }).slice(-1)[0]?.from;
-      to = this.chessInstance.history({ verbose: true }).slice(-1)[0]?.to;
+      // Sin argumentos: la última jugada de chess.js o, si el historial está vacío, la de la solución
+      const last = this.chessInstance.history({ verbose: true }).slice(-1)[0];
+      from = last?.from;
+      to = last?.to;
 
       if (!from || !to) {
         from = this.arrayMovesSolution[this.currentMoveNumber - 1]?.slice(0, 2);
         to = this.arrayMovesSolution[this.currentMoveNumber - 1]?.slice(2, 4);
       }
     }
-    if (from && to) {
-      const marker = { id: 'lastMove', class: 'marker-square-green', slice: 'markerSquare' };
-      this.board.addMarker(marker, from);
-      this.board.addMarker(marker, to);
-    }
+    drawLastMove(this.board, from, to);
   }
 
   // Navigation controls
@@ -892,25 +663,8 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit, OnDe
   }
 
   ngOnDestroy() {
-    console.log('[Stockfish] Component destroying, cleaning up...');
-    // Detener análisis si está activo
-    if (this.stockfishEnabled) {
-      try {
-        this.stockfishService.stopAnalysis();
-      } catch (error) {
-        console.warn('[Stockfish] Error stopping analysis:', error);
-      }
-    }
-
-    // Limpiar recursos de Stockfish
-    try {
-      if (this.stockfishService) {
-        this.stockfishService.terminate();
-        console.log('[Stockfish] Worker terminated');
-      }
-    } catch (error) {
-      console.error('[Stockfish] Error terminating Stockfish:', error);
-    }
+    // El facade es dueño del worker: termina el motor y detiene cualquier análisis en curso
+    this.engine.dispose();
     this.stopTimer();
   }
 }

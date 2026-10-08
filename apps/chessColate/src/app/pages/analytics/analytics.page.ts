@@ -1,19 +1,29 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, IonContent, IonIcon } from '@ionic/angular/standalone';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
 import {
+  chevronDownOutline,
+  filterOutline,
   homeOutline,
   refreshOutline,
+  settingsOutline,
+  shuffle,
   statsChartOutline,
   trashOutline,
   linkOutline,
 } from 'ionicons/icons';
 
-import { ChessGame, ChessPlatform, TimeClass } from '@cpark/models';
+import {
+  ChessGame,
+  ChessPlatform,
+  Plan,
+  outcomeForUser,
+  TimeClass,
+} from '@chesspark/models';
 import {
   ActivityDay,
   applyFilters,
@@ -28,31 +38,51 @@ import {
 } from '@chesspark/game-reporter';
 
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
-import { AnalyticsService } from '@services/analytics.service';
+import { AnalyticsService } from '@services/analytics/analytics.service';
+import { GamesService } from '@services/games/games.service';
+import { AppService } from '@services/app/app.service';
+import { PlanService } from '@services/plans/plan.service';
+import { CustomPlansService } from '@services/plans/custom-plans.service';
+import { ProfileService } from '@services/account/profile.service';
+import { PlanFacadeService } from '@chesspark/state';
 import {
   GameAnalyticsService,
   UnknownUsernameError,
-} from '@services/game-analytics.service';
+} from '@services/analytics/game-analytics.service';
 import {
+  boardOrientation,
+  CatalogOpening,
   ConnectedAccounts,
+  PracticeOpening,
+  practiceOpenings,
   HISTORY_RANGES,
   HistoryRange,
+  newestFirst,
+  opponentOf,
   platformLabel,
   TIME_CLASSES,
   toPercent,
-} from '@services/game-analytics.util';
+} from '@services/analytics/game-analytics.util';
 
 import { ActivityHeatmapComponent } from './components/activity-heatmap/activity-heatmap.component';
 import { OpeningsTableComponent } from './components/openings-table/openings-table.component';
 import { RatingChartComponent } from './components/rating-chart/rating-chart.component';
+import { KingImagePipe } from '@shared/pipes/king-image.pipe';
 
 addIcons({
+  chevronDownOutline,
+  filterOutline,
   homeOutline,
   refreshOutline,
+  settingsOutline,
+  shuffle,
   statsChartOutline,
   trashOutline,
   linkOutline,
 });
+
+/** Filas de la lista de partidas que se pintan de cada vez. */
+const GAMES_PAGE_SIZE = 20;
 
 /**
  * Análisis de las partidas del usuario en chess.com y lichess.
@@ -62,12 +92,15 @@ addIcons({
  * dispositivo y solo después se va a la red: los números aparecen al instante
  * aunque la descarga tarde.
  */
+type PracticeColor = 'white' | 'black' | 'random';
+
 @Component({
   selector: 'app-analytics',
   templateUrl: './analytics.page.html',
   styleUrls: ['./analytics.page.scss'],
   standalone: true,
   imports: [
+    KingImagePipe,
     CommonModule,
     FormsModule,
     TranslocoPipe,
@@ -85,6 +118,13 @@ export class AnalyticsPage implements OnInit {
   private transloco = inject(TranslocoService);
   private analytics = inject(AnalyticsService);
   private gameAnalytics = inject(GameAnalyticsService);
+  private gamesService = inject(GamesService);
+  private appService = inject(AppService);
+  private planService = inject(PlanService);
+  private route = inject(ActivatedRoute);
+  private customPlansService = inject(CustomPlansService);
+  private profileService = inject(ProfileService);
+  private planFacade = inject(PlanFacadeService);
 
   /** Formulario de conexión. */
   chesscomInput = '';
@@ -117,19 +157,61 @@ export class AnalyticsPage implements OnInit {
   ratingPoints: RatingDataPoint[] = [];
   openings: OpeningStats[] = [];
   activityDays: ActivityDay[] = [];
+  /** Las partidas filtradas, de la más reciente a la más antigua. */
+  gamesList: ChessGame[] = [];
+  /** Cuántas filas de la lista se pintan; crece con "Ver más". */
+  shownGames = GAMES_PAGE_SIZE;
+
+  /** Qué tab se ve en la sección de Estadísticas / Aperturas / Partidas. */
+  activeTab: 'stats' | 'openings' | 'games' = this.initialTab();
 
   readonly historyRanges = HISTORY_RANGES;
   readonly timeClasses = TIME_CLASSES;
   readonly platformLabel = platformLabel;
   readonly toPercent = toPercent;
 
+  get catalog(): CatalogOpening[] {
+    return this.appService.getOpeningsList;
+  }
+
+  colorPickerOpen = false;
+  private colorResolver: ((color: PracticeColor | null) => void) | null = null;
+
+  /** Aperturas tuyas donde peor te va y que tienen puzzles para practicarlas. */
+  get practiceOpenings(): PracticeOpening[] {
+    return practiceOpenings(this.openings, this.appService.getOpeningsList);
+  }
+  readonly opponentOf = opponentOf;
+  readonly outcomeForUser = outcomeForUser;
+
   get hasAccounts(): boolean {
     return Boolean(this.accounts.chesscom || this.accounts.lichess);
+  }
+
+  get pagedGames(): ChessGame[] {
+    return this.gamesList.slice(0, this.shownGames);
+  }
+
+  get hasMoreGames(): boolean {
+    return this.shownGames < this.gamesList.length;
   }
 
   /** Hay cuentas conectadas pero ninguna partida que enseñar. */
   get allGamesEmpty(): boolean {
     return this.allGames.length === 0;
+  }
+
+  /**
+   * La partida más antigua y la más reciente de todo lo descargado. Sale de
+   * todas las partidas y no de las filtradas: describe qué cubre la descarga,
+   * y no debe encoger al marcar un control de tiempo.
+   */
+  get downloadedFrom(): number {
+    return this.allGames[0]?.playedAt ?? 0;
+  }
+
+  get downloadedTo(): number {
+    return this.allGames[this.allGames.length - 1]?.playedAt ?? 0;
   }
 
   get canConnect(): boolean {
@@ -149,6 +231,10 @@ export class AnalyticsPage implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
+    if (!this.appService.getOpeningsList.length) {
+      void this.appService.loadOpenings();
+    }
+
     const settings = this.gameAnalytics.getSettings();
     this.accounts = settings.accounts;
     this.historyMonths = settings.historyMonths;
@@ -156,13 +242,9 @@ export class AnalyticsPage implements OnInit {
     this.lichessInput = settings.accounts.lichess;
 
     if (this.hasAccounts) {
-      this.allGames = await this.gameAnalytics.loadStored(this.accounts);
+      this.allGames = await this.gameAnalytics.loadStored(this.accounts, this.historyMonths);
       this.recalculate();
-
-      // Nada guardado todavía: la primera descarga tiene que salir sola
-      if (this.allGames.length === 0) {
-        void this.sync();
-      }
+      void this.sync();
     }
 
     this.loading = false;
@@ -171,6 +253,17 @@ export class AnalyticsPage implements OnInit {
       connected: this.connectedList.length,
       games_count: this.allGames.length,
     });
+  }
+
+  /**
+   * Al volver a la pantalla se busca lo nuevo sin esperar al botón. Es barato:
+   * los meses pasados salen del caché, y el mes en curso solo se vuelve a pedir
+   * si su copia tiene más de una hora.
+   */
+  ionViewWillEnter(): void {
+    if (!this.loading && this.hasAccounts) {
+      void this.sync();
+    }
   }
 
   // — Conectar ————————————————————————————————————————————————
@@ -235,7 +328,7 @@ export class AnalyticsPage implements OnInit {
     this.lichessInput = settings.accounts.lichess;
 
     this.allGames = this.hasAccounts
-      ? await this.gameAnalytics.loadStored(this.accounts)
+      ? await this.gameAnalytics.loadStored(this.accounts, this.historyMonths)
       : [];
     this.recalculate();
   }
@@ -279,6 +372,81 @@ export class AnalyticsPage implements OnInit {
   }
 
   /** Cambiar el rango obliga a bajar los meses que aún no estén. */
+  practiceName(opening: CatalogOpening): string {
+    return this.transloco.getActiveLang() === 'es' ? opening.nameEs : opening.nameEn;
+  }
+
+  /** Arma una sesión de puzzles de esa apertura, con tu rating como nivel, y la empieza. */
+  /**
+   * Guarda una rutina por apertura —la misma que una rutina propia, para que
+   * tenga historial, gráficos y "repetir"— y la empieza. Repetir la práctica de
+   * una apertura reutiliza su rutina, así que el historial se acumula.
+   */
+  async practice(opening: CatalogOpening): Promise<void> {
+    const color = await this.chooseColor();
+    if (!color) {
+      return;
+    }
+
+    const uid = `practice-${opening.value}`;
+    const last = this.ratingPoints[this.ratingPoints.length - 1];
+    const plan: Plan = {
+      uid,
+      uidCustomPlan: uid,
+      title: this.practiceName(opening),
+      uidUser: this.profileService.getProfile?.uid ?? '',
+      createdAt: Date.now(),
+      planType: 'custom',
+      isPublic: false,
+      blocks: [
+        {
+          title: this.practiceName(opening),
+          time: 300,
+          puzzlesCount: 0,
+          theme: '',
+          openingFamily: opening.value,
+          elo: last?.rating ?? 1500,
+          color,
+          puzzleTimes: { total: 60, warningOn: 30, dangerOn: 10 },
+          puzzlesPlayed: [],
+          nextPuzzleImmediately: true,
+          showPuzzleSolution: true,
+          streamSolution: false,
+          showPuzzleElo: false,
+          goshPuzzle: false,
+        },
+      ],
+    };
+
+    await this.customPlansService.save(plan);
+    const planToPlay = await this.planService.makeCustomPlanForPlay(plan, last?.rating ?? 1500);
+    this.planFacade.clearPlan();
+    this.planFacade.setPlan(planToPlay);
+    void this.router.navigate(['/puzzles/training'], {
+      queryParams: { returnTo: '/analytics?tab=openings' },
+    });
+  }
+
+  /** Con qué color practicar; null si se cancela. */
+  private chooseColor(): Promise<PracticeColor | null> {
+    this.colorPickerOpen = true;
+    return new Promise((resolve) => {
+      this.colorResolver = resolve;
+    });
+  }
+
+  pickColor(color: PracticeColor | null): void {
+    this.colorPickerOpen = false;
+    this.colorResolver?.(color);
+    this.colorResolver = null;
+  }
+
+  /** La pestaña con la que se entra: la que pidió la ruta de vuelta, o Estadísticas. */
+  private initialTab(): 'stats' | 'openings' | 'games' {
+    const tab = this.route.snapshot.queryParamMap.get('tab');
+    return tab === 'openings' || tab === 'games' ? tab : 'stats';
+  }
+
   async setHistoryRange(months: HistoryRange): Promise<void> {
     if (months === this.historyMonths) {
       return;
@@ -343,6 +511,43 @@ export class AnalyticsPage implements OnInit {
     this.ratingPoints = getRatingProgress(games);
     this.openings = getOpeningStats(games);
     this.activityDays = getActivityHeatmap(games);
+    this.gamesList = newestFirst(games);
+    this.shownGames = GAMES_PAGE_SIZE;
+  }
+
+  // — Lista de partidas ——————————————————————————————————————
+
+  setActiveTab(tab: 'stats' | 'openings' | 'games'): void {
+    this.activeTab = tab;
+  }
+
+  showMoreGames(): void {
+    this.shownGames += GAMES_PAGE_SIZE;
+  }
+
+  /**
+   * Abre una partida en el reproductor de Partidas.
+   *
+   * Se le pasa la lista entera tal como se ve —con sus filtros y en su orden—
+   * y el tablero se orienta desde el color con el que jugó el usuario.
+   */
+  openGame(game: ChessGame): void {
+    const index = this.gamesList.indexOf(game);
+    if (index < 0) {
+      return;
+    }
+
+    this.gamesService.openOwnGames(
+      this.transloco.translate('ANALYTICS.gamesList.title'),
+      this.gamesList
+    );
+    this.router.navigate(['/games/viewer'], {
+      queryParams: {
+        index,
+        color: boardOrientation(game),
+        source: 'analytics',
+      },
+    });
   }
 
   // — Ayudas de plantilla ————————————————————————————————————

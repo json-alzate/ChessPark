@@ -1,0 +1,176 @@
+/**
+ * Lógica pura de la pantalla de Análisis de partidas (sin Angular ni red):
+ * cuentas conectadas, rangos de historial y preparación de las gráficas.
+ */
+
+import {
+  ArchiveMonth,
+  archiveMonthsBetween,
+  ChessGame,
+  ChessGamePlayer,
+  ChessPlatform,
+  TimeClass,
+} from '@chesspark/models';
+import { OpeningStats, RatingDataPoint } from '@chesspark/game-reporter';
+
+/** Una cuenta conectada por el usuario. */
+export interface ConnectedAccounts {
+  /** Nombre en chess.com; vacío si no la ha conectado. */
+  chesscom: string;
+  /** Nombre en lichess; vacío si no la ha conectado. */
+  lichess: string;
+}
+
+export const EMPTY_ACCOUNTS: ConnectedAccounts = { chesscom: '', lichess: '' };
+
+/** Cuánto historial se baja la primera vez, en meses. */
+export const HISTORY_RANGES = [3, 6, 12, 24] as const;
+export type HistoryRange = (typeof HISTORY_RANGES)[number];
+
+export const DEFAULT_HISTORY_RANGE: HistoryRange = 6;
+
+/** Las familias de tiempo que se ofrecen como filtro, en orden de reloj. */
+export const TIME_CLASSES: TimeClass[] = [
+  'bullet',
+  'blitz',
+  'rapid',
+  'classical',
+  'daily',
+];
+
+/** Lo que la pantalla guarda entre visitas. */
+export interface GameAnalyticsSettings {
+  accounts: ConnectedAccounts;
+  historyMonths: HistoryRange;
+}
+
+export const DEFAULT_SETTINGS: GameAnalyticsSettings = {
+  accounts: EMPTY_ACCOUNTS,
+  historyMonths: DEFAULT_HISTORY_RANGE,
+};
+
+/**
+ * Los meses que cubre un rango contado hacia atrás desde hoy.
+ *
+ * El mes en curso siempre entra: quien acaba de jugar espera ver esa partida.
+ */
+export function monthsForRange(months: number, now = new Date()): ArchiveMonth[] {
+  const from = new Date(now.getFullYear(), now.getMonth() - (months - 1), 1);
+  return archiveMonthsBetween(from, now);
+}
+
+/**
+ * Desde qué instante cuenta un rango: el primer milisegundo del mes más
+ * antiguo que cubre. Es el mismo corte que usa la descarga, así que lo que se
+ * enseña al abrir coincide con lo que se acaba de descargar.
+ */
+export function rangeStart(months: number, now = new Date()): number {
+  const [first] = monthsForRange(months, now);
+  return new Date(first.year, first.month - 1, 1).getTime();
+}
+
+/** El nombre visible de una plataforma. */
+export function platformLabel(platform: ChessPlatform): string {
+  return platform === 'chess.com' ? 'Chess.com' : 'Lichess';
+}
+
+/** Un porcentaje entero listo para pintar: 0,635 → 64. */
+export function toPercent(fraction: number): number {
+  return Math.round(fraction * 100);
+}
+
+/**
+ * Adelgaza la serie de rating a un máximo de puntos.
+ *
+ * Un año de blitz son miles de partidas y Chart.js las dibujaría todas: la
+ * gráfica tarda y no se lee mejor. Se toma una de cada N conservando siempre
+ * el primer y el último punto, que son los que marcan la tendencia.
+ */
+export function thinSeries(
+  points: RatingDataPoint[],
+  maxPoints = 400
+): RatingDataPoint[] {
+  if (points.length <= maxPoints) {
+    return points;
+  }
+
+  const step = Math.ceil(points.length / maxPoints);
+  const thinned = points.filter((_, index) => index % step === 0);
+
+  const last = points[points.length - 1];
+  if (thinned[thinned.length - 1] !== last) {
+    thinned.push(last);
+  }
+  return thinned;
+}
+
+/** Las partidas de la más reciente a la más antigua: el orden de la lista. */
+export function newestFirst(games: ChessGame[]): ChessGame[] {
+  return [...games].sort((a, b) => b.playedAt - a.playedAt);
+}
+
+/** El rival del usuario en una partida. */
+export function opponentOf(game: ChessGame): ChessGamePlayer {
+  return game.userColor === 'white' ? game.black : game.white;
+}
+
+/**
+ * Desde qué lado se ve el tablero al abrir una partida propia: el del color
+ * con el que jugó el usuario, que es como la vio mientras la jugaba.
+ */
+export function boardOrientation(game: ChessGame): 'w' | 'b' {
+  return game.userColor === 'white' ? 'w' : 'b';
+}
+
+/** Una apertura del catálogo de puzzles, con su nombre en cada idioma. */
+export interface CatalogOpening {
+  value: string;
+  nameEn: string;
+  nameEs: string;
+}
+
+/** Una apertura tuya donde te va mal y que tiene puzzles para practicarla. */
+export interface PracticeOpening extends CatalogOpening {
+  games: number;
+  winRate: number;
+}
+
+/** Lo que escriben igual el catálogo y la plataforma: sin mayúsculas, acentos ni signos. */
+function sameName(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/['’.]/g, '')
+    .replace(/[\s-]+/g, '_');
+}
+
+/**
+ * Las aperturas donde peor te va y que tienen puzzles: el nombre de la
+ * plataforma ('Sicilian Defense: Najdorf') se cruza con el catálogo sin
+ * importar mayúsculas ni apóstrofes. Solo cuentan aperturas con al menos
+ * `minGames` partidas, para no recomendar una que jugaste una vez.
+ */
+export function catalogOpeningFor(
+  row: OpeningStats,
+  catalog: CatalogOpening[]
+): CatalogOpening | null {
+  const name = sameName(row.name.split(':')[0]);
+  return catalog.find((item) => sameName(item.value) === name) ?? null;
+}
+
+export function practiceOpenings(
+  openings: OpeningStats[],
+  catalog: CatalogOpening[],
+  minGames = 3,
+  count = 3
+): PracticeOpening[] {
+  return openings
+    .filter((row) => row.games >= minGames)
+    .flatMap((row) => {
+      const item = catalogOpeningFor(row, catalog);
+      return item ? [{ ...item, games: row.games, winRate: row.winRate }] : [];
+    })
+    .sort((a, b) => a.winRate - b.winRate)
+    .slice(0, count);
+}

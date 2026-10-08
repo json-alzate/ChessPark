@@ -4,7 +4,7 @@ import { TranslocoPipe } from '@jsverse/transloco';
 
 import { BoardPuzzleSolutionComponent } from './board-puzzle-solution.component';
 import { SoundsService, SecondsToMinutesSecondsPipe } from '@chesspark/common-utils';
-import { Puzzle } from '@cpark/models';
+import { Puzzle } from '@chesspark/models';
 
 describe('BoardPuzzleSolutionComponent', () => {
   let component: BoardPuzzleSolutionComponent;

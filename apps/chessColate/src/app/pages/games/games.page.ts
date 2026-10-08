@@ -17,9 +17,9 @@ import {
 import { GameCollectionInfo } from '@chesspark/games-provider';
 
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
-import { AnalyticsService } from '@services/analytics.service';
-import { GamesService } from '@services/games.service';
-import { formatBytes } from '@services/games.util';
+import { AnalyticsService } from '@services/analytics/analytics.service';
+import { GamesService } from '@services/games/games.service';
+import { formatBytes } from '@services/games/games.util';
 
 addIcons({
   homeOutline,

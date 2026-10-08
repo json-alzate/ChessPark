@@ -1,4 +1,4 @@
-# @cpark/state
+# @chesspark/state
 
 Librería de gestión de estado para las aplicaciones del monorepo ChessPark.
 
@@ -34,7 +34,7 @@ import {
   getProfile,
   setProfile,
   logOut 
-} from '@cpark/state';
+} from '@chesspark/state';
 ```
 
 ### Configuración en la aplicación
@@ -44,7 +44,7 @@ Para usar el estado de autenticación en tu aplicación:
 1. **Registrar el reducer** en el `StoreModule`:
 
 ```typescript
-import { authReducer } from '@cpark/state';
+import { authReducer } from '@chesspark/state';
 
 @NgModule({
   imports: [
@@ -60,7 +60,7 @@ export class AppModule {}
 2. **Registrar los effects** en el `EffectsModule`:
 
 ```typescript
-import { AuthEffects, AUTH_SERVICE_TOKEN, PROFILE_SERVICE_TOKEN } from '@cpark/state';
+import { AuthEffects, AUTH_SERVICE_TOKEN, PROFILE_SERVICE_TOKEN } from '@chesspark/state';
 import { AuthService } from './services/auth.service';
 import { ProfileService } from './services/profile.service';
 
@@ -80,7 +80,7 @@ export class AppModule {}
 3. **Implementar las interfaces requeridas** en tus servicios:
 
 ```typescript
-import { IAuthService, IProfileService } from '@cpark/state';
+import { IAuthService, IProfileService } from '@chesspark/state';
 
 @Injectable()
 export class AuthService implements IAuthService {
@@ -152,14 +152,14 @@ Estado para gestionar la autenticación de usuarios:
 
 - `@ngrx/store`
 - `@ngrx/effects`
-- `@cpark/models` (para los tipos `Profile`)
+- `@chesspark/models` (para los tipos `Profile`)
 
 ## Migración desde @redux
 
 Si estás migrando desde el antiguo sistema de `@redux/`, puedes seguir estos pasos:
 
-1. Reemplazar los imports de `@redux/states/auth.state` por `@cpark/state`
-2. Reemplazar los imports de `@redux/actions/auth.actions` por `@cpark/state`
-3. Reemplazar los imports de `@redux/selectors/auth.selectors` por `@cpark/state`
+1. Reemplazar los imports de `@redux/states/auth.state` por `@chesspark/state`
+2. Reemplazar los imports de `@redux/actions/auth.actions` por `@chesspark/state`
+3. Reemplazar los imports de `@redux/selectors/auth.selectors` por `@chesspark/state`
 4. Implementar las interfaces `IAuthService` y `IProfileService` en tus servicios
 5. Registrar los providers con los tokens de inyección correspondientes

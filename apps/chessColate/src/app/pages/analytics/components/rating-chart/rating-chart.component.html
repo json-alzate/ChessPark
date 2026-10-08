@@ -1,3 +1,25 @@
+<div class="mb-3 flex flex-col gap-1.5 text-xs">
+  <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+    <span class="opacity-50 uppercase tracking-wide text-[10px]">{{ 'ANALYTICS.chartTimeClassLabel' | transloco }}</span>
+    @for (item of legendTimeClasses; track item.label) {
+      <span class="flex items-center gap-1.5">
+        <span class="inline-block w-2.5 h-2.5 rounded-sm" [style.background-color]="item.color"></span>
+        {{ item.label }}
+      </span>
+    }
+  </div>
+  <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+    <span class="opacity-50 uppercase tracking-wide text-[10px]">{{ 'ANALYTICS.chartPlatformLabel' | transloco }}</span>
+    @for (platform of legendPlatforms; track platform.name) {
+      <span class="flex items-center gap-1.5">
+        <span class="inline-block w-5 border-t-2 border-current"
+          [class.border-dashed]="platform.dashed"></span>
+        {{ platform.name }}
+      </span>
+    }
+  </div>
+</div>
+
 <div class="rating-chart">
   <canvas #canvas></canvas>
 </div>

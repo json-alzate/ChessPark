@@ -1,5 +1,5 @@
 <ion-content [fullscreen]="true">
-  <div class="main-container" data-theme="halloween">
+  <div class="main-container">
     <app-navbar></app-navbar>
 
     <!-- Max-width wrapper para pantallas grandes -->
@@ -379,7 +379,7 @@
               <!-- Fila de estado: turno · Elo + stats -->
               <div class="flex items-center justify-between gap-2">
                 <div class="flex items-center gap-2 min-w-0">
-                  <img [src]="'assets/images/king-' + playerColor + '.svg'" [alt]="playerColor"
+                  <img [src]="playerColor | kingImage" [alt]="playerColor"
                     class="h-7 w-7 md:h-8 md:w-8 shrink-0" />
                   <div class="flex flex-col min-w-0">
                     <span class="text-sm font-semibold leading-tight">{{ 'PUZZLES.help.yourTurn' | transloco }}</span>
@@ -449,7 +449,7 @@
             </div>
             <div class="flex-1 min-w-0">
               <div class="text-sm font-semibold leading-tight">{{ 'DONATION.homeCard.title' | transloco }}</div>
-              <div class="text-xs text-base-content/60 leading-snug line-clamp-2"
+              <div class="text-xs text-base-content/60 leading-snug"
                 [innerHTML]="'DONATION.homeCard.description' | transloco"></div>
             </div>
             <ion-icon name="chevron-forward" class="text-base-content/40 text-lg flex-shrink-0"></ion-icon>
@@ -517,7 +517,7 @@
       [initialBreakpoint]="0.65" [breakpoints]="[0, 0.85]" handleBehavior="cycle">
       <ng-template>
         <ion-content>
-          <div data-theme="halloween" class="min-h-full bg-base-100 text-base-content flex flex-col">
+          <div class="min-h-full bg-base-100 text-base-content flex flex-col">
             <div class="p-4 flex-1">
               <!-- Modal Header -->
               <div class="flex items-start justify-between mb-4 mt-2">

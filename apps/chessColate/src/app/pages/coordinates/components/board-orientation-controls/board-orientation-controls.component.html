@@ -8,7 +8,7 @@
       (click)="onOrientationChange('white')"
     >
       <img
-        src="assets/images/king-white.svg"
+        [src]="'white' | kingImage"
         [alt]="'APP.components.whiteKing' | transloco"
         class="size-6"
       />
@@ -29,7 +29,7 @@
       (click)="onOrientationChange('black')"
     >
       <img
-        src="assets/images/king-black.svg"
+        [src]="'black' | kingImage"
         [alt]="'APP.components.blackKing' | transloco"
         class="size-6"
       />

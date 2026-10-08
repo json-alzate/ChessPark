@@ -1,0 +1,143 @@
+@let c = compact();
+@let t = c || tabbed();
+
+<!--
+  Con pestañas (`t`, Ajustes y onboarding): una tira a la vez, todas con el mismo alto para
+  que el tablero de muestra no cambie de tamaño al cambiar de pestaña.
+  Compacto (`c`, onboarding): además llena la altura que le dan y el tablero de muestra toma
+  lo que sobra, así el slide no necesita scroll.
+-->
+<div class="flex flex-col" [class]="c ? 'h-full gap-2' : 'gap-4'">
+
+  <!-- Tablero de muestra: cambia al instante con cada elección -->
+  @if (c) {
+  <!-- El cuadrado mide lo mismo que el menor lado del espacio libre (cqw/cqh), así nunca desborda -->
+  <div class="flex min-h-0 flex-1 items-center justify-center" style="container-type: size;">
+    <div style="width: min(100cqw, 100cqh); aspect-ratio: 1;">
+      <lib-fen-board [fen]="previewFen"></lib-fen-board>
+    </div>
+  </div>
+  } @else {
+  <div class="mx-auto w-full max-w-[280px]">
+    <lib-fen-board [fen]="previewFen"></lib-fen-board>
+  </div>
+  }
+
+  <!-- Pestañas: botones unidos; la activa va en el color primario -->
+  @if (t) {
+  <div role="tablist" class="join w-full">
+    @for (item of tabs; track item.id) {
+    @if (item.id !== 'theme' || showTheme()) {
+    <button type="button" role="tab"
+      class="btn btn-sm join-item flex-1"
+      [class]="tab() === item.id ? 'btn-primary' : 'btn-outline border-base-content/30'"
+      [attr.aria-selected]="tab() === item.id"
+      (click)="tab.set(item.id)">
+      {{ item.labelKey | transloco }}
+    </button>
+    }
+    }
+  </div>
+  }
+
+  <!-- Las tres tiras. Con pestañas comparten un alto fijo (el de la más alta) para que el
+       tablero de muestra no cambie de tamaño al cambiar de pestaña -->
+  <div [class]="t ? 'flex h-[9.5rem] shrink-0 flex-col justify-center' : 'contents'">
+
+  <!-- Piezas: tira horizontal con la elegida centrada y más grande -->
+  <div [class.hidden]="t && tab() !== 'pieces'">
+    <h3 class="mb-1 text-center text-sm font-semibold text-base-content/70">
+      {{ 'APPEARANCE.pieces' | transloco }}
+      <span class="font-normal text-base-content/50">· {{ 'APPEARANCE.piecesNames.' + appearance.pieces() | transloco }}</span>
+    </h3>
+    <div #piecesStrip class="strip relative flex snap-x snap-mandatory items-center gap-3 overflow-x-auto overflow-y-hidden"
+      [class]="t ? 'py-3' : 'py-4'"
+      style="padding-inline: calc(50% - 2.5rem);">
+      @for (option of piecesOptions; track option.name) {
+      <button type="button"
+        class="flex h-20 w-20 shrink-0 snap-center items-center justify-center rounded-box border bg-base-200/40 transition-transform duration-200"
+        [class]="appearance.pieces() === option.name
+          ? 'z-10 scale-125 border-primary bg-primary/10 shadow-lg'
+          : 'scale-90 border-base-content/10 opacity-70'"
+        [attr.aria-pressed]="appearance.pieces() === option.name"
+        [attr.aria-label]="'APPEARANCE.piecesNames.' + option.name | transloco"
+        (click)="selectPieces(option.name)">
+        <img [src]="option.sample" alt="" class="h-14 w-14" draggable="false" />
+      </button>
+      }
+    </div>
+  </div>
+
+  <!-- Tablero: misma tira -->
+  <div [class.hidden]="t && tab() !== 'board'">
+    <h3 class="mb-1 text-center text-sm font-semibold text-base-content/70">
+      {{ 'APPEARANCE.board' | transloco }}
+      <span class="font-normal text-base-content/50">· {{ 'APPEARANCE.boardsNames.' + appearance.board() | transloco }}</span>
+    </h3>
+    <div #boardStrip class="strip relative flex snap-x snap-mandatory items-center gap-3 overflow-x-auto overflow-y-hidden"
+      [class]="t ? 'py-3' : 'py-4'"
+      style="padding-inline: calc(50% - 2rem);">
+      @for (option of boardOptions; track option.name) {
+      <button type="button"
+        class="flex h-16 w-16 shrink-0 snap-center items-center justify-center rounded-box border bg-base-200/40 transition-transform duration-200"
+        [class]="appearance.board() === option.name
+          ? 'z-10 scale-125 border-primary bg-primary/10 shadow-lg'
+          : 'scale-90 border-base-content/10 opacity-70'"
+        [attr.aria-pressed]="appearance.board() === option.name"
+        [attr.aria-label]="'APPEARANCE.boardsNames.' + option.name | transloco"
+        (click)="selectBoard(option.name)">
+        <!-- Muestra 2x2 con las casillas clara y oscura del tema -->
+        <span class="grid h-11 w-11 grid-cols-2 overflow-hidden rounded-sm">
+          <span [style.background-color]="option.light"></span>
+          <span [style.background-color]="option.dark"></span>
+          <span [style.background-color]="option.dark"></span>
+          <span [style.background-color]="option.light"></span>
+        </span>
+      </button>
+      }
+    </div>
+  </div>
+
+  <!-- Tema de DaisyUI de toda la app: cada tarjeta se pinta con los colores de su propio tema -->
+  @if (showTheme()) {
+  <div [class.hidden]="t && tab() !== 'theme'">
+    <h3 class="mb-1 text-center text-sm font-semibold text-base-content/70">
+      {{ 'APPEARANCE.theme' | transloco }}
+    </h3>
+    <div #themeStrip class="strip relative flex snap-x snap-mandatory items-center gap-3 overflow-x-auto overflow-y-hidden"
+      [class]="t ? 'py-3' : 'py-4'"
+      style="padding-inline: calc(50% - 3rem);">
+      @for (name of themeOptions; track name) {
+      <!-- Botón neutro (sin data-theme): el nombre usa los colores del tema actual y solo la tarjeta, los del suyo -->
+      <button type="button"
+        class="flex w-24 shrink-0 snap-center flex-col items-center gap-3 pt-2"
+        [attr.aria-pressed]="appearance.theme() === name"
+        [attr.aria-label]="name"
+        (click)="selectTheme(name)">
+        <span class="flex h-16 w-20 flex-col items-center justify-center gap-1 rounded-box border bg-base-100 text-base-content transition-transform duration-200"
+          [attr.data-theme]="name"
+          [class]="appearance.theme() === name
+            ? 'z-10 scale-125 border-primary shadow-lg'
+            : 'scale-90 border-base-content/20 opacity-80'">
+          <span class="text-sm font-bold leading-none">Aa</span>
+          <span class="flex gap-1">
+            <span class="h-3 w-3 rounded-full bg-primary"></span>
+            <span class="h-3 w-3 rounded-full bg-secondary"></span>
+            <span class="h-3 w-3 rounded-full bg-accent"></span>
+            <span class="h-3 w-3 rounded-full bg-neutral"></span>
+          </span>
+        </span>
+        <!-- truncate: ningún nombre (el más largo es «caramellatte») se sale de su casilla -->
+        <span class="w-full truncate px-1 text-center text-[11px] capitalize leading-tight"
+          [class]="appearance.theme() === name ? 'font-bold text-primary' : 'text-base-content/60'">
+          {{ name }}
+        </span>
+      </button>
+      }
+    </div>
+  </div>
+  }
+
+  </div>
+
+</div>

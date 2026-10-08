@@ -1,4 +1,4 @@
-import { ArchiveMonth, ChessGame } from '@cpark/models';
+import { ArchiveMonth, ChessGame } from '@chesspark/models';
 
 import { CHESS_COM_CONFIG } from './constants';
 import { normalizeGames } from './normalize';

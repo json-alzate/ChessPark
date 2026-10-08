@@ -1,6 +1,6 @@
 <!-- Menú lateral izquierdo (navegación principal) -->
 <ion-menu [swipeGesture]="false" side="start" menuId="side-menu" contentId="main-content">
-  <div class="h-full flex flex-col bg-base-100 text-base-content" data-theme="halloween">
+  <div class="h-full flex flex-col bg-base-100 text-base-content">
 
     <!-- Safe area spacer iOS -->
     <div style="height: env(safe-area-inset-top, 0px); background: hsl(var(--b1)); flex-shrink: 0;"></div>
@@ -48,6 +48,11 @@
             @if (option.divider) {
               <div class="divider my-1"></div>
             }
+            @if (option.section) {
+              <li class="menu-title text-[10px] uppercase tracking-wide opacity-50 pb-0">
+                {{ option.section | transloco }}
+              </li>
+            }
             <li [class.disabled]="!option.enabled">
               <a (click)="option.enabled ? navigateTo(option.route) : null" class="flex gap-4 py-3">
                 <ion-icon [name]="option.icon" class="text-xl"></ion-icon>
@@ -94,7 +99,7 @@
 
 <!-- Menú lateral derecho (notificaciones) -->
 <ion-menu [swipeGesture]="false" side="end" menuId="notifications-menu" contentId="main-content">
-  <div class="h-full flex flex-col bg-base-100 text-base-content" data-theme="halloween">
+  <div class="h-full flex flex-col bg-base-100 text-base-content">
 
     <!-- Safe area spacer iOS -->
     <div style="height: env(safe-area-inset-top, 0px); background: hsl(var(--b1)); flex-shrink: 0;"></div>

@@ -1,6 +1,6 @@
 import { createFeatureSelector } from '@ngrx/store';
 import { EntityState, EntityAdapter, createEntityAdapter } from '@ngrx/entity';
-import { PublicPlan, PlanInteraction, PublicPlanFilter } from '@cpark/models';
+import { PublicPlan, PlanInteraction, PublicPlanFilter } from '@chesspark/models';
 
 export type PublicPlansState = EntityState<PublicPlan> & {
   loading: boolean;
@@ -11,6 +11,10 @@ export type PublicPlansState = EntityState<PublicPlan> & {
   hasMore: boolean;
   interactions: PlanInteraction[];
   loadingInteractions: boolean;
+  // Planes sueltos cargados por uid (likes, jugados y guardados). Van aparte de
+  // las entidades para no mezclarlos con el listado público que muestra la
+  // pestaña "Públicos".
+  interactionPlans: Record<string, PublicPlan>;
 };
 
 export const publicPlansStateAdapter: EntityAdapter<PublicPlan> =

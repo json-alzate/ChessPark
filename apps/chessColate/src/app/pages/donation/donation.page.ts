@@ -15,8 +15,8 @@ import { RevenueCatService } from '@chesspark/revenuecat';
 import { Package, PurchasesError, PURCHASES_ERROR_CODE } from '@chesspark/revenuecat';
 import { Capacitor } from '@capacitor/core';
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
-import { ProfileService } from '@services/profile.service';
-import { AnalyticsService } from '@services/analytics.service';
+import { ProfileService } from '@services/account/profile.service';
+import { AnalyticsService } from '@services/analytics/analytics.service';
 import { LoginComponent } from '@shared/components/login/login.component';
 import { Subscription } from 'rxjs';
 

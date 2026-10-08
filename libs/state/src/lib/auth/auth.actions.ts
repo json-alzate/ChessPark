@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { Profile } from '@cpark/models';
+import { Profile } from '@chesspark/models';
 
 export const requestLoginGoogle = createAction(
     '[Auth] requestLoginGoogle'

@@ -1,6 +1,6 @@
 import { createSelector } from '@ngrx/store';
 import { getPlansElosState, planElosStateAdapter } from './plansElos.state';
-import { PlanElos } from '@cpark/models';
+import { PlanElos } from '@chesspark/models';
 
 export const {
   selectAll: getAllPlansElos,

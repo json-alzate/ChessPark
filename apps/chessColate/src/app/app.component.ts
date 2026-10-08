@@ -41,20 +41,20 @@ import {
 import { TranslocoPipe } from '@jsverse/transloco';
 
 // Services
-import { AuthService } from '@services/auth.service';
-import { ProfileService } from '@services/profile.service';
-import { UserRecordsService } from '@services/user-records.service';
-import { FirestoreService } from '@services/firestore.service';
-import { PwaService } from '@services/pwa.service';
-import { AnalyticsService } from '@services/analytics.service';
-import { screenNameFromUrl } from '@services/analytics-events.util';
-import { TrainingReminderService } from '@services/training-reminder.service';
+import { AuthService } from '@services/account/auth.service';
+import { ProfileService } from '@services/account/profile.service';
+import { UserRecordsService } from '@services/progress/user-records.service';
+import { FirestoreConnection } from '@services/firestore/firestore-connection.service';
+import { PwaService } from '@services/app/pwa.service';
+import { AnalyticsService } from '@services/analytics/analytics.service';
+import { screenNameFromUrl } from '@services/analytics/analytics-events.util';
+import { TrainingReminderService } from '@services/training/training-reminder.service';
 import { RevenueCatService, LogLevel } from '@chesspark/revenuecat';
 import { Capacitor } from '@capacitor/core';
 import { SplashScreen } from '@capacitor/splash-screen';
 
 // Models
-import { Profile } from '@cpark/models';
+import { Profile } from '@chesspark/models';
 
 // RxJS
 import { switchMap, filter } from 'rxjs/operators';
@@ -71,6 +71,8 @@ interface MenuOption {
   hideOnWeb?: boolean;
   /** Renderiza un separador visual encima de esta opción (inicio de grupo) */
   divider?: boolean;
+  /** Clave de traducción del título del grupo; se muestra encima de la opción */
+  section?: string;
 }
 
 interface Notification {
@@ -104,7 +106,7 @@ export class AppComponent implements OnInit, OnDestroy {
   router = inject(Router);
   authService = inject(AuthService);
   profileService = inject(ProfileService);
-  firestoreService = inject(FirestoreService);
+  firestoreConnection = inject(FirestoreConnection);
   pwaService = inject(PwaService);
   revenueCat = inject(RevenueCatService);
   analyticsService = inject(AnalyticsService);
@@ -142,6 +144,7 @@ export class AppComponent implements OnInit, OnDestroy {
       route: '/puzzles/public-plans',
       enabled: true,
       divider: true,
+      section: 'MENU.sections.train',
     },
     {
       title: 'CUSTOM_PLANS.listTitle',
@@ -158,16 +161,17 @@ export class AppComponent implements OnInit, OnDestroy {
 
     // --- Estudio ---
     {
-      title: 'GAMES.title',
-      icon: 'library-outline',
-      route: '/games',
-      enabled: true,
-      divider: true,
-    },
-    {
       title: 'ANALYTICS.title',
       icon: 'stats-chart-outline',
       route: '/analytics',
+      enabled: true,
+      divider: true,
+      section: 'MENU.sections.study',
+    },
+    {
+      title: 'GAMES.title',
+      icon: 'library-outline',
+      route: '/games',
       enabled: true,
     },
 
@@ -178,6 +182,7 @@ export class AppComponent implements OnInit, OnDestroy {
       route: '/streak',
       enabled: true,
       divider: true,
+      section: 'MENU.sections.practice',
     },
     {
       title: 'MENU.navigation.coordinates',
@@ -205,6 +210,7 @@ export class AppComponent implements OnInit, OnDestroy {
       route: '/settings',
       enabled: true,
       divider: true,
+      section: 'MENU.sections.account',
     },
     // Los recordatorios se acceden desde Ajustes (fila bajo Idioma), no desde
     // el menú lateral, para no cargar la navegación principal.
@@ -324,7 +330,7 @@ export class AppComponent implements OnInit, OnDestroy {
     await this.authService.init();
 
     // Inicializar Firestore
-    await this.firestoreService.init();
+    await this.firestoreConnection.init();
 
     // Inicializar RevenueCat en segundo plano: no debe bloquear el ocultado
     // del splash ni la carga del home (el SDK nativo tarda en responder)

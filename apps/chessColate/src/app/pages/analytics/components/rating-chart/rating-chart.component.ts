@@ -8,31 +8,52 @@ import {
   ViewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslocoPipe } from '@jsverse/transloco';
 
 import { Chart, ChartDataset, registerables } from 'chart.js';
 
-import { ChessPlatform } from '@cpark/models';
+import { ChessPlatform, TimeClass } from '@chesspark/models';
 import { RatingDataPoint } from '@chesspark/game-reporter';
 
-import { thinSeries } from '@services/game-analytics.util';
+import { thinSeries } from '@services/analytics/game-analytics.util';
 
-/** Color de cada plataforma en la gráfica; el verde es el de chess.com. */
-const PLATFORM_COLORS: Record<ChessPlatform, string> = {
-  'chess.com': '#81b64c',
-  lichess: '#f28c18',
+/** Color de cada ritmo, igual para las dos plataformas: así se compara a simple vista. */
+const TIME_CLASS_COLORS: Record<TimeClass, string> = {
+  bullet: '#ef4444',
+  blitz: '#f59e0b',
+  rapid: '#22c55e',
+  classical: '#3b82f6',
+  daily: '#a855f7',
+};
+
+const TIME_CLASS_LABELS: Record<TimeClass, string> = {
+  bullet: 'Bullet',
+  blitz: 'Blitz',
+  rapid: 'Rapid',
+  classical: 'Classical',
+  daily: 'Daily',
+};
+
+/** Lichess se dibuja punteada; así, si coincide el ritmo con chess.com, se distinguen sin otro color. */
+const PLATFORM_DASH: Record<ChessPlatform, number[]> = {
+  'chess.com': [],
+  lichess: [6, 3],
 };
 
 /**
  * Progreso del rating del usuario a lo largo del tiempo.
  *
- * Una línea por plataforma, porque los ratings de chess.com y lichess no son
- * comparables: juntarlos en una sola línea dibujaría saltos de trescientos
- * puntos que el usuario nunca dio.
+ * Una línea por ritmo y plataforma —bullet, blitz, rápidas…—, como lo enseña
+ * lichess: los ratings de bullet y clásicas no son comparables entre sí, así
+ * que juntarlos en una sola línea por plataforma dibujaría saltos que el
+ * usuario nunca dio. El color marca el ritmo; el trazo continuo o punteado, la
+ * plataforma. La leyenda va aparte, una sola vez, en vez de repetir la
+ * plataforma en cada serie.
  */
 @Component({
   selector: 'app-rating-chart',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslocoPipe],
   templateUrl: './rating-chart.component.html',
   styleUrls: ['./rating-chart.component.scss'],
 })
@@ -43,6 +64,26 @@ export class RatingChartComponent implements AfterViewInit, OnChanges, OnDestroy
   @Input() points: RatingDataPoint[] = [];
 
   private chart: Chart | null = null;
+
+  /** Un ritmo por color, solo los que tienen partidas. */
+  get legendTimeClasses(): { label: string; color: string }[] {
+    const present = new Set(this.points.map((point) => point.timeClass));
+    return (Object.keys(TIME_CLASS_LABELS) as TimeClass[])
+      .filter((timeClass) => present.has(timeClass))
+      .map((timeClass) => ({
+        label: TIME_CLASS_LABELS[timeClass],
+        color: TIME_CLASS_COLORS[timeClass],
+      }));
+  }
+
+  /** Las plataformas con partidas, cada una con su trazo. */
+  get legendPlatforms(): { name: ChessPlatform; dashed: boolean }[] {
+    const present = new Set(this.points.map((point) => point.platform));
+    return [...present].map((platform) => ({
+      name: platform,
+      dashed: PLATFORM_DASH[platform].length > 0,
+    }));
+  }
   private viewReady = false;
 
   constructor() {
@@ -74,9 +115,11 @@ export class RatingChartComponent implements AfterViewInit, OnChanges, OnDestroy
       return;
     }
 
+    const datasets = this.buildDatasets();
+
     this.chart = new Chart(element, {
       type: 'line',
-      data: { datasets: this.buildDatasets() },
+      data: { datasets },
       options: {
         responsive: true,
         maintainAspectRatio: false,
@@ -85,10 +128,7 @@ export class RatingChartComponent implements AfterViewInit, OnChanges, OnDestroy
         animation: false,
         interaction: { mode: 'nearest', intersect: false },
         plugins: {
-          legend: {
-            display: this.buildDatasets().length > 1,
-            labels: { color: '#e5e7eb', boxWidth: 12 },
-          },
+          legend: { display: false },
           tooltip: {
             callbacks: {
               title: (items) => this.formatDate(Number(items[0].parsed.x)),
@@ -114,20 +154,30 @@ export class RatingChartComponent implements AfterViewInit, OnChanges, OnDestroy
     });
   }
 
-  /** Una serie por plataforma que tenga partidas. */
+  /** Una serie por cada combinación de plataforma y ritmo que tenga partidas. */
   private buildDatasets(): ChartDataset<'line', { x: number; y: number }[]>[] {
-    const platforms = [...new Set(this.points.map((point) => point.platform))];
+    const groups = new Map<string, RatingDataPoint[]>();
+    for (const point of this.points) {
+      const key = `${point.platform}:${point.timeClass}`;
+      const group = groups.get(key);
+      if (group) {
+        group.push(point);
+      } else {
+        groups.set(key, [point]);
+      }
+    }
 
-    return platforms.map((platform) => {
-      const series = thinSeries(
-        this.points.filter((point) => point.platform === platform)
-      );
+    return [...groups.values()].map((groupPoints) => {
+      const { platform, timeClass } = groupPoints[0];
+      const series = thinSeries(groupPoints);
+      const color = TIME_CLASS_COLORS[timeClass];
 
       return {
-        label: platform,
+        label: `${TIME_CLASS_LABELS[timeClass]} · ${platform}`,
         data: series.map((point) => ({ x: point.date, y: point.rating })),
-        borderColor: PLATFORM_COLORS[platform],
-        backgroundColor: PLATFORM_COLORS[platform],
+        borderColor: color,
+        backgroundColor: color,
+        borderDash: PLATFORM_DASH[platform],
         borderWidth: 2,
         pointRadius: 0,
         pointHoverRadius: 4,

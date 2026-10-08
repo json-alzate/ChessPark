@@ -1,5 +1,5 @@
 <ion-content [fullscreen]="true">
-  <div class="main-container" data-theme="halloween">
+  <div class="main-container">
 
     <!-- Barra superior: contador de racha, récord y acciones -->
     <div class="navbar bg-base-100 shadow-sm">
@@ -80,7 +80,7 @@
         <!-- Turno -->
         @if (puzzleToPlay) {
         <div class="flex items-center gap-3">
-          <img [src]="'assets/images/king-' + playerColor + '.svg'" [alt]="playerColor" class="h-8 w-8" />
+          <img [src]="playerColor | kingImage" [alt]="playerColor" class="h-8 w-8" />
           <div class="flex flex-col">
             <span class="text-base font-semibold">{{ 'PUZZLES.help.yourTurn' | transloco }}</span>
             <span class="text-sm text-base-content/80">

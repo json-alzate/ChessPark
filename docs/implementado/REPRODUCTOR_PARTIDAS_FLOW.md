@@ -267,3 +267,19 @@ Angular ni plugins:
 Importar partidas de lichess y chess.com **no** entra aquí: se construye en
 [Game Analytics](../features/GAME_ANALYTICS.md), que es dueña de esos
 conectores, y el reproductor los consumirá después como una fuente más.
+
+---
+
+## Mapa de calor de una pieza
+
+Fuera del modo TV, el reproductor tiene unas pestañas **Partida / Mapa de
+calor** que cambian el tablero para enseñar por dónde se movió una pieza
+concreta. Se describe en
+[GAME_ANALYTICS_FLOW.md](./GAME_ANALYTICS_FLOW.md#mapa-de-calor-de-una-pieza).
+
+## Valoración de las piezas
+
+Una tercera pestaña, **Valoración**, analiza la partida con Stockfish y pone
+nota del 1 al 10 a cada pieza, con la mejor y la peor de cada color. Se
+describe en
+[GAME_ANALYTICS_FLOW.md](./GAME_ANALYTICS_FLOW.md#valoración-de-las-piezas).

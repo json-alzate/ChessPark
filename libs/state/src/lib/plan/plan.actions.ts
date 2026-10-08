@@ -1,6 +1,6 @@
 import { createAction, props } from '@ngrx/store';
 
-import { Plan } from '@cpark/models';
+import { Plan } from '@chesspark/models';
 export const loadPlan = createAction('[Plan] Load Plan');
 
 export const loadPlanSuccess = createAction(
