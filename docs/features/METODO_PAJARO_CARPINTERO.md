@@ -62,7 +62,7 @@ const blocksToSave = this.blocks.map(({ puzzles, puzzlesPlayed, ...rest }) => ({
 
 Para el Pájaro Carpintero eso **no sirve**: si se re-pidieran puzzles cada vuelta, no serían los mismos y el método pierde todo el sentido. El set debe **persistirse** una vez generado.
 
-Se reutiliza el mismo patrón que el feature de [Rutina con BD de Puzzles Personalizada](./RUTINA_PGN_PERSONALIZADA.md): guardar el set como un documento aparte referenciado por id, en vez de re-pedirlo.
+Este feature **estrena** el patrón de set congelado (un documento aparte referenciado por id, en vez de re-pedir puzzles); [Rutina con BD de Puzzles Personalizada](./RUTINA_PGN_PERSONALIZADA.md) lo reutilizará después con otra fuente. **No depende de ese feature**: el set sale de los puzzles que ya se descargan del catálogo.
 
 ```ts
 interface WoodpeckerSet {
@@ -256,4 +256,4 @@ Catálogo en [OBSERVABILITY_TRACKING](../implementado/OBSERVABILITY_TRACKING.md)
 - [`board-puzzle.component.ts`](../../libs/board/src/lib/board-puzzle/board-puzzle.component.ts) para el juego (soporta timer y `failByTime`).
 - Storage local existente para `WoodpeckerSet` / `WoodpeckerProgress` (mismo patrón que planes personalizados).
 - `AnalyticsService` existente para la instrumentación.
-- (Reutilizable) el enfoque de "set congelado referenciado por id" del feature [Rutina con BD de Puzzles Personalizada](./RUTINA_PGN_PERSONALIZADA.md).
+- Ninguna feature pendiente. El `WoodpeckerSet` conviene diseñarlo con la fuente como dato (`source: 'catalog'` por ahora) para que [Rutina con BD de Puzzles Personalizada](./RUTINA_PGN_PERSONALIZADA.md) pueda añadir `'pgn'` sin migrar.

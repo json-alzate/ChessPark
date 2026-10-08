@@ -270,4 +270,6 @@ Reusar `AnalyticsService` (catálogo en [OBSERVABILITY_TRACKING](../implementado
 
 ## Relación con otros features
 
+- Va **después** del [Método del Pájaro Carpintero](./METODO_PAJARO_CARPINTERO.md), que estrena el set de puzzles congelado y persistido por id. Al implementar este feature conviene reutilizar ese set (añadiéndole la fuente `pgn`) en lugar de crear un `CustomPuzzleSet` paralelo; la sección de persistencia de arriba se revisa entonces.
+
 - Comparte el **parseo de PGN con `chess.js`** con el [Reproductor / TV de Partidas](./REPRODUCTOR_PARTIDAS.md); conviene extraer un **util común de parseo PGN** (`libs/common-utils`) que ambos consuman: el reproductor usa la mainline como "partida a ver", este feature la usa como "solución de un ejercicio".
