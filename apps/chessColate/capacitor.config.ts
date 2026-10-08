@@ -1,11 +1,16 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
+// Si CAP_DEV_SERVER_URL está definida (ver scripts ios:dev:sync / android:dev:sync),
+// el shell nativo carga el contenido en vivo desde ese host en vez del bundle local.
+const devServerUrl = process.env.CAP_DEV_SERVER_URL;
+
 const config: CapacitorConfig = {
   appId: 'com.jheison.chesscolate',
   appName: 'chessColate',
   webDir: '../../dist/apps/chessColate/browser',
   server: {
     androidScheme: 'https',
+    ...(devServerUrl ? { url: devServerUrl } : {}),
   },
   plugins: {
     SplashScreen: {

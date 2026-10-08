@@ -53,6 +53,9 @@
     },
     "serve": {
       "executor": "@angular/build:dev-server",
+      "options": {
+        "allowedHosts": ["mac-mini-de-jheison.tail23d06b.ts.net"]
+      },
       "configurations": {
         "production": {
           "buildTarget": "chessColate:build:production"

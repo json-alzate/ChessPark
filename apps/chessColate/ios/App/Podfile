@@ -11,13 +11,23 @@ install! 'cocoapods', :disable_input_output_paths => true
 def capacitor_pods
   pod 'Capacitor', :path => '../../../../node_modules/@capacitor/ios'
   pod 'CapacitorCordova', :path => '../../../../node_modules/@capacitor/ios'
+  pod 'CapacitorCommunityInAppReview', :path => '../../../../node_modules/@capacitor-community/in-app-review'
+  pod 'CapacitorCommunityKeepAwake', :path => '../../../../node_modules/@capacitor-community/keep-awake'
+  pod 'CapacitorFirebaseAnalytics', :path => '../../../../node_modules/@capacitor-firebase/analytics'
   pod 'CapacitorFirebaseAuthentication', :path => '../../../../node_modules/@capacitor-firebase/authentication'
-  pod 'RevenuecatPurchasesCapacitor', :path => '../../../../node_modules/@revenuecat/purchases-capacitor'
+  pod 'CapacitorFirebaseCrashlytics', :path => '../../../../node_modules/@capacitor-firebase/crashlytics'
+  pod 'CapacitorApp', :path => '../../../../node_modules/@capacitor/app'
+  pod 'CapacitorLocalNotifications', :path => '../../../../node_modules/@capacitor/local-notifications'
   pod 'CapacitorSplashScreen', :path => '../../../../node_modules/@capacitor/splash-screen'
+  pod 'RevenuecatPurchasesCapacitor', :path => '../../../../node_modules/@revenuecat/purchases-capacitor'
 end
 
 target 'App' do
   capacitor_pods
+  # Firebase Analytics no viene incluido en el pod base de CapacitorFirebaseAnalytics;
+  # hay que declararlo aparte (ver README del plugin). Se usa la variante sin IDFA
+  # porque la app no pide permiso de App Tracking Transparency.
+  pod 'CapacitorFirebaseAnalytics/AnalyticsWithoutAdIdSupport', :path => '../../../../node_modules/@capacitor-firebase/analytics'
 end
 
 post_install do |installer|

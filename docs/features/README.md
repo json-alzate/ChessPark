@@ -30,6 +30,7 @@ la feature se implemente o cambie de posición. Por eso los IDs se leen salteado
 | ⬜ | F14 | [Cuadros de Conquista](./CUADROS_DE_CONQUISTA.md) | Alto | Muy Alto | Backend + matchmaking |
 | ⬜ | F15 | [Puzzle Racer (Multijugador)](./PUZZLE_RACER.md) | Alto (competitivo/viral) | Alto | RTDB + matchmaking (sin backend propio) |
 | ⬜ | F16 | [Puzzle Geo Hunt](./PUZZLE_GEO_HUNT.md) | Medio (nicho) | Muy Alto | GPS + AR + permisos |
+| ⬜ | F17 | [Jugar en Lichess (Board API)](./JUGAR_EN_LICHESS.md) | Alto (adquisición) | Alto | OAuth lichess (Board API) + `@chesspark/board` |
 
 > ✅ = ya implementado (detalle en [Ya implementado](#ya-implementado)) · ⬜ = pendiente.
 > **Regla del ID:** una feature nueva toma el siguiente número libre (F17, F18, …) y se
@@ -65,6 +66,9 @@ la feature se implemente o cambie de posición. Por eso los IDs se leen salteado
 
 ### F16 · [Puzzle Geo Hunt](./PUZZLE_GEO_HUNT.md)
 **GPS + AR + permisos de cámara/ubicación.** El más caro en hardware/plataforma y el más de nicho. Último, como apuesta diferenciadora una vez consolidado el núcleo.
+
+### F17 · [Jugar en Lichess (Board API)](./JUGAR_EN_LICHESS.md)
+**Apoyarse en la audiencia de lichess en vez de construir matchmaking propio**: conecta la cuenta de lichess del usuario (OAuth) y lo empareja con rivales reales vía `POST /api/board/seek`, jugando la partida con el tablero propio de ChessColate. No requiere backend (el "servidor" de la partida es lichess), pero sí OAuth con manejo de tokens, deep links en Capacitor y aislar por completo el Stockfish embebido de esta pantalla (fair play de lichess). Independiente del resto del roadmap — puede paralelizarse igual que F12.
 
 ---
 
