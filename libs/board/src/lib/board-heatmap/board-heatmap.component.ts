@@ -9,7 +9,8 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { BORDER_TYPE, Chessboard } from 'cm-chessboard';
+import { Chessboard } from 'cm-chessboard';
+import { createChessboard } from '../chessboard-factory/create-chessboard';
 
 import { HeatCell, heatCells, singlePiecePlacement } from './board-heatmap.util';
 
@@ -73,17 +74,10 @@ export class BoardHeatmapComponent implements AfterViewInit, OnChanges, OnDestro
       return;
     }
 
-    this.board = await new Chessboard(this.boardContainer.nativeElement, {
-      responsive: true,
+    this.board = await createChessboard(this.boardContainer.nativeElement, {
       position: this.placement(),
       orientation: this.orientation,
-      assetsUrl: 'assets/cm-chessboard/assets/',
-      assetsCache: true,
-      style: {
-        cssClass: 'chessboard-js',
-        borderType: BORDER_TYPE.none,
-        pieces: { file: 'pieces/standard.svg' },
-      },
+      border: 'none',
     });
   }
 

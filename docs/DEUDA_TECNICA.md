@@ -17,6 +17,7 @@ Desde la actualización del 2026-10-01 se abordaron los hallazgos P0.1, P0.2 y P
 | P0.2 God-components | 🟡 Parcial | Stockfish y el motor de puzzle salieron de `libs/board`; en `training` se extrajo sesión, cronómetro y utils, pero el componente no se achicó |
 | P0.3 Bypass de facades | ✅ Resuelto | Componentes leen por el store; regla de lint impide inyectar repositorios en `pages/` y `shared/` |
 | P0.4 Sin CI | ⏳ Abierto | No se abordó (se dejó fuera a propósito) |
+| P1.1 Lógica de tablero duplicada | 🟡 Parcial | Construcción del tablero unificada en `createChessboard`; falta el manejador de movimientos de `board-puzzle-solution` |
 | P1.4 Dependencias | 🟡 Parcial | Quitadas 3 dependencias muertas y unificado `@capacitor/cli`; faltan Nx/prettier y duplicados de `@ionic` |
 | P1.6 Límites de módulo | 🟡 Parcial | Scope `@chesspark/*` unificado; faltan tags y `depConstraints` |
 | P2.3 Tests | 🟡 Mejorado | App de 9 a 28 specs (323 tests); `libs/state` tiene 11 de 12 suites sin compilar |
@@ -141,6 +142,11 @@ Existe infraestructura de facades (`plan-facade.service.ts`, `public-plans-facad
 ### 🟠 P1 — Duplicación y consistencia
 
 #### P1.1 — Duplicación de lógica de tablero en `libs/board`
+
+> **Estado 2026-10-07 — 🟡 Parcial.**
+> - ✅ **Construcción del tablero:** `createChessboard` / `buildChessboardConfig` (`libs/board/src/lib/chessboard-factory/`) concentran la configuración común (assets, estilo, piezas, modo responsive). Lo usan `board-puzzle`, `board-puzzle-solution`, `fen-board`, `board-game-player` y `board-heatmap`, y hay tests que fijan que cada uno recibe la misma configuración que construía antes. `board` y `chess960-board` quedan fuera: reciben su configuración por `@Input`. *(El conteo de «5 archivos» del hallazgo ya era 6 antes de este cambio, porque aparecieron `board-heatmap` y `board-game-player`.)*
+> - 🟡 **Manejo de movimientos:** `board-puzzle` ya delega la validación y la promoción en `PuzzleEngine` (ver P0.2), pero `board-puzzle-solution` conserva su manejador inline de unas 113 líneas, con la promoción de peón copiada a mano. También siguen duplicados en ambos `showLastMove`, `removeMarkerNotLastMove`, `turnRoundBoard` y `puzzleMoveResponse`.
+> - ⏳ **Siguiente paso:** migrar `board-puzzle-solution` al `PuzzleEngine` y compartir los métodos de marcadores. Es el paso delicado: toca promoción, pistas y marcadores, que no tienen tests de comportamiento, así que conviene escribirlos antes y probar a mano en el navegador.
 
 El handler `enableMoveInput` (~120 líneas, incl. bloque de promoción de peón) está **duplicado casi literal** entre:
 - `libs/board/src/lib/board-puzzle/board-puzzle.component.ts:303-455`
@@ -298,7 +304,7 @@ Ambas libs implementan casi línea por línea la misma cola de throttling de pet
 6. ✅ Unificar scope de paquete a `@chesspark/*` en `models`, `state` y `widgets` (P1.6) — hecho 2026-10-07.
 
 ### Refactors de fondo (planificados)
-7. Factory + servicio de tablero en `libs/board` (elimina la duplicación de P1.1).
+7. 🟡 Factory + servicio de tablero en `libs/board` (elimina la duplicación de P1.1): factory ✅ (`createChessboard`, 2026-10-07); servicio de movimientos y marcadores ⏳ pendiente.
 8. ✅ Partir `firestore.service.ts` por agregado y descomponer `generateBlocksForPlan` — hecho (`af5e993`).
 9. ✅ Forzar acceso a datos vía facades; prohibir `FirestoreService` en componentes — hecho (`af5e993`).
 10. `takeUntilDestroyed()` sistemático + OnPush en componentes con timers.
@@ -322,7 +328,7 @@ Ambas libs implementan casi línea por línea la misma cola de throttling de pet
 | P0.2 | Componentes God-object con dominio incrustado | Alta | Alto | 🟡 Parcial |
 | P0.3 | Bypass de facades → Firestore directo en UI | Alta | Medio | ✅ Resuelto |
 | P0.4 | **CI eliminado por completo** (no solo sin gate) | Alta | Bajo | ⏳ Abierto |
-| P1.1 | Duplicación de lógica de tablero | Media-Alta | Medio | ⏳ Abierto |
+| P1.1 | Duplicación de lógica de tablero | Media-Alta | Medio | 🟡 Parcial |
 | P1.2 | Lógica de temas/debilidades duplicada | Media-Alta | Medio | ⏳ Abierto |
 | P1.3 | Doble fuente de estado (Store + campo mutable) | Media | Bajo | ⏳ Abierto |
 | P1.4 | Deps muertas / conflictos de versión | Media | Bajo | 🟡 Parcial |

@@ -7,9 +7,9 @@ import { takeUntil } from 'rxjs/operators';
 
 import {
   COLOR,
-  Chessboard,
-  BORDER_TYPE
+  Chessboard
 } from 'cm-chessboard';
+import { createChessboard } from '../chessboard-factory/create-chessboard';
 import { Chess } from 'chess.js';
 import { Markers } from 'cm-chessboard/src/extensions/markers/Markers.js';
 import { Arrows } from 'cm-chessboard/src/extensions/arrows/Arrows.js';
@@ -316,23 +316,13 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit, OnDe
     this.chessInstance.load(this.puzzle.fen);
     this.piecePathKingTurn = this.chessInstance.turn() === 'b' ? 'wK.svg' : 'bK.svg';
 
-    this.board = await new Chessboard(document.getElementById('boardPuzzleSolution') as HTMLElement, {
-      responsive: true,
+    this.board = await createChessboard(document.getElementById('boardPuzzleSolution') as HTMLElement, {
       position: fen,
-      assetsUrl: 'assets/cm-chessboard/assets/',
-      assetsCache: true,
-      style: {
-        cssClass: 'chessboard-js',
-        borderType: BORDER_TYPE.thin,
-        pieces: {
-          file: 'pieces/standard.svg',
-        }
-      },
       extensions: [
         { class: Markers },
         { class: Arrows },
-        { class: PromotionDialog }
-      ]
+        { class: PromotionDialog },
+      ],
     });
 
     this.board.enableMoveInput((event) => {

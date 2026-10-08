@@ -19,8 +19,8 @@ import {
   MOVE_INPUT_MODE,
   SQUARE_SELECT_TYPE,
   Chessboard,
-  BORDER_TYPE,
 } from 'cm-chessboard';
+import { createChessboard } from '../chessboard-factory/create-chessboard';
 import {
   MARKER_TYPE,
   Markers,
@@ -258,18 +258,8 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // const cssClass = this.uiService.currentBoardStyleSelected.name !== 'default' ? this.uiService.currentBoardStyleSelected.name : null;
 
-    this.board = await new Chessboard(this.boardContainer.nativeElement, {
-      responsive: true,
+    this.board = await createChessboard(this.boardContainer.nativeElement, {
       position: fen,
-      assetsUrl: 'assets/cm-chessboard/assets/',
-      assetsCache: true,
-      style: {
-        cssClass: 'chessboard-js',
-        borderType: BORDER_TYPE.thin,
-        pieces: {
-          file: 'pieces/standard.svg',
-        },
-      },
       extensions: [
         { class: Markers },
         { class: Arrows },

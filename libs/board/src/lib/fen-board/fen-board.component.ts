@@ -1,10 +1,8 @@
 import { Component, OnInit, Input, AfterViewInit, EventEmitter, Output, OnChanges, SimpleChanges, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import {
-  Chessboard,
-  BORDER_TYPE
-} from 'cm-chessboard';
+import { Chessboard } from 'cm-chessboard';
+import { createChessboard } from '../chessboard-factory/create-chessboard';
 import { Markers } from 'cm-chessboard/src/extensions/markers/Markers.js';
 
 import { Puzzle } from '@chesspark/models';
@@ -54,21 +52,9 @@ export class FenBoardComponent implements OnInit, AfterViewInit, OnChanges {
       return;
     }
 
-    this.board = new Chessboard(this.boardContainer.nativeElement, {
-      responsive: true,
+    this.board = createChessboard(this.boardContainer.nativeElement, {
       position: this.fen,
-      assetsUrl: 'assets/cm-chessboard/assets/',
-      assetsCache: true,
-      style: {
-        cssClass: 'chessboard-js',
-        borderType: BORDER_TYPE.thin,
-        pieces: {
-          file: 'pieces/standard.svg',
-        }
-      },
-      extensions: [
-        { class: Markers }
-      ]
+      extensions: [{ class: Markers }],
     });
 
     if (this.firstMoveSquaresHighlight && this.firstMoveSquaresHighlight.length >= 2) {
