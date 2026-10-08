@@ -1,4 +1,5 @@
 import { Chess, Move, Square } from 'chess.js';
+import { isPromotionAttempt } from '../move-input/promotion';
 
 /** Veredicto de una jugada del usuario frente a la solución del puzzle. */
 export type PuzzleMoveVerdict = 'correct' | 'wrong';
@@ -118,7 +119,7 @@ export class PuzzleEngine {
    * @param to - Casilla destino
    */
   isPromotionAttempt(piece: string, to: string): boolean {
-    return piece.charAt(1) === 'p' && (to.charAt(1) === '8' || to.charAt(1) === '1');
+    return isPromotionAttempt(piece, to);
   }
 
   /**

@@ -14,7 +14,6 @@ import {
 } from '@angular/core';
 
 import {
-  COLOR,
   INPUT_EVENT_TYPE,
   MOVE_INPUT_MODE,
   SQUARE_SELECT_TYPE,
@@ -51,6 +50,8 @@ import {
 // models
 import { Puzzle } from '@chesspark/models';
 import { PuzzleEngine } from './puzzle-engine';
+import { createMoveInputHandler } from '../move-input/move-input-handler';
+import { drawLastMove, removeMarkersExceptLastMove, turnBoard } from '../move-input/board-markers';
 
 interface UISettings {
   allowBackMove: boolean;
@@ -272,115 +273,19 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
     this.board.enableMoveInput(this.handleMoveInput);
   }
 
-  // Handler de input del tablero extraído a propiedad de clase (arrow para
-  // preservar `this`) para poder rehabilitarlo desde initPuzzle() tras un stream.
-  // La validación de jugadas vive en PuzzleEngine; aquí solo se traduce cada
-  // resultado en acciones de tablero (marcadores, flechas y diálogo de promoción).
-  private handleMoveInput = (event: any) => {
-    switch (event.type) {
-      case 'moveInputStarted':
-        this.board.removeMarkers();
-        this.showLastMove();
-        this.board.removeArrows();
-
-        // mostrar indicadores para donde se puede mover la pieza
-        if (event.square) {
-          const possibleMoves = this.engine.movesFrom(event.square);
-          if (possibleMoves.length > 0) {
-            // adiciona el marcador para la casilla seleccionada
-            const markerSquareSelected = {
-              class: 'marker-square-green',
-              slice: 'markerSquare',
-            };
-            this.board.addMarker(markerSquareSelected, event.square);
-            for (const move of possibleMoves) {
-              const markerDotMove = {
-                class: 'marker-dot-green',
-                slice: 'markerDot',
-              };
-              this.board.addMarker(markerDotMove, move.to);
-            }
-          }
-        }
-        return true;
-      case 'validateMoveInput':
-        if (
-          event.squareFrom &&
-          event.squareTo &&
-          event.piece &&
-          this.engine.isPromotionAttempt(event.piece, event.squareTo)
-        ) {
-          return this.handlePromotionAttempt(event.squareFrom, event.squareTo, event.piece);
-        }
-        if (event.squareFrom && event.squareTo) {
-          return this.handleUserMove(event.squareFrom, event.squareTo);
-        }
-        this.board.removeMarkers();
-        this.showLastMove();
-        return false;
-      case 'moveInputCanceled':
-        this.board.removeMarkers();
-        this.showLastMove();
-        this.board.removeArrows();
-        return true;
-      case 'moveInputFinished':
-        return true;
-      default:
-        return true;
-    }
-  };
-
-  /**
-   * Jugada normal del usuario. Si el motor la acepta, el tablero conserva la pieza movida
-   * (se devuelve true) y se valida contra la solución. Si no es legal, cm-chessboard
-   * devuelve la pieza a su casilla.
-   */
-  private handleUserMove(from: string, to: string): boolean {
-    const accepted = this.engine.tryMove(from, to);
-    if (accepted) {
-      this.board.removeArrows();
-      this.showLastMove();
-      this.validateMove();
-    } else {
-      this.board.removeMarkers();
-      this.showLastMove();
-    }
-    return accepted;
-  }
-
-  /**
-   * Promoción de peón. Primero se comprueba que el peón pueda llegar a la casilla; si no, se
-   * rechaza sin abrir el diálogo. Si puede, el diálogo elige la pieza y la jugada se aplica al
-   * confirmar. Se devuelve true para que cm-chessboard espere la elección.
-   */
-  private handlePromotionAttempt(from: string, to: string, piece: string): boolean {
-    try {
-      if (!this.engine.isPawnPromotionLegal(from, to)) {
-        this.board.removeMarkers();
-        this.showLastMove();
-        return false;
-      }
-      const colorToShow = piece.charAt(0) === 'w' ? COLOR.white : COLOR.black;
-      this.board.showPromotionDialog(to, colorToShow, (result) => {
-        const accepted = !!result?.piece && this.engine.tryMove(from, to, result.piece.charAt(1));
-        // Sincroniza el tablero con el motor en ambos casos: si la jugada se rechaza, deshace el movimiento visual
-        this.board.setPosition(this.engine.fen, false);
-        if (accepted) {
-          this.board.removeArrows();
-          this.showLastMove();
-          this.validateMove();
-        } else {
-          this.board.removeMarkers();
-          this.showLastMove();
-        }
-      });
-      return true;
-    } catch (error) {
-      this.board.removeMarkers();
-      this.showLastMove();
-      return false;
-    }
-  }
+  // Manejador de movimientos del tablero, compartido con BoardPuzzleSolutionComponent
+  // (ver move-input/move-input-handler.ts). Es una propiedad de clase para poder rehabilitarlo
+  // desde initPuzzle() tras un stream. Este componente solo le dice con qué motor consultar
+  // (PuzzleEngine) y qué hacer cuando se acepta una jugada (validarla contra la solución).
+  private handleMoveInput = createMoveInputHandler({
+    board: () => this.board,
+    destinationsFrom: (square) => this.engine.movesFrom(square).map((move) => move.to),
+    tryMove: (from, to, promotion) => this.engine.tryMove(from, to, promotion),
+    fen: () => this.engine.fen,
+    showLastMove: () => this.showLastMove(),
+    clearArrows: () => this.board.removeArrows(),
+    onMoveAccepted: () => this.validateMove(),
+  });
 
   // Código de enableSquareSelect deshabilitado; se conserva como referencia.
   // let startSquare;
@@ -461,39 +366,18 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
     // });
 
   removeMarkerNotLastMove(square?: string) {
-    let markersToProcess: { type: any; square?: string }[] = [];
-    if (square) {
-      markersToProcess = this.board.getMarkers(undefined, square);
-    } else {
-      markersToProcess = this.board.getMarkers();
-    }
-    markersToProcess.forEach(
-      (marker: { type: { id?: string }; square?: string }) => {
-        if (marker.type?.id !== 'lastMove') {
-          this.board.removeMarkers(marker.type, square ?? marker.square);
-        }
-      }
-    );
+    removeMarkersExceptLastMove(this.board, square);
   }
 
   // Muestra la ultima jugada utilizando marcadores
   showLastMove(from?: string, to?: string) {
-    this.board.removeMarkers();
     if (!from && !to) {
       // Sin argumentos: la última jugada del tablero o, si el historial está vacío, la de la solución
       const last = this.engine.lastMove();
       from = last?.from;
       to = last?.to;
     }
-    if (from && to) {
-      const marker = {
-        id: 'lastMove',
-        class: 'marker-square-green',
-        slice: 'markerSquare',
-      };
-      this.board.addMarker(marker, from);
-      this.board.addMarker(marker, to);
-    }
+    drawLastMove(this.board, from, to);
   }
 
   // Timer --------------------------------------------
@@ -749,14 +633,6 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
    * @param orientation
    */
   turnRoundBoard(orientation?: 'w' | 'b') {
-    if (orientation) {
-      this.board.setOrientation(orientation);
-    } else {
-      if (this.board.getOrientation() === 'w') {
-        this.board.setOrientation('b');
-      } else {
-        this.board.setOrientation('w');
-      }
-    }
+    turnBoard(this.board, orientation);
   }
 }
