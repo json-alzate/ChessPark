@@ -260,6 +260,7 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
     // const cssClass = this.uiService.currentBoardStyleSelected.name !== 'default' ? this.uiService.currentBoardStyleSelected.name : null;
 
     this.board = await createChessboard(this.boardContainer.nativeElement, {
+      highlightCheck: true,
       position: fen,
       extensions: [
         { class: Markers },

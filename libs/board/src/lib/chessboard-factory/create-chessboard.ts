@@ -1,4 +1,5 @@
 import { BORDER_TYPE, Chessboard, ChessboardConfig } from 'cm-chessboard';
+import { CheckHighlight } from '../check-highlight/check-highlight';
 import {
   CHESSBOARD_ASSETS_URL,
   getChessboardAppearance,
@@ -33,6 +34,11 @@ export interface ChessboardOptions {
    * no se envía. Las clases se importan en el componente que las usa.
    */
   extensions?: ChessboardExtension[];
+  /**
+   * Pinta de rojo la casilla del rey en jaque. Se activa en los tableros donde se juega
+   * o se revisa una partida; no en los que no llevan reyes (mapa de calor).
+   */
+  highlightCheck?: boolean;
 }
 
 /**
@@ -45,6 +51,10 @@ export interface ChessboardOptions {
  */
 export function buildChessboardConfig(options: ChessboardOptions): ChessboardConfig {
   const appearance = getChessboardAppearance();
+  const extensions = [
+    ...(options.extensions ?? []),
+    ...(options.highlightCheck ? [{ class: CheckHighlight }] : []),
+  ];
   return {
     responsive: true,
     position: options.position,
@@ -56,7 +66,7 @@ export function buildChessboardConfig(options: ChessboardOptions): ChessboardCon
       borderType: BORDER_TYPE[options.border ?? 'thin'],
       pieces: { file: PIECES_FILES[appearance.pieces] },
     },
-    ...(options.extensions ? { extensions: options.extensions } : {}),
+    ...(extensions.length ? { extensions } : {}),
   };
 }
 

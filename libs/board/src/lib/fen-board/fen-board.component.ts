@@ -53,6 +53,7 @@ export class FenBoardComponent implements OnInit, AfterViewInit, OnChanges {
     }
 
     this.board = createChessboard(this.boardContainer.nativeElement, {
+      highlightCheck: true,
       position: this.fen,
       extensions: [{ class: Markers }],
     });

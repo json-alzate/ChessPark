@@ -12,6 +12,7 @@ import { CommonModule } from '@angular/common';
 
 import { Chessboard, BOARD_TYPE, ChessboardConfig } from 'cm-chessboard';
 import { Markers } from 'cm-chessboard/src/extensions/markers/Markers.js';
+import { CheckHighlight } from '../check-highlight/check-highlight';
 import { withChessboardAppearance } from '../chessboard-factory/create-chessboard';
 import { Chess, Move } from 'chess.js';
 
@@ -47,7 +48,7 @@ export class Chess960Board implements OnInit, AfterViewInit {
         file: 'pieces/standard.svg',
       },
     },
-    extensions: [{ class: Markers }],
+    extensions: [{ class: Markers }, { class: CheckHighlight }],
   };
 
   private board: any = null;

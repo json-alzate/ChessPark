@@ -106,6 +106,7 @@ export class BoardGamePlayerComponent
     }
 
     this.board = await createChessboard(this.boardContainer.nativeElement, {
+      highlightCheck: true,
       position: this.fens[0],
       orientation: this.orientation,
       extensions: [{ class: Markers }],

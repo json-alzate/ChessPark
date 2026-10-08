@@ -344,6 +344,7 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit, OnDe
     this.piecePathKingTurn = this.chessInstance.turn() === 'b' ? 'wK.svg' : 'bK.svg';
 
     this.board = await createChessboard(document.getElementById('boardPuzzleSolution') as HTMLElement, {
+      highlightCheck: true,
       position: fen,
       extensions: [
         { class: Markers },

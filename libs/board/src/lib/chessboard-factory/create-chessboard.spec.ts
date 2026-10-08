@@ -5,6 +5,7 @@ import {
   createChessboard,
   withChessboardAppearance,
 } from './create-chessboard';
+import { CheckHighlight } from '../check-highlight/check-highlight';
 import {
   resetChessboardAppearanceForTests,
   setChessboardAppearance,
@@ -47,6 +48,26 @@ describe('apariencia elegida por el usuario', () => {
       showCoordinates: true,
       pieces: { file: 'pieces/staunty.svg' },
     });
+  });
+});
+
+describe('resaltado del jaque', () => {
+  class Markers {}
+
+  it('no se añade si no se pide: el mapa de calor no lleva reyes', () => {
+    expect('extensions' in buildChessboardConfig({ position: START_FEN })).toBe(false);
+  });
+
+  it('con highlightCheck se añade solo, sin quitar las extensiones del componente', () => {
+    expect(
+      buildChessboardConfig({ position: START_FEN, extensions: [{ class: Markers }], highlightCheck: true })['extensions']
+    ).toEqual([{ class: Markers }, { class: CheckHighlight }]);
+  });
+
+  it('con highlightCheck y sin más extensiones, es la única', () => {
+    expect(buildChessboardConfig({ position: START_FEN, highlightCheck: true })['extensions']).toEqual([
+      { class: CheckHighlight },
+    ]);
   });
 });
 
