@@ -17,8 +17,9 @@ Desde la actualización del 2026-10-01 se abordaron los hallazgos P0.1, P0.2 y P
 | P0.2 God-components | 🟡 Parcial | Stockfish y el motor de puzzle salieron de `libs/board`; en `training` se extrajo sesión, cronómetro y utils, pero el componente no se achicó |
 | P0.3 Bypass de facades | ✅ Resuelto | Componentes leen por el store; regla de lint impide inyectar repositorios en `pages/` y `shared/` |
 | P0.4 Sin CI | ⏳ Abierto | No se abordó (se dejó fuera a propósito) |
-| P1.1 Lógica de tablero duplicada | 🟡 Parcial | Construcción del tablero unificada en `createChessboard`; falta el manejador de movimientos de `board-puzzle-solution` |
-| P1.4 Dependencias | 🟡 Parcial | Quitadas 3 dependencias muertas y unificado `@capacitor/cli`; faltan Nx/prettier y duplicados de `@ionic` |
+| P1.1 Lógica de tablero duplicada | 🟡 Parcial | Construcción del tablero, manejador de movimientos y utilidades de marcadores compartidos; queda el parseo de la solución |
+| P1.4 Dependencias | 🟡 Parcial | Quitadas 3 dependencias muertas; `@capacitor/cli`, `@nx/angular` y `@ionic` alineados; falta `prettier` y la convención del lock |
+| P1.8 `libs/widgets` | ✅ Resuelto | Lib eliminada junto a sus dos alias de `tsconfig` |
 | P1.6 Límites de módulo | 🟡 Parcial | Scope `@chesspark/*` unificado; faltan tags y `depConstraints` |
 | P2.3 Tests | 🟡 Mejorado | App de 9 a 28 specs (323 tests); `libs/state` tiene 11 de 12 suites sin compilar |
 | P2.5 Logging | 🟡 Parcial | Se quitaron los `console.log` que volcaban el plan |
@@ -26,7 +27,9 @@ Desde la actualización del 2026-10-01 se abordaron los hallazgos P0.1, P0.2 y P
 
 **Hallazgos nuevos de esta pasada:**
 - `@capacitor/cli` estaba instalado en **6.2.1** junto a `core`, `android` e `ios` en 7.6.x: `npx cap sync` corría con un CLI una versión mayor atrás. Corregido en `package.json` y el lock; **`node_modules` no se actualiza hasta ejecutar `npm install`**.
-- `@ionic/angular` y `@ionic/angular-toolkit` están declarados a la vez en `dependencies` y `devDependencies`.
+- `@nx/angular` estaba en 22.5.1 con el resto de Nx en 21.2.1, y traía **su propia copia de Nx 22.5.1** anidada en `node_modules`: convivían dos Nx. Tres libs compilan con su executor (`ng-packagr-lite`).
+- Con `@nx/angular` 21.2.1, `"composite": true` en el `tsconfig.lib.json` de esas tres libs rompe su build (`TS6307`, por los archivos `.ngtypecheck.ts` que genera el compilador de Angular). Se quitó; compilan con ambas versiones.
+- Siguen existiendo copias de `nx@21.6.10` anidadas bajo `@nx/plugin` y `@nxext/stencil` (mismo major, distinto menor que el 21.2.1 del resto).
 - El lock se genera de forma inconsistente: el informe asume `npm ci --legacy-peer-deps`, pero un `npm install` sin esa bandera añade al lock ~75 paquetes peer (storybook, vitest, react…) que no están en `package.json`.
 - Los specs de `plan` y `plansElos` en `libs/state` se escribieron contra la forma de un estado generado y nunca se actualizaron (errores de tipos), por lo que 11 de las 12 suites de la lib no compilan.
 
@@ -145,8 +148,10 @@ Existe infraestructura de facades (`plan-facade.service.ts`, `public-plans-facad
 
 > **Estado 2026-10-07 — 🟡 Parcial.**
 > - ✅ **Construcción del tablero:** `createChessboard` / `buildChessboardConfig` (`libs/board/src/lib/chessboard-factory/`) concentran la configuración común (assets, estilo, piezas, modo responsive). Lo usan `board-puzzle`, `board-puzzle-solution`, `fen-board`, `board-game-player` y `board-heatmap`, y hay tests que fijan que cada uno recibe la misma configuración que construía antes. `board` y `chess960-board` quedan fuera: reciben su configuración por `@Input`. *(El conteo de «5 archivos» del hallazgo ya era 6 antes de este cambio, porque aparecieron `board-heatmap` y `board-game-player`.)*
-> - 🟡 **Manejo de movimientos:** `board-puzzle` ya delega la validación y la promoción en `PuzzleEngine` (ver P0.2), pero `board-puzzle-solution` conserva su manejador inline de unas 113 líneas, con la promoción de peón copiada a mano. También siguen duplicados en ambos `showLastMove`, `removeMarkerNotLastMove`, `turnRoundBoard` y `puzzleMoveResponse`.
-> - ⏳ **Siguiente paso:** migrar `board-puzzle-solution` al `PuzzleEngine` y compartir los métodos de marcadores. Es el paso delicado: toca promoción, pistas y marcadores, que no tienen tests de comportamiento, así que conviene escribirlos antes y probar a mano en el navegador.
+> - ✅ **Manejador de movimientos:** el flujo de `enableMoveInput` (casillas posibles, aceptar o rechazar la jugada, diálogo de promoción) vive ahora una sola vez en `createMoveInputHandler` (`libs/board/src/lib/move-input/`). Cada componente solo indica con qué motor de ajedrez consulta y qué hace al aceptar una jugada. `removeMarkerNotLastMove`, `turnRoundBoard` y el dibujo de la última jugada (`showLastMove`) son ahora utilidades compartidas (`board-markers.ts`), y la detección de coronación (`isPromotionAttempt`) es una sola función.
+> - ✅ **Red de seguridad:** `move-input-behavior.spec.ts` (26 tests) ejecuta los mismos escenarios contra `BoardPuzzleComponent` y `BoardPuzzleSolutionComponent` y fija la secuencia exacta de llamadas al tablero. Se escribió y pasó contra el código original antes de refactorizar; confirmó además que los dos manejadores ya se comportaban igual.
+> - ⏳ **Lo que sigue duplicado:** la construcción de la solución (`getMoves` en `board-puzzle-solution` frente a `PuzzleEngine.load`) y `puzzleMoveResponse`, que difieren de verdad entre los dos.
+> - ℹ️ **Decisión:** el informe proponía migrar `board-puzzle-solution` al `PuzzleEngine`; **no se hizo porque no encaja**. El motor modela *resolver* un puzzle contra las respuestas de la máquina; el componente de solución es un visor que navega una lista de posiciones (atrás, adelante, inicio, fin, reproducción automática, pista y modo libre al terminar). Forzarlo habría exigido añadir al motor navegación y movimientos libres, sin quitar duplicación real.
 
 El handler `enableMoveInput` (~120 líneas, incl. bloque de promoción de peón) está **duplicado casi literal** entre:
 - `libs/board/src/lib/board-puzzle/board-puzzle.component.ts:303-455`
@@ -178,7 +183,9 @@ También duplicados: `showLastMove`, `removeMarkerNotLastMove`, `turnRoundBoard`
 > **Estado 2026-10-07 — 🟡 Parcial.**
 > - ✅ Se quitaron `@lichess-org/chessground`, `@ngrx/signals` y `@ngrx/component-store` (0 usos en código activo; solo figuraban en el `package.json` de `Chesscolate-old`).
 > - ✅ `@capacitor/cli` quedó en `^7.4.2` y se eliminaron los duplicados de `@capacitor/android|core|ios` en `devDependencies`. **Hasta ejecutar `npm install`, `node_modules` sigue con el CLI 6.2.1.**
-> - ⏳ Siguen: `nx` 21.2.1 frente a `@nx/angular` 22.5.1, `prettier ^2.6.2`, y `@ionic/angular` / `@ionic/angular-toolkit` declarados en `dependencies` y en `devDependencies`.
+> - ✅ `@nx/angular` bajó a 21.2.1 y coincide con el resto de Nx: desaparece la segunda copia de Nx que traía anidada. Verificado en una instalación limpia aislada (build de los 13 proyectos y tests con las mismas cifras de antes). Requirió quitar `"composite": true` del `tsconfig.lib.json` de `stockfish-wasm`, `common-utils` y `revenuecat`, que compilan tanto con la 21.2.1 como con la 22.5.1.
+> - ✅ `@ionic/angular` y `@ionic/angular-toolkit` quedan solo en `dependencies` (con el rango más exigente de los dos).
+> - ⏳ Siguen: `prettier ^2.6.2` (la v3 cambia los valores por defecto de formato, así que se deja para decidirlo aparte) y las copias de `nx@21.6.10` bajo `@nx/plugin` y `@nxext/stencil`.
 > - ⏳ Convención del lock: hay que decidir si se genera siempre con `--legacy-peer-deps` (como asume el informe) o sin ella; hoy se alterna y el lock sin commitear arrastra ~75 paquetes peer.
 
 - `@lichess-org/chessground ^9.3.1` — **0 usos**; todo el código usa `cm-chessboard`. Peso muerto.
@@ -213,7 +220,7 @@ Ambas libs implementan casi línea por línea la misma cola de throttling de pet
 
 #### P1.8 — `libs/widgets` es una lib placeholder sin uso
 
-> **Estado 2026-10-07 — ⏳ Abierto.** Sigue sin ser importada por nadie. Solo cambió su alias a `@chesspark/widgets` por la unificación de scope; eliminarla es una decisión pendiente.
+> **Estado 2026-10-07 — ✅ Resuelto.** `libs/widgets` se eliminó, junto a sus alias en `tsconfig.base.json` y `apps/chessColate/tsconfig.json`. Nadie la importaba; esas dos líneas eran sus únicas referencias en el repositorio.
 
 38 líneas: un componente Angular (`lib-widgets`) generado por `nx g library` y nunca completado. Ningún archivo en `apps/` ni en otras `libs/` lo importa, y no tiene target `build` configurado (igual que `state`). Ya señalada como dependencia muerta en P1.4 — se repite aquí porque además arrastra el tag incorrecto de P1.6. Candidata directa a eliminar.
 
@@ -242,6 +249,7 @@ Ambas libs implementan casi línea por línea la misma cola de throttling de pet
 
 > **Estado 2026-10-07 — 🟡 Mejorado, con deuda nueva.**
 > - La app pasó de 9 a 28 specs (323 tests). `training.component.spec.ts` ya no está vacío: tiene 58 tests de caracterización del flujo. Hay specs nuevos para `block.service`, utils, servicios de sesión y cronómetro, `PuzzleEngine` y `StockfishEngineFacade`.
+> - `libs/board` tiene ahora `move-input-behavior.spec.ts` (26 tests), que cubre el manejador de movimientos de los dos tableros de puzzle, y specs para la fábrica del tablero y las utilidades de marcadores.
 > - ⏳ Siguen sin existir tests e2e, y `revenuecat` y `models` no tienen specs.
 > - ⚠️ La app tiene 8 suites que no compilan o no arrancan (`fetch` no definido con Firebase, módulo `chess960` ausente, `IonicModule`, JSON inválido en `plan-played`) y 2 tests `should create` que fallan (`BlockPresentationComponent`, `TrainingMenuComponent`). `libs/board` tiene 4 suites en la misma situación.
 > - ⚠️ **Nuevo:** 11 de las 12 suites de `libs/state` no compilan. Los specs de `plan` y `plansElos` se escribieron contra un estado generado que nunca se actualizó (`Property 'error' does not exist on type 'PlansElosState'`, entre otros).
@@ -297,14 +305,14 @@ Ambas libs implementan casi línea por línea la misma cola de throttling de pet
 
 ### Quick wins (bajo riesgo, alto retorno) — ~1 sprint
 1. ⏳ **Reintroducir un workflow de CI de solo verificación** (`nx affected -t lint test build` en PRs), sin auto-deploy — ver P0.4.
-2. 🟡 Eliminar dependencias/lib sin uso: `@lichess-org/chessground`, `@ngrx/signals`, `@ngrx/component-store` ✅ (2026-10-07); `libs/widgets` ⏳ pendiente.
-3. 🟡 Unificar versiones de `@capacitor/cli` ✅ (2026-10-07, requiere `npm install`); alinear `@nx/angular` con el core de Nx ⏳ pendiente.
+2. ✅ Eliminar dependencias/lib sin uso: `@lichess-org/chessground`, `@ngrx/signals`, `@ngrx/component-store` y `libs/widgets` — hecho 2026-10-07.
+3. ✅ Unificar versiones de `@capacitor/cli` (requiere `npm install`) y alinear `@nx/angular` con el core de Nx — hecho 2026-10-07. Queda `prettier`, aparte.
 4. 🟡 Sacar `test_data/*.pgn` del repo: ✅ fuera del árbol y en `.gitignore` (2026-10-07); ⏳ sigue en el historial (ver P2.6).
 5. ⏳ Regla ESLint `no-console` y limpieza de logs que vuelcan datos de usuario (los de `training` ya se quitaron).
 6. ✅ Unificar scope de paquete a `@chesspark/*` en `models`, `state` y `widgets` (P1.6) — hecho 2026-10-07.
 
 ### Refactors de fondo (planificados)
-7. 🟡 Factory + servicio de tablero en `libs/board` (elimina la duplicación de P1.1): factory ✅ (`createChessboard`, 2026-10-07); servicio de movimientos y marcadores ⏳ pendiente.
+7. ✅ Factory + manejador de movimientos y utilidades de marcadores en `libs/board` (elimina la duplicación de P1.1) — hecho 2026-10-07 (`createChessboard`, `createMoveInputHandler`, `board-markers`). Queda el parseo de la solución.
 8. ✅ Partir `firestore.service.ts` por agregado y descomponer `generateBlocksForPlan` — hecho (`af5e993`).
 9. ✅ Forzar acceso a datos vía facades; prohibir `FirestoreService` en componentes — hecho (`af5e993`).
 10. `takeUntilDestroyed()` sistemático + OnPush en componentes con timers.
@@ -335,7 +343,7 @@ Ambas libs implementan casi línea por línea la misma cola de throttling de pet
 | P1.5 | `chess-extension` no reutiliza libs, sin tests ni target lint/test | Baja-Media | Alto | ⏳ Abierto |
 | P1.6 | `enforce-module-boundaries` sin restricciones reales + scope `@cpark` vs `@chesspark` | Media | Bajo | 🟡 Parcial |
 | P1.7 | Duplicación de throttling entre `chess-com-provider`/`lichess-provider` | Media | Bajo | ⏳ Abierto |
-| P1.8 | `libs/widgets` placeholder sin uso | Baja | Bajo | ⏳ Abierto |
+| P1.8 | `libs/widgets` placeholder sin uso | Baja | Bajo | ✅ Resuelto |
 | P2.1 | Suscripciones/timers sin teardown | Media-Alta | Medio | ⏳ Abierto |
 | P2.2 | Sin OnPush + timers de alta frecuencia | Media | Medio | ⏳ Abierto |
 | P2.3 | Cobertura de tests ~10-15 %, `revenuecat` sin specs, e2e no-op | Media-Alta | Alto | 🟡 Mejorado |
