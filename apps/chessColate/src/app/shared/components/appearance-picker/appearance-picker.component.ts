@@ -83,6 +83,9 @@ export class AppearancePickerComponent {
   /** Muestra también el tema de DaisyUI de toda la app (el onboarding solo ofrece tablero y piezas). */
   readonly showTheme = input(true);
 
+  /** Una tira a la vez con pestañas (el modo compacto siempre las usa). */
+  readonly tabbed = input(false);
+
   private readonly piecesStrip = viewChild<ElementRef<HTMLElement>>('piecesStrip');
   private readonly boardStrip = viewChild<ElementRef<HTMLElement>>('boardStrip');
   private readonly themeStrip = viewChild<ElementRef<HTMLElement>>('themeStrip');

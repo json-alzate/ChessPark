@@ -1,9 +1,11 @@
 @let c = compact();
+@let t = c || tabbed();
 
 <!--
-  Normal (Ajustes): las tres tiras apiladas, con su altura natural.
-  Compacto (onboarding): llena la altura que le dan y muestra una tira a la vez (pestañas);
-  el tablero de muestra toma lo que sobra, así el slide no necesita scroll ni se satura.
+  Con pestañas (`t`, Ajustes y onboarding): una tira a la vez, todas con el mismo alto para
+  que el tablero de muestra no cambie de tamaño al cambiar de pestaña.
+  Compacto (`c`, onboarding): además llena la altura que le dan y el tablero de muestra toma
+  lo que sobra, así el slide no necesita scroll.
 -->
 <div class="flex flex-col" [class]="c ? 'h-full gap-2' : 'gap-4'">
 
@@ -21,8 +23,8 @@
   </div>
   }
 
-  <!-- Pestañas (solo compacto): botones unidos; la activa va en el color primario -->
-  @if (c) {
+  <!-- Pestañas: botones unidos; la activa va en el color primario -->
+  @if (t) {
   <div role="tablist" class="join w-full">
     @for (item of tabs; track item.id) {
     @if (item.id !== 'theme' || showTheme()) {
@@ -38,18 +40,18 @@
   </div>
   }
 
-  <!-- Las tres tiras. En compacto comparten un alto fijo (el de la más alta) para que el
+  <!-- Las tres tiras. Con pestañas comparten un alto fijo (el de la más alta) para que el
        tablero de muestra no cambie de tamaño al cambiar de pestaña -->
-  <div [class]="c ? 'flex h-[9.5rem] shrink-0 flex-col justify-center' : 'contents'">
+  <div [class]="t ? 'flex h-[9.5rem] shrink-0 flex-col justify-center' : 'contents'">
 
   <!-- Piezas: tira horizontal con la elegida centrada y más grande -->
-  <div [class.hidden]="c && tab() !== 'pieces'">
+  <div [class.hidden]="t && tab() !== 'pieces'">
     <h3 class="mb-1 text-center text-sm font-semibold text-base-content/70">
       {{ 'APPEARANCE.pieces' | transloco }}
       <span class="font-normal text-base-content/50">· {{ 'APPEARANCE.piecesNames.' + appearance.pieces() | transloco }}</span>
     </h3>
     <div #piecesStrip class="strip relative flex snap-x snap-mandatory items-center gap-3 overflow-x-auto overflow-y-hidden"
-      [class]="c ? 'py-3' : 'py-4'"
+      [class]="t ? 'py-3' : 'py-4'"
       style="padding-inline: calc(50% - 2.5rem);">
       @for (option of piecesOptions; track option.name) {
       <button type="button"
@@ -67,13 +69,13 @@
   </div>
 
   <!-- Tablero: misma tira -->
-  <div [class.hidden]="c && tab() !== 'board'">
+  <div [class.hidden]="t && tab() !== 'board'">
     <h3 class="mb-1 text-center text-sm font-semibold text-base-content/70">
       {{ 'APPEARANCE.board' | transloco }}
       <span class="font-normal text-base-content/50">· {{ 'APPEARANCE.boardsNames.' + appearance.board() | transloco }}</span>
     </h3>
     <div #boardStrip class="strip relative flex snap-x snap-mandatory items-center gap-3 overflow-x-auto overflow-y-hidden"
-      [class]="c ? 'py-3' : 'py-4'"
+      [class]="t ? 'py-3' : 'py-4'"
       style="padding-inline: calc(50% - 2rem);">
       @for (option of boardOptions; track option.name) {
       <button type="button"
@@ -98,12 +100,12 @@
 
   <!-- Tema de DaisyUI de toda la app: cada tarjeta se pinta con los colores de su propio tema -->
   @if (showTheme()) {
-  <div [class.hidden]="c && tab() !== 'theme'">
+  <div [class.hidden]="t && tab() !== 'theme'">
     <h3 class="mb-1 text-center text-sm font-semibold text-base-content/70">
       {{ 'APPEARANCE.theme' | transloco }}
     </h3>
     <div #themeStrip class="strip relative flex snap-x snap-mandatory items-center gap-3 overflow-x-auto overflow-y-hidden"
-      [class]="c ? 'py-3' : 'py-4'"
+      [class]="t ? 'py-3' : 'py-4'"
       style="padding-inline: calc(50% - 3rem);">
       @for (name of themeOptions; track name) {
       <!-- Botón neutro (sin data-theme): el nombre usa los colores del tema actual y solo la tarjeta, los del suyo -->
