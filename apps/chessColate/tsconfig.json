@@ -29,7 +29,6 @@
       "@chesspark/stockfish-wasm": ["../../libs/stockfish-wasm/src/index.ts"],
       "@chesspark/models": ["../../libs/models/src/index.ts"],
       "@chesspark/state": ["../../libs/state/src/index.ts"],
-      "@chesspark/widgets": ["../../libs/widgets/src/index.ts"],
       "@environments/*": [
         "src/environments/*"
       ],
