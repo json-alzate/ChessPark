@@ -1,5 +1,5 @@
 import { createFeatureSelector } from '@ngrx/store';
-import { Profile } from '@cpark/models';
+import { Profile } from '@chesspark/models';
 
 export interface AuthState {
     profile: Profile | null;

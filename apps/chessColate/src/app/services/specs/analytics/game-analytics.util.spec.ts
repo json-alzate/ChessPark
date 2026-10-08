@@ -1,4 +1,4 @@
-import { ChessGame } from '@cpark/models';
+import { ChessGame } from '@chesspark/models';
 import { OpeningStats, RatingDataPoint } from '@chesspark/game-reporter';
 
 import {

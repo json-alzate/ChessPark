@@ -33,7 +33,7 @@ import {
 import { TranslocoPipe } from '@jsverse/transloco';
 
 // models
-import { Puzzle } from '@cpark/models';
+import { Puzzle } from '@chesspark/models';
 
 // Utils
 import { SecondsToMinutesSecondsPipe, SoundsService } from '@chesspark/common-utils';

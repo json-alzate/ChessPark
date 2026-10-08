@@ -139,7 +139,7 @@ function parseTimeControl(raw: string | undefined): {
 }
 
 /**
- * Mismo criterio que `timeClassFor` de `@cpark/models` —tiempo base más
+ * Mismo criterio que `timeClassFor` de `@chesspark/models` —tiempo base más
  * cuarenta jugadas de incremento—, para que una partida clasifique igual
  * venga del PGN (catálogo) o del propio conector (partidas propias).
  */

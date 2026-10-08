@@ -25,7 +25,7 @@ import { BlockService } from '@services/training/block.service';
 import { PlanService } from '@services/plans/plan.service';
 import { ProfileService } from '@services/account/profile.service';
 
-import { Block, Plan, PlanTypes } from '@cpark/models';
+import { Block, Plan, PlanTypes } from '@chesspark/models';
 import { Router } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {

@@ -1,4 +1,4 @@
-import { UserPuzzle } from '@cpark/models';
+import { UserPuzzle } from '@chesspark/models';
 
 /** Puzzles que hay que resolver para completar el Reto 333. */
 export const RETO333_TARGET = 333;

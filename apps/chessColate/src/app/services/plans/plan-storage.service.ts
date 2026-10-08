@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Plan } from '@cpark/models';
+import { Plan } from '@chesspark/models';
 
 @Injectable({
   providedIn: 'root',

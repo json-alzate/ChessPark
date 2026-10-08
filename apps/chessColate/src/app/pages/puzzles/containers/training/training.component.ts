@@ -27,7 +27,7 @@ import { AppService } from '@services/app/app.service';
 import { BlockService } from '@services/training/block.service';
 import { InfinityPuzzlePoolService } from '@services/training/infinity-puzzle-pool.service';
 import { ProfileService } from '@services/account/profile.service';
-import { PlanFacadeService } from '@cpark/state';
+import { PlanFacadeService } from '@chesspark/state';
 import { PlansElosService } from '@services/plans/plans-elos.service';
 import { PlanStorageService } from '@services/plans/plan-storage.service';
 import { PlanService } from '@services/plans/plan.service';
@@ -55,7 +55,7 @@ import {
 } from 'ionicons/icons';
 
 // models
-import { Block, Plan, Puzzle } from '@cpark/models';
+import { Block, Plan, Puzzle } from '@chesspark/models';
 
 import {
   BoardPuzzleComponent,

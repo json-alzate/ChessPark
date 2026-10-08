@@ -8,7 +8,7 @@ import {
   collection, query, where, getDocs,
 } from 'firebase/firestore';
 
-import { PlanElos } from '@cpark/models';
+import { PlanElos } from '@chesspark/models';
 import { FirestoreConnection } from './firestore-connection.service';
 
 /**

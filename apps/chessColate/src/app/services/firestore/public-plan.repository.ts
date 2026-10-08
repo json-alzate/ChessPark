@@ -13,7 +13,7 @@ import {
   increment,
 } from 'firebase/firestore';
 
-import { Plan, PublicPlan, PublicPlanFilter } from '@cpark/models';
+import { Plan, PublicPlan, PublicPlanFilter } from '@chesspark/models';
 import { FirestoreConnection } from './firestore-connection.service';
 import { serializeFirestoreData } from './firestore-serialize.util';
 

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import { StreakRecord, StreakRun } from '@cpark/models';
+import { StreakRecord, StreakRun } from '@chesspark/models';
 
 import { applyRunToRecord, emptyStreakRecord } from './streak.util';
 

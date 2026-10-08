@@ -7,7 +7,7 @@ import {
   collection, query, where, getDocs,
 } from 'firebase/firestore';
 
-import { Plan } from '@cpark/models';
+import { Plan } from '@chesspark/models';
 import { FirestoreConnection } from './firestore-connection.service';
 
 /**

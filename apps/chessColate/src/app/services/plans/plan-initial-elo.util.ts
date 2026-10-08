@@ -1,4 +1,4 @@
-import { PlanTypes, User } from '@cpark/models';
+import { PlanTypes, User } from '@chesspark/models';
 
 /**
  * Elo de referencia de una rutina al empezar a jugarla: el total con el que

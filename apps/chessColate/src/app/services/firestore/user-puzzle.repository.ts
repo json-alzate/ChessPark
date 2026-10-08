@@ -6,7 +6,7 @@ import {
   collection, query, where, getDocs,
 } from 'firebase/firestore';
 
-import { CoordinatesPuzzle, UserPuzzle } from '@cpark/models';
+import { CoordinatesPuzzle, UserPuzzle } from '@chesspark/models';
 import { FirestoreConnection } from './firestore-connection.service';
 
 /**

@@ -4,7 +4,7 @@
  * para poder testearla directamente.
  */
 
-import { StreakConfig, StreakRecord, StreakRun } from '@cpark/models';
+import { StreakConfig, StreakRecord, StreakRun } from '@chesspark/models';
 
 /**
  * Configuración por defecto: arranca fácil, sube poco a poco y mezcla temas.

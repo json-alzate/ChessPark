@@ -1,4 +1,4 @@
-import { Block } from '@cpark/models';
+import { Block } from '@chesspark/models';
 
 /** Imagen de los bloques sin tema (los que se juegan por apertura). */
 const OPENING_IMAGE = '/assets/images/puzzle-themes/opening.svg';

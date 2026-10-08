@@ -28,7 +28,7 @@ import {
   StreakEndReason,
   StreakRecord,
   StreakRun,
-} from '@cpark/models';
+} from '@chesspark/models';
 import { BoardPuzzleComponent, BoardPuzzleSolutionComponent } from '@chesspark/board';
 import {
   ConfettiService,

@@ -31,7 +31,7 @@ import {
   FIRESTORE_SERVICE_TOKEN,
   CUSTOM_PLANS_FIRESTORE_TOKEN,
   PUBLIC_PLANS_FIRESTORE_TOKEN,
-} from '@cpark/state';
+} from '@chesspark/state';
 
 // Services
 import { AuthService } from './app/services/account/auth.service';

@@ -17,8 +17,8 @@ import {
 } from '@ionic/angular/standalone';
 import { TranslocoService } from '@jsverse/transloco';
 
-import { Block, Plan, Puzzle } from '@cpark/models';
-import { PlanFacadeService } from '@cpark/state';
+import { Block, Plan, Puzzle } from '@chesspark/models';
+import { PlanFacadeService } from '@chesspark/state';
 import { BoardPuzzleSolutionComponent } from '@chesspark/board';
 import { SoundsService, UidGeneratorService } from '@chesspark/common-utils';
 

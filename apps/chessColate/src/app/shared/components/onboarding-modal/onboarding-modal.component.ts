@@ -21,7 +21,7 @@ import {
   flameOutline,
 } from 'ionicons/icons';
 import { BoardPuzzleComponent } from '@chesspark/board';
-import { Puzzle } from '@cpark/models';
+import { Puzzle } from '@chesspark/models';
 
 /** Clave de localStorage que marca el onboarding como visto (solo invitados/local). */
 export const ONBOARDING_SEEN_KEY = 'chessColate_onboarding_seen';

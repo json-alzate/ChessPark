@@ -3,9 +3,9 @@ import { Store } from '@ngrx/store';
 import { combineLatest, of } from 'rxjs';
 import { filter, take, switchMap } from 'rxjs/operators';
 
-import { AppState } from '@cpark/state';
-import { getProfile, getIsInitialized } from '@cpark/state';
-import { PublicPlansFacadeService } from '@cpark/state';
+import { AppState } from '@chesspark/state';
+import { getProfile, getIsInitialized } from '@chesspark/state';
+import { PublicPlansFacadeService } from '@chesspark/state';
 
 /**
  * Guard para la ruta de planes públicos.

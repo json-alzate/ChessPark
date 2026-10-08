@@ -13,10 +13,10 @@ import {
   updateProfile,
   getProfile,
   IProfileService
-} from '@cpark/state';
+} from '@chesspark/state';
 
 // models
-import { Profile, PlanTypes } from '@cpark/models';
+import { Profile, PlanTypes } from '@chesspark/models';
 import { User as FirebaseUser } from 'firebase/auth';
 
 

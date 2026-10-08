@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 
-import { ChessGame, ChessPlatform } from '@cpark/models';
+import { ChessGame, ChessPlatform } from '@chesspark/models';
 import {
   ChessComUserNotFoundError,
   createChessComProvider,

@@ -9,9 +9,9 @@ import { DonationModalComponent } from '../donation-modal/donation-modal.compone
 import { ProfileService } from '@services/account/profile.service';
 import { Capacitor } from '@capacitor/core';
 import { AuthService } from '@services/account/auth.service';
-import { Profile } from '@cpark/models';
+import { Profile } from '@chesspark/models';
 import { Store, select } from '@ngrx/store';
-import { AuthState, getIsInitialized } from '@cpark/state';
+import { AuthState, getIsInitialized } from '@chesspark/state';
 import { TranslocoPipe } from '@jsverse/transloco';
 
 @Component({

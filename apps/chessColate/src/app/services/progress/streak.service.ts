@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 
-import { Puzzle, StreakConfig } from '@cpark/models';
+import { Puzzle, StreakConfig } from '@chesspark/models';
 import {
   buildPuzzleUrl,
   getManifestThemes,

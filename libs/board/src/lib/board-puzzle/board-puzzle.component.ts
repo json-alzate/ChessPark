@@ -49,7 +49,7 @@ import {
 } from 'ionicons/icons';
 
 // models
-import { Puzzle } from '@cpark/models';
+import { Puzzle } from '@chesspark/models';
 import { PuzzleEngine } from './puzzle-engine';
 
 interface UISettings {

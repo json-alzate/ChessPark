@@ -12,7 +12,7 @@ import {
   collection, query, where, getDocs,
 } from 'firebase/firestore';
 
-import { Profile } from '@cpark/models';
+import { Profile } from '@chesspark/models';
 import { FirestoreConnection } from './firestore-connection.service';
 
 /**

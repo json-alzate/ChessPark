@@ -1,8 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { PlanElos } from '@cpark/models';
+import { PlanElos } from '@chesspark/models';
 import { EloCalculatorService, UidGeneratorService } from '@chesspark/common-utils';
-import { PlansElosFacadeService } from '@cpark/state';
+import { PlansElosFacadeService } from '@chesspark/state';
 import { PlanElosRepository } from '@services/firestore/plan-elos.repository';
 import { ProfileService } from '@services/account/profile.service';
 

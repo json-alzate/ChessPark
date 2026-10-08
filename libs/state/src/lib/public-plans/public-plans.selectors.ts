@@ -3,7 +3,7 @@ import {
   getPublicPlansState,
   publicPlansStateAdapter,
 } from './public-plans.state';
-import { PublicPlan, PlanInteraction } from '@cpark/models';
+import { PublicPlan, PlanInteraction } from '@chesspark/models';
 
 export const {
   selectAll: getAllPublicPlans,

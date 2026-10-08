@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 
-import { PublicPlan, PlanInteraction, PublicPlanFilter } from '@cpark/models';
-import { IPublicPlansFirestore } from '@cpark/state';
+import { PublicPlan, PlanInteraction, PublicPlanFilter } from '@chesspark/models';
+import { IPublicPlansFirestore } from '@chesspark/state';
 
 import { PublicPlanRepository } from './public-plan.repository';
 import { PlanInteractionRepository } from './plan-interaction.repository';

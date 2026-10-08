@@ -6,8 +6,8 @@ import { ModalController, IonContent, IonIcon } from '@ionic/angular/standalone'
 
 import { TranslocoPipe } from '@jsverse/transloco';
 
-import { Block } from '@cpark/models';
-import { PuzzleThemesGroup } from '@cpark/models';
+import { Block } from '@chesspark/models';
+import { PuzzleThemesGroup } from '@chesspark/models';
 import { SecondsToMinutesSecondsPipe } from '@chesspark/common-utils';
 
 import { TranslocoService } from '@jsverse/transloco';

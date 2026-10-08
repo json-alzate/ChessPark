@@ -7,7 +7,7 @@ import {
 } from 'cm-chessboard';
 import { Markers } from 'cm-chessboard/src/extensions/markers/Markers.js';
 
-import { Puzzle } from '@cpark/models';
+import { Puzzle } from '@chesspark/models';
 import { UidGeneratorService } from '@chesspark/common-utils';
 
 @Component({

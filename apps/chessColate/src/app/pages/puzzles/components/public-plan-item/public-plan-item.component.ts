@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { IonIcon } from '@ionic/angular/standalone';
-import { PublicPlan, Block } from '@cpark/models';
+import { PublicPlan, Block } from '@chesspark/models';
 import { ProfileService } from '@services/account/profile.service';
 import { AppService } from '@services/app/app.service';
 import { SecondsToMinutesSecondsPipe } from '@chesspark/common-utils';

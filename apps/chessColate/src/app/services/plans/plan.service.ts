@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
-import { Plan, Block, PlanTypes } from '@cpark/models';
+import { Plan, Block, PlanTypes } from '@chesspark/models';
 import { UidGeneratorService } from '@chesspark/common-utils';
-import { PlanFacadeService } from '@cpark/state';
+import { PlanFacadeService } from '@chesspark/state';
 
 // services
 import { PlanRepository } from '@services/firestore/plan.repository';

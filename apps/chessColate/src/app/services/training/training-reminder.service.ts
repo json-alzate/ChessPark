@@ -5,7 +5,7 @@ import { Capacitor, PermissionState } from '@capacitor/core';
 import { LocalNotifications } from '@capacitor/local-notifications';
 import { TranslocoService } from '@jsverse/transloco';
 import { UidGeneratorService } from '@chesspark/common-utils';
-import { Plan } from '@cpark/models';
+import { Plan } from '@chesspark/models';
 
 import { AnalyticsService } from '@services/analytics/analytics.service';
 import { PlanStorageService } from '@services/plans/plan-storage.service';

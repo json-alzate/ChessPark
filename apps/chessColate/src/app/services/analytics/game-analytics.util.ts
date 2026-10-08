@@ -10,7 +10,7 @@ import {
   ChessGamePlayer,
   ChessPlatform,
   TimeClass,
-} from '@cpark/models';
+} from '@chesspark/models';
 import { OpeningStats, RatingDataPoint } from '@chesspark/game-reporter';
 
 /** Una cuenta conectada por el usuario. */

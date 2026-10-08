@@ -1,6 +1,6 @@
 /**
  * A qué ritmo corresponde un control de tiempo. Mismos valores que el
- * `TimeClass` de `@cpark/models` (los proveedores clasifican igual), pero
+ * `TimeClass` de `@chesspark/models` (los proveedores clasifican igual), pero
  * declarado aparte para no acoplar este parser genérico de PGN a los modelos
  * de las plataformas externas.
  */

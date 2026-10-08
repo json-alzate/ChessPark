@@ -17,7 +17,7 @@ Este documento describe el estado de la migración desde la aplicación legacy *
 - **Rutas:** `home`, `puzzles/training`, `puzzles/plan-played` (standalone, lazy).
 - **Flujo:** Home → menú de planes (solo planes por número: 1, 3, 5, 10, 20, 30) → training → plan-played.
 - **Servicios clave:** BlockService, PlanService, ProfileService, PlanFacadeService (estado), FirestoreService.
-- **Libs compartidas:** `@chesspark/board` (BoardPuzzle, BoardPuzzleSolution), `@cpark/state`, `@cpark/models`, `@chesspark/puzzles-provider`.
+- **Libs compartidas:** `@chesspark/board` (BoardPuzzle, BoardPuzzleSolution), `@chesspark/state`, `@chesspark/models`, `@chesspark/puzzles-provider`.
 
 ### Chesscolate-old (legacy)
 

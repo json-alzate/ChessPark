@@ -4,8 +4,8 @@ import { Store } from '@ngrx/store';
 import { Observable, of } from 'rxjs';
 import { map, filter, take, timeout, catchError, switchMap } from 'rxjs/operators';
 
-import { AppState } from '@cpark/state';
-import { getProfile, getIsInitialized } from '@cpark/state';
+import { AppState } from '@chesspark/state';
+import { getProfile, getIsInitialized } from '@chesspark/state';
 
 /**
  * Guard que verifica si el usuario está autenticado.

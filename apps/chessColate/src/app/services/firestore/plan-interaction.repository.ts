@@ -9,7 +9,7 @@ import {
   collection, query, where, getDocs,
 } from 'firebase/firestore';
 
-import { PlanInteraction } from '@cpark/models';
+import { PlanInteraction } from '@chesspark/models';
 import { FirestoreConnection } from './firestore-connection.service';
 import { PublicPlanRepository } from './public-plan.repository';
 import { serializeFirestoreData } from './firestore-serialize.util';

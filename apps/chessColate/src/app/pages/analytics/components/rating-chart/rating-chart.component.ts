@@ -12,7 +12,7 @@ import { TranslocoPipe } from '@jsverse/transloco';
 
 import { Chart, ChartDataset, registerables } from 'chart.js';
 
-import { ChessPlatform, TimeClass } from '@cpark/models';
+import { ChessPlatform, TimeClass } from '@chesspark/models';
 import { RatingDataPoint } from '@chesspark/game-reporter';
 
 import { thinSeries } from '@services/analytics/game-analytics.util';

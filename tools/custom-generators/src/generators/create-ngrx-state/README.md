@@ -1,6 +1,6 @@
 # Generador de Estados NgRx
 
-Este generador crea automáticamente toda la estructura NgRx para una nueva entidad en la librería de estados (@cpark/state), incluyendo pruebas y modelos opcionales.
+Este generador crea automáticamente toda la estructura NgRx para una nueva entidad en la librería de estados (@chesspark/state), incluyendo pruebas y modelos opcionales.
 
 ## Uso
 
@@ -108,7 +108,7 @@ tests/
 - Pruebas del facade con operaciones limitadas
 
 ### Importaciones Inteligentes
-- Si `createModel=true`: Importa desde `@cpark/models`
+- Si `createModel=true`: Importa desde `@chesspark/models`
 - Si `createModel=false`: Define interfaces temporales con TODO para importar cuando se cree el modelo
 
 ## Integración Automática

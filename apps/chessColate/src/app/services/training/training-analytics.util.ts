@@ -1,4 +1,4 @@
-import { PlanTypes, Puzzle } from '@cpark/models';
+import { PlanTypes, Puzzle } from '@chesspark/models';
 
 import {
   RoutineKind,

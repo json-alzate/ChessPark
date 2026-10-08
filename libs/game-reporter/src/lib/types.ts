@@ -1,4 +1,4 @@
-import { ArchiveMonth, ChessGame, ChessPlatform, TimeClass } from '@cpark/models';
+import { ArchiveMonth, ChessGame, ChessPlatform, TimeClass } from '@chesspark/models';
 
 /**
  * Lo que hace falta saber de un conector para poder alimentar el archivo.

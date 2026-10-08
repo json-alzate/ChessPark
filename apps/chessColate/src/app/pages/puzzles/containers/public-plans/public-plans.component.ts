@@ -15,7 +15,7 @@ import {
 
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
-import { PublicPlan, PublicPlanFilter, PlanInteraction } from '@cpark/models';
+import { PublicPlan, PublicPlanFilter, PlanInteraction } from '@chesspark/models';
 
 import { PublicPlansService } from '@services/plans/public-plans.service';
 import { PlanService } from '@services/plans/plan.service';
@@ -26,8 +26,8 @@ import {
     PublicPlansFacadeService,
     getProfile,
     AppState,
-} from '@cpark/state';
-import { PlanFacadeService } from '@cpark/state';
+} from '@chesspark/state';
+import { PlanFacadeService } from '@chesspark/state';
 
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 import { PublicPlanItemComponent } from '@pages/puzzles/components/public-plan-item/public-plan-item.component';

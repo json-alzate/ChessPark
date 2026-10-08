@@ -1,4 +1,4 @@
-import { Plan, Puzzle, UserPuzzle } from '@cpark/models';
+import { Plan, Puzzle, UserPuzzle } from '@chesspark/models';
 
 import {
   addPuzzlePlayedToPlan,

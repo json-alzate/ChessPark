@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { Plan, PublicPlan, PlanInteraction } from '@cpark/models';
+import { Plan, PublicPlan, PlanInteraction } from '@chesspark/models';
 import { PlanService } from './plan.service';
 
 @Injectable({

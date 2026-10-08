@@ -1,4 +1,4 @@
-import { Puzzle, UserPuzzle } from '@cpark/models';
+import { Puzzle, UserPuzzle } from '@chesspark/models';
 
 
 export interface Block {

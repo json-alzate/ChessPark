@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { map } from 'rxjs/operators';
 
-import { Plan } from '@cpark/models';
+import { Plan } from '@chesspark/models';
 import { PlanState, getPlanState } from './plan.state';
 import {
   loadPlan,

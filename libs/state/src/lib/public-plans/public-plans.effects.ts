@@ -28,7 +28,7 @@ import {
   markPlanAsPlayedSuccess,
   markPlanAsPlayedFailure,
 } from './public-plans.actions';
-import { PublicPlan, PlanInteraction, PublicPlanFilter } from '@cpark/models';
+import { PublicPlan, PlanInteraction, PublicPlanFilter } from '@chesspark/models';
 import { getPublicPlansState } from './public-plans.state';
 import { AppState } from '../app.state';
 

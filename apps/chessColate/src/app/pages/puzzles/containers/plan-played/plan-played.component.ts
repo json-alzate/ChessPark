@@ -11,8 +11,8 @@ import {
 
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
-import { Plan, Puzzle, UserPuzzle, Block, PlanTypes } from '@cpark/models';
-import { PlanFacadeService, PublicPlansFacadeService } from '@cpark/state';
+import { Plan, Puzzle, UserPuzzle, Block, PlanTypes } from '@chesspark/models';
+import { PlanFacadeService, PublicPlansFacadeService } from '@chesspark/state';
 
 import { AppService } from '@services/app/app.service';
 import { ProfileService } from '@services/account/profile.service';

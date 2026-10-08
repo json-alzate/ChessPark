@@ -23,7 +23,7 @@ import {
   Plan,
   outcomeForUser,
   TimeClass,
-} from '@cpark/models';
+} from '@chesspark/models';
 import {
   ActivityDay,
   applyFilters,
@@ -44,7 +44,7 @@ import { AppService } from '@services/app/app.service';
 import { PlanService } from '@services/plans/plan.service';
 import { CustomPlansService } from '@services/plans/custom-plans.service';
 import { ProfileService } from '@services/account/profile.service';
-import { PlanFacadeService } from '@cpark/state';
+import { PlanFacadeService } from '@chesspark/state';
 import {
   GameAnalyticsService,
   UnknownUsernameError,

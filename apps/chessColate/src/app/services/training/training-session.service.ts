@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import { Block, Plan, UserPuzzle } from '@cpark/models';
+import { Block, Plan, UserPuzzle } from '@chesspark/models';
 
 import { addPuzzlePlayedToPlan } from './user-puzzle.util';
 

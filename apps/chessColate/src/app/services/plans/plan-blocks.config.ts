@@ -1,4 +1,4 @@
-import { PlanTypes } from '@cpark/models';
+import { PlanTypes } from '@chesspark/models';
 
 /**
  * Configuración declarativa de los bloques que genera BlockService para cada plan.

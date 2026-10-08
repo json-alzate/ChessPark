@@ -4,7 +4,7 @@ import { TranslocoPipe } from '@jsverse/transloco';
 
 import { Chart, registerables } from 'chart.js';
 
-import { Profile, Plan, PlanElos } from '@cpark/models';
+import { Profile, Plan, PlanElos } from '@chesspark/models';
 
 import { AppService } from '@services/app/app.service';
 import { ProfileService } from '@services/account/profile.service';

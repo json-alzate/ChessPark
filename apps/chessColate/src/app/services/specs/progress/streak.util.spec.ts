@@ -1,4 +1,4 @@
-import { StreakConfig, StreakRun } from '@cpark/models';
+import { StreakConfig, StreakRun } from '@chesspark/models';
 
 import {
   applyRunToRecord,

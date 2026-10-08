@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { PublicPlan, PlanInteraction, PublicPlanFilter } from '@cpark/models';
+import { PublicPlan, PlanInteraction, PublicPlanFilter } from '@chesspark/models';
 
 // Load public plans
 export const loadPublicPlans = createAction(

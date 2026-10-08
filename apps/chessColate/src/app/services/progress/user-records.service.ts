@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 
-import { Reto333Record, StreakRecord, UserRecords } from '@cpark/models';
+import { Reto333Record, StreakRecord, UserRecords } from '@chesspark/models';
 
 import { ProfileService } from '../account/profile.service';
 import { Reto333StorageService } from '../training/reto333-storage.service';

@@ -12,7 +12,7 @@ import {
   parseGameHeader,
   parsePackHeaders,
 } from '@chesspark/games-provider';
-import { ChessGame } from '@cpark/models';
+import { ChessGame } from '@chesspark/models';
 
 import { AnalyticsService } from '../analytics/analytics.service';
 import {

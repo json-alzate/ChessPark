@@ -63,7 +63,7 @@ lichess API    →  lichess-provider    ─┘   (archivo + reportes)
 
 El modelo canónico
 [`ChessGame`](../../libs/models/src/lib/chess-game.model.ts) vive en
-`@cpark/models`, con los ayudantes que necesitan todos: el resultado visto desde
+`@chesspark/models`, con los ayudantes que necesitan todos: el resultado visto desde
 el color del usuario, su rating en la partida y la clasificación del control de
 tiempo.
 

@@ -33,7 +33,7 @@ import {
   logOut,
   setInitialized,
   IAuthService 
-} from '@cpark/state';
+} from '@chesspark/state';
 
 @Injectable({
   providedIn: 'root'

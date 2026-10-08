@@ -3,9 +3,9 @@ import { Store } from '@ngrx/store';
 import { combineLatest, of } from 'rxjs';
 import { filter, take, switchMap } from 'rxjs/operators';
 
-import { AppState } from '@cpark/state';
-import { getCountAllCustomPlans, getProfile, getIsInitialized, loadCustomPlans } from '@cpark/state';
-import { PlansElosFacadeService } from '@cpark/state';
+import { AppState } from '@chesspark/state';
+import { getCountAllCustomPlans, getProfile, getIsInitialized, loadCustomPlans } from '@chesspark/state';
+import { PlansElosFacadeService } from '@chesspark/state';
 
 /**
  * Guard para la ruta de listado de planes personalizados.

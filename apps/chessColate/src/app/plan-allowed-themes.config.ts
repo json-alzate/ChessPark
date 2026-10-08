@@ -1,4 +1,4 @@
-import { PlanTypes } from '@cpark/models';
+import { PlanTypes } from '@chesspark/models';
 
 /**
  * Temas permitidos por plan por defecto.

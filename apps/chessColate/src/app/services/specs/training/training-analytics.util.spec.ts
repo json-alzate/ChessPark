@@ -1,4 +1,4 @@
-import { Puzzle } from '@cpark/models';
+import { Puzzle } from '@chesspark/models';
 
 import {
   puzzleCompletedPayload,

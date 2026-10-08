@@ -8,7 +8,7 @@ import {
   requestUpdatePlanElos,
 } from './plansElos.actions';
 import { getAllPlansElos, getPlanElo } from './plansElos.selectors';
-import { PlanElos } from '@cpark/models';
+import { PlanElos } from '@chesspark/models';
 
 /**
  * Fachada fina para el estado plansElos: solo dispatch de acciones y selectores.

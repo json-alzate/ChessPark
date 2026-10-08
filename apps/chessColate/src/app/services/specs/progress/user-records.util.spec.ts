@@ -1,4 +1,4 @@
-import { Reto333Record, StreakRecord } from '@cpark/models';
+import { Reto333Record, StreakRecord } from '@chesspark/models';
 
 import {
   isFromAnotherUser,

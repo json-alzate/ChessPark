@@ -8,7 +8,7 @@ import {
   Opening,
   PuzzleThemes,
   PuzzleThemesGroup
-} from '@cpark/models';
+} from '@chesspark/models';
 
 
 @Injectable({

@@ -1,4 +1,4 @@
-import { PublicPlan, PlanInteraction } from '@cpark/models';
+import { PublicPlan, PlanInteraction } from '@chesspark/models';
 import { publicPlansReducer, initialPublicPlansState } from '../../lib/public-plans/public-plans.reducer';
 import {
   loadInteractionPlansSuccess,

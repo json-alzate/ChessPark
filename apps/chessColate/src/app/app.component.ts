@@ -54,7 +54,7 @@ import { Capacitor } from '@capacitor/core';
 import { SplashScreen } from '@capacitor/splash-screen';
 
 // Models
-import { Profile } from '@cpark/models';
+import { Profile } from '@chesspark/models';
 
 // RxJS
 import { switchMap, filter } from 'rxjs/operators';

@@ -9,13 +9,13 @@ import { IonContent, IonIcon, LoadingController, ModalController } from '@ionic/
 
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
-import { Plan, Block } from '@cpark/models';
+import { Plan, Block } from '@chesspark/models';
 
 import { CustomPlansService } from '@services/plans/custom-plans.service';
 import { PlanService } from '@services/plans/plan.service';
 import { ProfileService } from '@services/account/profile.service';
 import { AppService } from '@services/app/app.service';
-import { PlanFacadeService, PlansElosFacadeService, CustomPlansFacadeService, getProfile, getIsInitialized, AppState, getCountAllCustomPlans } from '@cpark/state';
+import { PlanFacadeService, PlansElosFacadeService, CustomPlansFacadeService, getProfile, getIsInitialized, AppState, getCountAllCustomPlans } from '@chesspark/state';
 import { SecondsToMinutesSecondsPipe } from '@chesspark/common-utils';
 
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';

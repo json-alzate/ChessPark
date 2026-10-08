@@ -21,7 +21,7 @@ import {
     markPlanAsPlayedSuccess,
     clearPublicPlansError,
 } from './public-plans.actions';
-import { PublicPlan, Block } from '@cpark/models';
+import { PublicPlan, Block } from '@chesspark/models';
 
 export const initialPublicPlansState: PublicPlansState =
     publicPlansStateAdapter.getInitialState({

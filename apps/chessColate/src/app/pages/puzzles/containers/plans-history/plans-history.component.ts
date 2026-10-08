@@ -11,10 +11,10 @@ import {
 } from '@ionic/angular/standalone';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
-import { Plan, Block } from '@cpark/models';
+import { Plan, Block } from '@chesspark/models';
 
 import { PlanStorageService } from '@services/plans/plan-storage.service';
-import { PlanFacadeService } from '@cpark/state';
+import { PlanFacadeService } from '@chesspark/state';
 import { AppService } from '@services/app/app.service';
 import { SecondsToMinutesSecondsPipe } from '@chesspark/common-utils';
 

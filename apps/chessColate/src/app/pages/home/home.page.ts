@@ -14,11 +14,11 @@ import { addIcons } from 'ionicons';
 import { arrowForward, statsChartOutline, eye, close, flash, flame, heart, trophy, logoGooglePlaystore, logoApple, optionsOutline, globeOutline, chevronForwardOutline } from 'ionicons/icons';
 import { Subscription } from 'rxjs';
 import { Store, select } from '@ngrx/store';
-import { AuthState, getIsInitialized } from '@cpark/state';
+import { AuthState, getIsInitialized } from '@chesspark/state';
 
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
-import { Block, Plan, PlanTypes, Puzzle, Reto333Record, StreakRecord } from '@cpark/models';
+import { Block, Plan, PlanTypes, Puzzle, Reto333Record, StreakRecord } from '@chesspark/models';
 
 // Services
 import { BlockService } from '@services/training/block.service';

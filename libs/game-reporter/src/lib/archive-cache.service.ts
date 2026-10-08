@@ -1,4 +1,4 @@
-import { ChessPlatform } from '@cpark/models';
+import { ChessPlatform } from '@chesspark/models';
 
 import {
   AccountStorageSummary,

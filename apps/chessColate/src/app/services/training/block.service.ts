@@ -2,10 +2,10 @@ import { Injectable, inject } from '@angular/core';
 
 import { TranslocoService } from '@jsverse/transloco';
 
-import { Puzzle } from '@cpark/models';
-import { Block } from '@cpark/models';
-import { PlanTypes } from '@cpark/models';
-import { PuzzleQueryOptions } from '@cpark/models';
+import { Puzzle } from '@chesspark/models';
+import { Block } from '@chesspark/models';
+import { PlanTypes } from '@chesspark/models';
+import { PuzzleQueryOptions } from '@chesspark/models';
 
 // import { PlansElosService } from '@services/plans/plans-elos.service';
 import { ProfileService } from '@services/account/profile.service';

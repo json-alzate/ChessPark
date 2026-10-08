@@ -14,7 +14,7 @@ import {
   getCustomPlansOrderByDate,
   getCustomPlansLoading,
 } from './custom-plans.selectors';
-import { Plan } from '@cpark/models';
+import { Plan } from '@chesspark/models';
 
 @Injectable({ providedIn: 'root' })
 export class CustomPlansFacadeService {

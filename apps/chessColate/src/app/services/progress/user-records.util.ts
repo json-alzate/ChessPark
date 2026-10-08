@@ -13,7 +13,7 @@
  * Sin dependencias de Angular ni de almacenamiento, para poder testearla sola.
  */
 
-import { Reto333Record, StreakRecord } from '@cpark/models';
+import { Reto333Record, StreakRecord } from '@chesspark/models';
 
 /** Un récord de racha vacío no cuenta como copia: no hay nada que fusionar. */
 export function hasStreakData(record: StreakRecord | null | undefined): boolean {

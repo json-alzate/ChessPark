@@ -4,7 +4,7 @@ import {
   archiveMonthOf,
   ChessGame,
   ChessPlatform,
-} from '@cpark/models';
+} from '@chesspark/models';
 
 import { ArchiveCacheService } from './archive-cache.service';
 import {

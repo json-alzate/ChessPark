@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 
 import { TranslocoService } from '@jsverse/transloco';
 
-import { PlanTypes, Profile } from '@cpark/models';
+import { PlanTypes, Profile } from '@chesspark/models';
 import { PuzzlesProvider } from '@chesspark/puzzles-provider';
 
 import { AppService } from '@services/app/app.service';

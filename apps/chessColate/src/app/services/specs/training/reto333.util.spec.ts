@@ -1,4 +1,4 @@
-import { UserPuzzle } from '@cpark/models';
+import { UserPuzzle } from '@chesspark/models';
 
 import {
   formatMinutesSeconds,

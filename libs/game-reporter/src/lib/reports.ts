@@ -5,7 +5,7 @@ import {
   outcomeForUser,
   TimeClass,
   userRating,
-} from '@cpark/models';
+} from '@chesspark/models';
 
 import {
   ActivityDay,

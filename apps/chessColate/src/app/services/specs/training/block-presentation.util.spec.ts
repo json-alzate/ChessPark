@@ -1,4 +1,4 @@
-import { Block } from '@cpark/models';
+import { Block } from '@chesspark/models';
 
 import {
   blockPresentationImage,

@@ -1,4 +1,4 @@
-import { Block, Plan, UserPuzzle } from '@cpark/models';
+import { Block, Plan, UserPuzzle } from '@chesspark/models';
 
 import { TrainingSessionService } from '../../training/training-session.service';
 

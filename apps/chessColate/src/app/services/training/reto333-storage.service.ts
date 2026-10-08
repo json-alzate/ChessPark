@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import { Reto333Record } from '@cpark/models';
+import { Reto333Record } from '@chesspark/models';
 
 /** Resultado de un intento, tal y como lo entrega la pantalla de entrenamiento. */
 export interface Reto333Attempt {

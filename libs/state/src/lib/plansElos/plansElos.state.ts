@@ -1,7 +1,7 @@
 import { createFeatureSelector } from '@ngrx/store';
 import { EntityState, EntityAdapter, createEntityAdapter } from '@ngrx/entity';
 
-import { PlanElos } from '@cpark/models';
+import { PlanElos } from '@chesspark/models';
 
 export type PlansElosState = EntityState<PlanElos>;
 

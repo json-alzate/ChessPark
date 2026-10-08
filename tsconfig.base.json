@@ -24,12 +24,12 @@
       "@chesspark/game-reporter": ["libs/game-reporter/src/index.ts"],
       "@chesspark/games-provider": ["libs/games-provider/src/index.ts"],
       "@chesspark/lichess-provider": ["libs/lichess-provider/src/index.ts"],
+      "@chesspark/models": ["libs/models/src/index.ts"],
       "@chesspark/puzzles-provider": ["libs/puzzles-provider/src/index.ts"],
       "@chesspark/revenuecat": ["libs/revenuecat/src/index.ts"],
+      "@chesspark/state": ["libs/state/src/index.ts"],
       "@chesspark/stockfish-wasm": ["libs/stockfish-wasm/src/index.ts"],
-      "@cpark/models": ["libs/models/src/index.ts"],
-      "@cpark/state": ["libs/state/src/index.ts"],
-      "@cpark/widgets": ["libs/widgets/src/index.ts"]
+      "@chesspark/widgets": ["libs/widgets/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"],
