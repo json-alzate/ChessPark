@@ -31,6 +31,7 @@ la feature se implemente o cambie de posición. Por eso los IDs se leen salteado
 | ⬜ | F15 | [Puzzle Racer (Multijugador)](./PUZZLE_RACER.md) | Alto (competitivo/viral) | Alto | RTDB + matchmaking (sin backend propio) |
 | ⬜ | F16 | [Puzzle Geo Hunt](./PUZZLE_GEO_HUNT.md) | Medio (nicho) | Muy Alto | GPS + AR + permisos |
 | ⬜ | F17 | [Jugar en Lichess (Board API)](./JUGAR_EN_LICHESS.md) | Alto (adquisición) | Alto | OAuth lichess (Board API) + `@chesspark/board` |
+| ⬜ | F18 | [Transmisión 24/7 a YouTube (Canal de Puzzles Lofi)](./TRANSMISION_24_7.md) | Medio-Alto (adquisición/marca) | Medio-Alto | `board-game-player`, `puzzles-provider`; `ffmpeg` + Mac mini 24/7 |
 
 > ✅ = ya implementado (detalle en [Ya implementado](#ya-implementado)) · ⬜ = pendiente.
 > **Regla del ID:** una feature nueva toma el siguiente número libre (F17, F18, …) y se
@@ -69,6 +70,9 @@ Va **después de F08**: reutiliza el lector de PGN que dejó F06 y, en vez de in
 
 ### F17 · [Jugar en Lichess (Board API)](./JUGAR_EN_LICHESS.md)
 **Apoyarse en la audiencia de lichess en vez de construir matchmaking propio**: conecta la cuenta de lichess del usuario (OAuth) y lo empareja con rivales reales vía `POST /api/board/seek`, jugando la partida con el tablero propio de ChessColate. No requiere backend (el "servidor" de la partida es lichess), pero sí OAuth con manejo de tokens, deep links en Capacitor y aislar por completo el Stockfish embebido de esta pantalla (fair play de lichess). Independiente del resto del roadmap — puede paralelizarse igual que F12.
+
+### F18 · [Transmisión 24/7 a YouTube (Canal de Puzzles Lofi)](./TRANSMISION_24_7.md)
+**Escaparate permanente de la marca, sin tocar la app de usuario.** Una app Nx aparte (`apps/live-stream`) resuelve puzzles sola, rota tema y ELO por programa horario y pinta una escena lofi con ciclo del día; un runner de Node (Puppeteer + `ffmpeg`) la emite a YouTube desde el Mac mini, sin OBS. Reutiliza `board-game-player` y `puzzles-provider`, así que no depende de ninguna feature pendiente. Va al final por ser **infra propia (Mac mini 24/7)** y por tener una incógnita técnica fuerte (¿el screencast aguanta 30 fps?) que se resuelve con una **Fase 0** de prueba de concepto; es independiente del resto y puede adelantarse si la prioridad es difusión.
 
 ---
 
