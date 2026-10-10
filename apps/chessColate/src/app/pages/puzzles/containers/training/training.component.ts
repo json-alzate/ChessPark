@@ -969,7 +969,10 @@ export class TrainingComponent implements OnInit, OnDestroy {
         ...this.plan,
         uidUser: this.profileService.getProfile?.uid,
       };
-      // this.planService.requestSavePlanAction(this.plan);
+      // TODO(premium): sincronizar el historial de rutinas con Firestore
+      // (`this.planService.savePlan(this.plan)`), posiblemente como función
+      // de la versión premium. Hoy el historial vive solo en el dispositivo
+      // (PlanStorageService); ver docs/ARQUITECTURA.md.
     }
 
     // Actualizar el plan en Redux

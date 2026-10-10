@@ -16,7 +16,8 @@ import { FirestoreConnection } from './firestore-connection.service';
  * Métodos: getPlans (planes de un usuario), savePlan (upsert por uid).
  * Los planes personalizados viven en CustomPlanRepository, no aquí.
  *
- * Consumido por: PlanService.
+ * Consumido por: PlanService. `savePlan` aún no se invoca desde ninguna
+ * pantalla: se conectará con la sincronización del historial (TODO premium).
  */
 @Injectable({
   providedIn: 'root'

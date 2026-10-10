@@ -124,7 +124,13 @@ export class PlanService {
   }
 
   /**
-   * Save the plan
+   * Guarda el plan en Firestore (sincronización del historial entre
+   * dispositivos).
+   *
+   * TODO(premium): hoy nadie lo llama a propósito: el historial es local
+   * (PlanStorageService). Se conectará desde `endPlan()` de la pantalla de
+   * entrenamiento cuando se habilite la sincronización, posiblemente solo
+   * para usuarios premium.
    */
   savePlan(plan: Plan) {
     return this.planRepository.savePlan(plan);
