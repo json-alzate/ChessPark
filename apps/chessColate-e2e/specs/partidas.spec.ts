@@ -276,10 +276,9 @@ test.describe('Partidas', () => {
     await expect(page.getByRole('button', { name: 'Download', exact: true })).toBeVisible();
   });
 
-  // BUG REAL: tras borrar el paquete, el catálogo que queda en la pila de Ionic sigue
-  // enseñándolo en "On your device" (GamesPage solo carga la lista en ngOnInit). Se deja
-  // anotado aquí para activarlo cuando se arregle (ionViewWillEnter).
-  test.fixme('tras borrar el paquete, el catálogo ya no lo muestra sin recargar', async ({ page }) => {
+  // Antes: el catálogo que queda en la pila de Ionic seguía enseñando el paquete borrado en
+  // "On your device" (GamesPage solo cargaba la lista en ngOnInit). Se arregló con ionViewWillEnter.
+  test('tras borrar el paquete, el catálogo ya no lo muestra sin recargar', async ({ page }) => {
     await simularCatalogoDePartidas(page);
     await page.goto('/games');
     await abrirPaquete(page);

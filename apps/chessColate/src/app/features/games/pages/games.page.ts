@@ -92,6 +92,24 @@ export class GamesPage implements OnInit {
     });
   }
 
+  /**
+   * Al volver a esta pantalla desde la de una colección (p. ej. tras borrarla) Ionic la
+   * reutiliza sin pasar por `ngOnInit`: se vuelve a leer qué paquetes hay en el dispositivo.
+   */
+  async ionViewWillEnter(): Promise<void> {
+    if (this.loading || this.rows.length === 0) {
+      return;
+    }
+    try {
+      const downloaded = await this.gamesService.getDownloadedIds();
+      for (const row of this.rows) {
+        row.downloaded = downloaded.includes(row.collection.id);
+      }
+    } catch (error) {
+      console.error('Error al actualizar los paquetes guardados:', error);
+    }
+  }
+
   private async load(options: { forceRefresh?: boolean } = {}): Promise<void> {
     this.loading = true;
     try {

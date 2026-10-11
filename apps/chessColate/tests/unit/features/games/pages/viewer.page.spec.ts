@@ -745,9 +745,10 @@ describe('GamesViewerPage', () => {
       expect(page.tvPositionLabel.current).toBe(2);
     });
 
-    it.skip('BUG: si ninguna partida se deja leer, el TV con repetición entra en recursión infinita', () => {
+    it('si ninguna partida se deja leer, el TV con repetición se detiene en vez de recursar sin fin', () => {
       juegos = {};
       expect(() => abrir()).not.toThrow();
+      expect(page.notFound).toBe(true);
     });
   });
 

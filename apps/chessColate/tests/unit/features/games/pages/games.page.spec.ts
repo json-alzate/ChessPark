@@ -139,6 +139,19 @@ describe('GamesPage', () => {
       expect(gamesService.getCatalog).toHaveBeenCalledWith({ forceRefresh: true });
     });
 
+    it('al volver a la pantalla ya no muestra como descargado un paquete que se borró', async () => {
+      await abrir();
+      expect(page.downloadedRows.map((r) => r.collection.id)).toEqual(['petrosian']);
+
+      gamesService.getDownloadedIds.mockResolvedValue([]);
+      await page.ionViewWillEnter();
+      fixture.detectChanges();
+
+      expect(page.downloadedRows).toHaveLength(0);
+      expect(page.availableRows).toHaveLength(2);
+      expect(texto()).not.toContain('GAMES.onDevice');
+    });
+
     it('abrir una colección descargada navega a su reproductor', async () => {
       await abrir();
       fixture.nativeElement.querySelector('button.text-left').click();

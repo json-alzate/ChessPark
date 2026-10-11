@@ -338,18 +338,26 @@ export class GamesViewerPage implements OnInit, OnDestroy {
     });
   }
 
+  /** Partidas seguidas que el TV no pudo leer: si es toda la colección, se detiene. */
+  private unreadableInARow = 0;
+
   /** Carga una partida del paquete. Si no se deja leer, el TV pasa a la siguiente. */
   private loadGame(index: number): void {
     const game = this.gamesService.getGame(index);
 
     if (!game) {
-      if (this.isTv) {
+      // Con la repetición activa, saltar de una a otra sin parar si ninguna se lee no terminaría nunca
+      if (this.isTv && this.unreadableInARow < this.playOrder.length) {
+        this.unreadableInARow++;
         this.goToNextGame();
         return;
       }
+      this.unreadableInARow = 0;
       this.notFound = true;
       return;
     }
+
+    this.unreadableInARow = 0;
 
     this.game = game;
     this.currentIndex = index;
