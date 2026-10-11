@@ -17,7 +17,7 @@ export const routes: Routes = [
   {
     path: 'donation',
     loadComponent: () =>
-      import('./pages/donation/donation.page').then((m) => m.DonationPage),
+      import('./features/donation/pages/donation.page').then((m) => m.DonationPage),
   },
   // {
   //   path: 'puzzles',
@@ -110,36 +110,36 @@ export const routes: Routes = [
   {
     path: 'coordinates',
     loadComponent: () =>
-      import('./pages/coordinates/coordinates.page').then(
+      import('./features/coordinates/pages/coordinates.page').then(
         (m) => m.CoordinatesPage
       ),
   },
   {
     path: 'knight-tour',
     loadComponent: () =>
-      import('./pages/knight-tour/knight-tour.page').then(
+      import('./features/knight-tour/pages/knight-tour.page').then(
         (m) => m.KnightTourPage
       ),
   },
   {
     path: 'chess960',
     loadComponent: () =>
-      import('./pages/chess960/chess960.page').then((m) => m.Chess960Page),
+      import('./features/chess960/pages/chess960.page').then((m) => m.Chess960Page),
   },
   {
     path: 'privacy',
     loadComponent: () =>
-      import('./pages/privacy/privacy.page').then((m) => m.PrivacyPage),
+      import('./features/privacy/pages/privacy.page').then((m) => m.PrivacyPage),
   },
   {
     path: 'settings',
     loadComponent: () =>
-      import('./pages/settings/settings.page').then((m) => m.SettingsPage),
+      import('./features/settings/pages/settings.page').then((m) => m.SettingsPage),
   },
   {
     path: 'settings/storage',
     loadComponent: () =>
-      import('./pages/settings/storage/storage.page').then((m) => m.StoragePage),
+      import('./features/settings/pages/storage.page').then((m) => m.StoragePage),
   },
   {
     path: 'reminders',
