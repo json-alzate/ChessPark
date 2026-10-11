@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 
 import { StreakRecord, StreakRun } from '@chesspark/models';
 
-import { applyRunToRecord, emptyStreakRecord } from './streak.util';
+import { applyRunToRecord, emptyStreakRecord } from '../../streak/utils/streak.util';
 
 /**
  * Persistencia local del modo Racha: récord personal y las últimas rachas

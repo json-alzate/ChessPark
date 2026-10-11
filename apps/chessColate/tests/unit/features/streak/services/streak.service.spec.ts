@@ -3,8 +3,8 @@ import { TestBed } from '@angular/core/testing';
 import { Puzzle, StreakConfig } from '@chesspark/models';
 import { PuzzlesProvider } from '@chesspark/puzzles-provider';
 
-import { StreakService } from '@services/progress/streak.service';
-import { DEFAULT_STREAK_CONFIG } from '@services/progress/streak.util';
+import { StreakService } from '@features/streak/services/streak.service';
+import { DEFAULT_STREAK_CONFIG } from '@features/streak/utils/streak.util';
 
 import { makePuzzle } from '@tests/support/partidas-progreso-fixtures';
 

@@ -105,7 +105,7 @@ export const routes: Routes = [
   {
     path: 'streak',
     loadComponent: () =>
-      import('./pages/streak/streak.page').then((m) => m.StreakPage),
+      import('./features/streak/pages/streak.page').then((m) => m.StreakPage),
   },
   {
     path: 'coordinates',

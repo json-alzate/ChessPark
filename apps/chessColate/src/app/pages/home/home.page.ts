@@ -25,8 +25,8 @@ import { BlockService } from '@services/training/block.service';
 import { PlanService } from '@services/plans/plan.service';
 import { PuzzlesProvider } from '@chesspark/puzzles-provider';
 import { InfinityPuzzlePoolService } from '@services/training/infinity-puzzle-pool.service';
-import { StreakStorageService } from '@services/progress/streak-storage.service';
-import { Reto333StorageService } from '@services/training/reto333-storage.service';
+import { StreakStorageService } from '@features/records/services/streak-storage.service';
+import { Reto333StorageService } from '@features/records/services/reto333-storage.service';
 
 import { ProfileService } from '@services/account/profile.service';
 

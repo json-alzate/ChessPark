@@ -30,7 +30,7 @@ import { ProfileService } from '@services/account/profile.service';
 import { AnalyticsService } from '@services/analytics/analytics.service';
 import { PwaService } from '@services/app/pwa.service';
 import { FirestoreConnection } from '@services/firestore/firestore-connection.service';
-import { UserRecordsService } from '@services/progress/user-records.service';
+import { UserRecordsService } from '@features/records/services/user-records.service';
 import { TrainingReminderService } from '@features/reminders/services/training-reminder.service';
 import { LoginComponent } from '@shared/components/login/login.component';
 import { environment } from '@environments/environment';

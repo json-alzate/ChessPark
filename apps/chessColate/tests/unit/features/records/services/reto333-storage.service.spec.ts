@@ -1,4 +1,4 @@
-import { Reto333StorageService, Reto333Attempt } from '@services/training/reto333-storage.service';
+import { Reto333StorageService, Reto333Attempt } from '@features/records/services/reto333-storage.service';
 
 const KEY = 'chesscolate_reto333_stats';
 

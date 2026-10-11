@@ -5,7 +5,7 @@ import {
   mergeReto333Records,
   mergeStreakRecords,
   recordsEqual,
-} from '@services/progress/user-records.util';
+} from '@features/records/utils/user-records.util';
 
 function streakWith(overrides: Partial<StreakRecord> = {}): StreakRecord {
   return {

@@ -2,8 +2,8 @@ import { inject, Injectable } from '@angular/core';
 
 import { Reto333Record, StreakRecord, UserRecords } from '@chesspark/models';
 
-import { ProfileService } from '../account/profile.service';
-import { Reto333StorageService } from '../training/reto333-storage.service';
+import { ProfileService } from '../../../services/account/profile.service';
+import { Reto333StorageService } from './reto333-storage.service';
 import { StreakStorageService } from './streak-storage.service';
 import {
   hasStreakData,
@@ -11,7 +11,7 @@ import {
   mergeReto333Records,
   mergeStreakRecords,
   recordsEqual,
-} from './user-records.util';
+} from '../utils/user-records.util';
 
 /**
  * Sincroniza las marcas del Reto 333 y del modo Racha entre el dispositivo y el

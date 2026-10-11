@@ -1,5 +1,5 @@
-import { StreakStorageService } from '@services/progress/streak-storage.service';
-import { emptyStreakRecord } from '@services/progress/streak.util';
+import { StreakStorageService } from '@features/records/services/streak-storage.service';
+import { emptyStreakRecord } from '@features/streak/utils/streak.util';
 
 import {
   makeStreakRecord,

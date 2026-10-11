@@ -9,7 +9,7 @@ import {
   PuzzlesProvider,
 } from '@chesspark/puzzles-provider';
 
-import { pickTheme, STREAK_EXCLUDED_THEMES } from './streak.util';
+import { pickTheme, STREAK_EXCLUDED_THEMES } from '../utils/streak.util';
 
 /**
  * Fuente de puzzles del modo Racha.

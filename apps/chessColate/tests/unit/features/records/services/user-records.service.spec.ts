@@ -3,9 +3,9 @@ import { TestBed } from '@angular/core/testing';
 import { Profile, Reto333Record, StreakRecord, UserRecords } from '@chesspark/models';
 
 import { ProfileService } from '@services/account/profile.service';
-import { StreakStorageService } from '@services/progress/streak-storage.service';
-import { UserRecordsService } from '@services/progress/user-records.service';
-import { Reto333StorageService } from '@services/training/reto333-storage.service';
+import { StreakStorageService } from '@features/records/services/streak-storage.service';
+import { UserRecordsService } from '@features/records/services/user-records.service';
+import { Reto333StorageService } from '@features/records/services/reto333-storage.service';
 
 import { makeStreakRecord } from '@tests/support/partidas-progreso-fixtures';
 

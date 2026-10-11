@@ -26,8 +26,8 @@ import { PlanStorageService } from '@services/plans/plan-storage.service';
 import { PlanService } from '@services/plans/plan.service';
 import { AnalyticsService } from '@services/analytics/analytics.service';
 import { TrainingReminderService } from '@features/reminders/services/training-reminder.service';
-import { Reto333StorageService } from '@services/training/reto333-storage.service';
-import { UserRecordsService } from '@services/progress/user-records.service';
+import { Reto333StorageService } from '@features/records/services/reto333-storage.service';
+import { UserRecordsService } from '@features/records/services/user-records.service';
 
 import { TrainingComponent } from '@app/pages/puzzles/containers/training/training.component';
 

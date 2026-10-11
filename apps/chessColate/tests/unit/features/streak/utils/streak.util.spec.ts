@@ -7,7 +7,7 @@ import {
   isNewRecord,
   nextTargetElo,
   pickTheme,
-} from '@services/progress/streak.util';
+} from '@features/streak/utils/streak.util';
 
 /** Racha terminada de ejemplo, con lo mínimo para actualizar el récord. */
 function runWith(overrides: Partial<StreakRun> = {}): StreakRun {

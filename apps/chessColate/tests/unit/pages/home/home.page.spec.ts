@@ -75,10 +75,10 @@ import { ProfileService } from '@services/account/profile.service';
 import { AppService } from '@services/app/app.service';
 import { AppearanceService } from '@services/app/appearance.service';
 import { PlanService } from '@services/plans/plan.service';
-import { StreakStorageService } from '@services/progress/streak-storage.service';
+import { StreakStorageService } from '@features/records/services/streak-storage.service';
 import { BlockService } from '@services/training/block.service';
 import { InfinityPuzzlePoolService } from '@services/training/infinity-puzzle-pool.service';
-import { Reto333StorageService } from '@services/training/reto333-storage.service';
+import { Reto333StorageService } from '@features/records/services/reto333-storage.service';
 import { OnboardingModalComponent, ONBOARDING_SEEN_KEY } from '@shared/components/onboarding-modal/onboarding-modal.component';
 import { provideTranslocoTesting } from '@tests/support/transloco-testing';
 

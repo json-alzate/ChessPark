@@ -43,7 +43,7 @@ import { TranslocoPipe } from '@jsverse/transloco';
 // Services
 import { AuthService } from '@services/account/auth.service';
 import { ProfileService } from '@services/account/profile.service';
-import { UserRecordsService } from '@services/progress/user-records.service';
+import { UserRecordsService } from '@features/records/services/user-records.service';
 import { FirestoreConnection } from '@services/firestore/firestore-connection.service';
 import { PwaService } from '@services/app/pwa.service';
 import { AnalyticsService } from '@services/analytics/analytics.service';

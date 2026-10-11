@@ -31,16 +31,16 @@ import { AppService } from '@services/app/app.service';
 import { AppearanceService } from '@services/app/appearance.service';
 import { AnalyticsService } from '@services/analytics/analytics.service';
 import { ProfileService } from '@services/account/profile.service';
-import { StreakService } from '@services/progress/streak.service';
-import { StreakStorageService } from '@services/progress/streak-storage.service';
-import { UserRecordsService } from '@services/progress/user-records.service';
+import { StreakService } from '@features/streak/services/streak.service';
+import { StreakStorageService } from '@features/records/services/streak-storage.service';
+import { UserRecordsService } from '@features/records/services/user-records.service';
 import {
   applyRunToRecord,
   emptyStreakRecord,
-} from '@services/progress/streak.util';
+} from '@features/streak/utils/streak.util';
 import { TrainingReminderService } from '@features/reminders/services/training-reminder.service';
 import { KingImagePipe } from '@shared/pipes/king-image.pipe';
-import { StreakPage } from '@app/pages/streak/streak.page';
+import { StreakPage } from '@app/features/streak/pages/streak.page';
 
 import {
   TableroPuzzleFalso,
