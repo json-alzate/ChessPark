@@ -148,6 +148,23 @@ describe('LoginComponent', () => {
 
       expect(component.errorLogin).toBe('loginFailed');
     });
+
+    it('el aviso de error se retira solo a los 5 segundos', async () => {
+      jest.useFakeTimers();
+      try {
+        authService.signInWithEmailAndPassword.mockRejectedValue(new Error('credenciales'));
+        component.formLogin.setValue({ email: 'ana@correo.com', password: 'mala' });
+
+        await submit(component.onSubmitLogin);
+        jest.advanceTimersByTime(4999);
+        expect(component.errorLogin).toBe('loginFailed');
+
+        jest.advanceTimersByTime(1);
+        expect(component.errorLogin).toBe('');
+      } finally {
+        jest.useRealTimers();
+      }
+    });
   });
 
   describe('registrarse', () => {
