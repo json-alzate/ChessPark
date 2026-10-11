@@ -130,6 +130,20 @@ describe('Chess960Page', () => {
     expect(component.currentFen).toBe(POSITIONS[0].fen);
   });
 
+  it('un decimal se trunca al entero y un campo vacío no carga ni registra nada', () => {
+    flushPositions();
+    analytics.logEvent.mockClear();
+
+    component.currentPositionId = 1.5;
+    component.onIdChange();
+    expect(component.currentPositionId).toBe(1);
+
+    component.currentPositionId = null as unknown as number;
+    component.onIdChange();
+    expect(component.currentPositionId).toBeNull();
+    expect(analytics.logEvent).toHaveBeenCalledTimes(1);
+  });
+
   it('una posición que no está en el catálogo no cambia el tablero', () => {
     flushPositions();
 

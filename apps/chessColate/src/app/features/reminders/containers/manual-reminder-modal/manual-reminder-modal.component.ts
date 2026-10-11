@@ -72,10 +72,11 @@ export class ManualReminderModalComponent implements OnInit {
     if (this.saving) {
       return;
     }
-    const [hour, minute] = this.time.split(':').map(Number);
-    if (Number.isNaN(hour) || Number.isNaN(minute)) {
+    // Con la hora borrada ('') no hay "hh:mm" completo: se queda sin guardar en vez de guardar sin minuto
+    if (!/^\d{1,2}:\d{2}$/.test(this.time)) {
       return;
     }
+    const [hour, minute] = this.time.split(':').map(Number);
     this.saving = true;
 
     const selectedWeekdays = this.weekdays

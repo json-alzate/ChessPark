@@ -123,10 +123,11 @@ export class RemindersPage implements OnInit {
 
   async onReminderTimeChange(event: Event): Promise<void> {
     const value = (event.target as HTMLInputElement).value;
-    const [hour, minute] = value.split(':').map(Number);
-    if (Number.isNaN(hour) || Number.isNaN(minute)) {
+    // Un campo de hora borrado llega como '': sin "hh:mm" completo no hay nada que guardar
+    if (!/^\d{1,2}:\d{2}$/.test(value)) {
       return;
     }
+    const [hour, minute] = value.split(':').map(Number);
     await this.trainingReminderService.setUserTime(hour, minute);
     this.refresh();
   }

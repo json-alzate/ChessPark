@@ -80,8 +80,10 @@ export class Chess960Page implements OnInit {
   }
 
   onIdChange() {
-    if (this.currentPositionId < 0) this.currentPositionId = 0;
-    if (this.currentPositionId > 959) this.currentPositionId = 959;
+    // Campo vacío o no numérico mientras se escribe: no hay posición que cargar ni evento que registrar
+    if (!Number.isFinite(this.currentPositionId)) return;
+    // La posición es un entero de 0 a 959: un decimal (1.5) se trunca y lo de fuera de rango se recorta
+    this.currentPositionId = Math.min(959, Math.max(0, Math.trunc(this.currentPositionId)));
     this.loadPosition(this.currentPositionId);
     void this.analyticsService.logEvent('chess960_position_changed', {
       position_id: this.currentPositionId,

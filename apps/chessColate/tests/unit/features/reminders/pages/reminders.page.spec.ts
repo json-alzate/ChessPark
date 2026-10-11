@@ -321,9 +321,8 @@ describe('RemindersPage', () => {
       expect(reminders.setUserTime).not.toHaveBeenCalled();
     });
 
-    // Un campo de hora borrado llega como '': se parte en [''] -> hora 0 y minuto
-    // undefined, y Number.isNaN(undefined) es false, así que se guardaría 00:undefined.
-    it.skip('BUG: con la hora borrada no debería guardar nada (llega 0, undefined)', async () => {
+    // Un campo de hora borrado llega como '': no es un "hh:mm" completo y no se guarda.
+    it('con la hora borrada no debería guardar nada (llega 0, undefined)', async () => {
       estado = { ...estado, enabled: true, permissionGranted: true };
       await crear();
 

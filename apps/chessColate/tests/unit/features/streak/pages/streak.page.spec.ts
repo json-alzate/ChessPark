@@ -290,6 +290,24 @@ describe('StreakPage', () => {
       expect(eventos('streak_started')).toHaveLength(2);
     });
 
+    it('reintentar desde el error guarda como récord lo acertado antes de que fallara la descarga', async () => {
+      await entrar();
+      await acertar();
+      await acertar();
+      streakService.getPuzzleForElo.mockResolvedValue(null);
+      page.useSkip();
+      await vaciarPromesas();
+      expect(page.status).toBe('error');
+
+      catalogoPorElo();
+      page.retry();
+      await vaciarPromesas();
+
+      expect(page.record.bestScore).toBe(2);
+      expect(page.score).toBe(0);
+      expect(page.status).toBe('playing');
+    });
+
     it('desde el error, "volver al inicio" navega a /home', async () => {
       streakService.getPuzzleForElo.mockResolvedValue(null);
       await entrar();

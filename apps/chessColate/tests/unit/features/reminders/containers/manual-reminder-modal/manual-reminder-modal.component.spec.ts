@@ -205,9 +205,8 @@ describe('ManualReminderModalComponent', () => {
       expect(modal.saving).toBe(false);
     });
 
-    // La hora vacía (campo borrado) se parte en [''] -> hora 0 y minuto undefined,
-    // y Number.isNaN(undefined) es false, así que se guardaría con minuto undefined.
-    it.skip('BUG: con la hora vacía no debería guardar un recordatorio sin minuto', async () => {
+    // La hora vacía (campo borrado) no es un "hh:mm" completo: no se guarda.
+    it('con la hora vacía no debería guardar un recordatorio sin minuto', async () => {
       modal.time = '';
 
       await modal.save();

@@ -495,6 +495,10 @@ export class StreakPage implements ViewWillEnter, ViewWillLeave, OnDestroy {
 
   /** Reintentar: arranca una racha nueva desde el elo base. */
   retry() {
+    // Desde la pantalla de error la racha sigue viva (falló la descarga del siguiente puzzle):
+    // se cierra y se guarda antes de empezar otra, para no perder lo ya acertado.
+    // Si ya terminó (fallo, salida), `finishRun` no hace nada.
+    this.finishRun('quit', { silent: true });
     void this.startRun();
   }
 
