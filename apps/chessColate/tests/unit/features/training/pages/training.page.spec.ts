@@ -1070,11 +1070,10 @@ describe('TrainingPage · caracterización del flujo de entrenamiento', () => {
       expect(jest.getTimerCount()).toBe(0);
     });
 
-    it('caso límite actual: si la solución se abre con el reloj en 0, al cerrarla el bloque queda sin cronómetro', async () => {
-      // Comportamiento preexistente, no necesariamente deseado: el tic que
-      // agota el bloque nunca llega porque la solución lo pausó en 0, y
-      // resumeBlockTimer rehúsa arrancar sin tiempo. Si un refactor lo cambia,
-      // debe documentarlo.
+    it('si la solución se abre con el reloj en 00:00, al cerrarla el bloque vence en vez de quedarse colgado', async () => {
+      // Antes (error): el tic que agota el bloque nunca llegaba porque la solución lo pausaba en 0 y
+      // resumeBlockTimer rehusaba arrancar sin tiempo: el bloque no terminaba nunca y se seguían
+      // pidiendo ejercicios (126 en una prueba en vivo).
       const plan = makePlan({ blocks: [makeBlock({ puzzles: makePuzzles(3) }), makeBlock()] });
       component = await createComponent(mocks);
       mountAtBlock(component, plan);
@@ -1086,12 +1085,9 @@ describe('TrainingPage · caracterización del flujo de entrenamiento', () => {
       component.onPuzzleCompleted(component.puzzleToPlay, 'bad');
       await closeLastModal();
 
-      expect(nextBlock).not.toHaveBeenCalled();
-      expect(component.currentIndexBlock).toBe(0);
-      expect(component.puzzleToPlay.uid).toBe('p2');
-      expect(jest.getTimerCount()).toBe(0);
+      expect(nextBlock).toHaveBeenCalledTimes(1);
       jest.advanceTimersByTime(60000);
-      expect(nextBlock).not.toHaveBeenCalled();
+      expect(nextBlock).toHaveBeenCalledTimes(1);
     });
   });
 

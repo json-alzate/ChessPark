@@ -145,6 +145,51 @@ describe('TrainingTimerService', () => {
       expect(timeUps).toBe(1);
     });
 
+    it('pausar en 00:00 (el segundo de gracia) y reanudar avisa el vencimiento una sola vez: el bloque no se queda colgado', () => {
+      timer.start(2);
+      jest.advanceTimersByTime(2000);
+      expect(timer.timeLeft).toBe(0);
+      expect(timeUps).toBe(0);
+
+      // p. ej. se abre la solución de un ejercicio justo en ese segundo
+      timer.pause();
+      jest.advanceTimersByTime(30000);
+      expect(timeUps).toBe(0);
+      expect(timer.isRunning).toBe(false);
+
+      timer.resume();
+      expect(timeUps).toBe(1);
+      expect(timer.isRunning).toBe(false);
+
+      timer.resume();
+      expect(timeUps).toBe(1);
+    });
+
+    it('pausar con tiempo restante y reanudar no avisa ningún vencimiento', () => {
+      timer.start(5);
+      jest.advanceTimersByTime(2000);
+
+      timer.pause();
+      timer.resume();
+
+      expect(timeUps).toBe(0);
+      expect(timer.timeLeft).toBe(3);
+      expect(timer.isRunning).toBe(true);
+    });
+
+    it('un reloj nuevo olvida el vencimiento pendiente de uno pausado en 00:00', () => {
+      timer.start(1);
+      jest.advanceTimersByTime(1000);
+      timer.pause();
+
+      timer.start(10);
+      timer.pause();
+      timer.resume();
+
+      expect(timeUps).toBe(0);
+      expect(timer.timeLeft).toBe(10);
+    });
+
     it('stop apaga el reloj y conserva el restante; repetirlo no hace nada', () => {
       timer.start(5);
       jest.advanceTimersByTime(1000);

@@ -52,6 +52,13 @@ export class TrainingTimerService implements OnDestroy {
    */
   private ticks: Subscription | null = null;
   private destroyed = false;
+  /**
+   * El reloj estaba en 00:00 (el segundo de gracia antes de vencer) cuando se pausó. Al reanudar no
+   * hay segundos que contar, pero el bloque sí venció: se avisa en ese momento. Sin esto, abrir la
+   * solución de un ejercicio justo en ese segundo dejaba el reloj parado en 0 para siempre y el
+   * bloque no terminaba nunca.
+   */
+  private dueOnResume = false;
 
   /** Segundos restantes del bloque; emite el valor actual al suscribirse y en cada tic. */
   readonly timeLeft$: Observable<number> = this.timeLeftSubject.asObservable();
@@ -89,6 +96,7 @@ export class TrainingTimerService implements OnDestroy {
     }
 
     this.stop();
+    this.dueOnResume = false;
     this.timeLeftSubject.next(Math.max(seconds, 0));
 
     if (this.timeLeft === 0) {
@@ -100,6 +108,9 @@ export class TrainingTimerService implements OnDestroy {
 
   /** Congela el restante: apaga el reloj y conserva los segundos que quedaban. */
   pause(): void {
+    if (this.isRunning && this.timeLeft === 0) {
+      this.dueOnResume = true;
+    }
     this.stop();
   }
 
@@ -109,6 +120,12 @@ export class TrainingTimerService implements OnDestroy {
    * forzaba un cambio de bloque.
    */
   resume(): void {
+    if (this.dueOnResume) {
+      // Pausado en el segundo de gracia: el bloque ya había vencido
+      this.dueOnResume = false;
+      this.timeUpSubject.next();
+      return;
+    }
     if (this.timeLeft <= 0) {
       return;
     }
