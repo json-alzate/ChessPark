@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ModalController } from '@ionic/angular/standalone';
 
-import { BlockPresentationComponent } from '@app/features/training/components/block-presentation/block-presentation.component';
+import { BlockPresentationComponent } from '@features/training/components/block-presentation/block-presentation.component';
 
 describe('BlockPresentationComponent', () => {
   let component: BlockPresentationComponent;

@@ -35,10 +35,10 @@ import { add, playOutline, createOutline, shuffle, trendingDown, infiniteOutline
     NavbarComponent,
     SecondsToMinutesSecondsPipe,
   ],
-  templateUrl: './custom-plans-list.component.html',
-  styleUrl: './custom-plans-list.component.scss',
+  templateUrl: './custom-plans-list.page.html',
+  styleUrl: './custom-plans-list.page.scss',
 })
-export class CustomPlansListComponent implements OnInit, OnDestroy {
+export class CustomPlansListPage implements OnInit, OnDestroy {
   private customPlansService = inject(CustomPlansService);
   private customPlansFacade = inject(CustomPlansFacadeService);
   private planService = inject(PlanService);

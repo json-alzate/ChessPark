@@ -17,8 +17,8 @@ import { CustomPlansFacadeService } from '@chesspark/state';
  * await para que un error llegue al formulario que guarda, en vez de perderse
  * en un efecto del store.
  *
- * Consumido por: CustomPlanFormComponent (getById, save, update) y
- * CustomPlansListComponent (getMyPlans$).
+ * Consumido por: CustomPlanFormPage (getById, save, update) y
+ * CustomPlansListPage (getMyPlans$).
  */
 @Injectable({
   providedIn: 'root',

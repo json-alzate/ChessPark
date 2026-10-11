@@ -23,7 +23,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { By } from '@angular/platform-browser';
 
-import { Chess960Page } from '@app/features/chess960/pages/chess960.page';
+import { Chess960Page } from '@features/chess960/pages/chess960.page';
 import { AnalyticsService } from '@core/analytics/analytics.service';
 import { provideTranslocoTesting } from '@tests/support/transloco-testing';
 

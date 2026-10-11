@@ -20,7 +20,7 @@ import { AppService } from '@core/app/app.service';
 import { AppearanceService } from '@core/app/appearance.service';
 import { KingImagePipe } from '@shared/pipes/king-image.pipe';
 
-import { BlockSettingsComponent } from '@app/features/training/components/block-settings/block-settings.component';
+import { BlockSettingsComponent } from '@features/training/components/block-settings/block-settings.component';
 
 import { findButton, textOf, translocoModule } from '@tests/support/puzzles-pages';
 

@@ -63,10 +63,10 @@ import { EloDeltaComponent } from '@shared/components/elo-delta/elo-delta.compon
     CountUpComponent,
     EloDeltaComponent,
   ],
-  templateUrl: './plan-played.component.html',
-  styleUrl: './plan-played.component.scss',
+  templateUrl: './plan-played.page.html',
+  styleUrl: './plan-played.page.scss',
 })
-export class PlanPlayedComponent implements OnInit, OnDestroy {
+export class PlanPlayedPage implements OnInit, OnDestroy {
   private planFacade = inject(PlanFacadeService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);

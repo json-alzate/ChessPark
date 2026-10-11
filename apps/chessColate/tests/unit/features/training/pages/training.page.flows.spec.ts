@@ -29,7 +29,7 @@ import { TrainingReminderService } from '@features/reminders/services/training-r
 import { Reto333StorageService } from '@features/records/services/reto333-storage.service';
 import { UserRecordsService } from '@features/records/services/user-records.service';
 
-import { TrainingComponent } from '@app/features/training/pages/training.component';
+import { TrainingPage } from '@features/training/pages/training.page';
 
 import {
   flushMicrotasks,
@@ -131,9 +131,9 @@ function makeMocks() {
 }
 type Mocks = ReturnType<typeof makeMocks>;
 
-async function createComponent(mocks: Mocks): Promise<TrainingComponent> {
+async function createComponent(mocks: Mocks): Promise<TrainingPage> {
   await TestBed.configureTestingModule({
-    imports: [TrainingComponent],
+    imports: [TrainingPage],
     providers: [
       { provide: ModalController, useValue: mocks.modalController },
       { provide: AlertController, useValue: mocks.alertController },
@@ -157,10 +157,10 @@ async function createComponent(mocks: Mocks): Promise<TrainingComponent> {
       { provide: UserRecordsService, useValue: mocks.userRecordsService },
     ],
   })
-    .overrideComponent(TrainingComponent, { set: { template: '', imports: [], schemas: [] } })
+    .overrideComponent(TrainingPage, { set: { template: '', imports: [], schemas: [] } })
     .compileComponents();
 
-  const component = TestBed.createComponent(TrainingComponent).componentInstance;
+  const component = TestBed.createComponent(TrainingPage).componentInstance;
   // Consume el setTimeout(0) del planificador de Angular para que getTimerCount
   // cuente solo los cronómetros del componente.
   jest.advanceTimersByTime(0);
@@ -168,7 +168,7 @@ async function createComponent(mocks: Mocks): Promise<TrainingComponent> {
 }
 
 /** Deja el componente como tras cerrar la presentación del bloque `index`. */
-function mountAtBlock(component: TrainingComponent, plan: Plan, index = 0): void {
+function mountAtBlock(component: TrainingPage, plan: Plan, index = 0): void {
   const block = plan.blocks[index];
   component.plan = plan;
   component.currentIndexBlock = index;
@@ -177,8 +177,8 @@ function mountAtBlock(component: TrainingComponent, plan: Plan, index = 0): void
   component.puzzleToPlay = (block.puzzles ?? [])[0];
 }
 
-describe('TrainingComponent · decisiones de onPuzzleCompleted y cierre', () => {
-  let component: TrainingComponent;
+describe('TrainingPage · decisiones de onPuzzleCompleted y cierre', () => {
+  let component: TrainingPage;
   let mocks: Mocks;
   let modals: FakeModal[];
 

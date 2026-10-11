@@ -8,9 +8,9 @@ import { Router } from '@angular/router';
 
 import { ConfettiService, RandomFENService, SoundsService } from '@chesspark/common-utils';
 
-import { CoordinatesPage } from '@app/features/coordinates/pages/coordinates.page';
-import { GameResultsModalComponent } from '@app/features/coordinates/components/game-results-modal/game-results-modal.component';
-import { SettingsSideMenuComponent } from '@app/features/coordinates/components/settings-side-menu/settings-side-menu.component';
+import { CoordinatesPage } from '@features/coordinates/pages/coordinates.page';
+import { GameResultsModalComponent } from '@features/coordinates/components/game-results-modal/game-results-modal.component';
+import { SettingsSideMenuComponent } from '@features/coordinates/components/settings-side-menu/settings-side-menu.component';
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 import { AnalyticsService } from '@core/analytics/analytics.service';
 import { CoordinatesPuzzle, StorageService } from '@features/coordinates/services/storage.service';

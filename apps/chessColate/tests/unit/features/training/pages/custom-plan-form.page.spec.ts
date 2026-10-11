@@ -33,8 +33,8 @@ import { CustomPlansService } from '@features/training/services/custom-plans.ser
 import { PlanService } from '@features/training/services/plan.service';
 import { LoginComponent } from '@shared/components/login/login.component';
 
-import { BlockSettingsComponent } from '@app/features/training/components/block-settings/block-settings.component';
-import { CustomPlanFormComponent } from '@app/features/training/pages/custom-plan-form.component';
+import { BlockSettingsComponent } from '@features/training/components/block-settings/block-settings.component';
+import { CustomPlanFormPage } from '@features/training/pages/custom-plan-form.page';
 
 import {
   ELO_TO_START_CASES,
@@ -57,9 +57,9 @@ function settingsBlock(overrides: Partial<Block> = {}): Block {
   return makeBlock({ puzzles: undefined, puzzlesPlayed: [], ...overrides });
 }
 
-describe('CustomPlanFormComponent', () => {
-  let fixture: ComponentFixture<CustomPlanFormComponent>;
-  let component: CustomPlanFormComponent;
+describe('CustomPlanFormPage', () => {
+  let fixture: ComponentFixture<CustomPlanFormPage>;
+  let component: CustomPlanFormPage;
   let el: HTMLElement;
   let store: MockStore;
 
@@ -85,7 +85,7 @@ describe('CustomPlanFormComponent', () => {
   }
 
   function render(): void {
-    fixture = TestBed.createComponent(CustomPlanFormComponent);
+    fixture = TestBed.createComponent(CustomPlanFormPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
     el = fixture.nativeElement as HTMLElement;
@@ -147,7 +147,7 @@ describe('CustomPlanFormComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [CustomPlanFormComponent, translocoModule()],
+      imports: [CustomPlanFormPage, translocoModule()],
       providers: [
         provideMockStore({
           selectors: [
@@ -185,7 +185,7 @@ describe('CustomPlanFormComponent', () => {
         { provide: UidGeneratorService, useValue: { generateSimpleUid: () => 'new-uid' } },
       ],
     })
-      .overrideComponent(CustomPlanFormComponent, {
+      .overrideComponent(CustomPlanFormPage, {
         set: {
           imports: [
             CommonModule,

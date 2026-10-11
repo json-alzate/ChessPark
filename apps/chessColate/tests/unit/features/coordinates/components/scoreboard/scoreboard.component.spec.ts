@@ -2,7 +2,7 @@ jest.mock('@chesspark/board', () => ({}));
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ScoreboardComponent } from '@app/features/coordinates/components/scoreboard/scoreboard.component';
+import { ScoreboardComponent } from '@features/coordinates/components/scoreboard/scoreboard.component';
 import { appearanceDouble, textoDe, translocoTesting } from '@tests/support/analisis-juegos';
 
 const puntajes = [

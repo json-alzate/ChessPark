@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TimerComponent } from '@app/features/coordinates/components/timer/timer.component';
+import { TimerComponent } from '@features/coordinates/components/timer/timer.component';
 import { textoDe, translocoTesting } from '@tests/support/analisis-juegos';
 
 describe('TimerComponent', () => {

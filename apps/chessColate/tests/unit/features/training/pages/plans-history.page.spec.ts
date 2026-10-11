@@ -13,7 +13,7 @@ import { SecondsToMinutesSecondsPipe } from '@chesspark/common-utils';
 import { AppService } from '@core/app/app.service';
 import { PlanStorageService } from '@features/training/services/plan-storage.service';
 
-import { PlansHistoryComponent } from '@app/features/training/pages/plans-history.component';
+import { PlansHistoryPage } from '@features/training/pages/plans-history.page';
 
 import {
   findButtonByIcon,
@@ -65,9 +65,9 @@ function planOn(daysAgo: number, uid: string, overrides: Partial<Plan> = {}): Pl
   });
 }
 
-describe('PlansHistoryComponent', () => {
-  let fixture: ComponentFixture<PlansHistoryComponent>;
-  let component: PlansHistoryComponent;
+describe('PlansHistoryPage', () => {
+  let fixture: ComponentFixture<PlansHistoryPage>;
+  let component: PlansHistoryPage;
   let el: HTMLElement;
   let stored: Plan[];
   let planStorage: { getAllPlans: jest.Mock; deletePlan: jest.Mock };
@@ -77,7 +77,7 @@ describe('PlansHistoryComponent', () => {
   let appService: { getNameThemePuzzleByValue: jest.Mock; getThemePuzzleByValue: jest.Mock };
 
   function render(): void {
-    fixture = TestBed.createComponent(PlansHistoryComponent);
+    fixture = TestBed.createComponent(PlansHistoryPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
     el = fixture.nativeElement as HTMLElement;
@@ -110,7 +110,7 @@ describe('PlansHistoryComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [PlansHistoryComponent, translocoModule(TRANSLATIONS)],
+      imports: [PlansHistoryPage, translocoModule(TRANSLATIONS)],
       providers: [
         { provide: PlanStorageService, useValue: planStorage },
         { provide: PlanFacadeService, useValue: planFacade },
@@ -119,7 +119,7 @@ describe('PlansHistoryComponent', () => {
         { provide: AppService, useValue: appService },
       ],
     })
-      .overrideComponent(PlansHistoryComponent, {
+      .overrideComponent(PlansHistoryPage, {
         set: {
           imports: [
             CommonModule,

@@ -1,6 +1,6 @@
 import { PlanTypes } from '@chesspark/models';
 
-import { PLAN_ALLOWED_THEMES } from '@app/features/training/config/plan-allowed-themes.config';
+import { PLAN_ALLOWED_THEMES } from '@features/training/config/plan-allowed-themes.config';
 import {
   BlockSpec,
   PLAN_BLOCK_SPECS,

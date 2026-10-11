@@ -40,7 +40,7 @@ import {
 } from '@features/streak/utils/streak.util';
 import { TrainingReminderService } from '@features/reminders/services/training-reminder.service';
 import { KingImagePipe } from '@shared/pipes/king-image.pipe';
-import { StreakPage } from '@app/features/streak/pages/streak.page';
+import { StreakPage } from '@features/streak/pages/streak.page';
 
 import {
   TableroPuzzleFalso,

@@ -4,7 +4,7 @@ import { AlertController } from '@ionic/angular/standalone';
 
 import { GameCollectionInfo } from '@chesspark/games-provider';
 
-import { GamesPage } from '@app/features/games/pages/games.page';
+import { GamesPage } from '@features/games/pages/games.page';
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 import { AnalyticsService } from '@core/analytics/analytics.service';
 import { GamesService } from '@features/games/services/games.service';

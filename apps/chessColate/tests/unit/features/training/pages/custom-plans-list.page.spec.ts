@@ -25,7 +25,7 @@ import { CustomPlansService } from '@features/training/services/custom-plans.ser
 import { PlanService } from '@features/training/services/plan.service';
 import { LoginComponent } from '@shared/components/login/login.component';
 
-import { CustomPlansListComponent } from '@app/features/training/pages/custom-plans-list.component';
+import { CustomPlansListPage } from '@features/training/pages/custom-plans-list.page';
 
 import {
   ELO_TO_START_CASES,
@@ -65,9 +65,9 @@ function customPlan(uid: string, overrides: Partial<Plan> = {}): Plan {
 
 const PROFILE = { uid: 'user-1', elos: undefined } as unknown as Profile;
 
-describe('CustomPlansListComponent', () => {
-  let fixture: ComponentFixture<CustomPlansListComponent>;
-  let component: CustomPlansListComponent;
+describe('CustomPlansListPage', () => {
+  let fixture: ComponentFixture<CustomPlansListPage>;
+  let component: CustomPlansListPage;
   let el: HTMLElement;
   let store: MockStore;
 
@@ -95,7 +95,7 @@ describe('CustomPlansListComponent', () => {
   }
 
   function render(): void {
-    fixture = TestBed.createComponent(CustomPlansListComponent);
+    fixture = TestBed.createComponent(CustomPlansListPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
     el = fixture.nativeElement as HTMLElement;
@@ -136,7 +136,7 @@ describe('CustomPlansListComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [CustomPlansListComponent, translocoModule(TRANSLATIONS)],
+      imports: [CustomPlansListPage, translocoModule(TRANSLATIONS)],
       providers: [
         provideMockStore({
           selectors: [
@@ -164,7 +164,7 @@ describe('CustomPlansListComponent', () => {
         { provide: ModalController, useValue: modalController },
       ],
     })
-      .overrideComponent(CustomPlansListComponent, {
+      .overrideComponent(CustomPlansListPage, {
         set: {
           imports: [CommonModule, TranslocoPipe, SecondsToMinutesSecondsPipe, NavbarStub],
           schemas: [CUSTOM_ELEMENTS_SCHEMA],

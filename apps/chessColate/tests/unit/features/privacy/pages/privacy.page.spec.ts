@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 
 import { IonContent, IonIcon } from '@ionic/angular/standalone';
 
-import { PrivacyPage } from '@app/features/privacy/pages/privacy.page';
+import { PrivacyPage } from '@features/privacy/pages/privacy.page';
 
 import { NavbarFalsa } from '@tests/support/racha-ajustes-recordatorios';
 

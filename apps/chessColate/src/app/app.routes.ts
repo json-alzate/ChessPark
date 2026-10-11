@@ -26,54 +26,54 @@ export const routes: Routes = [
   {
     path: 'puzzles/training',
     loadComponent: () =>
-      import('./features/training/pages/training.component').then(
-        (m) => m.TrainingComponent
+      import('./features/training/pages/training.page').then(
+        (m) => m.TrainingPage
       ),
   },
   {
     path: 'puzzles/plan-played',
     loadComponent: () =>
       import(
-        './features/training/pages/plan-played.component'
-      ).then((m) => m.PlanPlayedComponent),
+        './features/training/pages/plan-played.page'
+      ).then((m) => m.PlanPlayedPage),
   },
   {
     path: 'puzzles/plans-history',
     loadComponent: () =>
       import(
-        './features/training/pages/plans-history.component'
-      ).then((m) => m.PlansHistoryComponent),
+        './features/training/pages/plans-history.page'
+      ).then((m) => m.PlansHistoryPage),
   },
   {
     path: 'puzzles/custom-plans',
     loadComponent: () =>
       import(
-        './features/training/pages/custom-plans-list.component'
-      ).then((m) => m.CustomPlansListComponent),
+        './features/training/pages/custom-plans-list.page'
+      ).then((m) => m.CustomPlansListPage),
     canActivate: [CustomPlansGuard],
   },
   {
     path: 'puzzles/custom-plans/create',
     loadComponent: () =>
       import(
-        './features/training/pages/custom-plan-form.component'
-      ).then((m) => m.CustomPlanFormComponent),
+        './features/training/pages/custom-plan-form.page'
+      ).then((m) => m.CustomPlanFormPage),
     canActivate: [AuthGuard],
   },
   {
     path: 'puzzles/custom-plans/edit/:uid',
     loadComponent: () =>
       import(
-        './features/training/pages/custom-plan-form.component'
-      ).then((m) => m.CustomPlanFormComponent),
+        './features/training/pages/custom-plan-form.page'
+      ).then((m) => m.CustomPlanFormPage),
     canActivate: [AuthGuard],
   },
   {
     path: 'puzzles/public-plans',
     loadComponent: () =>
       import(
-        './features/training/pages/public-plans.component'
-      ).then((m) => m.PublicPlansComponent),
+        './features/training/pages/public-plans.page'
+      ).then((m) => m.PublicPlansPage),
     canActivate: [PublicPlansGuard],
   },
   {

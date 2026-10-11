@@ -10,7 +10,7 @@ import { SecondsToMinutesSecondsPipe } from '@chesspark/common-utils';
 import { AppService } from '@core/app/app.service';
 import { ProfileService } from '@core/account/profile.service';
 
-import { PublicPlanItemComponent } from '@app/features/training/components/public-plan-item/public-plan-item.component';
+import { PublicPlanItemComponent } from '@features/training/components/public-plan-item/public-plan-item.component';
 
 import {
   findButton,

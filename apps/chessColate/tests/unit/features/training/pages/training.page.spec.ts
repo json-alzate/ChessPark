@@ -34,8 +34,8 @@ import { TrainingReminderService } from '@features/reminders/services/training-r
 import { Reto333StorageService } from '@features/records/services/reto333-storage.service';
 import { UserRecordsService } from '@features/records/services/user-records.service';
 
-import { BlockPresentationComponent } from '@app/features/training/components/block-presentation/block-presentation.component';
-import { TrainingComponent } from '@app/features/training/pages/training.component';
+import { BlockPresentationComponent } from '@features/training/components/block-presentation/block-presentation.component';
+import { TrainingPage } from '@features/training/pages/training.page';
 
 /**
  * Pruebas de la pantalla de entrenamiento, en dos grupos:
@@ -252,9 +252,9 @@ function makeMocks(): Mocks {
 async function createComponent(
   mocks: Mocks,
   returnTo?: string
-): Promise<TrainingComponent> {
+): Promise<TrainingPage> {
   await TestBed.configureTestingModule({
-    imports: [TrainingComponent],
+    imports: [TrainingPage],
     providers: [
       { provide: ModalController, useValue: mocks.modalController },
       { provide: AlertController, useValue: mocks.alertController },
@@ -285,12 +285,12 @@ async function createComponent(
       { provide: UserRecordsService, useValue: mocks.userRecordsService },
     ],
   })
-    .overrideComponent(TrainingComponent, {
+    .overrideComponent(TrainingPage, {
       set: { template: '', imports: [], schemas: [] },
     })
     .compileComponents();
 
-  const component = TestBed.createComponent(TrainingComponent).componentInstance;
+  const component = TestBed.createComponent(TrainingPage).componentInstance;
 
   // Al crear el fixture, Angular programa un setTimeout(0) propio (su
   // planificador de detección de cambios). Se consume aquí, antes de que el
@@ -305,7 +305,7 @@ async function createComponent(
  * Deja el componente como queda justo después de cerrar la presentación del
  * bloque `index`: puzzle en el tablero, contadores a cero y sin cronómetro.
  */
-function mountAtBlock(component: TrainingComponent, plan: Plan, index = 0): void {
+function mountAtBlock(component: TrainingPage, plan: Plan, index = 0): void {
   const block = plan.blocks[index];
   component.plan = plan;
   component.currentIndexBlock = index;
@@ -314,8 +314,8 @@ function mountAtBlock(component: TrainingComponent, plan: Plan, index = 0): void
   component.puzzleToPlay = (block.puzzles ?? [])[0];
 }
 
-describe('TrainingComponent · cronómetro del bloque', () => {
-  let component: TrainingComponent;
+describe('TrainingPage · cronómetro del bloque', () => {
+  let component: TrainingPage;
   let modalController: { create: jest.Mock };
 
   beforeEach(async () => {
@@ -448,8 +448,8 @@ describe('TrainingComponent · cronómetro del bloque', () => {
   });
 });
 
-describe('TrainingComponent · caracterización del flujo de entrenamiento', () => {
-  let component: TrainingComponent;
+describe('TrainingPage · caracterización del flujo de entrenamiento', () => {
+  let component: TrainingPage;
   let mocks: Mocks;
   /** Modales creados por el componente, en orden; el último es el que está abierto. */
   let modals: FakeModal[];

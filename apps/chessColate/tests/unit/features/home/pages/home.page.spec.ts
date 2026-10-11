@@ -43,13 +43,13 @@ jest.mock('@shared/components/navbar/navbar.component', () => {
   Component({ selector: 'app-navbar', standalone: true, template: '' })(NavbarComponent);
   return { NavbarComponent };
 });
-jest.mock('@app/features/home/containers/training-menu/training-menu.component', () => {
+jest.mock('@features/home/containers/training-menu/training-menu.component', () => {
   const { Component } = jest.requireActual('@angular/core');
   class TrainingMenuComponent {}
   Component({ selector: 'app-training-menu', standalone: true, template: '' })(TrainingMenuComponent);
   return { TrainingMenuComponent };
 });
-jest.mock('@app/features/training/components/plan-chart/plan-chart.component', () => {
+jest.mock('@features/training/components/plan-chart/plan-chart.component', () => {
   const { Component, Input } = jest.requireActual('@angular/core');
   class PlanChartComponent {}
   Component({ selector: 'app-plan-chart', standalone: true, template: '' })(PlanChartComponent);
@@ -70,7 +70,7 @@ import { BoardPuzzleSolutionComponent } from '@chesspark/board';
 import { PuzzlesProvider } from '@chesspark/puzzles-provider';
 import { getIsInitialized } from '@chesspark/state';
 
-import { HomePage } from '@app/features/home/pages/home.page';
+import { HomePage } from '@features/home/pages/home.page';
 import { ProfileService } from '@core/account/profile.service';
 import { AppService } from '@core/app/app.service';
 import { AppearanceService } from '@core/app/appearance.service';

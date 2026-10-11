@@ -10,9 +10,9 @@ import { TranslocoService } from '@jsverse/transloco';
 import { ChessGame } from '@chesspark/models';
 import { PlanFacadeService } from '@chesspark/state';
 
-import { AnalyticsPage } from '@app/features/game-analytics/pages/analytics.page';
-import { ActivityHeatmapComponent } from '@app/features/game-analytics/components/activity-heatmap/activity-heatmap.component';
-import { RatingChartComponent } from '@app/features/game-analytics/components/rating-chart/rating-chart.component';
+import { AnalyticsPage } from '@features/game-analytics/pages/analytics.page';
+import { ActivityHeatmapComponent } from '@features/game-analytics/components/activity-heatmap/activity-heatmap.component';
+import { RatingChartComponent } from '@features/game-analytics/components/rating-chart/rating-chart.component';
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 import { AnalyticsService } from '@core/analytics/analytics.service';
 import {

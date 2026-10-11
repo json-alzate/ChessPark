@@ -22,7 +22,7 @@ import { TranslocoService } from '@jsverse/transloco';
 import { Chart } from 'chart.js';
 
 import { ActivityDay } from '@chesspark/game-reporter';
-import { ActivityHeatmapComponent } from '@app/features/game-analytics/components/activity-heatmap/activity-heatmap.component';
+import { ActivityHeatmapComponent } from '@features/game-analytics/components/activity-heatmap/activity-heatmap.component';
 
 import { textoDe, translocoTesting } from '@tests/support/analisis-juegos';
 

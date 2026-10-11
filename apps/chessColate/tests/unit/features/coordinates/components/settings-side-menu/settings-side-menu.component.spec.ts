@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import {
   GameSettings,
   SettingsSideMenuComponent,
-} from '@app/features/coordinates/components/settings-side-menu/settings-side-menu.component';
+} from '@features/coordinates/components/settings-side-menu/settings-side-menu.component';
 import { conModalFalso, StubIonModal, translocoTesting } from '@tests/support/analisis-juegos';
 
 const base: GameSettings = {

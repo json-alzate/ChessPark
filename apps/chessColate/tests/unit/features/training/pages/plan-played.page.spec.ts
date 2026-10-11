@@ -49,7 +49,7 @@ import { BoardPuzzleSolutionComponent } from '@chesspark/board';
 import { ConfettiService } from '@chesspark/common-utils';
 import { PlanFacadeService, PublicPlansFacadeService } from '@chesspark/state';
 
-import { PlanPlayedComponent } from '@app/features/training/pages/plan-played.component';
+import { PlanPlayedPage } from '@features/training/pages/plan-played.page';
 import { TrainingReminderService } from '@features/reminders/services/training-reminder.service';
 import { ReminderPermissionModalComponent } from '@features/reminders/containers/reminder-permission-modal/reminder-permission-modal.component';
 import { ProfileService } from '@core/account/profile.service';
@@ -99,9 +99,9 @@ function makePlan(overrides: Partial<Plan> = {}): Plan {
   } as unknown as Plan;
 }
 
-describe('PlanPlayedComponent', () => {
-  let component: PlanPlayedComponent;
-  let fixture: ComponentFixture<PlanPlayedComponent>;
+describe('PlanPlayedPage', () => {
+  let component: PlanPlayedPage;
+  let fixture: ComponentFixture<PlanPlayedPage>;
 
   let plan$: Subject<Plan | null>;
   let loadingPlan$: BehaviorSubject<boolean>;
@@ -140,7 +140,7 @@ describe('PlanPlayedComponent', () => {
       route.snapshot.queryParams = { uid: queryUid };
       queryParams$.next({ uid: queryUid });
     }
-    fixture = TestBed.createComponent(PlanPlayedComponent);
+    fixture = TestBed.createComponent(PlanPlayedPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }
@@ -199,7 +199,7 @@ describe('PlanPlayedComponent', () => {
     appReview = { onRoutineFinished: jest.fn().mockResolvedValue(undefined) };
 
     await TestBed.configureTestingModule({
-      imports: [PlanPlayedComponent],
+      imports: [PlanPlayedPage],
       providers: [
         provideTranslocoTesting(),
         { provide: PlanFacadeService, useValue: planFacade },
@@ -220,7 +220,7 @@ describe('PlanPlayedComponent', () => {
         { provide: AppReviewService, useValue: appReview },
       ],
     })
-      .overrideComponent(PlanPlayedComponent, {
+      .overrideComponent(PlanPlayedPage, {
         remove: { imports: [IonContent, IonIcon] },
         add: { schemas: [CUSTOM_ELEMENTS_SCHEMA] },
       })

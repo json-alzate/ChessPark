@@ -28,7 +28,7 @@ import {
 import { AnalyticsService } from '@core/analytics/analytics.service';
 import { ProfileService } from '@core/account/profile.service';
 import { LoginComponent } from '@shared/components/login/login.component';
-import { DonationPage } from '@app/features/donation/pages/donation.page';
+import { DonationPage } from '@features/donation/pages/donation.page';
 
 import {
   NavbarFalsa,

@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { GameStatsComponent } from '@app/features/coordinates/components/game-stats/game-stats.component';
+import { GameStatsComponent } from '@features/coordinates/components/game-stats/game-stats.component';
 import { textoDe, translocoTesting } from '@tests/support/analisis-juegos';
 
 describe('GameStatsComponent', () => {

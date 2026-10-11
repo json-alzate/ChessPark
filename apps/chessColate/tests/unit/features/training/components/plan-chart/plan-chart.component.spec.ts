@@ -16,7 +16,7 @@ import { AppService } from '@core/app/app.service';
 import { ProfileService } from '@core/account/profile.service';
 import { PlansElosService } from '@features/training/services/plans-elos.service';
 
-import { PlanChartComponent } from '@app/features/training/components/plan-chart/plan-chart.component';
+import { PlanChartComponent } from '@features/training/components/plan-chart/plan-chart.component';
 
 import {
   findButton,

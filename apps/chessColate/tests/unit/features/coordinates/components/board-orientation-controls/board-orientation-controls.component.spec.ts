@@ -2,7 +2,7 @@ jest.mock('@chesspark/board', () => ({}));
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { BoardOrientationControlsComponent } from '@app/features/coordinates/components/board-orientation-controls/board-orientation-controls.component';
+import { BoardOrientationControlsComponent } from '@features/coordinates/components/board-orientation-controls/board-orientation-controls.component';
 import { appearanceDouble, translocoTesting } from '@tests/support/analisis-juegos';
 
 describe('BoardOrientationControlsComponent', () => {

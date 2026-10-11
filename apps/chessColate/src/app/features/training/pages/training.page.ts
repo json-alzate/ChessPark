@@ -144,10 +144,10 @@ import { KingImagePipe } from '@shared/pipes/king-image.pipe';
   // no comparten índice, contadores ni cuenta atrás.
   providers: [TrainingSessionService, TrainingTimerService],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  templateUrl: './training.component.html',
-  styleUrl: './training.component.scss',
+  templateUrl: './training.page.html',
+  styleUrl: './training.page.scss',
 })
-export class TrainingComponent implements OnInit, OnDestroy {
+export class TrainingPage implements OnInit, OnDestroy {
   private blockService = inject(BlockService);
   private planFacade = inject(PlanFacadeService);
   private plansElosService = inject(PlansElosService);

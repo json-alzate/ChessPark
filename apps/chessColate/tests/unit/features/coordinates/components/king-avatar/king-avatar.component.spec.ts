@@ -2,7 +2,7 @@ jest.mock('@chesspark/board', () => ({}));
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { KingAvatarComponent } from '@app/features/coordinates/components/king-avatar/king-avatar.component';
+import { KingAvatarComponent } from '@features/coordinates/components/king-avatar/king-avatar.component';
 import { appearanceDouble, textoDe, translocoTesting } from '@tests/support/analisis-juegos';
 
 describe('KingAvatarComponent', () => {

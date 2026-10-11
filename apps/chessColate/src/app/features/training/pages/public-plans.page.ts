@@ -48,10 +48,10 @@ import { heartOutline, heart, playOutline, bookmarkOutline, bookmark, homeOutlin
         NavbarComponent,
         PublicPlanItemComponent,
     ],
-    templateUrl: './public-plans.component.html',
-    styleUrl: './public-plans.component.scss',
+    templateUrl: './public-plans.page.html',
+    styleUrl: './public-plans.page.scss',
 })
-export class PublicPlansComponent implements OnInit, OnDestroy {
+export class PublicPlansPage implements OnInit, OnDestroy {
     private publicPlansFacade = inject(PublicPlansFacadeService);
     private publicPlansService = inject(PublicPlansService);
     private planService = inject(PlanService);

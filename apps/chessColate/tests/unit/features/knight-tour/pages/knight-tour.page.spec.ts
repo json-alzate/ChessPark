@@ -7,7 +7,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular/standalone';
 
-import { KnightTourPage } from '@app/features/knight-tour/pages/knight-tour.page';
+import { KnightTourPage } from '@features/knight-tour/pages/knight-tour.page';
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 import { AnalyticsService } from '@core/analytics/analytics.service';
 

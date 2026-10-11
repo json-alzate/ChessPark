@@ -16,7 +16,7 @@ import { ProfileService } from '@core/account/profile.service';
 import { PlanService } from '@features/training/services/plan.service';
 import { PublicPlansService } from '@features/training/services/public-plans.service';
 
-import { PublicPlansComponent } from '@app/features/training/pages/public-plans.component';
+import { PublicPlansPage } from '@features/training/pages/public-plans.page';
 
 import {
   ELO_TO_START_CASES,
@@ -77,9 +77,9 @@ function interaction(planUid: string, overrides: Partial<PlanInteraction> = {}):
   };
 }
 
-describe('PublicPlansComponent', () => {
-  let fixture: ComponentFixture<PublicPlansComponent>;
-  let component: PublicPlansComponent;
+describe('PublicPlansPage', () => {
+  let fixture: ComponentFixture<PublicPlansPage>;
+  let component: PublicPlansPage;
   let el: HTMLElement;
 
   let publicPlans$: BehaviorSubject<PublicPlan[]>;
@@ -104,7 +104,7 @@ describe('PublicPlansComponent', () => {
   let loader: { present: jest.Mock; dismiss: jest.Mock; message?: string };
 
   function render(): void {
-    fixture = TestBed.createComponent(PublicPlansComponent);
+    fixture = TestBed.createComponent(PublicPlansPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
     el = fixture.nativeElement as HTMLElement;
@@ -166,7 +166,7 @@ describe('PublicPlansComponent', () => {
     loader = { present: jest.fn().mockResolvedValue(undefined), dismiss: jest.fn().mockResolvedValue(undefined) };
 
     await TestBed.configureTestingModule({
-      imports: [PublicPlansComponent, translocoModule(TRANSLATIONS)],
+      imports: [PublicPlansPage, translocoModule(TRANSLATIONS)],
       providers: [
         provideMockStore({ selectors: [{ selector: getProfile, value: null }] }),
         { provide: PublicPlansFacadeService, useValue: facade },
@@ -186,7 +186,7 @@ describe('PublicPlansComponent', () => {
         { provide: AnalyticsService, useValue: analytics },
       ],
     })
-      .overrideComponent(PublicPlansComponent, {
+      .overrideComponent(PublicPlansPage, {
         set: {
           imports: [CommonModule, TranslocoPipe, NavbarStub, PublicPlanItemStub],
           schemas: [CUSTOM_ELEMENTS_SCHEMA],

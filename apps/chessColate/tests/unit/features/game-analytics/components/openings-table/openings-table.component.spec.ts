@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { OpeningStats } from '@chesspark/game-reporter';
 import { CatalogOpening } from '@features/game-analytics/utils/game-analytics.util';
-import { OpeningsTableComponent } from '@app/features/game-analytics/components/openings-table/openings-table.component';
+import { OpeningsTableComponent } from '@features/game-analytics/components/openings-table/openings-table.component';
 
 import { textoDe, translocoTesting } from '@tests/support/analisis-juegos';
 

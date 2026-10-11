@@ -50,10 +50,10 @@ import { EloDeltaComponent } from '@shared/components/elo-delta/elo-delta.compon
     EloDeltaComponent,
     CountUpComponent,
   ],
-  templateUrl: './plans-history.component.html',
-  styleUrl: './plans-history.component.scss',
+  templateUrl: './plans-history.page.html',
+  styleUrl: './plans-history.page.scss',
 })
-export class PlansHistoryComponent implements OnInit, OnDestroy {
+export class PlansHistoryPage implements OnInit, OnDestroy {
   private planStorageService = inject(PlanStorageService);
   private planFacade = inject(PlanFacadeService);
   private router = inject(Router);

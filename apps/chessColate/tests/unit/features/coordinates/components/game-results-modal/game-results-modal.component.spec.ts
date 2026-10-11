@@ -2,7 +2,7 @@ jest.mock('@chesspark/board', () => ({}));
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { GameResultsModalComponent } from '@app/features/coordinates/components/game-results-modal/game-results-modal.component';
+import { GameResultsModalComponent } from '@features/coordinates/components/game-results-modal/game-results-modal.component';
 import {
   appearanceDouble,
   conModalFalso,

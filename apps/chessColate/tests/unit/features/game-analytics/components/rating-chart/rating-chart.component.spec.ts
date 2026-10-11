@@ -17,7 +17,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Chart } from 'chart.js';
 
 import { RatingDataPoint } from '@chesspark/game-reporter';
-import { RatingChartComponent } from '@app/features/game-analytics/components/rating-chart/rating-chart.component';
+import { RatingChartComponent } from '@features/game-analytics/components/rating-chart/rating-chart.component';
 
 import { textoDe, translocoTesting } from '@tests/support/analisis-juegos';
 

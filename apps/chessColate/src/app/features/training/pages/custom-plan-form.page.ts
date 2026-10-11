@@ -52,10 +52,10 @@ import { add, shuffle, trendingDown, infiniteOutline, trashOutline, lockClosedOu
     IonReorder,
     NavbarComponent,
   ],
-  templateUrl: './custom-plan-form.component.html',
-  styleUrl: './custom-plan-form.component.scss',
+  templateUrl: './custom-plan-form.page.html',
+  styleUrl: './custom-plan-form.page.scss',
 })
-export class CustomPlanFormComponent implements OnInit, OnDestroy {
+export class CustomPlanFormPage implements OnInit, OnDestroy {
   get isDesktop(): boolean {
     return window.innerWidth >= 1024;
   }
