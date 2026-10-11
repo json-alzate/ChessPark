@@ -39,3 +39,13 @@ for (const { ruta, nombre } of RUTAS) {
     await expect(page).toHaveScreenshot(`${nombre}.png`);
   });
 }
+
+// Antes no había ruta `**`: una dirección que no existe dejaba la pantalla en blanco
+// (y un error NG04002 en la consola). Ahora lleva al inicio.
+test('una ruta que no existe lleva al inicio en vez de dejar la pantalla en blanco', async ({ page }) => {
+  await page.goto('/esta-ruta-no-existe');
+  await page.waitForLoadState('networkidle');
+
+  await expect(page).toHaveURL(/\/home$/);
+  await expect(page.locator('.ion-page:not(.ion-page-hidden)').last()).toBeVisible();
+});

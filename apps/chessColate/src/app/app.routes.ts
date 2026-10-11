@@ -146,4 +146,8 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/reminders/pages/reminders.page').then((m) => m.RemindersPage),
   },
+  {
+    path: '**',
+    redirectTo: 'home',
+  },
 ];
