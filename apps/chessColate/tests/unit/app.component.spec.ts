@@ -246,6 +246,18 @@ describe('AppComponent', () => {
       expect(analytics.logScreenView).toHaveBeenLastCalledWith('Racha');
     });
 
+    it('en las pantallas con tablero apaga el gesto de volver deslizando y lo devuelve en las demás', async () => {
+      await create();
+      const salida = { swipeGesture: true };
+      (component as unknown as { routerOutlet: typeof salida }).routerOutlet = salida;
+
+      routerEvents$.next(new NavigationEnd(1, '/puzzles/training', '/puzzles/training'));
+      expect(salida.swipeGesture).toBe(false);
+
+      routerEvents$.next(new NavigationEnd(2, '/home', '/home'));
+      expect(salida.swipeGesture).toBe(true);
+    });
+
     it('ignora eventos de router que no son NavigationEnd', async () => {
       await create();
 

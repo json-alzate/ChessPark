@@ -1,5 +1,6 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, inject } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
+import { isSwipeBackAllowed } from '@core/app/swipe-back.util';
 import { initializeApp } from 'firebase/app';
 import { Subscription } from 'rxjs';
 import { FirebaseCrashlytics } from '@capacitor-firebase/crashlytics';
@@ -98,10 +99,13 @@ interface Notification {
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent implements OnInit, OnDestroy {
+export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   title = 'chess-colate';
 
   readonly isNativePlatform = Capacitor.isNativePlatform();
+
+  /** Salida de rutas principal: se le apaga el gesto de volver en las pantallas con tablero. */
+  @ViewChild(IonRouterOutlet) private routerOutlet?: IonRouterOutlet;
 
   router = inject(Router);
   authService = inject(AuthService);
@@ -265,12 +269,27 @@ export class AppComponent implements OnInit, OnDestroy {
     this.initApp();
   }
 
+  ngAfterViewInit(): void {
+    // La primera navegación puede terminar antes de que exista la salida de rutas
+    this.updateSwipeBack(this.router.url);
+  }
+
+  /** En las pantallas con tablero, deslizar desde el borde izquierdo no debe sacar al usuario de la partida. */
+  private updateSwipeBack(url: string): void {
+    if (this.routerOutlet) {
+      this.routerOutlet.swipeGesture = isSwipeBackAllowed(url);
+    }
+  }
+
   ngOnInit(): void {
     // Screen tracking: registrar cada cambio de ruta como screen_view.
     // GA4 no capta la navegación SPA dentro de una sola Activity/ViewController.
     this.routerSubscription = this.router.events
       .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
-      .subscribe((e) => this.analyticsService.logScreenView(screenNameFromUrl(e.urlAfterRedirects)));
+      .subscribe((e) => {
+        this.analyticsService.logScreenView(screenNameFromUrl(e.urlAfterRedirects));
+        this.updateSwipeBack(e.urlAfterRedirects);
+      });
 
     // Suscribirse al perfil del usuario
     this.profileSubscription = this.profileService.profile$.subscribe(
