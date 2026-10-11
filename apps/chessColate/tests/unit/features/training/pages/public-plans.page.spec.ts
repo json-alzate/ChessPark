@@ -449,7 +449,7 @@ describe('PublicPlansPage', () => {
     });
 
     it('al pulsar Jugar en la tarjeta muestra el cargador, prepara la rutina, la marca como jugada, deja el plan nuevo y entra a entrenar', async () => {
-      currentProfile = { uid: 'user-1', elos: { plan5Total: 1800 } };
+      currentProfile = { uid: 'user-1', elos: { plan10Total: 1800 } };
       render();
 
       items()[0].querySelector<HTMLButtonElement>('.play')?.click();
@@ -553,10 +553,7 @@ describe('PublicPlansPage', () => {
       });
     });
 
-    // Las franjas se miden en segundos pero parecen pensadas en décimas de
-    // minuto: 3000 s son 50 minutos, así que una rutina de 20 minutos (1200 s)
-    // arranca con el elo de plan5 y no con el de plan20.
-    it.skip('BUG: una rutina de 20 minutos debería arrancar con el elo de plan20', async () => {
+    it('una rutina de 20 minutos arranca con el elo de plan20', async () => {
       currentProfile = { uid: 'u', elos: { plan5Total: 1111, plan20Total: 3333 } };
       render();
 

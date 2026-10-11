@@ -19,6 +19,7 @@ import { PublicPlan, PublicPlanFilter, PlanInteraction } from '@chesspark/models
 
 import { PublicPlansService } from '@features/training/services/public-plans.service';
 import { PlanService } from '@features/training/services/plan.service';
+import { eloToStartForDuration, totalBlockSeconds } from '@features/training/utils/custom-plan-elo.util';
 import { ProfileService } from '@core/account/profile.service';
 import { AnalyticsService } from '@core/analytics/analytics.service';
 import { minutesFromBlocks } from '@core/analytics/analytics-events.util';
@@ -171,33 +172,8 @@ export class PublicPlansPage implements OnInit, OnDestroy {
     }
 
     async onPlayPlan(plan: PublicPlan): Promise<void> {
-        const totalBlockTime = plan.blocks.reduce(
-            (sum, b) => sum + (b.time > 0 ? b.time : 0),
-            0
-        );
         const profile = this.profileService.getProfile;
-        let eloToStart = 1500;
-        if (profile?.elos) {
-            if (totalBlockTime <= 3000 && typeof profile.elos.plan5Total === 'number')
-                eloToStart = profile.elos.plan5Total;
-            else if (
-                totalBlockTime > 3000 &&
-                totalBlockTime <= 6000 &&
-                typeof profile.elos.plan10Total === 'number'
-            )
-                eloToStart = profile.elos.plan10Total;
-            else if (
-                totalBlockTime > 6000 &&
-                totalBlockTime <= 12000 &&
-                typeof profile.elos.plan20Total === 'number'
-            )
-                eloToStart = profile.elos.plan20Total;
-            else if (
-                totalBlockTime > 12000 &&
-                typeof profile.elos.plan30Total === 'number'
-            )
-                eloToStart = profile.elos.plan30Total;
-        }
+        const eloToStart = eloToStartForDuration(totalBlockSeconds(plan.blocks), profile?.elos);
 
         const loader = await this.loadingController.create({
             message: this.translocoService.translate('PUZZLES.loader.loadingPuzzles'),

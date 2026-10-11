@@ -13,6 +13,7 @@ import { Plan, Block } from '@chesspark/models';
 
 import { CustomPlansService } from '@features/training/services/custom-plans.service';
 import { PlanService } from '@features/training/services/plan.service';
+import { eloToStartForDuration, totalBlockSeconds } from '@features/training/utils/custom-plan-elo.util';
 import { ProfileService } from '@core/account/profile.service';
 import { AppService } from '@core/app/app.service';
 import { PlanFacadeService, PlansElosFacadeService, CustomPlansFacadeService, getProfile, getIsInitialized, AppState, getCountAllCustomPlans } from '@chesspark/state';
@@ -115,33 +116,10 @@ export class CustomPlansListPage implements OnInit, OnDestroy {
   }
 
   async play(plan: Plan): Promise<void> {
-    const totalBlockTime = plan.blocks.reduce(
-      (sum, b) => sum + (b.time > 0 ? b.time : 0),
-      0
+    const eloToStart = eloToStartForDuration(
+      totalBlockSeconds(plan.blocks),
+      this.profileService.getProfile?.elos
     );
-    const profile = this.profileService.getProfile;
-    let eloToStart = 1500;
-    if (profile?.elos) {
-      if (totalBlockTime <= 3000 && typeof profile.elos.plan5Total === 'number')
-        eloToStart = profile.elos.plan5Total;
-      else if (
-        totalBlockTime > 3000 &&
-        totalBlockTime <= 6000 &&
-        typeof profile.elos.plan10Total === 'number'
-      )
-        eloToStart = profile.elos.plan10Total;
-      else if (
-        totalBlockTime > 6000 &&
-        totalBlockTime <= 12000 &&
-        typeof profile.elos.plan20Total === 'number'
-      )
-        eloToStart = profile.elos.plan20Total;
-      else if (
-        totalBlockTime > 12000 &&
-        typeof profile.elos.plan30Total === 'number'
-      )
-        eloToStart = profile.elos.plan30Total;
-    }
 
     const loader = await this.loadingController.create({
       message: this.translocoService.translate('PUZZLES.loader.loadingPuzzles'),

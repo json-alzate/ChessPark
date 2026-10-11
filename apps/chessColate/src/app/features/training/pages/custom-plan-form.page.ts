@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormControl, Validators, ValidatorFn } from '@angular/forms';
 import { Subscription, of } from 'rxjs';
 import { filter, take, map, timeout, catchError } from 'rxjs/operators';
 
@@ -24,6 +24,7 @@ import { UidGeneratorService, SecondsToMinutesSecondsPipe } from '@chesspark/com
 
 import { CustomPlansService } from '@features/training/services/custom-plans.service';
 import { PlanService } from '@features/training/services/plan.service';
+import { eloToStartForDuration, totalBlockSeconds } from '@features/training/utils/custom-plan-elo.util';
 import { AppService } from '@core/app/app.service';
 import { ProfileService } from '@core/account/profile.service';
 import { PlanFacadeService, CustomPlansFacadeService, PlansElosFacadeService, getProfile, getIsInitialized } from '@chesspark/state';
@@ -74,7 +75,15 @@ export class CustomPlanFormPage implements OnInit, OnDestroy {
   private modalController = inject(ModalController);
   private uidGenerator = inject(UidGeneratorService);
 
-  nameControl = new FormControl('', [Validators.required, Validators.maxLength(30)]);
+  /** Un nombre de solo espacios cuenta como vacío (se muestra el aviso de "obligatorio"). */
+  private static readonly notBlank: ValidatorFn = (control) =>
+    (control.value ?? '').trim() ? null : { required: true };
+
+  nameControl = new FormControl('', [
+    Validators.required,
+    CustomPlanFormPage.notBlank,
+    Validators.maxLength(30),
+  ]);
   isPublicControl = new FormControl(false);
   blocks: Block[] = [];
   isEditMode = false;
@@ -181,7 +190,7 @@ export class CustomPlanFormPage implements OnInit, OnDestroy {
       component: BlockSettingsComponent,
       ...(this.isDesktop
         ? { cssClass: 'block-settings-modal-desktop', presentingElement: undefined }
-        : { initialBreakpoint: 0.75, breakpoints: [0, 0.5, 0.75, 0.9] }
+        : { initialBreakpoint: 0.75, breakpoints: [0, 0.5, 0.75, 1] }
       ),
     });
     await modal.present();
@@ -198,14 +207,7 @@ export class CustomPlanFormPage implements OnInit, OnDestroy {
   }
 
   private getEloToStart(): number {
-    const totalBlockTime = this.blocks.reduce((sum, b) => sum + (b.time > 0 ? b.time : 0), 0);
-    const profile = this.profileService.getProfile;
-    if (!profile?.elos) return 1500;
-    if (totalBlockTime <= 3000 && typeof profile.elos.plan5Total === 'number') return profile.elos.plan5Total;
-    if (totalBlockTime > 3000 && totalBlockTime <= 6000 && typeof profile.elos.plan10Total === 'number') return profile.elos.plan10Total;
-    if (totalBlockTime > 6000 && totalBlockTime <= 12000 && typeof profile.elos.plan20Total === 'number') return profile.elos.plan20Total;
-    if (totalBlockTime > 12000 && typeof profile.elos.plan30Total === 'number') return profile.elos.plan30Total;
-    return 1500;
+    return eloToStartForDuration(totalBlockSeconds(this.blocks), this.profileService.getProfile?.elos);
   }
 
   private buildPlanToSave(): Plan {
@@ -215,7 +217,7 @@ export class CustomPlanFormPage implements OnInit, OnDestroy {
       return {
         uid: this.planUid,
         uidCustomPlan: this.planUid,
-        title: this.nameControl.value ?? '',
+        title: (this.nameControl.value ?? '').trim(),
         uidUser,
         createdAt: this.originalCreatedAt,
         planType: 'custom',
@@ -227,7 +229,7 @@ export class CustomPlanFormPage implements OnInit, OnDestroy {
     return {
       uid,
       uidCustomPlan: uid,
-      title: this.nameControl.value ?? '',
+      title: (this.nameControl.value ?? '').trim(),
       uidUser,
       createdAt: Date.now(),
       planType: 'custom',

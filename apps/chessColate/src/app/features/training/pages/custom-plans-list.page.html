@@ -90,11 +90,11 @@
                   <div class="flex items-start justify-between gap-3 mb-2">
                     <div class="flex-1 min-w-0">
                       <h3 class="font-semibold truncate">
-                        {{ plan.title || ('CUSTOM_PLANS.untitled' | transloco) }}
+                        {{ plan.title?.trim() || ('CUSTOM_PLANS.untitled' | transloco) }}
                       </h3>
                       <div class="flex items-center gap-2 flex-wrap mt-1">
                         <span class="text-xs text-base-content/50">
-                          {{ plan.blocks.length }} {{ 'COMMON.chess.blocks' | transloco }}
+                          {{ plan.blocks.length }} {{ (plan.blocks.length === 1 ? 'COMMON.chess.block' : 'COMMON.chess.blocks') | transloco }}
                         </span>
                         @if (plan.isPublic) {
                           <span class="badge badge-xs badge-ghost">{{ 'CUSTOM_PLANS.public' | transloco }}</span>
