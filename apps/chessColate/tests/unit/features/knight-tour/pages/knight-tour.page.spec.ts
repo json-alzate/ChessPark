@@ -303,7 +303,7 @@ describe('KnightTourPage', () => {
         start_position: 'a1',
       });
       expect(alertController.create).toHaveBeenCalledWith(
-        expect.objectContaining({ header: 'Game Over', buttons: expect.any(Array) })
+        expect.objectContaining({ header: 'KNIGHT_TOUR.gameOver', buttons: expect.any(Array) })
       );
     });
 
@@ -313,8 +313,8 @@ describe('KnightTourPage', () => {
       await Promise.resolve();
       await Promise.resolve();
       const { buttons, message } = alertController.create.mock.calls[0][0];
-      expect(message).toContain('7 / 64');
-      buttons.find((b: { text: string }) => b.text === 'Reiniciar').handler();
+      expect(message).toContain('KNIGHT_TOUR.visitedSquares: 7 / 64');
+      buttons.find((b: { text: string }) => b.text === 'KNIGHT_TOUR.restart').handler();
       expect(page.isGameOver).toBe(false);
       expect(page.visitedSquares).toEqual([]);
     });

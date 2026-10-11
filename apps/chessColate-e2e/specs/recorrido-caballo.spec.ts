@@ -198,11 +198,11 @@ test.describe('Recorrido del caballo', () => {
 
     const aviso = page.locator('ion-alert');
     await expect(aviso).toBeVisible();
-    await expect(aviso).toContainText('Game Over');
-    await expect(aviso).toContainText(`Casillas visitadas: ${RECORRIDO_SIN_SALIDA.length} / 64`);
+    await expect(aviso).toContainText('Game over');
+    await expect(aviso).toContainText(`Visited squares: ${RECORRIDO_SIN_SALIDA.length} / 64`);
     await expect(visitadas(page)).toHaveText(new RegExp(`^\\s*${RECORRIDO_SIN_SALIDA.length}\\s*/ 64\\s*$`));
 
-    await aviso.getByRole('button', { name: 'Reiniciar' }).click();
+    await aviso.getByRole('button', { name: 'Restart' }).click();
     await expect(aviso).toHaveCount(0);
     await expect(visitadas(page)).toHaveText(/^\s*1\s*\/ 64\s*$/);
     await expect(page.getByText('Ready to start!')).toBeVisible();

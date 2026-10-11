@@ -5,12 +5,13 @@ import { takeUntil } from 'rxjs/operators';
 
 import { ModalController } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
+import { TranslocoPipe } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-block-presentation',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './block-presentation.component.html',
-  imports: [CommonModule],
+  imports: [CommonModule, TranslocoPipe],
   styleUrls: ['./block-presentation.component.scss'],
 })
 export class BlockPresentationComponent implements OnInit, OnDestroy {

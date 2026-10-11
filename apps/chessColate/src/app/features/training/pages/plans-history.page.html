@@ -30,7 +30,7 @@
         </div>
         @if (plans.length > 0) {
         <p class="text-sm text-base-content/70 mt-1">
-          {{ plans.length }} {{ plans.length === 1 ? 'plan' : 'planes' }} guardados
+          {{ (plans.length === 1 ? 'PLANS_HISTORY.planSaved' : 'PLANS_HISTORY.plansSaved') | transloco: { count: plans.length } }}
         </p>
         }
       </div>
@@ -107,7 +107,7 @@
                       <span class="badge badge-sm" [class.badge-success]="getSuccessRate(plan) >= 70"
                         [class.badge-warning]="getSuccessRate(plan) >= 50 && getSuccessRate(plan) < 70"
                         [class.badge-error]="getSuccessRate(plan) < 50">
-                        {{ getSuccessRate(plan) }}% correctos
+                        {{ 'PLANS_HISTORY.correct' | transloco: { percent: getSuccessRate(plan) } }}
                       </span>
                       }
                     </div>

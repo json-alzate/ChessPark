@@ -18,7 +18,7 @@ import {
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { homeOutline, refreshOutline, playOutline, settingsOutline, closeOutline, trophy } from 'ionicons/icons';
-import { TranslocoPipe } from '@jsverse/transloco';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
 import { BoardComponent } from '@chesspark/board';
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
@@ -86,7 +86,8 @@ export class KnightTourPage implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private alertController: AlertController,
-    private analyticsService: AnalyticsService
+    private analyticsService: AnalyticsService,
+    private transloco: TranslocoService
   ) {}
 
   ngOnInit() {
@@ -300,18 +301,19 @@ export class KnightTourPage implements OnInit, OnDestroy {
    * Muestra un alert con la información del game over
    */
   async showGameOverAlert() {
+    const t = (key: string) => this.transloco.translate(`KNIGHT_TOUR.${key}`);
     const alert = await this.alertController.create({
-      header: 'Game Over',
-      message: `No hay más movimientos válidos disponibles.\n\nTiempo: ${this.formatTime(this.elapsedTime)}\nCasillas visitadas: ${this.visitedSquares.length} / 64`,
+      header: t('gameOver'),
+      message: `${t('noMoreMoves')}\n\n${t('time')}: ${this.formatTime(this.elapsedTime)}\n${t('visitedSquares')}: ${this.visitedSquares.length} / 64`,
       buttons: [
         {
-          text: 'Reiniciar',
+          text: t('restart'),
           handler: () => {
             this.resetGame();
           }
         },
         {
-          text: 'Cerrar',
+          text: t('close'),
           role: 'cancel'
         }
       ]
@@ -480,7 +482,6 @@ export class KnightTourPage implements OnInit, OnDestroy {
       // Crear FEN con el caballo en la posición correcta
       const fen = this.createFenWithKnight(square);
       this.boardComponent.setPosition(fen);
-      console.log('Caballo colocado en:', square, 'FEN:', fen);
     });
   }
 
@@ -530,7 +531,6 @@ export class KnightTourPage implements OnInit, OnDestroy {
         };
 
         this.boardComponent.addMarker(square, marker);
-        console.log('Marcador agregado en:', square);
       }
     });
   }

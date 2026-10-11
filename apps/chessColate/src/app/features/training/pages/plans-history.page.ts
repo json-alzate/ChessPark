@@ -195,25 +195,13 @@ export class PlansHistoryPage implements OnInit, OnDestroy {
   }
 
   /**
-   * Obtiene el nombre del tipo de plan para mostrar
+   * Obtiene el nombre del tipo de plan para mostrar (el mismo que en el menú de inicio)
    */
   getPlanTypeName(planType: Plan['planType']): string {
-    // Usar el servicio de app para obtener el nombre traducido si está disponible
-    // Por ahora, usar nombres en español como fallback
-    const typeNames: Record<Plan['planType'], string> = {
-      warmup: 'Calentamiento',
-      plan1: 'Plan 1',
-      plan3: 'Plan 3',
-      plan5: 'Plan 5',
-      plan10: 'Plan 10',
-      plan20: 'Plan 20',
-      plan30: 'Plan 30',
-      backToCalm: 'Vuelta a la calma',
-      custom: 'Personalizado',
-      infinity: 'Infinito',
-      reto333: 'Reto 333',
-    };
-    return typeNames[planType] || planType;
+    const key = /^plan\d+$/.test(planType)
+      ? `TRAINING.plans.${planType}.title`
+      : `PLANS_HISTORY.types.${planType}`;
+    return this.translocoService.translate(key);
   }
 
   /**

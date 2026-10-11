@@ -43,7 +43,22 @@ class EloDeltaStub {
 class NavbarStub {}
 
 const TRANSLATIONS = {
-  PLANS_HISTORY: { today: 'Hoy', yesterday: 'Ayer', daysAgo: 'Hace {{days}} días' },
+  PLANS_HISTORY: {
+    today: 'Hoy',
+    yesterday: 'Ayer',
+    daysAgo: 'Hace {{days}} días',
+    planSaved: '{{count}} plan guardado',
+    plansSaved: '{{count}} planes guardados',
+    correct: '{{percent}}% correctos',
+    types: {
+      warmup: 'Calentamiento',
+      backToCalm: 'Vuelta a la calma',
+      custom: 'Personalizado',
+      infinity: 'Infinito',
+      reto333: 'Reto 333',
+    },
+  },
+  TRAINING: { plans: { plan1: { title: 'Bullet' }, plan5: { title: 'Blitz+' } } },
 };
 
 /** Fecha local `daysAgo` días antes del "ahora" de la prueba, a la hora dada. */
@@ -165,7 +180,7 @@ describe('PlansHistoryPage', () => {
 
       expect(cards()).toHaveLength(1);
       expect(component.plans.map((p) => p.uid)).toEqual(['a']);
-      expect(textOf(el)).toContain('1 plan guardados');
+      expect(textOf(el)).toContain('1 plan guardado');
     });
 
     it('si el almacenamiento falla muestra el estado vacío, no se queda cargando y deja el error en consola', () => {
@@ -244,7 +259,8 @@ describe('PlansHistoryPage', () => {
     it('getPlanTypeName traduce cada tipo de rutina', () => {
       render();
 
-      expect(component.getPlanTypeName('plan5')).toBe('Plan 5');
+      expect(component.getPlanTypeName('plan1')).toBe('Bullet');
+      expect(component.getPlanTypeName('plan5')).toBe('Blitz+');
       expect(component.getPlanTypeName('backToCalm')).toBe('Vuelta a la calma');
       expect(component.getPlanTypeName('infinity')).toBe('Infinito');
       expect(component.getPlanTypeName('reto333')).toBe('Reto 333');

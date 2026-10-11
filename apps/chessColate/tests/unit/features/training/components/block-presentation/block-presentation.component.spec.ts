@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ModalController } from '@ionic/angular/standalone';
 
+import { translocoModule } from '@tests/support/puzzles-pages';
 import { BlockPresentationComponent } from '@features/training/components/block-presentation/block-presentation.component';
 
 describe('BlockPresentationComponent', () => {
@@ -13,7 +14,7 @@ describe('BlockPresentationComponent', () => {
     modalController = { dismiss: jest.fn() };
 
     await TestBed.configureTestingModule({
-      imports: [BlockPresentationComponent],
+      imports: [BlockPresentationComponent, translocoModule({ PUZZLES: { general: { start: 'Empezar' } } })],
       providers: [{ provide: ModalController, useValue: modalController }],
     }).compileComponents();
 
@@ -43,6 +44,12 @@ describe('BlockPresentationComponent', () => {
     const img = el.querySelector('img');
     expect(img?.getAttribute('src')).toBe('assets/mate.png');
     expect(img?.getAttribute('alt')).toBe('Mates en 2');
+  });
+
+  it('el botón de inicio usa el texto traducido junto con la cuenta regresiva', () => {
+    const boton: HTMLElement = fixture.nativeElement.querySelector('ion-button');
+
+    expect(boton.textContent?.replace(/\s+/g, ' ').trim()).toBe('Empezar (5)');
   });
 
   it('descuenta un segundo por vez sin cerrar antes de tiempo', () => {

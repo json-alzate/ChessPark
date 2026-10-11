@@ -403,6 +403,16 @@
     "day": "day",
     "today": "Today",
     "yesterday": "Yesterday",
+    "planSaved": "{{ count }} saved plan",
+    "plansSaved": "{{ count }} saved plans",
+    "correct": "{{ percent }}% correct",
+    "types": {
+      "warmup": "Warm-up",
+      "backToCalm": "Cool-down",
+      "custom": "Custom",
+      "infinity": "Infinite",
+      "reto333": "Challenge 333"
+    },
     "daysAgo": "{{ days }} days ago"
   },
   "CUSTOM_PLANS": {
@@ -877,6 +887,8 @@
     },
     "components": {
       "loading": "Loading…",
+      "openMenu": "Open menu",
+      "reminders": "Reminders",
       "donate": "Donate",
       "googleLogo": "Google Logo",
       "chessColateLogo": "ChessColate Logo",
@@ -1003,6 +1015,9 @@
   },
   "KNIGHT_TOUR": {
     "title": "Knight tour",
+    "gameOver": "Game over",
+    "noMoreMoves": "There are no valid moves left.",
+    "close": "Close",
     "restart": "Restart",
     "visitedSquares": "Visited squares",
     "time": "Time",
