@@ -51,6 +51,8 @@ import {
 import { Puzzle } from '@chesspark/models';
 import { PuzzleEngine } from './puzzle-engine';
 import { createMoveInputHandler } from '../move-input/move-input-handler';
+import { closePromotionDialog } from '../move-input/promotion-dialog';
+import { cancelMoveInput } from '../move-input/cancel-move-input';
 import { drawLastMove, removeMarkersExceptLastMove, turnBoard } from '../move-input/board-markers';
 
 interface UISettings {
@@ -206,6 +208,11 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async initPuzzle() {
+    // Un diálogo de coronación abierto del puzzle anterior (p. ej. se acabó el tiempo con él abierto)
+    // no debe sobrevivir al puzzle nuevo
+    closePromotionDialog(this.board);
+    // Y lo mismo con una pieza que el usuario tenga en la mano: el puzzle nuevo no hereda su arrastre
+    cancelMoveInput(this.board, true);
     if (this.board) {
       // en caso de que se haya jugado un puzzle a ciegas anteriormente, se muestra las piezas
       const pieces = document.querySelectorAll(`#${this.boardId} .pieces`);
@@ -472,6 +479,7 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
     // parada universal (lo llaman setPuzzle, fallo, timeout, completado y
     // setForceStopTimer), por lo que es el choke point correcto para el token.
     this.puzzleGenerationId++;
+    this.closeOpenPromotionDialog();
     this.subsSeconds = undefined as any;
     if (this.timerUnsubscribe$) {
       this.timerUnsubscribe$.next();
@@ -480,6 +488,19 @@ export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
     // Resetear el progreso suave
     this.smoothProgress = 0;
     this.timerStartTime = 0;
+  }
+
+  /**
+   * Si el puzzle termina o se detiene con el diálogo de coronación abierto (tiempo agotado, fallo,
+   * parada externa), lo cierra y devuelve al tablero la posición del motor: la jugada que se estaba
+   * eligiendo no llegó a aplicarse.
+   */
+  private closeOpenPromotionDialog() {
+    if (closePromotionDialog(this.board)) {
+      this.board.setPosition(this.engine.fen, false);
+    }
+    // Si el tiempo se acaba con una pieza en la mano, el soltar ya no llegará: se descarta el arrastre
+    cancelMoveInput(this.board);
   }
 
   /** Promesa que resuelve tras `ms` milisegundos (reemplaza los setTimeout inline). */
