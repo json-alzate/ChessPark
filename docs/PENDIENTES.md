@@ -65,7 +65,7 @@ No hay una convención escrita de dónde va cada tipo de archivo, y la carpeta `
 
 Síntomas concretos hoy en `apps/chessColate/src/app/`:
 
-- **Utils dentro de `services/`** — `analytics-events.util.ts` y `training-reminder.util.ts` son funciones puras, no servicios inyectables. Decidir si van a un `utils/` local, junto a su feature, o a la lib compartida [libs/common-utils/](../libs/common-utils/).
+- **Utils dentro de `services/`** — ✅ `training-reminder.util.ts` ya se resolvió: se migró a `features/reminders/` (ver [ARQUITECTURA.md](./ARQUITECTURA.md), «Organización por funcionalidad»), que es la convención acordada y se aplicará al resto de funcionalidades. Sigue pendiente `analytics-events.util.ts`, y el resto de utils sueltos. Son funciones puras, no servicios inyectables. Decidir si van a un `utils/` local, junto a su feature, o a la lib compartida [libs/common-utils/](../libs/common-utils/).
 - **Archivos que no son servicios ni utils** — `crashlytics-error-handler.ts` (provider de Angular) también vive en `services/`.
 - **Config suelta en la raíz de `app/`** — `plan-allowed-themes.config.ts` está al mismo nivel que `app.component.ts` y `app.routes.ts`.
 - **Orden de componentes** — `shared/components/` solo agrupa por "es compartido", sin criterio de qué merece estar ahí frente a vivir junto a su página. Revisar también la organización dentro de `pages/`.

@@ -107,7 +107,7 @@ Decisiones de diseño:
 
 - **Puppeteer** (ya está en `package.json`, `^21.4.1`) abre la página con un perfil persistente (`--user-data-dir`) para conservar la caché IndexedDB de puzzles.
 - Los frames salen con **`Page.startScreencast`** (CDP) → JPEG → stdin de ffmpeg.
-- **Riesgo conocido:** el screencast de Chrome puede no sostener 30 fps con una animación constante en 1080p. **Es lo primero que hay que medir** (ver [Fase 0](#fase-0--prueba-de-concepto)). Plan B: **Electron con offscreen rendering**, que entrega los frames de forma más eficiente.
+- **Riesgo conocido:** el screencast de Chrome podría no sostener 30 fps con una animación constante en 1080p. La [Fase 0](#fase-0--prueba-de-concepto) lo midió con una escena sencilla y salió bien; falta confirmarlo con la escena real. Plan B (si la escena real no aguanta): **Electron con offscreen rendering**. La Fase 0 indica que de momento no hace falta.
 - Descartado: capturar la pantalla real con `avfoundation`. Exige sesión desbloqueada, permiso de grabación de pantalla y una pantalla "viva"; es frágil para 24/7.
 
 ### Codificación y envío
@@ -188,6 +188,24 @@ Decisiones de diseño:
 - Decidir 720p vs 1080p y si el screencast alcanza o hay que pasar a Electron.
 - *Salida:* decisión documentada (captura, resolución, bitrate).
 
+**Resultado (10-oct-2026) — viable.** Prueba en un Apple M1 de 8 GB: página con cielo animado (gradiente, sol/luna, 120 estrellas, nubes, tablero y una pieza en movimiento) a 60 fps, capturada con Puppeteer (`Page.startScreencast`, JPEG) y codificada con `ffmpeg` 9.0.2 (`h264_videotoolbox`, 30 fps) hacia un receptor RTMP local.
+
+| Prueba | Resultado |
+|---|---|
+| 720p30, 40 s | 1200/1200 frames, velocidad 1,06× |
+| 1080p30, 60 s y 45 s | 1800/1800 y 1350/1350 frames, 1,02–1,03× |
+| **1080p30, 10 min por RTMP (flv)** | **18 000/18 000 frames, 1×, duración exacta 600,03 s, sin caídas** |
+| CPU (Chrome + ffmpeg) | ~90–100 % de un núcleo (de 8) a 1080p; ~60 % a 720p |
+| Memoria (Chrome + ffmpeg) | ~1 GB, estable (1042 → 905 MB en 10 min, sin fuga visible) |
+
+Lo que **no** demuestra: el destino fue un receptor local, no YouTube; el audio era un tono de prueba; la escena era sencilla (el bitrate real fue ~1,2 Mbps, una escena con más detalle necesitará los 3–4,5 Mbps); no se usó la página Angular ni el tablero real; la prueba duró 10 min, no horas.
+
+Hallazgos que cambian el plan:
+- **El Chrome que trae Puppeteer 21 (Chrome 121) se cae al arrancar en este macOS** (Darwin 25.5). Funciona con el **Google Chrome instalado en el sistema (v154)** vía `executablePath`. Hay que decidir entre usar el Chrome del sistema o actualizar Puppeteer; no hace falta pasar a Electron.
+- El screencast entregó ~58 fps con la página a 60: **hay margen**. ffmpeg normaliza a 30 fps con `-use_wallclock_as_timestamps 1` + `fps=30`.
+- Para medir bien la CPU hay que sumar **solo** el árbol de procesos del runner; contar todos los "Chrome" incluye el navegador personal y falsea la cifra.
+- Queda pendiente repetir con la escena real y un directo **no listado** en YouTube de varias horas.
+
 ### Fase 1 · Página con puzzles
 `apps/live-stream`, `puzzle-to-frames.util`, `stream-schedule.util`, ciclo de un puzzle y HUD. Probar abriendo la página en un navegador normal, sin runner.
 
@@ -210,7 +228,8 @@ LaunchAgent (con aprobación), `pmset`, avisos por push, créditos y descripció
 
 ## Pendientes antes de implementar
 
-- [ ] **Fase 0:** ¿el screencast de Chrome headless sostiene 720p/1080p a 30 fps estables en el Mac mini? Si no, Electron offscreen.
+- [x] **Fase 0:** el screencast de Chrome headless sostiene 1080p30 estable durante 10 min en un M1 de 8 GB (ver resultado arriba). Falta repetirla con la escena real, contra YouTube y durante horas.
+- [ ] Elegir **Chrome del sistema vs. actualizar Puppeteer** (el Chrome 121 de Puppeteer 21 no arranca en este macOS).
 - [ ] Modelo y recursos del Mac mini (chip, RAM), y si seguirá usándose para otras cosas mientras transmite.
 - [ ] Confirmar que `@chesspark/board` se puede importar sin arrastrar Ionic a `live-stream`.
 - [ ] Duración del ciclo del día (60–90 min comprimido vs. hora local real) y si **ELO se liga al ciclo** (escalera de dificultad) o es independiente.

@@ -21,7 +21,7 @@ import { BlockService } from '@services/training/block.service';
 import { PlanService } from '@services/plans/plan.service';
 import { PlanStorageService } from '@services/plans/plan-storage.service';
 import { AnalyticsService } from '@services/analytics/analytics.service';
-import { TrainingReminderService } from '@services/training/training-reminder.service';
+import { TrainingReminderService } from '@features/reminders/services/training-reminder.service';
 import { AppReviewService } from '@services/app/app-review.service';
 import { routineAccuracy } from '@services/app/app-review.util';
 import { LoadingController } from '@ionic/angular/standalone';
@@ -31,7 +31,7 @@ import { FenBoardComponent } from '@chesspark/board';
 import { PlanChartComponent } from '@pages/puzzles/components/plan-chart/plan-chart.component';
 import { LoginComponent } from '@shared/components/login/login.component';
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
-import { ReminderPermissionModalComponent } from '@shared/components/reminder-permission-modal/reminder-permission-modal.component';
+import { ReminderPermissionModalComponent } from '@features/reminders/containers/reminder-permission-modal/reminder-permission-modal.component';
 import { planImage } from '@pages/home/components/training-plans.config';
 import { ConfettiService } from '@chesspark/common-utils';
 

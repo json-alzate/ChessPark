@@ -7,12 +7,7 @@
  * Ver docs/implementado/CALIFICAR_APP_FLOW.md.
  */
 
-// Mismo formato de fecha local que usa el recordatorio de entrenamiento; se
-// reutiliza para no tener dos maneras distintas de escribir "hoy" en el
-// localStorage.
-import { toLocalISODate } from '../training/training-reminder.util';
-
-export { toLocalISODate };
+import { toLocalISODate } from '@shared/utils/date.util';
 
 /** Estado local de la feature. Nunca sale del dispositivo. */
 export interface AppReviewState {

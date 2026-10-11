@@ -4,12 +4,14 @@ import { TranslocoPipe } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
 import { closeOutline, trashOutline } from 'ionicons/icons';
 
-import { TrainingReminderService } from '@services/training/training-reminder.service';
+import { TrainingReminderService } from '@features/reminders/services/training-reminder.service';
 import {
   ManualReminder,
+} from '@features/reminders/models/reminder.model';
+import {
   WEEKDAYS_MON_FIRST,
   weekdayKey,
-} from '@services/training/training-reminder.util';
+} from '@features/reminders/utils/reminder-schedule.util';
 
 addIcons({ closeOutline, trashOutline });
 

@@ -32,7 +32,7 @@ import { PlansElosService } from '@services/plans/plans-elos.service';
 import { PlanStorageService } from '@services/plans/plan-storage.service';
 import { PlanService } from '@services/plans/plan.service';
 import { AnalyticsService } from '@services/analytics/analytics.service';
-import { TrainingReminderService } from '@services/training/training-reminder.service';
+import { TrainingReminderService } from '@features/reminders/services/training-reminder.service';
 import { Reto333StorageService } from '@services/training/reto333-storage.service';
 import {
   TrainingSessionNextStep,

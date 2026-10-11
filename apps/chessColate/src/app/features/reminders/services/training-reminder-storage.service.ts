@@ -6,7 +6,7 @@ import {
   MAX_STORED_EVENTS,
   TrainingEvent,
   TrainingReminderState,
-} from './training-reminder.util';
+} from '../models/reminder.model';
 
 /**
  * Persistencia local del recordatorio de entrenamiento: estado del

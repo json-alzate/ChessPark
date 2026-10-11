@@ -21,19 +21,23 @@ import {
 } from 'ionicons/icons';
 
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
-import { ReminderPermissionModalComponent } from '@shared/components/reminder-permission-modal/reminder-permission-modal.component';
-import { ManualReminderModalComponent } from '@shared/components/manual-reminder-modal/manual-reminder-modal.component';
+import { ReminderPermissionModalComponent } from '@features/reminders/containers/reminder-permission-modal/reminder-permission-modal.component';
+import { ManualReminderModalComponent } from '@features/reminders/containers/manual-reminder-modal/manual-reminder-modal.component';
 import { AnalyticsService } from '@services/analytics/analytics.service';
-import { TrainingReminderService } from '@services/training/training-reminder.service';
+import { TrainingReminderService } from '@features/reminders/services/training-reminder.service';
 import {
-  effectiveReminderTime,
-  formatReminderTime,
-  weekdayKey,
   ManualReminder,
   TrainingReminderState,
   UpcomingNotification,
+} from '@features/reminders/models/reminder.model';
+import {
+  effectiveReminderTime,
+  formatReminderTime,
+} from '@features/reminders/utils/reminder-time.util';
+import {
+  weekdayKey,
   WEEKDAYS_MON_FIRST,
-} from '@services/training/training-reminder.util';
+} from '@features/reminders/utils/reminder-schedule.util';
 
 addIcons({
   homeOutline,

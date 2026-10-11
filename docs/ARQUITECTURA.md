@@ -73,6 +73,33 @@ Reglas que ya se hacen cumplir o se siguen:
 - **La conexión a Firestore es única** (`FirestoreConnection`, se inicia en
   `AppComponent`); los repositorios la comparten.
 
+### Organización por funcionalidad (en migración)
+
+La app se está pasando de "una carpeta por tipo de archivo" a "una carpeta por
+funcionalidad", en `apps/chessColate/src/app/features/<nombre>/` (alias
+`@features/*`). **Hoy solo `reminders` está migrada**; el resto sigue como se
+describe arriba y se irá moviendo de a una, verificando con tests cada vez.
+
+```
+features/<nombre>/
+  pages/        Lo que enruta app.routes.ts: pantallas completas  (*.page.ts)
+  containers/   Piezas con lógica (inyectan servicios) dentro de una page,
+                incluidos los modales con lógica                  (*.container.ts)
+  components/   Piezas solo visuales: @Input/@Output, sin servicios de datos (*.component.ts)
+  services/     Servicios y storage/repositorios de la funcionalidad
+  models/       Tipos exclusivos de la funcionalidad              (*.model.ts)
+  utils/        Funciones puras                                   (*.util.ts)
+```
+
+- **Si algo está en `pages/`, tiene ruta.** Si no tiene ruta, no está ahí.
+- **Un tipo exclusivo de una funcionalidad vive en su `models/`.** Si lo comparten
+  varias funcionalidades, apps o libs, va a `libs/models`.
+- **Lo que usan varias funcionalidades** va a `shared/` (p. ej.
+  `shared/utils/date.util.ts`), no se importa de la carpeta de otra.
+- Los specs van junto al archivo que prueban dentro de `features/`.
+- La regla de lint de repositorios cubre también `features/**/pages` y
+  `features/**/containers`.
+
 ---
 
 ## 3. Arranque de la app
@@ -111,7 +138,7 @@ Rutas en `app.routes.ts` (todas con `loadComponent`, cargan bajo demanda):
 | `streak` | Modo Racha | `StreakService`, `StreakStorageService`, `UserRecordsService` |
 | `games`, `games/viewer`, `games/:id` | Reproductor de partidas | `GamesService`, `GameReviewService` |
 | `analytics` | Análisis de partidas | `GameAnalyticsService` |
-| `reminders` | Recordatorios | `TrainingReminderService` |
+| `reminders` | Recordatorios (`features/reminders/pages`) | `TrainingReminderService` |
 | `coordinates`, `knight-tour`, `chess960` | Minijuegos | Servicios propios / `libs/board` |
 | `settings`, `settings/storage` | Ajustes y descargas | `AppService`, `AppearanceService`, `LanguageService`, caché de `puzzles-provider` |
 
@@ -179,15 +206,19 @@ perfil. No toca el elo del usuario. Detalle: [`implementado/RACHA_STREAK_FLOW.md
 
 ### 5.3 Recordatorios de entrenamiento
 
-Tres archivos, tres papeles:
-- `training-reminder.util.ts` — **cálculo puro**: hora sugerida según cuándo suele
-  entrenar, próximas fechas, qué texto usar.
-- `training-reminder-storage.service.ts` — **guarda** el estado en el dispositivo.
-- `training-reminder.service.ts` — **orquesta** y agenda las notificaciones
+Todo vive en `features/reminders/` (la primera funcionalidad migrada):
+- `utils/reminder-time.util.ts` — **cálculo puro de la hora**: sugerida según
+  cuándo suele entrenar, efectiva y formato legible.
+- `utils/reminder-schedule.util.ts` — **cálculo puro de la agenda**: próximas
+  fechas, días de la semana, racha de días y qué texto usar.
+- `models/reminder.model.ts` — los tipos y el estado por defecto.
+- `services/training-reminder-storage.service.ts` — **guarda** el estado en el dispositivo.
+- `services/training-reminder.service.ts` — **orquesta** y agenda las notificaciones
   locales (no-op en web). Se dispara al abrir la app, al volver de background y
   al terminar una sesión; regla: no notificar si ya entrenó hoy.
+- `containers/` — los dos modales (permiso y recordatorio manual).
 
-Pantalla: `pages/reminders`. Detalle: [`implementado/RECORDATORIOS_ENTRENAMIENTO_FLOW.md`](./implementado/RECORDATORIOS_ENTRENAMIENTO_FLOW.md).
+Pantalla: `features/reminders/pages/reminders.page.ts`. Detalle: [`implementado/RECORDATORIOS_ENTRENAMIENTO_FLOW.md`](./implementado/RECORDATORIOS_ENTRENAMIENTO_FLOW.md).
 
 ### 5.4 Análisis de partidas (Game Analytics)
 
@@ -276,7 +307,7 @@ una facade). Las pantallas leen el store; los guards (`custom-plans.guard`,
 | Cambiar cómo se calcula el elo | `ProfileService.calculateEloPuzzlePlan` / `PlansElosService`; fórmula en `libs/common-utils/elo-calculator.service` |
 | Cambiar el flujo entre ejercicios/bloques | `TrainingSessionService` (decisión) y `TrainingComponent.follow` (efecto) |
 | Cambiar de dónde salen los puzzles | `libs/puzzles-provider` |
-| Cambiar la hora/texto de los recordatorios | `training-reminder.util.ts` (cálculo), `training-reminder.service.ts` (agenda) |
+| Cambiar la hora/texto de los recordatorios | `features/reminders/utils/` (cálculo), `features/reminders/services/training-reminder.service.ts` (agenda) |
 | Añadir una estadística a Análisis | `libs/game-reporter` (reporte) + `game-analytics.util.ts` (presentación) |
 | Añadir un dato a Firestore | un `*.repository.ts` + su service (la página nunca lo inyecta) |
 | Añadir un evento de analítica | `services/analytics/analytics-events.util.ts` y `AnalyticsService` |

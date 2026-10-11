@@ -4,8 +4,10 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
 import { notificationsOutline } from 'ionicons/icons';
 
-import { TrainingReminderService } from '@services/training/training-reminder.service';
-import { formatReminderTime } from '@services/training/training-reminder.util';
+import { TrainingReminderService } from '@features/reminders/services/training-reminder.service';
+import {
+  formatReminderTime,
+} from '@features/reminders/utils/reminder-time.util';
 
 addIcons({ notificationsOutline });
 

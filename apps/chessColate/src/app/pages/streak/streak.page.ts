@@ -42,7 +42,7 @@ import { ProfileService } from '@services/account/profile.service';
 import { StreakService } from '@services/progress/streak.service';
 import { StreakStorageService } from '@services/progress/streak-storage.service';
 import { UserRecordsService } from '@services/progress/user-records.service';
-import { TrainingReminderService } from '@services/training/training-reminder.service';
+import { TrainingReminderService } from '@features/reminders/services/training-reminder.service';
 import {
   DEFAULT_STREAK_CONFIG,
   isNewRecord,

@@ -10,7 +10,13 @@ export default [
   {
     // Evita que una página o componente inyecte un repositorio o la conexión de Firestore
     // y se salte los facades. Así cada dato tiene un solo camino (store) y no dos.
-    files: ['src/app/pages/**/*.ts', 'src/app/**/components/**/*.ts', 'src/app/shared/**/*.ts'],
+    files: [
+      'src/app/pages/**/*.ts',
+      'src/app/features/**/pages/**/*.ts',
+      'src/app/features/**/containers/**/*.ts',
+      'src/app/**/components/**/*.ts',
+      'src/app/shared/**/*.ts',
+    ],
     rules: {
       'no-restricted-imports': [
         'error',

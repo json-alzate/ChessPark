@@ -1,8 +1,8 @@
-import { TrainingReminderStorageService } from '../../training/training-reminder-storage.service';
+import { TrainingReminderStorageService } from './training-reminder-storage.service';
 import {
   DEFAULT_TRAINING_REMINDER_STATE,
   MAX_STORED_EVENTS,
-} from '../../training/training-reminder.util';
+} from '../models/reminder.model';
 
 describe('TrainingReminderStorageService', () => {
   let service: TrainingReminderStorageService;

@@ -10,7 +10,7 @@ import { ProfileService } from '@services/account/profile.service';
 import { PlansElosService } from '@services/plans/plans-elos.service';
 import { AnalyticsService } from '@services/analytics/analytics.service';
 import { routineMetaFromPlanType, minutesFromBlocks } from '@services/analytics/analytics-events.util';
-import { TrainingReminderService } from '@services/training/training-reminder.service';
+import { TrainingReminderService } from '@features/reminders/services/training-reminder.service';
 
 @Injectable({
   providedIn: 'root'

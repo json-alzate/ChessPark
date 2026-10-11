@@ -20,7 +20,7 @@ flowchart TD
   SVC --> PLUG["Plugins de notificaciones"]
 ```
 
-- **Lógica pura** (`training-reminder.util.ts`) — los cálculos (hora, fechas, racha). Testeable.
+- **Lógica pura** (`utils/reminder-time.util.ts` y `utils/reminder-schedule.util.ts`) — los cálculos (hora, fechas, racha). Testeable.
 - **Storage** (`training-reminder-storage.service.ts`) — guarda config, historial de horas y manuales en localStorage.
 - **Orquestador** (`training-reminder.service.ts`) — agenda/cancela notificaciones y habla con los plugins. Todo es no-op en web.
 - **Pantalla** (`/reminders`) — activar el automático, crear manuales y ver las próximas notificaciones.
@@ -167,12 +167,17 @@ npm run android:build && npm run android:run
 
 ## Archivos
 
+Todos bajo `apps/chessColate/src/app/features/reminders/`:
+
 | Archivo | Rol |
 |---------|-----|
-| `services/training-reminder.util.ts` (+ `.spec`) | Cálculos (lógica pura) |
+| `utils/reminder-time.util.ts` (+ `.spec`) | Cálculos de la hora (lógica pura) |
+| `utils/reminder-schedule.util.ts` (+ `.spec`) | Cálculos de la agenda: fechas, racha, textos (lógica pura) |
+| `models/reminder.model.ts` | Tipos y estado por defecto |
 | `services/training-reminder-storage.service.ts` (+ `.spec`) | Persistencia (localStorage) |
 | `services/training-reminder.service.ts` | Orquestador |
-| `pages/reminders/` | Pantalla `/reminders` |
-| `shared/components/reminder-permission-modal/`, `manual-reminder-modal/` | Modales |
+| `pages/reminders.page.ts` | Pantalla `/reminders` |
+| `containers/reminder-permission-modal/`, `containers/manual-reminder-modal/` | Modales |
+| `shared/utils/date.util.ts` (fuera de la carpeta) | `toLocalISODate`, compartida con la reseña de la app |
 | `app.component.ts`, `plan.service.ts`, `training.component.ts`, `plan-played.component.ts` | Enganches (arranque, inicio/fin de sesión, modal de contexto) |
 | `capacitor.config.ts`, `AndroidManifest.xml`, `res/drawable/ic_stat_reminder.xml` | Config nativa |

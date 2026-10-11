@@ -9,22 +9,26 @@ import { Plan } from '@chesspark/models';
 
 import { AnalyticsService } from '@services/analytics/analytics.service';
 import { PlanStorageService } from '@services/plans/plan-storage.service';
-import { TrainingReminderStorageService } from '@services/training/training-reminder-storage.service';
+import { TrainingReminderStorageService } from '@features/reminders/services/training-reminder-storage.service';
 import {
-  allocateReminderSeq,
-  computeStreakDays,
-  computeSuggestedTime,
-  effectiveReminderTime,
-  nextOccurrences,
-  nextReminderDates,
-  pickCopyKey,
-  toLocalISODate,
   ManualReminder,
   MAX_MANUAL_REMINDERS,
   SuggestedTime,
   TrainingReminderState,
   UpcomingNotification,
-} from '@services/training/training-reminder.util';
+} from '@features/reminders/models/reminder.model';
+import {
+  computeSuggestedTime,
+  effectiveReminderTime,
+} from '@features/reminders/utils/reminder-time.util';
+import {
+  allocateReminderSeq,
+  computeStreakDays,
+  nextOccurrences,
+  nextReminderDates,
+  pickCopyKey,
+} from '@features/reminders/utils/reminder-schedule.util';
+import { toLocalISODate } from '@shared/utils/date.util';
 
 /** IDs fijos de las notificaciones agendadas (hoy + 2 días de fallback). */
 const NOTIFICATION_IDS = [741001, 741002, 741003];

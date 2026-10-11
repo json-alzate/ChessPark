@@ -144,6 +144,6 @@ export const routes: Routes = [
   {
     path: 'reminders',
     loadComponent: () =>
-      import('./pages/reminders/reminders.page').then((m) => m.RemindersPage),
+      import('./features/reminders/pages/reminders.page').then((m) => m.RemindersPage),
   },
 ];

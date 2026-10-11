@@ -48,7 +48,7 @@ import { FirestoreConnection } from '@services/firestore/firestore-connection.se
 import { PwaService } from '@services/app/pwa.service';
 import { AnalyticsService } from '@services/analytics/analytics.service';
 import { screenNameFromUrl } from '@services/analytics/analytics-events.util';
-import { TrainingReminderService } from '@services/training/training-reminder.service';
+import { TrainingReminderService } from '@features/reminders/services/training-reminder.service';
 import { RevenueCatService, LogLevel } from '@chesspark/revenuecat';
 import { Capacitor } from '@capacitor/core';
 import { SplashScreen } from '@capacitor/splash-screen';
