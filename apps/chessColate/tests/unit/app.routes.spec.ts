@@ -8,8 +8,8 @@ import { Route } from '@angular/router';
 
 import { routes } from '@app/app.routes';
 import { AuthGuard } from '@app/core/guards/auth.guard';
-import { CustomPlansGuard } from '@app/guards/custom-plans.guard';
-import { PublicPlansGuard } from '@app/guards/public-plans.guard';
+import { CustomPlansGuard } from '@app/features/training/guards/custom-plans.guard';
+import { PublicPlansGuard } from '@app/features/training/guards/public-plans.guard';
 
 /** Cada ruta con carga perezosa: su ruta y el nombre de la clase que debe entregar. */
 const PANTALLAS: ReadonlyArray<readonly [path: string, clase: string]> = [

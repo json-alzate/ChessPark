@@ -21,10 +21,10 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Block, Plan, PlanTypes, Puzzle, Reto333Record, StreakRecord } from '@chesspark/models';
 
 // Services
-import { BlockService } from '@services/training/block.service';
-import { PlanService } from '@services/plans/plan.service';
+import { BlockService } from '@features/training/services/block.service';
+import { PlanService } from '@features/training/services/plan.service';
 import { PuzzlesProvider } from '@chesspark/puzzles-provider';
-import { InfinityPuzzlePoolService } from '@services/training/infinity-puzzle-pool.service';
+import { InfinityPuzzlePoolService } from '@features/training/services/infinity-puzzle-pool.service';
 import { StreakStorageService } from '@features/records/services/streak-storage.service';
 import { Reto333StorageService } from '@features/records/services/reto333-storage.service';
 
@@ -37,7 +37,7 @@ import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 import { TrainingMenuComponent } from '../containers/training-menu/training-menu.component';
 import { OnboardingModalComponent, ONBOARDING_SEEN_KEY } from '@shared/components/onboarding-modal/onboarding-modal.component';
 import { BoardPuzzleComponent, BoardPuzzleSolutionComponent } from '@chesspark/board';
-import { PlanChartComponent } from '../../../pages/puzzles/components/plan-chart/plan-chart.component';
+import { PlanChartComponent } from '../../training/components/plan-chart/plan-chart.component';
 import { Capacitor } from '@capacitor/core';
 import { KingImagePipe } from '@shared/pipes/king-image.pipe';
 

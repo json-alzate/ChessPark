@@ -36,9 +36,9 @@ import {
 // Services
 import { AuthService } from './app/core/account/auth.service';
 import { ProfileService } from './app/core/account/profile.service';
-import { CustomPlanRepository } from './app/services/firestore/custom-plan.repository';
-import { PlanElosRepository } from './app/services/firestore/plan-elos.repository';
-import { PublicPlansFirestoreAdapter } from './app/services/firestore/public-plans-firestore.adapter';
+import { CustomPlanRepository } from './app/features/training/data/custom-plan.repository';
+import { PlanElosRepository } from './app/features/training/data/plan-elos.repository';
+import { PublicPlansFirestoreAdapter } from './app/features/training/data/public-plans-firestore.adapter';
 import { LanguageService } from './app/core/app/language.service';
 import { AppService } from './app/core/app/app.service';
 import { AppearanceService } from './app/core/app/appearance.service';

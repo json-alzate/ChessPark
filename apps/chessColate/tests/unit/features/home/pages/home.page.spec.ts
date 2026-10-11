@@ -49,7 +49,7 @@ jest.mock('@app/features/home/containers/training-menu/training-menu.component',
   Component({ selector: 'app-training-menu', standalone: true, template: '' })(TrainingMenuComponent);
   return { TrainingMenuComponent };
 });
-jest.mock('@app/pages/puzzles/components/plan-chart/plan-chart.component', () => {
+jest.mock('@app/features/training/components/plan-chart/plan-chart.component', () => {
   const { Component, Input } = jest.requireActual('@angular/core');
   class PlanChartComponent {}
   Component({ selector: 'app-plan-chart', standalone: true, template: '' })(PlanChartComponent);
@@ -74,10 +74,10 @@ import { HomePage } from '@app/features/home/pages/home.page';
 import { ProfileService } from '@core/account/profile.service';
 import { AppService } from '@core/app/app.service';
 import { AppearanceService } from '@core/app/appearance.service';
-import { PlanService } from '@services/plans/plan.service';
+import { PlanService } from '@features/training/services/plan.service';
 import { StreakStorageService } from '@features/records/services/streak-storage.service';
-import { BlockService } from '@services/training/block.service';
-import { InfinityPuzzlePoolService } from '@services/training/infinity-puzzle-pool.service';
+import { BlockService } from '@features/training/services/block.service';
+import { InfinityPuzzlePoolService } from '@features/training/services/infinity-puzzle-pool.service';
 import { Reto333StorageService } from '@features/records/services/reto333-storage.service';
 import { OnboardingModalComponent, ONBOARDING_SEEN_KEY } from '@shared/components/onboarding-modal/onboarding-modal.component';
 import { provideTranslocoTesting } from '@tests/support/transloco-testing';

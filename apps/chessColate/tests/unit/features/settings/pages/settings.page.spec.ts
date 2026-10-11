@@ -20,7 +20,7 @@ import { AnalyticsService } from '@core/analytics/analytics.service';
 import { ProfileService } from '@core/account/profile.service';
 import { LanguageService, SupportedLang } from '@core/app/language.service';
 import { AppReviewService } from '@features/app-review/services/app-review.service';
-import { PuzzleStorageService } from '@services/training/puzzle-storage.service';
+import { PuzzleStorageService } from '@features/training/services/puzzle-storage.service';
 import { GamesService } from '@features/games/services/games.service';
 import { SettingsPage } from '@app/features/settings/pages/settings.page';
 

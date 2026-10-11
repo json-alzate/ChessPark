@@ -18,7 +18,7 @@ import {
   PuzzleStorageService,
   StorageFileItem,
   StorageGroup,
-} from '@services/training/puzzle-storage.service';
+} from '@features/training/services/puzzle-storage.service';
 import { GamesService } from '@features/games/services/games.service';
 import { GameAnalyticsService } from '@features/game-analytics/services/game-analytics.service';
 import { platformLabel } from '@features/game-analytics/utils/game-analytics.util';

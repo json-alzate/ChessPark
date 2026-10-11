@@ -19,7 +19,7 @@ import {
   PuzzleStorageService,
   StorageFileItem,
   StorageGroup,
-} from '@services/training/puzzle-storage.service';
+} from '@features/training/services/puzzle-storage.service';
 import { StoragePage } from '@app/features/settings/pages/storage.page';
 
 import {

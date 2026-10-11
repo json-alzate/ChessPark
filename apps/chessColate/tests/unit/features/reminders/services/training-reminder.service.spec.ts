@@ -9,7 +9,7 @@ import { UidGeneratorService } from '@chesspark/common-utils';
 import { Plan } from '@chesspark/models';
 
 import { AnalyticsService } from '@core/analytics/analytics.service';
-import { PlanStorageService } from '@services/plans/plan-storage.service';
+import { PlanStorageService } from '@features/training/services/plan-storage.service';
 import {
   ManualReminder,
   MAX_MANUAL_REMINDERS,

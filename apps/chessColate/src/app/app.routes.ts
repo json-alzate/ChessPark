@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
-import { CustomPlansGuard } from './guards/custom-plans.guard';
+import { CustomPlansGuard } from './features/training/guards/custom-plans.guard';
 import { AuthGuard } from './core/guards/auth.guard';
-import { PublicPlansGuard } from './guards/public-plans.guard';
+import { PublicPlansGuard } from './features/training/guards/public-plans.guard';
 
 export const routes: Routes = [
   {
@@ -26,7 +26,7 @@ export const routes: Routes = [
   {
     path: 'puzzles/training',
     loadComponent: () =>
-      import('./pages/puzzles/containers/training/training.component').then(
+      import('./features/training/pages/training.component').then(
         (m) => m.TrainingComponent
       ),
   },
@@ -34,21 +34,21 @@ export const routes: Routes = [
     path: 'puzzles/plan-played',
     loadComponent: () =>
       import(
-        './pages/puzzles/containers/plan-played/plan-played.component'
+        './features/training/pages/plan-played.component'
       ).then((m) => m.PlanPlayedComponent),
   },
   {
     path: 'puzzles/plans-history',
     loadComponent: () =>
       import(
-        './pages/puzzles/containers/plans-history/plans-history.component'
+        './features/training/pages/plans-history.component'
       ).then((m) => m.PlansHistoryComponent),
   },
   {
     path: 'puzzles/custom-plans',
     loadComponent: () =>
       import(
-        './pages/puzzles/containers/custom-plans-list/custom-plans-list.component'
+        './features/training/pages/custom-plans-list.component'
       ).then((m) => m.CustomPlansListComponent),
     canActivate: [CustomPlansGuard],
   },
@@ -56,7 +56,7 @@ export const routes: Routes = [
     path: 'puzzles/custom-plans/create',
     loadComponent: () =>
       import(
-        './pages/puzzles/containers/custom-plan-form/custom-plan-form.component'
+        './features/training/pages/custom-plan-form.component'
       ).then((m) => m.CustomPlanFormComponent),
     canActivate: [AuthGuard],
   },
@@ -64,7 +64,7 @@ export const routes: Routes = [
     path: 'puzzles/custom-plans/edit/:uid',
     loadComponent: () =>
       import(
-        './pages/puzzles/containers/custom-plan-form/custom-plan-form.component'
+        './features/training/pages/custom-plan-form.component'
       ).then((m) => m.CustomPlanFormComponent),
     canActivate: [AuthGuard],
   },
@@ -72,7 +72,7 @@ export const routes: Routes = [
     path: 'puzzles/public-plans',
     loadComponent: () =>
       import(
-        './pages/puzzles/containers/public-plans/public-plans.component'
+        './features/training/pages/public-plans.component'
       ).then((m) => m.PublicPlansComponent),
     canActivate: [PublicPlansGuard],
   },

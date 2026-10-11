@@ -5,7 +5,7 @@ import {
   planImage,
   TRAINING_PLAN_PRESETS,
 } from '@features/home/utils/training-plans.config';
-import { PLAN_BLOCK_SPECS } from '@services/plans/plan-blocks.config';
+import { PLAN_BLOCK_SPECS } from '@features/training/config/plan-blocks.config';
 import { routineMetaFromPlanType } from '@core/analytics/analytics-events.util';
 
 /**

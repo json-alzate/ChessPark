@@ -21,8 +21,8 @@ import { addIcons } from 'ionicons';
 import { eyeOffOutline, eyeOutline, playOutline, timeOutline } from 'ionicons/icons';
 
 // services
-import { BlockService } from '@services/training/block.service';
-import { PlanService } from '@services/plans/plan.service';
+import { BlockService } from '@features/training/services/block.service';
+import { PlanService } from '@features/training/services/plan.service';
 import { ProfileService } from '@core/account/profile.service';
 
 import { Block, Plan, PlanTypes } from '@chesspark/models';

@@ -41,8 +41,8 @@ import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 import { AnalyticsService } from '@core/analytics/analytics.service';
 import { GamesService } from '@features/games/services/games.service';
 import { AppService } from '@core/app/app.service';
-import { PlanService } from '@services/plans/plan.service';
-import { CustomPlansService } from '@services/plans/custom-plans.service';
+import { PlanService } from '@features/training/services/plan.service';
+import { CustomPlansService } from '@features/training/services/custom-plans.service';
 import { ProfileService } from '@core/account/profile.service';
 import { PlanFacadeService } from '@chesspark/state';
 import {

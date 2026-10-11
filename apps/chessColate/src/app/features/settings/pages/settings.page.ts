@@ -24,7 +24,7 @@ import { AppearancePickerComponent } from '@shared/components/appearance-picker/
 import { ProfileService } from '@core/account/profile.service';
 import { LanguageService, SupportedLang } from '@core/app/language.service';
 import { AnalyticsService } from '@core/analytics/analytics.service';
-import { PuzzleStorageService } from '@services/training/puzzle-storage.service';
+import { PuzzleStorageService } from '@features/training/services/puzzle-storage.service';
 import { AppReviewService } from '@features/app-review/services/app-review.service';
 import { GamesService } from '@features/games/services/games.service';
 
