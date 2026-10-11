@@ -188,9 +188,9 @@ confianza; si hay cola larga en decenas de MB, hay que revisar los umbrales de
 | [`libs/puzzles-provider/src/lib/utils.ts`](../../libs/puzzles-provider/src/lib/utils.ts) | `parsePuzzleUrl`, `estimateSizeBytes` |
 | [`libs/puzzles-provider/src/lib/cache.service.ts`](../../libs/puzzles-provider/src/lib/cache.service.ts) | listado, backfill, borrado múltiple, resumen |
 | [`libs/puzzles-provider/src/lib/types.ts`](../../libs/puzzles-provider/src/lib/types.ts) | `CachedFileIndexEntry`, `StorageSummary` |
-| [`apps/chessColate/src/app/services/puzzle-storage.service.ts`](../../apps/chessColate/src/app/services/puzzle-storage.service.ts) | fachada: agrupar, traducir, formatear |
-| [`apps/chessColate/src/app/pages/settings/storage/`](../../apps/chessColate/src/app/pages/settings/storage/) | pantalla de gestión |
-| [`apps/chessColate/src/app/pages/settings/settings.page.html`](../../apps/chessColate/src/app/pages/settings/settings.page.html) | sección de Almacenamiento |
+| [`apps/chessColate/src/app/services/puzzle-storage.service.ts`](../../apps/chessColate/src/app/features/training/services/puzzle-storage.service.ts) | fachada: agrupar, traducir, formatear |
+| [`apps/chessColate/src/app/features/settings/pages/`](../../apps/chessColate/src/app/features/settings/pages/) | pantalla de gestión |
+| [`apps/chessColate/src/app/features/settings/pages/settings.page.html`](../../apps/chessColate/src/app/features/settings/pages/settings.page.html) | sección de Almacenamiento |
 | `assets/i18n/{es,en}.json` | claves `SETTINGS.storage` y `STORAGE.*` |
 
 ## Fuera de alcance

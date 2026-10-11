@@ -32,24 +32,6 @@
       "@environments/*": [
         "src/environments/*"
       ],
-      "@pages/*": [
-        "src/app/pages/*"
-      ],
-      "@guards/*": [
-        "src/app/guards/*"
-      ],
-      "@utils/*": [
-        "src/app/utils/*"
-      ],
-      "@redux/*": [
-        "src/app/redux/*"
-      ],
-      "@models/*": [
-        "src/app/models/*"
-      ],
-      "@services/*": [
-        "src/app/services/*"
-      ],
       "@tests/*": [
         "tests/*"
       ],

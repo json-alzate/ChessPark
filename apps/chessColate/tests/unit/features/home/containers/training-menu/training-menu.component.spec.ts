@@ -7,7 +7,7 @@ import { BehaviorSubject } from 'rxjs';
 import { Block, Profile } from '@chesspark/models';
 
 import { TrainingMenuComponent } from '@features/home/containers/training-menu/training-menu.component';
-import { TRAINING_PLAN_PRESETS } from '@features/home/utils/training-plans.config';
+import { TRAINING_PLAN_PRESETS } from '@features/training/config/training-plans.config';
 import { ProfileService } from '@core/account/profile.service';
 import { PlanService } from '@features/training/services/plan.service';
 import { BlockService } from '@features/training/services/block.service';

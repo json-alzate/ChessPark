@@ -240,9 +240,9 @@ partida.
 | [`libs/games-provider/src/lib/games-provider.ts`](../../libs/games-provider/src/lib/games-provider.ts) | índice, descarga con progreso, catálogo |
 | [`libs/games-provider/src/lib/games-cache.service.ts`](../../libs/games-provider/src/lib/games-cache.service.ts) | IndexedDB de paquetes e índice |
 | [`libs/board/src/lib/board-game-player/`](../../libs/board/src/lib/board-game-player/) | tablero de solo mirar y reloj de reproducción |
-| [`services/games.service.ts`](../../apps/chessColate/src/app/services/games.service.ts) | fachada: paquete abierto, ajustes, pantalla encendida |
-| [`services/games.util.ts`](../../apps/chessColate/src/app/services/games.util.ts) | lógica pura: filtros, orden del TV, tamaños |
-| [`pages/games/`](../../apps/chessColate/src/app/pages/games/) | las tres pantallas |
+| [`services/games.service.ts`](../../apps/chessColate/src/app/features/games/services/games.service.ts) | fachada: paquete abierto, ajustes, pantalla encendida |
+| [`services/games.util.ts`](../../apps/chessColate/src/app/features/games/utils/games.util.ts) | lógica pura: filtros, orden del TV, tamaños |
+| [`features/games/pages/`](../../apps/chessColate/src/app/features/games/pages/) | las tres pantallas |
 | `assets/i18n/{es,en}.json` | claves `GAMES.*` |
 | **Fuera del repo**: [chesscolate_pngs_packs](https://github.com/json-alzate/chesscolate_pngs_packs) | paquetes, índice y su generador |
 

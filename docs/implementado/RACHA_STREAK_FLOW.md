@@ -61,10 +61,10 @@ flowchart TD
   UI --> BOARD["board-puzzle · el tablero de siempre"]
 ```
 
-- **Lógica pura** ([`streak.util.ts`](../../apps/chessColate/src/app/services/streak.util.ts)) — la rampa de dificultad, la elección de tema y cómo una racha actualiza el récord. Testeada en [`streak.util.spec.ts`](../../apps/chessColate/src/app/services/streak.util.spec.ts).
-- **Fuente de puzzles** ([`streak.service.ts`](../../apps/chessColate/src/app/services/streak.service.ts)) — pide **un** puzzle al catálogo para el elo objetivo, sin repetir los ya jugados.
-- **Persistencia** ([`streak-storage.service.ts`](../../apps/chessColate/src/app/services/streak-storage.service.ts)) — récord y últimas 20 rachas en localStorage. El récord además viaja a la cuenta: ver [Récords sincronizados](./RECORDS_SINCRONIZADOS_FLOW.md).
-- **Pantalla** ([`streak.page.ts`](../../apps/chessColate/src/app/pages/streak/streak.page.ts)) — el bucle del juego y la pantalla de resultado.
+- **Lógica pura** ([`streak.util.ts`](../../apps/chessColate/src/app/features/streak/utils/streak.util.ts)) — la rampa de dificultad, la elección de tema y cómo una racha actualiza el récord. Testeada en [`streak.util.spec.ts`](../../apps/chessColate/tests/unit/features/streak/utils/streak.util.spec.ts).
+- **Fuente de puzzles** ([`streak.service.ts`](../../apps/chessColate/src/app/features/streak/services/streak.service.ts)) — pide **un** puzzle al catálogo para el elo objetivo, sin repetir los ya jugados.
+- **Persistencia** ([`streak-storage.service.ts`](../../apps/chessColate/src/app/features/records/services/streak-storage.service.ts)) — récord y últimas 20 rachas en localStorage. El récord además viaja a la cuenta: ver [Récords sincronizados](./RECORDS_SINCRONIZADOS_FLOW.md).
+- **Pantalla** ([`streak.page.ts`](../../apps/chessColate/src/app/features/streak/pages/streak.page.ts)) — el bucle del juego y la pantalla de resultado.
 - **Modelo** ([`streak.model.ts`](../../libs/models/src/lib/streak.model.ts)) — `StreakConfig`, `StreakRun`, `StreakRecord`.
 
 **No crea un `Plan`.** Las rutinas se juegan por bloques con un set precargado;

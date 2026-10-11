@@ -36,69 +36,121 @@ libs/
 Dependen "hacia abajo": `apps/chessColate` → `libs/*`; `libs/*` casi nunca
 dependen entre sí salvo todas de `models`.
 
-**Alias de importación** (en `tsconfig`): `@chesspark/<lib>` para las libs,
-`@services/*` y `@shared/*` para `apps/chessColate/src/app/services` y `shared`.
+**Alias de importación** (en `apps/chessColate/tsconfig.json`): `@chesspark/<lib>` para las libs
+y, dentro de la app, `@core/*`, `@features/*`, `@shared/*` (carpetas de `src/app`),
+`@app/*` (cualquier ruta de `src/app`) y `@tests/*` (`tests/`, para el apoyo de las pruebas).
 
 ---
 
-## 2. Las capas de la app (la regla)
+## 2. Cómo está organizada la app
 
-Dentro de `apps/chessColate/src/app` todo sigue la misma cadena. Una capa solo
-habla con la de abajo:
+`apps/chessColate/src/app` se organiza **por funcionalidad**, no por tipo de archivo:
+para entender o cambiar algo (rutinas, recordatorios, partidas…) todo está en una carpeta.
 
 ```
-pages/ (y shared/components)     Pintan y reaccionan. Delegan.
-   │
-   ▼
-services/<área>/*.service.ts     Orquestan una funcionalidad. Tienen estado.
-   │            │
-   │            └──► libs/state (facades NgRx)   Estado compartido entre pantallas
-   ▼
-services/firestore/*.repository  Leen/escriben Firestore (un repositorio por agregado)
-services/**/*-storage.service    Leen/escriben el dispositivo (localStorage / IndexedDB)
-   │
-services/**/*.util.ts            Funciones PURAS: calculan, no inyectan nada, no hacen I/O
+src/app/
+  app.component.ts / app.routes.ts   Arranque y rutas (cada ruta carga su página bajo demanda)
+  core/        Lo que usa toda la app                       (@core/*)
+    account/     sesión (AuthService) y perfil (ProfileService + ProfileRepository)
+    analytics/   AnalyticsService, eventos y manejador de errores de Crashlytics
+    app/         ajustes de la app: idioma, apariencia, PWA, AppService
+    firestore/   conexión única a Firestore y serialización
+    guards/      auth.guard
+  features/    Una carpeta por funcionalidad                (@features/*)
+    training/      rutinas: entrenar, resumen, historial, rutinas propias y públicas,
+                   bloques, sesión, cronómetro, pool infinito, planes y sus repositorios
+    streak/        modo Racha
+    records/       récords de Racha y Reto 333 y su sincronización con el perfil
+    reminders/     recordatorios de entrenamiento
+    games/         reproductor de partidas
+    game-analytics/ análisis de partidas (chess.com / lichess)
+    app-review/    pedir la calificación de la app
+    home/ settings/ donation/ privacy/ coordinates/ knight-tour/ chess960/
+  shared/      Lo que usan varias funcionalidades            (@shared/*)
+    components/  navbar, login, onboarding, donación, selector de apariencia, count-up…
+    pipes/ utils/
 ```
 
-Reglas que ya se hacen cumplir o se siguen:
-
-- **Las páginas no inyectan repositorios.** Hay una regla de lint
-  (`apps/chessColate/eslint.config.mjs`, `no-restricted-imports`) que lo impide.
-  Lo que necesitan lo piden a un `service` o lo leen del store.
-- **`*.util.ts` = función pura.** Recibe datos, devuelve datos. Por eso casi todos
-  tienen su `.spec.ts` en `services/specs/`. Si una función necesita Angular,
-  Firestore o `localStorage`, no es un util: es un servicio.
-- **`*.repository.ts` = Firestore. `*-storage.service.ts` = dispositivo.**
-  Una funcionalidad puede usar uno, otro o ambos (ver el cuadro de persistencia).
-- **La conexión a Firestore es única** (`FirestoreConnection`, se inicia en
-  `AppComponent`); los repositorios la comparten.
-
-### Organización por funcionalidad (en migración)
-
-La app se está pasando de "una carpeta por tipo de archivo" a "una carpeta por
-funcionalidad", en `apps/chessColate/src/app/features/<nombre>/` (alias
-`@features/*`). **Hoy solo `reminders` está migrada**; el resto sigue como se
-describe arriba y se irá moviendo de a una, verificando con tests cada vez.
+Dentro de cada funcionalidad, **siempre el mismo orden**; solo existen las carpetas que hacen falta:
 
 ```
 features/<nombre>/
-  pages/        Lo que enruta app.routes.ts: pantallas completas  (*.page.ts)
-  containers/   Piezas con lógica (inyectan servicios) dentro de una page,
-                incluidos los modales con lógica                  (*.container.ts)
-  components/   Piezas solo visuales: @Input/@Output, sin servicios de datos (*.component.ts)
-  services/     Servicios y storage/repositorios de la funcionalidad
-  models/       Tipos exclusivos de la funcionalidad              (*.model.ts)
-  utils/        Funciones puras                                   (*.util.ts)
+  pages/        Lo que enruta app.routes.ts: pantallas completas             *.page.ts
+  containers/   Piezas con lógica (inyectan servicios) dentro de una página,
+                p. ej. los modales con lógica                                *.component.ts
+  components/   Piezas solo visuales: @Input/@Output, sin servicios de datos *.component.ts
+  services/     Servicios (orquestan, tienen estado) y storage del dispositivo
+  data/         Repositorios de Firestore                                    *.repository.ts
+  models/       Tipos exclusivos de la funcionalidad                         *.model.ts
+  utils/        Funciones puras                                              *.util.ts
+  config/       Tablas de configuración                                      *.config.ts
+  guards/       Guards de ruta propios de la funcionalidad
 ```
 
-- **Si algo está en `pages/`, tiene ruta.** Si no tiene ruta, no está ahí.
+**Si algo está en `pages/`, tiene ruta; si no tiene ruta, no está ahí.**
+
+### La cadena de capas
+
+Dentro de una funcionalidad, una capa solo habla con la de abajo:
+
+```
+pages/ · containers/ · components/   Pintan y reaccionan. Delegan.
+   │
+   ▼
+services/*.service.ts                Orquestan la funcionalidad. Tienen estado.
+   │            │
+   │            └──► libs/state (facades NgRx)   Estado compartido entre pantallas
+   ▼
+data/*.repository.ts                 Leen/escriben Firestore (un repositorio por agregado)
+services/*-storage.service.ts        Leen/escriben el dispositivo (localStorage / IndexedDB)
+   │
+utils/*.util.ts                      Funciones PURAS: calculan, no inyectan nada, no hacen I/O
+```
+
+### Reglas
+
+- **Las páginas, containers y componentes no inyectan repositorios.** Lo impide una
+  regla de lint (`apps/chessColate/eslint.config.mjs`, `no-restricted-imports`).
+  Lo que necesitan lo piden a un `service` o lo leen del store.
+- **`*.util.ts` = función pura.** Recibe datos, devuelve datos. Si una función
+  necesita Angular, Firestore o `localStorage`, no es un util: es un servicio.
+- **`*.repository.ts` = Firestore. `*-storage.service.ts` = dispositivo.**
+- **La conexión a Firestore es única** (`FirestoreConnection`, se inicia en
+  `AppComponent`); los repositorios la comparten.
 - **Un tipo exclusivo de una funcionalidad vive en su `models/`.** Si lo comparten
   varias funcionalidades, apps o libs, va a `libs/models`.
-- **Lo que usan varias funcionalidades** va a `shared/` (p. ej.
-  `shared/utils/date.util.ts`), no se importa de la carpeta de otra.
-- Los specs van junto al archivo que prueban dentro de `features/`.
-- La regla de lint de repositorios cubre también `features/**/pages` y
-  `features/**/containers`.
+- **Entre funcionalidades**: cualquiera puede usar `core/`, `shared/` y `libs/`. Una
+  funcionalidad que necesita algo de otra lo importa de su `services/` o `utils/`, y lo que
+  usan varias sin ser de ninguna va a `shared/` (p. ej. `shared/utils/date.util.ts`).
+  Dependencias que hay hoy (sacadas de los imports):
+  `training` → `records`, `reminders`, `app-review` · `home` → `training`, `records` ·
+  `streak` → `records`, `reminders` · `game-analytics` → `games`, `training` ·
+  `settings` → `training`, `games`, `game-analytics`, `app-review` (borra sus datos locales).
+  **Conocido:** `reminders` y `training` se importan mutuamente (recordatorios lee el historial
+  de `PlanStorageService`; entrenamiento le avisa al empezar y terminar una sesión). Es
+  acoplamiento anterior a la reorganización y no se resolvió.
+- **Dónde va una carpeta nueva:** una funcionalidad nueva es `features/<nombre>/`;
+  algo que usa toda la app es `core/`; algo que usan varias funcionalidades es `shared/`.
+
+---
+
+## Las pruebas
+
+Las pruebas **no viven junto al código**: `apps/chessColate/tests/unit/` es un **espejo** de
+`src/app/`, con el mismo árbol de carpetas y el nombre del archivo más `.spec.ts`
+(`src/app/features/reminders/utils/reminder-time.util.ts` →
+`tests/unit/features/reminders/utils/reminder-time.util.spec.ts`). Los dobles y datos que se
+comparten van en `tests/support/` (alias `@tests/*`). Convenciones en
+[`apps/chessColate/tests/README.md`](../apps/chessColate/tests/README.md).
+
+- **Unitarias (Jest):** `npx nx test chessColate`. Cubren servicios, repositorios, guards,
+  rutas, páginas y componentes. Tablero, Ionic, Chart.js y Stockfish se sustituyen por dobles.
+- **E2E (Playwright):** proyecto aparte, `apps/chessColate-e2e`
+  ([README](../apps/chessColate-e2e/README.md)). Abre la app compilada en un navegador de
+  móvil con la red externa cortada y compara cada pantalla con una captura de referencia.
+  Es lo que verifica que un movimiento de archivos no rompió ninguna pantalla.
+- Los problemas que aparecieron al escribirlas, sin corregir, están en
+  [`HALLAZGOS_PRUEBAS.md`](./HALLAZGOS_PRUEBAS.md).
 
 ---
 
@@ -125,22 +177,24 @@ global, elos por tema/plan, idioma, cuentas. Casi todos los flujos lo leen.
 
 ## 4. Mapa de pantallas → de qué dependen
 
-Rutas en `app.routes.ts` (todas con `loadComponent`, cargan bajo demanda):
+Rutas en `app.routes.ts` (todas con `loadComponent`, cargan bajo demanda). La página de cada
+ruta está en `features/<funcionalidad>/pages/`.
 
-| Ruta | Pantalla | Servicios principales |
+| Ruta | Funcionalidad | Servicios principales |
 |---|---|---|
-| `home` | Inicio y menú de rutinas (`home/components/training-menu`) | `BlockService`, `PlanService`, `InfinityPuzzlePoolService`, `StreakStorageService`, `Reto333StorageService` |
-| `puzzles/training` | **Entrenamiento (rutina)** | ver flujo 5.1 |
-| `puzzles/plan-played` | Resumen de la rutina | `PlanFacadeService`, `PlanStorageService` |
-| `puzzles/plans-history` | Historial | `PlanStorageService` |
-| `puzzles/custom-plans*` | Rutinas propias (requiere sesión) | `CustomPlansService` → `CustomPlanRepository` |
-| `puzzles/public-plans` | Rutinas públicas | `PublicPlansService` → `PublicPlanRepository` |
-| `streak` | Modo Racha | `StreakService`, `StreakStorageService`, `UserRecordsService` |
-| `games`, `games/viewer`, `games/:id` | Reproductor de partidas | `GamesService`, `GameReviewService` |
-| `analytics` | Análisis de partidas | `GameAnalyticsService` |
-| `reminders` | Recordatorios (`features/reminders/pages`) | `TrainingReminderService` |
-| `coordinates`, `knight-tour`, `chess960` | Minijuegos | Servicios propios / `libs/board` |
-| `settings`, `settings/storage` | Ajustes y descargas | `AppService`, `AppearanceService`, `LanguageService`, caché de `puzzles-provider` |
+| `home` | `home` (menú de rutinas en `containers/training-menu`) | `BlockService`, `PlanService`, `InfinityPuzzlePoolService`, `StreakStorageService`, `Reto333StorageService` |
+| `puzzles/training` | `training` · **Entrenamiento (rutina)** | ver flujo 5.1 |
+| `puzzles/plan-played` | `training` · Resumen de la rutina | `PlanFacadeService`, `PlanStorageService` |
+| `puzzles/plans-history` | `training` · Historial | `PlanStorageService` |
+| `puzzles/custom-plans*` | `training` · Rutinas propias (requiere sesión) | `CustomPlansService` → `CustomPlanRepository` |
+| `puzzles/public-plans` | `training` · Rutinas públicas | `PublicPlansService` → `PublicPlanRepository` |
+| `streak` | `streak` · Modo Racha | `StreakService`, `StreakStorageService`, `UserRecordsService` |
+| `games`, `games/viewer`, `games/:id` | `games` · Reproductor de partidas | `GamesService`, `GameReviewService` |
+| `analytics` | `game-analytics` · Análisis de partidas | `GameAnalyticsService` |
+| `reminders` | `reminders` · Recordatorios | `TrainingReminderService` |
+| `coordinates`, `knight-tour`, `chess960` | una funcionalidad cada una · Minijuegos | Servicios propios / `libs/board` |
+| `settings`, `settings/storage` | `settings` · Ajustes y descargas | `AppService`, `AppearanceService`, `LanguageService`, caché de `puzzles-provider` |
+| `donation`, `privacy` | `donation`, `privacy` | `RevenueCatService` (donación) |
 
 ---
 
@@ -153,14 +207,14 @@ El más largo y el que más cuesta seguir. En orden:
 **Crear la rutina**
 1. La pantalla (`home.page`, `training-menu` o "repetir" en `plan-played`) llama a `BlockService.generateBlocksForPlan(tipo)`
    → una lista de `Block` según una tabla por tipo de plan
-   (`plan-blocks.config.ts`). Un bloque = un tema/apertura + elo + tiempo +
+   (`features/training/config/plan-blocks.config.ts`). Un bloque = un tema/apertura + elo + tiempo +
    número de ejercicios.
 2. `PlanService.newPlan(blocks, tipo)` crea el `Plan` (uid, bloques), lo pone en
    el store (`PlanFacadeService.setPlan`), registra `routine_started` y avisa a
    `TrainingReminderService.onSessionStarted()` para no molestar en plena sesión.
 3. Navega a `puzzles/training`.
 
-**Jugar** (`TrainingComponent`, la pantalla es la que orquesta)
+**Jugar** (`TrainingPage`, la pantalla es la que orquesta)
 4. `TrainingSessionService` (máquina de estados) lleva el plan, el bloque actual
    y los contadores. **No sabe** de sonidos, modales, cronómetro ni navegación.
    `TrainingTimerService` solo cuenta el tiempo del bloque. Ambos se proveen en
@@ -191,7 +245,7 @@ El más largo y el que más cuesta seguir. En orden:
 ```
 Home ─► BlockService.generateBlocksForPlan ─► PlanService.newPlan ─► [store: plan]
                                                                         │
-TrainingComponent ◄──────────────── TrainingSessionService (estado) ◄──┘
+TrainingPage      ◄──────────────── TrainingSessionService (estado) ◄──┘
    │  getPuzzlesForBlock ─► PuzzlesProvider ─► IndexedDB / red
    │  onPuzzleCompleted ─► elos (Profile | PlansElos) + analítica + sonido
    └─ endPlan ─► PlanStorageService (local) ─► plan-played
@@ -201,12 +255,12 @@ TrainingComponent ◄──────────────── TrainingSe
 
 Muerte súbita: el primer fallo termina. `StreakService` pide un puzzle a la vez a
 `PuzzlesProvider` con la rampa de elo (+15 por acierto, sin repetir); el récord va
-a `StreakStorageService` (dispositivo) y `UserRecordsService` lo sincroniza con el
+a `StreakStorageService` (dispositivo, en `features/records`) y `UserRecordsService` lo sincroniza con el
 perfil. No toca el elo del usuario. Detalle: [`implementado/RACHA_STREAK_FLOW.md`](./implementado/RACHA_STREAK_FLOW.md).
 
 ### 5.3 Recordatorios de entrenamiento
 
-Todo vive en `features/reminders/` (la primera funcionalidad migrada):
+Todo vive en `features/reminders/`:
 - `utils/reminder-time.util.ts` — **cálculo puro de la hora**: sugerida según
   cuándo suele entrenar, efectiva y formato legible.
 - `utils/reminder-schedule.util.ts` — **cálculo puro de la agenda**: próximas
@@ -222,7 +276,7 @@ Pantalla: `features/reminders/pages/reminders.page.ts`. Detalle: [`implementado/
 
 ### 5.4 Análisis de partidas (Game Analytics)
 
-`GameAnalyticsService` es una fachada: la pantalla (`pages/analytics`) conecta una
+`GameAnalyticsService` es una fachada: la pantalla (`features/game-analytics/pages/analytics.page.ts`) conecta una
 cuenta, pide "ponerse al día" y recibe partidas **ya normalizadas**; no sabe si
 vienen de chess.com o lichess.
 `chess-com-provider` / `lichess-provider` descargan → `game-reporter`
@@ -242,8 +296,8 @@ Detalle: [`implementado/REPRODUCTOR_PARTIDAS_FLOW.md`](./implementado/REPRODUCTO
 
 `CustomPlansService` / `PublicPlansService` van por **NgRx** (`libs/state`:
 actions → effects → repositorio Firestore → reducer → selectors, expuestos por
-una facade). Las pantallas leen el store; los guards (`custom-plans.guard`,
-`public-plans.guard`, `auth.guard`) controlan el acceso.
+una facade). Las pantallas leen el store; los guards (`custom-plans.guard` y
+`public-plans.guard` en `features/training/guards/`, `auth.guard` en `core/guards/`) controlan el acceso.
 
 ---
 
@@ -276,9 +330,9 @@ una facade). Las pantallas leen el store; los guards (`custom-plans.guard`,
   propias/públicas) va al store; lo que es de una sola pantalla (sesión de
   entrenamiento, cronómetro) vive en un servicio provisto por el componente.
 - **`TrainingSessionService` y `TrainingTimerService` no son `root`.** Se proveen
-  en `TrainingComponent` para que cada pantalla arranque limpia. Ionic puede
+  en `TrainingPage` para que cada pantalla arranque limpia. Ionic puede
   reutilizar la instancia entre rutinas; por eso `start()`/`reset()` limpian todo.
-- **`TrainingComponent` sigue siendo grande (~1100 líneas).** Ya delegó sesión,
+- **`TrainingPage` sigue siendo grande (~1100 líneas).** Ya delegó sesión,
   cronómetro y utils, pero aún coordina elos, sonidos, modales, analítica y
   navegación. Es el primer sitio donde buscar al seguir el flujo 5.1.
 
@@ -294,7 +348,7 @@ una facade). Las pantallas leen el store; los guards (`custom-plans.guard`,
 | **Facade** (`*FacadeService`) | Envoltorio de un trozo del store: dispatch + selectors, para que nadie use NgRx directo. |
 | **Repository** | Acceso a Firestore de un agregado. |
 | **Storage service** | Acceso a `localStorage`/IndexedDB de una funcionalidad. |
-| **Util** | Función pura, sin Angular ni I/O. Probada en `services/specs/`. |
+| **Util** | Función pura, sin Angular ni I/O. Se prueba en `tests/unit/`. |
 | **Reto 333 / Racha** | Modos de juego con récord propio, fuera del sistema de elos del perfil. |
 
 ---
@@ -303,14 +357,14 @@ una facade). Las pantallas leen el store; los guards (`custom-plans.guard`,
 
 | Quiero… | Empieza por |
 |---|---|
-| Cambiar qué bloques tiene una rutina | `services/plans/plan-blocks.config.ts` → `BlockService.generateBlocksForPlan` |
+| Cambiar qué bloques tiene una rutina | `features/training/config/plan-blocks.config.ts` → `BlockService.generateBlocksForPlan` |
 | Cambiar cómo se calcula el elo | `ProfileService.calculateEloPuzzlePlan` / `PlansElosService`; fórmula en `libs/common-utils/elo-calculator.service` |
-| Cambiar el flujo entre ejercicios/bloques | `TrainingSessionService` (decisión) y `TrainingComponent.follow` (efecto) |
+| Cambiar el flujo entre ejercicios/bloques | `TrainingSessionService` (decisión) y `TrainingPage.follow` (efecto) |
 | Cambiar de dónde salen los puzzles | `libs/puzzles-provider` |
 | Cambiar la hora/texto de los recordatorios | `features/reminders/utils/` (cálculo), `features/reminders/services/training-reminder.service.ts` (agenda) |
-| Añadir una estadística a Análisis | `libs/game-reporter` (reporte) + `game-analytics.util.ts` (presentación) |
-| Añadir un dato a Firestore | un `*.repository.ts` + su service (la página nunca lo inyecta) |
-| Añadir un evento de analítica | `services/analytics/analytics-events.util.ts` y `AnalyticsService` |
+| Añadir una estadística a Análisis | `libs/game-reporter` (reporte) + `features/game-analytics/utils/game-analytics.util.ts` (presentación) |
+| Añadir un dato a Firestore | un `*.repository.ts` en `data/` de la funcionalidad + su service (la página nunca lo inyecta) |
+| Añadir un evento de analítica | `core/analytics/analytics-events.util.ts` y `AnalyticsService` |
 
 ---
 

@@ -229,7 +229,7 @@ anotaciones, y estos archivos no llevan ninguno.
 
 - **Lib `games-provider`**, hermana de [`puzzles-provider`](../../libs/puzzles-provider/):
   índice, descarga, caché y lectura de PGN.
-- **Página** `apps/chessColate/src/app/pages/games/`, con las tres vistas.
+- **Página** `apps/chessColate/src/app/features/games/pages/`, con las tres vistas.
 - **Componente de reproducción** en `@chesspark/board`, hermano del de solución
   de puzzles.
 

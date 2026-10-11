@@ -15,7 +15,7 @@ tests/unit/features/reminders/utils/reminder-time.util.spec.ts      ← espejo e
 
 ## Reglas
 
-1. **Imports con alias** (`@services/*`, `@features/*`, `@shared/*`, `@app/*`, `@tests/*` (para `tests/support`),
+1. **Imports con alias** (`@core/*`, `@features/*`, `@shared/*`, `@app/*`, `@tests/*` (para `tests/support`),
    `@chesspark/*`), nunca rutas relativas hacia `src/`.
 2. **No se modifica código de `src/` para poder probarlo.** Si algo no se deja
    probar, se anota el motivo y se prueba lo que sí se pueda.

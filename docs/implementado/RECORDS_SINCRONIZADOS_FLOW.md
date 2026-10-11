@@ -39,9 +39,9 @@ flowchart TD
   FIN["Al terminar una racha o un intento"] --> SYNC
 ```
 
-- **Copia local** — [`reto333-storage.service.ts`](../../apps/chessColate/src/app/services/reto333-storage.service.ts) y [`streak-storage.service.ts`](../../apps/chessColate/src/app/services/streak-storage.service.ts). Solo localStorage; no saben nada de Firestore.
-- **Sincronización** — [`user-records.service.ts`](../../apps/chessColate/src/app/services/user-records.service.ts). Es el único que habla con los dos lados.
-- **Lógica pura de fusión** — [`user-records.util.ts`](../../apps/chessColate/src/app/services/user-records.util.ts), probada en [`user-records.util.spec.ts`](../../apps/chessColate/src/app/services/user-records.util.spec.ts).
+- **Copia local** — [`reto333-storage.service.ts`](../../apps/chessColate/src/app/features/records/services/reto333-storage.service.ts) y [`streak-storage.service.ts`](../../apps/chessColate/src/app/features/records/services/streak-storage.service.ts). Solo localStorage; no saben nada de Firestore.
+- **Sincronización** — [`user-records.service.ts`](../../apps/chessColate/src/app/features/records/services/user-records.service.ts). Es el único que habla con los dos lados.
+- **Lógica pura de fusión** — [`user-records.util.ts`](../../apps/chessColate/src/app/features/records/utils/user-records.util.ts), probada en [`user-records.util.spec.ts`](../../apps/chessColate/tests/unit/features/records/utils/user-records.util.spec.ts).
 - **Modelos** — [`reto333.model.ts`](../../libs/models/src/lib/reto333.model.ts) y `UserRecords` en [`profile.model.ts`](../../libs/models/src/lib/profile.model.ts).
 
 ---

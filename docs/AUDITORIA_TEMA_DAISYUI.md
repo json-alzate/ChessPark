@@ -32,12 +32,12 @@ bg-white text-black border-[#e5e5e5]
 ```
 
 ### Página Coordinates
-**Archivo:** `apps/chessColate/src/app/pages/coordinates/coordinates.page.scss`
+**Archivo:** `apps/chessColate/src/app/features/coordinates/pages/coordinates.page.scss`
 - L17: `color: #ffffff;` → `color: hsl(var(--bc));` (equivalente a `text-base-content`)
 - L93 / L96: `rgba(255, 215, 0, 0.5)` y `rgba(255, 215, 0, 0.8)` (oro, glow del badge récord)
   → `hsl(var(--wa))` (warning)
 
-**Archivo:** `apps/chessColate/src/app/pages/coordinates/coordinates.page.ts:514-520`
+**Archivo:** `apps/chessColate/src/app/features/coordinates/pages/coordinates.page.ts:514-520`
 ```ts
 confettiColors = ['#FFD700', '#FFA500', '#FF8C00', '#FF6347'];
 ['#ffffff', '#f0f0f0', '#e0e0e0', '#d0d0d0']
@@ -46,14 +46,14 @@ confettiColors = ['#FFD700', '#FFA500', '#FF8C00', '#FF6347'];
 → Mapear a la paleta DaisyUI (`hsl(var(--wa))`, `hsl(var(--su))`, …).
 
 ### Confetti (segunda implementación duplicada)
-**Archivo:** `apps/chessColate/src/app/pages/puzzles/containers/plan-played/plan-played.component.ts:293`
+**Archivo:** `apps/chessColate/src/app/features/training/pages/plan-played.page.ts:293`
 ```ts
 const confettiColors = ['#FFD700', '#FFA500', '#FF8C00', '#FF6347'];
 ```
 → Idéntico al de coordinates. Conviene extraer a una utilidad compartida que use variables DaisyUI.
 
 ### Gráficas (Chart.js)
-**Archivo:** `apps/chessColate/src/app/pages/puzzles/components/plan-chart/plan-chart.component.ts`
+**Archivo:** `apps/chessColate/src/app/features/training/components/plan-chart/plan-chart.component.ts`
 - L58: `color: '#bf811c',` → `color: 'hsl(var(--wa))'`
 - L61: `color: 'white',` → `color: 'hsl(var(--bc))'`
 - L148-149, L171-172, L194-195, L217-218:
@@ -64,7 +64,7 @@ backgroundColor: 'rgba(255, 73, 97, 0.2)',  borderColor: 'rgba(224, 64, 85, 0.2)
 → `hsl(var(--su) / 0.2)` para barras de éxito y `hsl(var(--er) / 0.2)` para error.
 
 ### Training
-**Archivo:** `apps/chessColate/src/app/pages/puzzles/containers/training/training.component.html:225`
+**Archivo:** `apps/chessColate/src/app/features/training/pages/training.page.html:225`
 ```
 style="color: #bf811c;"   → text-warning
 ```
@@ -86,9 +86,9 @@ entre temas).
 
 - `apps/chessColate/src/app/shared/components/navbar/navbar.component.scss:11`
 - `apps/chessColate/src/app/shared/components/donation-modal/donation-modal.component.scss:16,65`
-- `apps/chessColate/src/app/pages/coordinates/coordinates.page.scss:83`
-- `apps/chessColate/src/app/pages/coordinates/components/game-results-modal/game-results-modal.component.scss:9`
-- `apps/chessColate/src/app/pages/coordinates/components/settings-side-menu/settings-side-menu.component.scss:12,22`
+- `apps/chessColate/src/app/features/coordinates/pages/coordinates.page.scss:83`
+- `apps/chessColate/src/app/features/coordinates/components/game-results-modal/game-results-modal.component.scss:9`
+- `apps/chessColate/src/app/features/coordinates/components/settings-side-menu/settings-side-menu.component.scss:12,22`
 
 ---
 

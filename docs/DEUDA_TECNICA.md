@@ -91,7 +91,7 @@ Prioridad = impacto × frecuencia de cambio × riesgo. Cada hallazgo incluye ref
 #### P0.1 — God-services y un método de ~700 líneas
 
 > **Estado 2026-10-07 — ✅ Resuelto** (`af5e993`, `296ebd6`).
-> - `generateBlocksForPlan` es ahora un despachador corto; la configuración de cada plan vive en una tabla (`services/plans/plan-blocks.config.ts`, 388 líneas). `block.service.ts` pasó de 866 a 436 líneas y tiene 26 tests de caracterización.
+> - `generateBlocksForPlan` es ahora un despachador corto; la configuración de cada plan vive en una tabla (`features/training/config/plan-blocks.config.ts`, 388 líneas). `block.service.ts` pasó de 866 a 436 líneas y tiene 26 tests de caracterización.
 > - `firestore.service.ts` (915 líneas) se eliminó. Hay un repositorio por agregado en `services/firestore/`: `profile`, `user-puzzle`, `plan`, `plan-elos`, `custom-plan`, `public-plan` y `plan-interaction`, más `firestore-connection` y `firestore-serialize`. El mayor que queda es `public-plan.repository.ts` (347 líneas).
 > - Los ELO de partida de cada modo se dejaron separados a propósito y documentados como constantes: 1500 en los planes de la tabla, `RETO333_START_ELO` en el Reto 333 y 800–1000 en `backToCalm`. El ELO del bloque de enfriamiento de `plan30` se lee ahora del mismo tema que se muestra.
 
@@ -113,7 +113,7 @@ Prioridad = impacto × frecuencia de cambio × riesgo. Cada hallazgo incluye ref
 
 *Lo que sigue es la descripción original del hallazgo, previa a estos cambios.*
 
-- `apps/chessColate/src/app/pages/puzzles/containers/training/training.component.ts:76` (953 líneas): cálculo de ELO por tipo de plan (`saveInitialMaxElo` `:221-255`), **persistencia directa a `localStorage`** con `JSON.parse`/`try-catch` inline (`showReto333Alert` `:656-715`), parseo de FEN en un getter (`playerColor` `:122-135`), y `onPuzzleCompleted` `:515-627` que mezcla dominio, sonidos y UI.
+- `apps/chessColate/src/app/features/training/pages/training.page.ts:76` (953 líneas): cálculo de ELO por tipo de plan (`saveInitialMaxElo` `:221-255`), **persistencia directa a `localStorage`** con `JSON.parse`/`try-catch` inline (`showReto333Alert` `:656-715`), parseo de FEN en un getter (`playerColor` `:122-135`), y `onPuzzleCompleted` `:515-627` que mezcla dominio, sonidos y UI.
 - `libs/board/src/lib/board-puzzle-solution/board-puzzle-solution.component.ts:54` (917 líneas): un componente de UI gestiona **todo el ciclo de vida de Stockfish** (init/terminate/reintentos/errores de worker) `:116-281`.
 - `libs/board/src/lib/board-puzzle/board-puzzle.component.ts:90` (871 líneas): motor de puzzle completo (validación, promoción, timers, hints) dentro del componente.
 
@@ -130,8 +130,8 @@ Prioridad = impacto × frecuencia de cambio × riesgo. Cada hallazgo incluye ref
 
 Existe infraestructura de facades (`plan-facade.service.ts`, `public-plans-facade.service.ts`) pero varios componentes la eluden, creando **dos caminos de datos** (Store vs Firestore directo):
 
-- `apps/chessColate/src/app/pages/puzzles/containers/public-plans/public-plans.component.ts:113, :139, :165` — `getPublicPlan()` directo.
-- `apps/chessColate/src/app/pages/puzzles/containers/plan-played/plan-played.component.ts:231` — `getPlanInteraction()` directo.
+- `apps/chessColate/src/app/features/training/pages/public-plans.page.ts:113, :139, :165` — `getPublicPlan()` directo.
+- `apps/chessColate/src/app/features/training/pages/plan-played.page.ts:231` — `getPlanInteraction()` directo.
 - Ya reconocido en el código: `// TODO: no llamar directamente a firestore, pasar por el facade o store` en `apps/chessColate/src/app/services/custom-plans.service.ts:38`.
 
 **Acción sugerida:** exponer estos accesos a través de los facades/Store y prohibir la inyección de `FirestoreService` en componentes (regla de lint de arquitectura).

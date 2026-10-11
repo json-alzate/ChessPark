@@ -4,7 +4,7 @@
 
 Permitir que, al crear una **rutina personalizada**, el usuario pueda **cargar su propio archivo PGN con ejercicios** en vez de (o además de) usar el pool de puzzles del catálogo. Es decir: **cargar una BD de puzzles propia**.
 
-Hoy una rutina personalizada se compone de **bloques** ([`Block`](../../libs/models/src/lib/block.model.ts)), y cada bloque pide sus puzzles al catálogo remoto vía [`PuzzlesProvider`](../../libs/puzzles-provider/src/lib/puzzles-provider.ts) filtrando por tema/ELO/color ([`block.service.ts` → `getPuzzlesForBlock`](../../apps/chessColate/src/app/services/block.service.ts)). Este feature añade una **fuente alternativa de puzzles para un bloque**: un archivo PGN aportado por el usuario, con una **estructura organizada** que la app sabe interpretar y convertir a la estructura interna [`Puzzle`](../../libs/models/src/lib/puzzle.model.ts).
+Hoy una rutina personalizada se compone de **bloques** ([`Block`](../../libs/models/src/lib/block.model.ts)), y cada bloque pide sus puzzles al catálogo remoto vía [`PuzzlesProvider`](../../libs/puzzles-provider/src/lib/puzzles-provider.ts) filtrando por tema/ELO/color ([`block.service.ts` → `getPuzzlesForBlock`](../../apps/chessColate/src/app/features/training/services/block.service.ts)). Este feature añade una **fuente alternativa de puzzles para un bloque**: un archivo PGN aportado por el usuario, con una **estructura organizada** que la app sabe interpretar y convertir a la estructura interna [`Puzzle`](../../libs/models/src/lib/puzzle.model.ts).
 
 Casos de uso:
 - Un entrenador arma una colección de **posiciones tácticas/temáticas** y la reparte como `.pgn` a sus alumnos.
@@ -96,7 +96,7 @@ Puzzle[]  →  se inyecta en Block.puzzles
 
 ### Dónde encaja
 
-El modelo [`Block`](../../libs/models/src/lib/block.model.ts) **ya** tiene un campo opcional `puzzles?: Puzzle[]`, y [`getPuzzlesForBlock`](../../apps/chessColate/src/app/services/block.service.ts) **ya** antepone `blockSettings.puzzles` a los del catálogo:
+El modelo [`Block`](../../libs/models/src/lib/block.model.ts) **ya** tiene un campo opcional `puzzles?: Puzzle[]`, y [`getPuzzlesForBlock`](../../apps/chessColate/src/app/features/training/services/block.service.ts) **ya** antepone `blockSettings.puzzles` a los del catálogo:
 
 ```ts
 if (blockSettings.puzzles) {
@@ -106,7 +106,7 @@ if (blockSettings.puzzles) {
 
 Es decir, la "tubería" para inyectar puzzles propios en un bloque **ya existe**. El feature consiste en:
 
-1. En el **formulario de bloque** ([`block-settings.component.ts`](../../apps/chessColate/src/app/pages/puzzles/components/block-settings/block-settings.component.ts)) añadir una **fuente de puzzles**: `catálogo` (actual) vs. `archivo PGN propio`.
+1. En el **formulario de bloque** ([`block-settings.component.ts`](../../apps/chessColate/src/app/features/training/components/block-settings/block-settings.component.ts)) añadir una **fuente de puzzles**: `catálogo` (actual) vs. `archivo PGN propio`.
 2. Al elegir "archivo PGN propio": importar `.pgn` → `CustomPuzzlesImportService` → `Puzzle[]` → guardarlos como la BD del bloque.
 3. Un bloque "PGN propio" **no** consulta al catálogo (o lo hace solo como relleno si el usuario lo permite): sus puzzles salen del archivo.
 
@@ -258,9 +258,9 @@ Reusar `AnalyticsService` (catálogo en [OBSERVABILITY_TRACKING](../implementado
 ## Dependencias técnicas
 
 - `chess.js` (ya en el repo) para parsear PGN y derivar FEN/jugadas.
-- [`PuzzlesProvider`](../../libs/puzzles-provider/src/lib/puzzles-provider.ts) / [`block.service.ts`](../../apps/chessColate/src/app/services/block.service.ts) — punto de integración (`getPuzzlesForBlock`).
+- [`PuzzlesProvider`](../../libs/puzzles-provider/src/lib/puzzles-provider.ts) / [`block.service.ts`](../../apps/chessColate/src/app/features/training/services/block.service.ts) — punto de integración (`getPuzzlesForBlock`).
 - [`Block`](../../libs/models/src/lib/block.model.ts) / [`Plan`](../../libs/models/src/lib/plan.model.ts) — extender con `puzzleSource` / `customPuzzleSetId`.
-- [`block-settings.component.ts`](../../apps/chessColate/src/app/pages/puzzles/components/block-settings/block-settings.component.ts) y [`custom-plan-form.component.ts`](../../apps/chessColate/src/app/pages/puzzles/containers/custom-plan-form/custom-plan-form.component.ts) — UI de selección de fuente + ajustar el `strip` de `puzzles` al guardar.
+- [`block-settings.component.ts`](../../apps/chessColate/src/app/features/training/components/block-settings/block-settings.component.ts) y [`custom-plan-form.component.ts`](../../apps/chessColate/src/app/features/training/pages/custom-plan-form.page.ts) — UI de selección de fuente + ajustar el `strip` de `puzzles` al guardar.
 - [`UidGeneratorService`](../../libs/common-utils) para los `uid`.
 - Import de archivos: plugin de Capacitor (`@capacitor/filesystem`) o file input web para leer el `.pgn`.
 - Storage local existente para `CustomPuzzleSet`.
