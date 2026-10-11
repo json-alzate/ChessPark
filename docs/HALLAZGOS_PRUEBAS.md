@@ -33,7 +33,7 @@
 
 ## Comportamientos dudosos (la prueba fija el comportamiento actual)
 
-- **Textos sin traducir o con typos:** el historial muestra "1 plan guardados", "17% correctos" y títulos "Plan 1" en vez de "Bullet" (`getPlanTypeName` con nombres en español fijos); la descripción del Reto 333 sale "Mate en 1" con la UI en inglés (`buildReto333Blocks`); el navbar dice "Login / Sing up" (`AUTH.login.menuBar`). ❔
+- **Textos sin traducir o con typos:** el historial muestra "1 plan guardados", "17% correctos" y títulos "Plan 1" en vez de "Bullet" (`getPlanTypeName` con nombres en español fijos); la descripción del Reto 333 sale "Mate en 1" con la UI en inglés (`buildReto333Blocks`); el navbar dice "Login / Sing up" (`AUTH.login.menuBar`) ✅ (visto en las capturas de `/chesscolate:probar`).
 - **`ion-loading` "Iniciando…"** puede seguir en el DOM tapando clics sobre el tablero con la máquina cargada. ❔
 - **`#main-content` queda con `aria-hidden="true"`** varios segundos tras elegir la salida con `ion-select` en el recorrido del caballo (posible rareza de Ionic con popover dentro de sheet modal). ❔
 - **`getPuzzles` no deduplica por `uid`**: con el CDN real no ocurre, pero con datos repetidos un bloque trae el mismo puzzle varias veces. ❔

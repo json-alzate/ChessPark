@@ -78,6 +78,16 @@ Necesita `apps/chessColate/src/environments/private/keys.ts` (ignorado por git).
 
 # 4. Recorre el flujo
 
+> **Si el MCP de Playwright no está conectado** (un servidor de `.mcp.json` hay que aprobarlo y
+> reiniciar la sesión), haz el mismo recorrido con un script de Playwright dentro de
+> `docs/local/<nombre>/run/` (ignorado por git): un `playwright.config.ts` con
+> `baseURL: http://localhost:4301` y viewport móvil, y un spec que reutilice los helpers de
+> tablero de `apps/chessColate-e2e/support/rut-helpers.ts` **sin** `support/test.ts` (ese corta
+> la red). Registra las respuestas externas con `page.on('response')` y guarda las capturas
+> numeradas. Corre con `npx playwright test -c docs/local/<nombre>/run/playwright.config.ts`.
+> La rutina **Bullet dura 1 minuto reales**; Blitz y las demás, más.
+
+
 El viewport ya viene como iPhone 15 (`.mcp.json`): la app es móvil, no la pruebes en escritorio.
 
 - El **onboarding** sale la primera vez: ciérralo, o recórrelo si es lo que se prueba.
