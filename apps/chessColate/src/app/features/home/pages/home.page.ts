@@ -34,10 +34,10 @@ import { AppService } from '@core/app/app.service';
 
 // Components
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
-import { TrainingMenuComponent } from './components/training-menu.component';
+import { TrainingMenuComponent } from '../containers/training-menu/training-menu.component';
 import { OnboardingModalComponent, ONBOARDING_SEEN_KEY } from '@shared/components/onboarding-modal/onboarding-modal.component';
 import { BoardPuzzleComponent, BoardPuzzleSolutionComponent } from '@chesspark/board';
-import { PlanChartComponent } from '../puzzles/components/plan-chart/plan-chart.component';
+import { PlanChartComponent } from '../../../pages/puzzles/components/plan-chart/plan-chart.component';
 import { Capacitor } from '@capacitor/core';
 import { KingImagePipe } from '@shared/pipes/king-image.pipe';
 

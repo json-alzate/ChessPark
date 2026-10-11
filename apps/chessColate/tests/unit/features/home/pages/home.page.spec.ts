@@ -43,7 +43,7 @@ jest.mock('@shared/components/navbar/navbar.component', () => {
   Component({ selector: 'app-navbar', standalone: true, template: '' })(NavbarComponent);
   return { NavbarComponent };
 });
-jest.mock('@app/pages/home/components/training-menu.component', () => {
+jest.mock('@app/features/home/containers/training-menu/training-menu.component', () => {
   const { Component } = jest.requireActual('@angular/core');
   class TrainingMenuComponent {}
   Component({ selector: 'app-training-menu', standalone: true, template: '' })(TrainingMenuComponent);
@@ -70,7 +70,7 @@ import { BoardPuzzleSolutionComponent } from '@chesspark/board';
 import { PuzzlesProvider } from '@chesspark/puzzles-provider';
 import { getIsInitialized } from '@chesspark/state';
 
-import { HomePage } from '@app/pages/home/home.page';
+import { HomePage } from '@app/features/home/pages/home.page';
 import { ProfileService } from '@core/account/profile.service';
 import { AppService } from '@core/app/app.service';
 import { AppearanceService } from '@core/app/appearance.service';

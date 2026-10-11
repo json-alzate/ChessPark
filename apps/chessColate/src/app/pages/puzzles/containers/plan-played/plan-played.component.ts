@@ -32,7 +32,7 @@ import { PlanChartComponent } from '@pages/puzzles/components/plan-chart/plan-ch
 import { LoginComponent } from '@shared/components/login/login.component';
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 import { ReminderPermissionModalComponent } from '@features/reminders/containers/reminder-permission-modal/reminder-permission-modal.component';
-import { planImage } from '@pages/home/components/training-plans.config';
+import { planImage } from '@features/home/utils/training-plans.config';
 import { ConfettiService } from '@chesspark/common-utils';
 
 import { addIcons } from 'ionicons';

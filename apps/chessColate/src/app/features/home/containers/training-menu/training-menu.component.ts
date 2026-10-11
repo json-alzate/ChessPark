@@ -32,7 +32,7 @@ import {
   planImage,
   TRAINING_PLAN_PRESETS,
   TrainingPlanPreset,
-} from './training-plans.config';
+} from '../../utils/training-plans.config';
 
 interface SwiperEl extends HTMLElement {
   swiper?: { slideTo: (index: number, speed?: number, runCallbacks?: boolean) => void };
