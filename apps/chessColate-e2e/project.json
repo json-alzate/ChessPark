@@ -1,0 +1,15 @@
+{
+  "name": "chessColate-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/chessColate-e2e/specs",
+  "tags": [],
+  "implicitDependencies": ["chessColate"],
+  "// targets": "El target `e2e` lo infiere @nx/playwright/plugin desde playwright.config.ts.",
+  "targets": {
+    "typecheck": {
+      "command": "tsc --noEmit -p apps/chessColate-e2e/tsconfig.json",
+      "cache": true
+    }
+  }
+}
