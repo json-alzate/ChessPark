@@ -15,7 +15,7 @@ import {
 } from '@chesspark/models';
 import { distinctUntilChanged, map } from 'rxjs';
 
-import { ProfileService } from '@services/account/profile.service';
+import { ProfileService } from '@core/account/profile.service';
 
 /** Claves de localStorage con la apariencia elegida (la que usan los invitados). */
 const PIECES_STORAGE_KEY = 'chessColate_pieces';

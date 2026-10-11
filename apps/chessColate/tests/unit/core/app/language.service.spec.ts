@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { of, Subject } from 'rxjs';
 import { TranslocoService } from '@jsverse/transloco';
 
-import { LanguageService } from '@services/app/language.service';
+import { LanguageService } from '@core/app/language.service';
 
 const KEY = 'chessColate_lang';
 

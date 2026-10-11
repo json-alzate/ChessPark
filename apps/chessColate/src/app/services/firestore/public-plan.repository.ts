@@ -14,8 +14,8 @@ import {
 } from 'firebase/firestore';
 
 import { Plan, PublicPlan, PublicPlanFilter } from '@chesspark/models';
-import { FirestoreConnection } from './firestore-connection.service';
-import { serializeFirestoreData } from './firestore-serialize.util';
+import { FirestoreConnection } from '../../core/firestore/firestore-connection.service';
+import { serializeFirestoreData } from '../../core/firestore/firestore-serialize.util';
 
 /**
  * Repositorio del agregado Plan público (colección `public-plans`): la copia

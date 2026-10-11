@@ -6,10 +6,10 @@ import { PlanFacadeService } from '@chesspark/state';
 // services
 import { PlanRepository } from '@services/firestore/plan.repository';
 import { BlockService } from '@services/training/block.service';
-import { ProfileService } from '@services/account/profile.service';
+import { ProfileService } from '@core/account/profile.service';
 import { PlansElosService } from '@services/plans/plans-elos.service';
-import { AnalyticsService } from '@services/analytics/analytics.service';
-import { routineMetaFromPlanType, minutesFromBlocks } from '@services/analytics/analytics-events.util';
+import { AnalyticsService } from '@core/analytics/analytics.service';
+import { routineMetaFromPlanType, minutesFromBlocks } from '@core/analytics/analytics-events.util';
 import { TrainingReminderService } from '@features/reminders/services/training-reminder.service';
 
 @Injectable({

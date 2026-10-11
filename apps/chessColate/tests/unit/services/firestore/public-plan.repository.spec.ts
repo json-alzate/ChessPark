@@ -3,7 +3,7 @@ import { getDoc, getDocs, setDoc, updateDoc } from 'firebase/firestore';
 
 import { Block, Plan, PublicPlan } from '@chesspark/models';
 
-import { FirestoreConnection } from '@services/firestore/firestore-connection.service';
+import { FirestoreConnection } from '@core/firestore/firestore-connection.service';
 import { PublicPlanRepository } from '@services/firestore/public-plan.repository';
 import { fakeDocSnap, fakeQuerySnap } from '@tests/support/firestore-plans.fake';
 

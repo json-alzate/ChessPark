@@ -27,8 +27,8 @@ export const translocoTesting = () =>
  */
 export const appearanceDouble = () => {
   const { AppearanceService } = jest.requireActual<
-    typeof import('@services/app/appearance.service')
-  >('@services/app/appearance.service');
+    typeof import('@core/app/appearance.service')
+  >('@core/app/appearance.service');
   return {
     provide: AppearanceService,
     useValue: { pieces: () => 'cburnett', board: () => 'green' },

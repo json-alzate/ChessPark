@@ -3,7 +3,7 @@ import { getDocs, setDoc, updateDoc } from 'firebase/firestore';
 
 import { PlanElos } from '@chesspark/models';
 
-import { FirestoreConnection } from '@services/firestore/firestore-connection.service';
+import { FirestoreConnection } from '@core/firestore/firestore-connection.service';
 import { PlanElosRepository } from '@services/firestore/plan-elos.repository';
 import { fakeQuerySnap } from '@tests/support/firestore-plans.fake';
 

@@ -16,7 +16,7 @@ import {
   StorageService,
   CoordinatesPuzzle,
 } from '@features/coordinates/services/storage.service';
-import { AnalyticsService } from '@services/analytics/analytics.service';
+import { AnalyticsService } from '@core/analytics/analytics.service';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { ConfettiService, RandomFENService, SoundsService } from '@chesspark/common-utils';

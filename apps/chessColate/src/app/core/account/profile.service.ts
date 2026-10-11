@@ -21,7 +21,7 @@ import { User as FirebaseUser } from 'firebase/auth';
 
 
 // services
-import { ProfileRepository } from '../firestore/profile.repository';
+import { ProfileRepository } from './profile.repository';
 import { AppService } from '../app/app.service';
 import { LanguageService, SupportedLang } from '../app/language.service';
 import { EloCalculatorService } from '@chesspark/common-utils';

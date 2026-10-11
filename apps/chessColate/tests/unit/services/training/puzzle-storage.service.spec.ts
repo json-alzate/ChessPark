@@ -4,7 +4,7 @@ import { TranslocoService } from '@jsverse/transloco';
 
 import { CachedFileIndexEntry, PuzzlesProvider } from '@chesspark/puzzles-provider';
 
-import { AppService } from '@services/app/app.service';
+import { AppService } from '@core/app/app.service';
 import { PuzzleStorageService } from '@services/training/puzzle-storage.service';
 
 /** Doble del servicio de caché: solo lo que consume la fachada. */

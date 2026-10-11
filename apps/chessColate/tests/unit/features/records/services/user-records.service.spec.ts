@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 
 import { Profile, Reto333Record, StreakRecord, UserRecords } from '@chesspark/models';
 
-import { ProfileService } from '@services/account/profile.service';
+import { ProfileService } from '@core/account/profile.service';
 import { StreakStorageService } from '@features/records/services/streak-storage.service';
 import { UserRecordsService } from '@features/records/services/user-records.service';
 import { Reto333StorageService } from '@features/records/services/reto333-storage.service';

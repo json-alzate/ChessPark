@@ -6,9 +6,9 @@ import { Subscription } from 'rxjs';
 
 import { LoginComponent } from '../login/login.component';
 import { DonationModalComponent } from '../donation-modal/donation-modal.component';
-import { ProfileService } from '@services/account/profile.service';
+import { ProfileService } from '@core/account/profile.service';
 import { Capacitor } from '@capacitor/core';
-import { AuthService } from '@services/account/auth.service';
+import { AuthService } from '@core/account/auth.service';
 import { Profile } from '@chesspark/models';
 import { Store, select } from '@ngrx/store';
 import { AuthState, getIsInitialized } from '@chesspark/state';

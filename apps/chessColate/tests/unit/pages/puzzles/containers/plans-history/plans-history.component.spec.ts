@@ -10,7 +10,7 @@ import { Block, Plan, UserPuzzle } from '@chesspark/models';
 import { PlanFacadeService } from '@chesspark/state';
 import { SecondsToMinutesSecondsPipe } from '@chesspark/common-utils';
 
-import { AppService } from '@services/app/app.service';
+import { AppService } from '@core/app/app.service';
 import { PlanStorageService } from '@services/plans/plan-storage.service';
 
 import { PlansHistoryComponent } from '@app/pages/puzzles/containers/plans-history/plans-history.component';

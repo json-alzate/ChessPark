@@ -13,7 +13,7 @@ import {
 } from 'ionicons/icons';
 
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
-import { AnalyticsService } from '@services/analytics/analytics.service';
+import { AnalyticsService } from '@core/analytics/analytics.service';
 import {
   PuzzleStorageService,
   StorageFileItem,

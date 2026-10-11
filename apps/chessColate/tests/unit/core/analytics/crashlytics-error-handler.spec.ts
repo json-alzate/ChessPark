@@ -1,4 +1,4 @@
-import { CrashlyticsErrorHandler } from '@services/analytics/crashlytics-error-handler';
+import { CrashlyticsErrorHandler } from '@core/analytics/crashlytics-error-handler';
 
 const mockState = { native: true, crashlyticsEnabled: true };
 const mockRecordException = jest.fn();

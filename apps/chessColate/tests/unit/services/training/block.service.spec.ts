@@ -5,10 +5,10 @@ import { TranslocoService } from '@jsverse/transloco';
 import { PlanTypes, Profile } from '@chesspark/models';
 import { PuzzlesProvider } from '@chesspark/puzzles-provider';
 
-import { AppService } from '@services/app/app.service';
+import { AppService } from '@core/app/app.service';
 import { BlockService } from '@services/training/block.service';
 import { PlansElosService } from '@services/plans/plans-elos.service';
-import { ProfileService } from '@services/account/profile.service';
+import { ProfileService } from '@core/account/profile.service';
 
 /** Temas disponibles en la app (unión de los permitidos por plan). */
 const APP_THEMES = [

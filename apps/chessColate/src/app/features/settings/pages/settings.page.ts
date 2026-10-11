@@ -21,9 +21,9 @@ import { Subscription } from 'rxjs';
 
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 import { AppearancePickerComponent } from '@shared/components/appearance-picker/appearance-picker.component';
-import { ProfileService } from '@services/account/profile.service';
-import { LanguageService, SupportedLang } from '@services/app/language.service';
-import { AnalyticsService } from '@services/analytics/analytics.service';
+import { ProfileService } from '@core/account/profile.service';
+import { LanguageService, SupportedLang } from '@core/app/language.service';
+import { AnalyticsService } from '@core/analytics/analytics.service';
 import { PuzzleStorageService } from '@services/training/puzzle-storage.service';
 import { AppReviewService } from '@features/app-review/services/app-review.service';
 import { GamesService } from '@features/games/services/games.service';

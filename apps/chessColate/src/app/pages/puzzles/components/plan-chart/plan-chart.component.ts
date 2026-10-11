@@ -6,8 +6,8 @@ import { Chart, registerables } from 'chart.js';
 
 import { Profile, Plan, PlanElos } from '@chesspark/models';
 
-import { AppService } from '@services/app/app.service';
-import { ProfileService } from '@services/account/profile.service';
+import { AppService } from '@core/app/app.service';
+import { ProfileService } from '@core/account/profile.service';
 import { PlansElosService } from '@services/plans/plans-elos.service';
 
 @Component({

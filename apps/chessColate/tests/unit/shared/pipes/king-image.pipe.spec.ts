@@ -1,11 +1,11 @@
 // El servicio real arrastra la librería del tablero (cm-chessboard), que Jest no
 // sabe cargar; la pipe solo necesita su señal `pieces`, que se reemplaza abajo.
-jest.mock('@services/app/appearance.service', () => ({ AppearanceService: class AppearanceService {} }));
+jest.mock('@core/app/appearance.service', () => ({ AppearanceService: class AppearanceService {} }));
 
 import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
-import { AppearanceService } from '@services/app/appearance.service';
+import { AppearanceService } from '@core/app/appearance.service';
 import { KingColor, KingImagePipe } from '@shared/pipes/king-image.pipe';
 
 describe('KingImagePipe', () => {

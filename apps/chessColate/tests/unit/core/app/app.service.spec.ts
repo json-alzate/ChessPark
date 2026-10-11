@@ -4,7 +4,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { TranslocoService } from '@jsverse/transloco';
 
 import { Opening, PuzzleThemesGroup } from '@chesspark/models';
-import { AppService } from '@services/app/app.service';
+import { AppService } from '@core/app/app.service';
 
 const themeGroups = [
   {

@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { AnalyticsService } from '@services/analytics/analytics.service';
+import { AnalyticsService } from '@core/analytics/analytics.service';
 import { AppReviewService } from '@features/app-review/services/app-review.service';
 import { AppReviewStorageService } from '@features/app-review/services/app-review-storage.service';
 import {

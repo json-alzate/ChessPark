@@ -9,7 +9,7 @@ import {
 } from 'firebase/firestore';
 
 import { PlanElos } from '@chesspark/models';
-import { FirestoreConnection } from './firestore-connection.service';
+import { FirestoreConnection } from '../../core/firestore/firestore-connection.service';
 
 /**
  * Repositorio del agregado ELO por plan (colección `plansElos`): el ELO que

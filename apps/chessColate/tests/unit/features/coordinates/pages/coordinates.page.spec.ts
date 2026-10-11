@@ -12,7 +12,7 @@ import { CoordinatesPage } from '@app/features/coordinates/pages/coordinates.pag
 import { GameResultsModalComponent } from '@app/features/coordinates/components/game-results-modal/game-results-modal.component';
 import { SettingsSideMenuComponent } from '@app/features/coordinates/components/settings-side-menu/settings-side-menu.component';
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
-import { AnalyticsService } from '@services/analytics/analytics.service';
+import { AnalyticsService } from '@core/analytics/analytics.service';
 import { CoordinatesPuzzle, StorageService } from '@features/coordinates/services/storage.service';
 
 import {

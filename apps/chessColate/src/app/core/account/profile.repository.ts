@@ -13,7 +13,7 @@ import {
 } from 'firebase/firestore';
 
 import { Profile } from '@chesspark/models';
-import { FirestoreConnection } from './firestore-connection.service';
+import { FirestoreConnection } from '../firestore/firestore-connection.service';
 
 /**
  * Repositorio del agregado Perfil: colección `Users` y la colección de

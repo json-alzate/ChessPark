@@ -14,13 +14,13 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Plan, Puzzle, UserPuzzle, Block, PlanTypes } from '@chesspark/models';
 import { PlanFacadeService, PublicPlansFacadeService } from '@chesspark/state';
 
-import { AppService } from '@services/app/app.service';
-import { ProfileService } from '@services/account/profile.service';
+import { AppService } from '@core/app/app.service';
+import { ProfileService } from '@core/account/profile.service';
 import { PlansElosService } from '@services/plans/plans-elos.service';
 import { BlockService } from '@services/training/block.service';
 import { PlanService } from '@services/plans/plan.service';
 import { PlanStorageService } from '@services/plans/plan-storage.service';
-import { AnalyticsService } from '@services/analytics/analytics.service';
+import { AnalyticsService } from '@core/analytics/analytics.service';
 import { TrainingReminderService } from '@features/reminders/services/training-reminder.service';
 import { AppReviewService } from '@features/app-review/services/app-review.service';
 import { routineAccuracy } from '@features/app-review/utils/app-review.util';

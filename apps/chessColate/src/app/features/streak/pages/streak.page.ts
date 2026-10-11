@@ -36,9 +36,9 @@ import {
   UidGeneratorService,
 } from '@chesspark/common-utils';
 
-import { AppService } from '@services/app/app.service';
-import { AnalyticsService } from '@services/analytics/analytics.service';
-import { ProfileService } from '@services/account/profile.service';
+import { AppService } from '@core/app/app.service';
+import { AnalyticsService } from '@core/analytics/analytics.service';
+import { ProfileService } from '@core/account/profile.service';
 import { StreakService } from '@features/streak/services/streak.service';
 import { StreakStorageService } from '@features/records/services/streak-storage.service';
 import { UserRecordsService } from '@features/records/services/user-records.service';

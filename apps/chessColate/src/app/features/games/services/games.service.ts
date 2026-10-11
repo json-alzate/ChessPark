@@ -14,7 +14,7 @@ import {
 } from '@chesspark/games-provider';
 import { ChessGame } from '@chesspark/models';
 
-import { AnalyticsService } from '../../../services/analytics/analytics.service';
+import { AnalyticsService } from '../../../core/analytics/analytics.service';
 import {
   DEFAULT_PLAYBACK_SETTINGS,
   PlaybackSettings,

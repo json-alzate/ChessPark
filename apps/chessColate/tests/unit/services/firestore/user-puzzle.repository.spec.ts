@@ -3,7 +3,7 @@ import { addDoc, getDocs } from 'firebase/firestore';
 
 import { CoordinatesPuzzle, UserPuzzle } from '@chesspark/models';
 
-import { FirestoreConnection } from '@services/firestore/firestore-connection.service';
+import { FirestoreConnection } from '@core/firestore/firestore-connection.service';
 import { UserPuzzleRepository } from '@services/firestore/user-puzzle.repository';
 import { fakeQuerySnap } from '@tests/support/firestore-plans.fake';
 

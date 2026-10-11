@@ -4,7 +4,7 @@ import { PlanElos } from '@chesspark/models';
 import { EloCalculatorService, UidGeneratorService } from '@chesspark/common-utils';
 import { PlansElosFacadeService } from '@chesspark/state';
 import { PlanElosRepository } from '@services/firestore/plan-elos.repository';
-import { ProfileService } from '@services/account/profile.service';
+import { ProfileService } from '@core/account/profile.service';
 
 /**
  * Información sobre récords alcanzados en un plan

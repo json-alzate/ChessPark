@@ -12,7 +12,7 @@ import { TranslocoPipe } from '@jsverse/transloco';
 import { GameCollectionInfo } from '@chesspark/games-provider';
 import { AccountStorageSummary } from '@chesspark/game-reporter';
 
-import { AnalyticsService } from '@services/analytics/analytics.service';
+import { AnalyticsService } from '@core/analytics/analytics.service';
 import { GameAnalyticsService } from '@features/game-analytics/services/game-analytics.service';
 import { GamesService } from '@features/games/services/games.service';
 import {

@@ -24,8 +24,8 @@ import { UidGeneratorService, SecondsToMinutesSecondsPipe } from '@chesspark/com
 
 import { CustomPlansService } from '@services/plans/custom-plans.service';
 import { PlanService } from '@services/plans/plan.service';
-import { AppService } from '@services/app/app.service';
-import { ProfileService } from '@services/account/profile.service';
+import { AppService } from '@core/app/app.service';
+import { ProfileService } from '@core/account/profile.service';
 import { PlanFacadeService, CustomPlansFacadeService, PlansElosFacadeService, getProfile, getIsInitialized } from '@chesspark/state';
 import { AppState } from '@chesspark/state';
 

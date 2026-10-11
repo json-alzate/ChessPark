@@ -15,7 +15,7 @@ import { Plan, Block } from '@chesspark/models';
 
 import { PlanStorageService } from '@services/plans/plan-storage.service';
 import { PlanFacadeService } from '@chesspark/state';
-import { AppService } from '@services/app/app.service';
+import { AppService } from '@core/app/app.service';
 import { SecondsToMinutesSecondsPipe } from '@chesspark/common-utils';
 
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';

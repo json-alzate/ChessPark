@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform, inject } from '@angular/core';
 
-import { AppearanceService } from '@services/app/appearance.service';
+import { AppearanceService } from '@core/app/appearance.service';
 
 /** Colores con los que se pide un rey: nombre completo o inicial de chess.js. */
 export type KingColor = 'white' | 'black' | 'w' | 'b';

@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ModalController } from '@ionic/angular/standalone';
 import { Subject } from 'rxjs';
 
-import { AuthService } from '@services/account/auth.service';
+import { AuthService } from '@core/account/auth.service';
 import { LoginComponent } from '@shared/components/login/login.component';
 import { provideTranslocoTesting } from '@tests/support/transloco-testing';
 

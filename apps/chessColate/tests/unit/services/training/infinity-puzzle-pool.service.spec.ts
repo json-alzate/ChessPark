@@ -1,5 +1,5 @@
 import { InfinityPoolEntry, Puzzle, PuzzlesProvider } from '@chesspark/puzzles-provider';
-import { ProfileService } from '@services/account/profile.service';
+import { ProfileService } from '@core/account/profile.service';
 import { InfinityPuzzlePoolService } from '@services/training/infinity-puzzle-pool.service';
 
 import { makePuzzle } from '@tests/support/partidas-progreso-fixtures';

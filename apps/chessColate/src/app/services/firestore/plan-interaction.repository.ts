@@ -10,9 +10,9 @@ import {
 } from 'firebase/firestore';
 
 import { PlanInteraction } from '@chesspark/models';
-import { FirestoreConnection } from './firestore-connection.service';
+import { FirestoreConnection } from '../../core/firestore/firestore-connection.service';
 import { PublicPlanRepository } from './public-plan.repository';
-import { serializeFirestoreData } from './firestore-serialize.util';
+import { serializeFirestoreData } from '../../core/firestore/firestore-serialize.util';
 
 /**
  * Repositorio del agregado Interacción usuario-plan (colección

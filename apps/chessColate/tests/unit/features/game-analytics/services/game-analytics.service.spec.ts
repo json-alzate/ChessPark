@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { ChessGame } from '@chesspark/models';
 import { ChessComUserNotFoundError } from '@chesspark/chess-com-provider';
 import { LichessUserNotFoundError } from '@chesspark/lichess-provider';
-import { AnalyticsService } from '@services/analytics/analytics.service';
+import { AnalyticsService } from '@core/analytics/analytics.service';
 import {
   GameAnalyticsService,
   UnknownUsernameError,

@@ -28,9 +28,9 @@ import { InfinityPuzzlePoolService } from '@services/training/infinity-puzzle-po
 import { StreakStorageService } from '@features/records/services/streak-storage.service';
 import { Reto333StorageService } from '@features/records/services/reto333-storage.service';
 
-import { ProfileService } from '@services/account/profile.service';
+import { ProfileService } from '@core/account/profile.service';
 
-import { AppService } from '@services/app/app.service';
+import { AppService } from '@core/app/app.service';
 
 // Components
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';

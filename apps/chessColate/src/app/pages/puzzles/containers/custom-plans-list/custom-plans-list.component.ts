@@ -13,8 +13,8 @@ import { Plan, Block } from '@chesspark/models';
 
 import { CustomPlansService } from '@services/plans/custom-plans.service';
 import { PlanService } from '@services/plans/plan.service';
-import { ProfileService } from '@services/account/profile.service';
-import { AppService } from '@services/app/app.service';
+import { ProfileService } from '@core/account/profile.service';
+import { AppService } from '@core/app/app.service';
 import { PlanFacadeService, PlansElosFacadeService, CustomPlansFacadeService, getProfile, getIsInitialized, AppState, getCountAllCustomPlans } from '@chesspark/state';
 import { SecondsToMinutesSecondsPipe } from '@chesspark/common-utils';
 

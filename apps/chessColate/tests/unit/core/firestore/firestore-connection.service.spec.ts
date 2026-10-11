@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { getApp } from 'firebase/app';
 import { getFirestore, initializeFirestore } from 'firebase/firestore';
 
-import { FirestoreConnection } from '@services/firestore/firestore-connection.service';
+import { FirestoreConnection } from '@core/firestore/firestore-connection.service';
 
 jest.mock('firebase/app', () => ({ getApp: jest.fn() }));
 jest.mock('firebase/firestore', () => ({

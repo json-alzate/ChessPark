@@ -44,7 +44,7 @@ import {
   BoardPlayerInfoComponent,
 } from '@chesspark/board';
 
-import { AnalyticsService } from '@services/analytics/analytics.service';
+import { AnalyticsService } from '@core/analytics/analytics.service';
 import { GamesService } from '@features/games/services/games.service';
 import { GameReviewService } from '@features/games/services/game-review.service';
 import {

@@ -9,7 +9,7 @@ import { AlertController } from '@ionic/angular/standalone';
 
 import { KnightTourPage } from '@app/features/knight-tour/pages/knight-tour.page';
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
-import { AnalyticsService } from '@services/analytics/analytics.service';
+import { AnalyticsService } from '@core/analytics/analytics.service';
 
 import {
   conModalFalso,

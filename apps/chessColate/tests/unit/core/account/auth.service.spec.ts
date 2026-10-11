@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 import { firstValueFrom } from 'rxjs';
 
 import { logOut, setErrorRegister, setInitialized } from '@chesspark/state';
-import { AuthService } from '@services/account/auth.service';
+import { AuthService } from '@core/account/auth.service';
 
 const mockNative = { value: false };
 const mockFb = {

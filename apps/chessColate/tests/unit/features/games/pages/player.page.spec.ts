@@ -6,7 +6,7 @@ import { GameCollectionInfo, GameHeader } from '@chesspark/games-provider';
 
 import { GamesPlayerPage } from '@app/features/games/pages/player.page';
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
-import { AnalyticsService } from '@services/analytics/analytics.service';
+import { AnalyticsService } from '@core/analytics/analytics.service';
 import { GamesService } from '@features/games/services/games.service';
 
 import { StubNavbar, sustituirImports, textoDe, translocoTesting } from '@tests/support/analisis-juegos';

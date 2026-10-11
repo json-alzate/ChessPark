@@ -3,7 +3,7 @@ import { PlanTypes, Puzzle } from '@chesspark/models';
 import {
   RoutineKind,
   routineMetaFromPlanType,
-} from '@services/analytics/analytics-events.util';
+} from '@core/analytics/analytics-events.util';
 import { Reto333Summary } from '@services/training/reto333.util';
 import { PuzzleResult } from '@services/training/user-puzzle.util';
 

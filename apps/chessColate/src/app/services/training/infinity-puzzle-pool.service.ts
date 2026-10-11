@@ -8,7 +8,7 @@ import {
   dedupeByUid,
   shuffleArray,
 } from '@chesspark/puzzles-provider';
-import { ProfileService } from '@services/account/profile.service';
+import { ProfileService } from '@core/account/profile.service';
 
 @Injectable({
   providedIn: 'root',

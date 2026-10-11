@@ -23,7 +23,7 @@ import {
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 import { ReminderPermissionModalComponent } from '@features/reminders/containers/reminder-permission-modal/reminder-permission-modal.component';
 import { ManualReminderModalComponent } from '@features/reminders/containers/manual-reminder-modal/manual-reminder-modal.component';
-import { AnalyticsService } from '@services/analytics/analytics.service';
+import { AnalyticsService } from '@core/analytics/analytics.service';
 import { TrainingReminderService } from '@features/reminders/services/training-reminder.service';
 import {
   ManualReminder,

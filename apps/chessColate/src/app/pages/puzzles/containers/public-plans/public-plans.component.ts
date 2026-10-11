@@ -19,9 +19,9 @@ import { PublicPlan, PublicPlanFilter, PlanInteraction } from '@chesspark/models
 
 import { PublicPlansService } from '@services/plans/public-plans.service';
 import { PlanService } from '@services/plans/plan.service';
-import { ProfileService } from '@services/account/profile.service';
-import { AnalyticsService } from '@services/analytics/analytics.service';
-import { minutesFromBlocks } from '@services/analytics/analytics-events.util';
+import { ProfileService } from '@core/account/profile.service';
+import { AnalyticsService } from '@core/analytics/analytics.service';
+import { minutesFromBlocks } from '@core/analytics/analytics-events.util';
 import {
     PublicPlansFacadeService,
     getProfile,

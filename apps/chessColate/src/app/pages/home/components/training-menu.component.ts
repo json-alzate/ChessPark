@@ -23,7 +23,7 @@ import { eyeOffOutline, eyeOutline, playOutline, timeOutline } from 'ionicons/ic
 // services
 import { BlockService } from '@services/training/block.service';
 import { PlanService } from '@services/plans/plan.service';
-import { ProfileService } from '@services/account/profile.service';
+import { ProfileService } from '@core/account/profile.service';
 
 import { Block, Plan, PlanTypes } from '@chesspark/models';
 import { Router } from '@angular/router';

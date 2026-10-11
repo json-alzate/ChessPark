@@ -11,7 +11,7 @@ import { PuzzleThemesGroup } from '@chesspark/models';
 import { SecondsToMinutesSecondsPipe } from '@chesspark/common-utils';
 
 import { TranslocoService } from '@jsverse/transloco';
-import { AppService } from '@services/app/app.service';
+import { AppService } from '@core/app/app.service';
 
 import { addIcons } from 'ionicons';
 import { close, shuffle, trendingDown, infiniteOutline } from 'ionicons/icons';

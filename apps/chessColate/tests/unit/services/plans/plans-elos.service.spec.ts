@@ -6,7 +6,7 @@ import { EloCalculatorService, UidGeneratorService } from '@chesspark/common-uti
 import { PlansElosFacadeService } from '@chesspark/state';
 
 import { PlanElosRepository } from '@services/firestore/plan-elos.repository';
-import { ProfileService } from '@services/account/profile.service';
+import { ProfileService } from '@core/account/profile.service';
 import { PlansElosService } from '@services/plans/plans-elos.service';
 
 /** Cálculo de elo determinista: victoria +10, empate 0, derrota -10. */

@@ -6,7 +6,7 @@ import { KeepAwake } from '@capacitor-community/keep-awake';
 import { GameCollectionInfo, GameHeader } from '@chesspark/games-provider';
 import { ChessGame } from '@chesspark/models';
 
-import { AnalyticsService } from '@services/analytics/analytics.service';
+import { AnalyticsService } from '@core/analytics/analytics.service';
 import { GamesService } from '@features/games/services/games.service';
 import { DEFAULT_PLAYBACK_SETTINGS } from '@features/games/utils/games.util';
 

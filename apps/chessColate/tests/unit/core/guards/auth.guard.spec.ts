@@ -5,7 +5,7 @@ import { BehaviorSubject, Observable, Subject, throwError } from 'rxjs';
 
 import { getIsInitialized, getProfile } from '@chesspark/state';
 
-import { AuthGuard } from '@guards/auth.guard';
+import { AuthGuard } from '@core/guards/auth.guard';
 
 describe('AuthGuard', () => {
   let guard: AuthGuard;

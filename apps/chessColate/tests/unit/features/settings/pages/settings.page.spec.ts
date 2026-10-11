@@ -16,9 +16,9 @@ import { IonContent, IonIcon } from '@ionic/angular/standalone';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { CommonModule } from '@angular/common';
 
-import { AnalyticsService } from '@services/analytics/analytics.service';
-import { ProfileService } from '@services/account/profile.service';
-import { LanguageService, SupportedLang } from '@services/app/language.service';
+import { AnalyticsService } from '@core/analytics/analytics.service';
+import { ProfileService } from '@core/account/profile.service';
+import { LanguageService, SupportedLang } from '@core/app/language.service';
 import { AppReviewService } from '@features/app-review/services/app-review.service';
 import { PuzzleStorageService } from '@services/training/puzzle-storage.service';
 import { GamesService } from '@features/games/services/games.service';

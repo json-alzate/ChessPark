@@ -5,9 +5,9 @@ import { UidGeneratorService } from '@chesspark/common-utils';
 import { PlanFacadeService } from '@chesspark/state';
 
 import { TrainingReminderService } from '@features/reminders/services/training-reminder.service';
-import { AnalyticsService } from '@services/analytics/analytics.service';
+import { AnalyticsService } from '@core/analytics/analytics.service';
 import { PlanRepository } from '@services/firestore/plan.repository';
-import { ProfileService } from '@services/account/profile.service';
+import { ProfileService } from '@core/account/profile.service';
 import { BlockService } from '@services/training/block.service';
 import { PlanService } from '@services/plans/plan.service';
 import { PlansElosService } from '@services/plans/plans-elos.service';

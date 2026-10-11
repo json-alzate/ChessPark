@@ -5,7 +5,7 @@ import {
   StockfishService,
 } from '@chesspark/stockfish-wasm';
 
-import { AnalyticsService } from '@services/analytics/analytics.service';
+import { AnalyticsService } from '@core/analytics/analytics.service';
 import { GameReviewService } from '@features/games/services/game-review.service';
 
 // El motor real necesita un Worker y WASM: se sustituyen los servicios por dobles.

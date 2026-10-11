@@ -8,8 +8,8 @@ import { PlanTypes } from '@chesspark/models';
 import { PuzzleQueryOptions } from '@chesspark/models';
 
 // import { PlansElosService } from '@services/plans/plans-elos.service';
-import { ProfileService } from '@services/account/profile.service';
-import { AppService } from '@services/app/app.service';
+import { ProfileService } from '@core/account/profile.service';
+import { AppService } from '@core/app/app.service';
 import { PuzzlesProvider } from '@chesspark/puzzles-provider';
 import { PlansElosService } from '@services/plans/plans-elos.service';
 import { PLAN_ALLOWED_THEMES } from '../../plan-allowed-themes.config';

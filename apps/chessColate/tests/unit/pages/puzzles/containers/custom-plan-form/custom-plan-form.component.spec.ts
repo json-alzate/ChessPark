@@ -27,8 +27,8 @@ import {
 } from '@chesspark/state';
 import { SecondsToMinutesSecondsPipe, UidGeneratorService } from '@chesspark/common-utils';
 
-import { AppService } from '@services/app/app.service';
-import { ProfileService } from '@services/account/profile.service';
+import { AppService } from '@core/app/app.service';
+import { ProfileService } from '@core/account/profile.service';
 import { CustomPlansService } from '@services/plans/custom-plans.service';
 import { PlanService } from '@services/plans/plan.service';
 import { LoginComponent } from '@shared/components/login/login.component';

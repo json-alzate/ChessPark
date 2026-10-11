@@ -19,7 +19,7 @@ import {
 } from '@ionic/angular/standalone';
 import { TranslocoPipe } from '@jsverse/transloco';
 
-import { AnalyticsService } from '@services/analytics/analytics.service';
+import { AnalyticsService } from '@core/analytics/analytics.service';
 import { TrainingReminderService } from '@features/reminders/services/training-reminder.service';
 import {
   DEFAULT_TRAINING_REMINDER_STATE,

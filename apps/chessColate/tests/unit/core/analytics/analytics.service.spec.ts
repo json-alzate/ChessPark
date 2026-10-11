@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { AnalyticsService } from '@services/analytics/analytics.service';
+import { AnalyticsService } from '@core/analytics/analytics.service';
 
 const mockFlags = { analyticsEnabled: true };
 const mockPlugin = {

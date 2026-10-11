@@ -16,8 +16,8 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Block, PuzzleThemesGroup } from '@chesspark/models';
 import { SecondsToMinutesSecondsPipe } from '@chesspark/common-utils';
 
-import { AppService } from '@services/app/app.service';
-import { AppearanceService } from '@services/app/appearance.service';
+import { AppService } from '@core/app/app.service';
+import { AppearanceService } from '@core/app/appearance.service';
 import { KingImagePipe } from '@shared/pipes/king-image.pipe';
 
 import { BlockSettingsComponent } from '@app/pages/puzzles/components/block-settings/block-settings.component';

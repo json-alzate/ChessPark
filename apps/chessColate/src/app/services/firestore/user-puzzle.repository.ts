@@ -7,7 +7,7 @@ import {
 } from 'firebase/firestore';
 
 import { CoordinatesPuzzle, UserPuzzle } from '@chesspark/models';
-import { FirestoreConnection } from './firestore-connection.service';
+import { FirestoreConnection } from '../../core/firestore/firestore-connection.service';
 
 /**
  * Repositorio del historial de puzzles del usuario: `coordinatesPuzzles`

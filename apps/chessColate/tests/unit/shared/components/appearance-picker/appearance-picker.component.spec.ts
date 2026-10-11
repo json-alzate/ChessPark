@@ -1,6 +1,6 @@
 // El servicio real y la librería del tablero arrastran cm-chessboard, que Jest no sabe
 // cargar. El selector solo necesita las listas de opciones y un tablero de muestra.
-jest.mock('@services/app/appearance.service', () => ({ AppearanceService: class AppearanceService {} }));
+jest.mock('@core/app/appearance.service', () => ({ AppearanceService: class AppearanceService {} }));
 jest.mock('@chesspark/board', () => {
   const { Component, Input } = jest.requireActual('@angular/core');
   class FenBoardComponent {
@@ -24,7 +24,7 @@ import { By } from '@angular/platform-browser';
 
 import { APP_THEMES, AppTheme, BoardStyle, PiecesStyle } from '@chesspark/models';
 
-import { AppearanceService } from '@services/app/appearance.service';
+import { AppearanceService } from '@core/app/appearance.service';
 import { AppearancePickerComponent } from '@shared/components/appearance-picker/appearance-picker.component';
 import { provideTranslocoTesting } from '@tests/support/transloco-testing';
 

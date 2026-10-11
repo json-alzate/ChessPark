@@ -17,7 +17,7 @@ import {
 import { GameCollectionInfo } from '@chesspark/games-provider';
 
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
-import { AnalyticsService } from '@services/analytics/analytics.service';
+import { AnalyticsService } from '@core/analytics/analytics.service';
 import { GamesService } from '@features/games/services/games.service';
 import { formatBytes } from '@features/games/utils/games.util';
 

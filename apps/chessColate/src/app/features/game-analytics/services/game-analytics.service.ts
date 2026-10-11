@@ -17,7 +17,7 @@ import {
   SyncProgress,
 } from '@chesspark/game-reporter';
 
-import { AnalyticsService } from '../../../services/analytics/analytics.service';
+import { AnalyticsService } from '../../../core/analytics/analytics.service';
 import {
   ConnectedAccounts,
   DEFAULT_SETTINGS,

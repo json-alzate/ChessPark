@@ -71,9 +71,9 @@ import { PuzzlesProvider } from '@chesspark/puzzles-provider';
 import { getIsInitialized } from '@chesspark/state';
 
 import { HomePage } from '@app/pages/home/home.page';
-import { ProfileService } from '@services/account/profile.service';
-import { AppService } from '@services/app/app.service';
-import { AppearanceService } from '@services/app/appearance.service';
+import { ProfileService } from '@core/account/profile.service';
+import { AppService } from '@core/app/app.service';
+import { AppearanceService } from '@core/app/appearance.service';
 import { PlanService } from '@services/plans/plan.service';
 import { StreakStorageService } from '@features/records/services/streak-storage.service';
 import { BlockService } from '@services/training/block.service';

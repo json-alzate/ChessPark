@@ -10,7 +10,7 @@ import {
   terminalEval,
 } from '@chesspark/game-reporter';
 
-import { AnalyticsService } from '../../../services/analytics/analytics.service';
+import { AnalyticsService } from '../../../core/analytics/analytics.service';
 
 /**
  * Profundidad del análisis: la velocidad "media" que se eligió.

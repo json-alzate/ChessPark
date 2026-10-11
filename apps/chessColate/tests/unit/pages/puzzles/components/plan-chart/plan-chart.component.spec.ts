@@ -12,8 +12,8 @@ import { Chart } from 'chart.js';
 
 import { Plan } from '@chesspark/models';
 
-import { AppService } from '@services/app/app.service';
-import { ProfileService } from '@services/account/profile.service';
+import { AppService } from '@core/app/app.service';
+import { ProfileService } from '@core/account/profile.service';
 import { PlansElosService } from '@services/plans/plans-elos.service';
 
 import { PlanChartComponent } from '@app/pages/puzzles/components/plan-chart/plan-chart.component';

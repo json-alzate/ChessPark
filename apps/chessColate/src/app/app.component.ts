@@ -41,13 +41,13 @@ import {
 import { TranslocoPipe } from '@jsverse/transloco';
 
 // Services
-import { AuthService } from '@services/account/auth.service';
-import { ProfileService } from '@services/account/profile.service';
+import { AuthService } from '@core/account/auth.service';
+import { ProfileService } from '@core/account/profile.service';
 import { UserRecordsService } from '@features/records/services/user-records.service';
-import { FirestoreConnection } from '@services/firestore/firestore-connection.service';
-import { PwaService } from '@services/app/pwa.service';
-import { AnalyticsService } from '@services/analytics/analytics.service';
-import { screenNameFromUrl } from '@services/analytics/analytics-events.util';
+import { FirestoreConnection } from '@core/firestore/firestore-connection.service';
+import { PwaService } from '@core/app/pwa.service';
+import { AnalyticsService } from '@core/analytics/analytics.service';
+import { screenNameFromUrl } from '@core/analytics/analytics-events.util';
 import { TrainingReminderService } from '@features/reminders/services/training-reminder.service';
 import { RevenueCatService, LogLevel } from '@chesspark/revenuecat';
 import { Capacitor } from '@capacitor/core';

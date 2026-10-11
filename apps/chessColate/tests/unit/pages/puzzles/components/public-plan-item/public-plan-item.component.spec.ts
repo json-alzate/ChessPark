@@ -7,8 +7,8 @@ import { TranslocoPipe } from '@jsverse/transloco';
 import { PlanInteraction, PublicPlan } from '@chesspark/models';
 import { SecondsToMinutesSecondsPipe } from '@chesspark/common-utils';
 
-import { AppService } from '@services/app/app.service';
-import { ProfileService } from '@services/account/profile.service';
+import { AppService } from '@core/app/app.service';
+import { ProfileService } from '@core/account/profile.service';
 
 import { PublicPlanItemComponent } from '@app/pages/puzzles/components/public-plan-item/public-plan-item.component';
 

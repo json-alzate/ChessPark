@@ -11,8 +11,8 @@ import { TranslocoPipe } from '@jsverse/transloco';
 import { PlanInteraction, PublicPlan, PublicPlanFilter } from '@chesspark/models';
 import { getProfile, PlanFacadeService, PublicPlansFacadeService } from '@chesspark/state';
 
-import { AnalyticsService } from '@services/analytics/analytics.service';
-import { ProfileService } from '@services/account/profile.service';
+import { AnalyticsService } from '@core/analytics/analytics.service';
+import { ProfileService } from '@core/account/profile.service';
 import { PlanService } from '@services/plans/plan.service';
 import { PublicPlansService } from '@services/plans/public-plans.service';
 

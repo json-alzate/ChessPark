@@ -14,16 +14,16 @@ import { AnalyticsPage } from '@app/features/game-analytics/pages/analytics.page
 import { ActivityHeatmapComponent } from '@app/features/game-analytics/components/activity-heatmap/activity-heatmap.component';
 import { RatingChartComponent } from '@app/features/game-analytics/components/rating-chart/rating-chart.component';
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
-import { AnalyticsService } from '@services/analytics/analytics.service';
+import { AnalyticsService } from '@core/analytics/analytics.service';
 import {
   GameAnalyticsService,
   UnknownUsernameError,
 } from '@features/game-analytics/services/game-analytics.service';
-import { AppService } from '@services/app/app.service';
+import { AppService } from '@core/app/app.service';
 import { GamesService } from '@features/games/services/games.service';
 import { CustomPlansService } from '@services/plans/custom-plans.service';
 import { PlanService } from '@services/plans/plan.service';
-import { ProfileService } from '@services/account/profile.service';
+import { ProfileService } from '@core/account/profile.service';
 
 import {
   appearanceDouble,

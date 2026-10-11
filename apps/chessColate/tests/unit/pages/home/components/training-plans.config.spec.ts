@@ -6,7 +6,7 @@ import {
   TRAINING_PLAN_PRESETS,
 } from '@pages/home/components/training-plans.config';
 import { PLAN_BLOCK_SPECS } from '@services/plans/plan-blocks.config';
-import { routineMetaFromPlanType } from '@services/analytics/analytics-events.util';
+import { routineMetaFromPlanType } from '@core/analytics/analytics-events.util';
 
 /**
  * La tabla de planes del menú es presentación estática: promete al usuario

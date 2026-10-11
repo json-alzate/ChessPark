@@ -25,11 +25,11 @@ import { RevenueCatService } from '@chesspark/revenuecat';
 import { Profile } from '@chesspark/models';
 
 import { AppComponent } from '@app/app.component';
-import { AuthService } from '@services/account/auth.service';
-import { ProfileService } from '@services/account/profile.service';
-import { AnalyticsService } from '@services/analytics/analytics.service';
-import { PwaService } from '@services/app/pwa.service';
-import { FirestoreConnection } from '@services/firestore/firestore-connection.service';
+import { AuthService } from '@core/account/auth.service';
+import { ProfileService } from '@core/account/profile.service';
+import { AnalyticsService } from '@core/analytics/analytics.service';
+import { PwaService } from '@core/app/pwa.service';
+import { FirestoreConnection } from '@core/firestore/firestore-connection.service';
 import { UserRecordsService } from '@features/records/services/user-records.service';
 import { TrainingReminderService } from '@features/reminders/services/training-reminder.service';
 import { LoginComponent } from '@shared/components/login/login.component';

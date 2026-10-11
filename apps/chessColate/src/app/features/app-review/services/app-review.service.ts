@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { Capacitor } from '@capacitor/core';
 import { InAppReview } from '@capacitor-community/in-app-review';
 
-import { AnalyticsService } from '../../../services/analytics/analytics.service';
+import { AnalyticsService } from '../../../core/analytics/analytics.service';
 import { AppReviewStorageService } from './app-review-storage.service';
 import {
   registerRoutine,

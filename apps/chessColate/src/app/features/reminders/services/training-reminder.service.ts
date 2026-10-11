@@ -7,7 +7,7 @@ import { TranslocoService } from '@jsverse/transloco';
 import { UidGeneratorService } from '@chesspark/common-utils';
 import { Plan } from '@chesspark/models';
 
-import { AnalyticsService } from '@services/analytics/analytics.service';
+import { AnalyticsService } from '@core/analytics/analytics.service';
 import { PlanStorageService } from '@services/plans/plan-storage.service';
 import { TrainingReminderStorageService } from '@features/reminders/services/training-reminder-storage.service';
 import {

@@ -8,7 +8,7 @@ import {
   StorageSummary,
 } from '@chesspark/puzzles-provider';
 
-import { AppService } from '@services/app/app.service';
+import { AppService } from '@core/app/app.service';
 
 /** Un archivo descargado, tal como se muestra en una fila de la lista. */
 export interface StorageFileItem {

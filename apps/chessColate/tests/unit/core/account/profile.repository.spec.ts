@@ -3,8 +3,8 @@ import { addDoc, getDoc, getDocs, setDoc, updateDoc } from 'firebase/firestore';
 
 import { Profile } from '@chesspark/models';
 
-import { FirestoreConnection } from '@services/firestore/firestore-connection.service';
-import { ProfileRepository } from '@services/firestore/profile.repository';
+import { FirestoreConnection } from '@core/firestore/firestore-connection.service';
+import { ProfileRepository } from '@core/account/profile.repository';
 import { fakeDocSnap, fakeQuerySnap } from '@tests/support/firestore-plans.fake';
 
 jest.mock('firebase/firestore', () =>

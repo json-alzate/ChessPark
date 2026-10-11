@@ -24,7 +24,7 @@ import { Router } from '@angular/router';
 import { By } from '@angular/platform-browser';
 
 import { Chess960Page } from '@app/features/chess960/pages/chess960.page';
-import { AnalyticsService } from '@services/analytics/analytics.service';
+import { AnalyticsService } from '@core/analytics/analytics.service';
 import { provideTranslocoTesting } from '@tests/support/transloco-testing';
 
 const STANDARD_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';

@@ -21,7 +21,7 @@ import { GameReview, MoveReview, PieceRating, reviewGame } from '@chesspark/game
 import { BoardGamePlayerComponent } from '@chesspark/board';
 
 import { GamesViewerPage } from '@app/features/games/pages/viewer.page';
-import { AnalyticsService } from '@services/analytics/analytics.service';
+import { AnalyticsService } from '@core/analytics/analytics.service';
 import { GameReviewService } from '@features/games/services/game-review.service';
 import { GamesService } from '@features/games/services/games.service';
 import { DEFAULT_PLAYBACK_SETTINGS, PlaybackSettings } from '@features/games/utils/games.util';

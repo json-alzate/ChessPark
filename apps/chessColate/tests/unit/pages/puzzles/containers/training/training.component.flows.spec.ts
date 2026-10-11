@@ -17,14 +17,14 @@ import { PlanFacadeService } from '@chesspark/state';
 import { BoardPuzzleSolutionComponent } from '@chesspark/board';
 import { SoundsService, UidGeneratorService } from '@chesspark/common-utils';
 
-import { AppService } from '@services/app/app.service';
+import { AppService } from '@core/app/app.service';
 import { BlockService } from '@services/training/block.service';
 import { InfinityPuzzlePoolService } from '@services/training/infinity-puzzle-pool.service';
-import { ProfileService } from '@services/account/profile.service';
+import { ProfileService } from '@core/account/profile.service';
 import { PlansElosService } from '@services/plans/plans-elos.service';
 import { PlanStorageService } from '@services/plans/plan-storage.service';
 import { PlanService } from '@services/plans/plan.service';
-import { AnalyticsService } from '@services/analytics/analytics.service';
+import { AnalyticsService } from '@core/analytics/analytics.service';
 import { TrainingReminderService } from '@features/reminders/services/training-reminder.service';
 import { Reto333StorageService } from '@features/records/services/reto333-storage.service';
 import { UserRecordsService } from '@features/records/services/user-records.service';

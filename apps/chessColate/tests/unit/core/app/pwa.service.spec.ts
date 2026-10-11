@@ -1,4 +1,4 @@
-import { PwaService } from '@services/app/pwa.service';
+import { PwaService } from '@core/app/pwa.service';
 
 const ANDROID_UA =
   'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 Chrome/120 Mobile Safari/537.36';

@@ -3,7 +3,7 @@ import { getDocs, setDoc } from 'firebase/firestore';
 
 import { Plan } from '@chesspark/models';
 
-import { FirestoreConnection } from '@services/firestore/firestore-connection.service';
+import { FirestoreConnection } from '@core/firestore/firestore-connection.service';
 import { PlanRepository } from '@services/firestore/plan.repository';
 import { fakeQuerySnap } from '@tests/support/firestore-plans.fake';
 

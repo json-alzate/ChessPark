@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { BehaviorSubject } from 'rxjs';
 
-import { AppearanceService } from '@services/app/appearance.service';
-import { ProfileService } from '@services/account/profile.service';
+import { AppearanceService } from '@core/app/appearance.service';
+import { ProfileService } from '@core/account/profile.service';
 
 // La lógica real de @chesspark/board se prueba en su propia librería; aquí se usa un
 // doble para no cargar cm-chessboard (módulo ESM que Jest no resuelve).

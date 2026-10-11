@@ -4,13 +4,13 @@ import { BehaviorSubject } from 'rxjs';
 
 import { Profile } from '@chesspark/models';
 import { requestUpdateProfile, setProfile, updateProfile } from '@chesspark/state';
-import { ProfileService } from '@services/account/profile.service';
-import { ProfileRepository } from '@services/firestore/profile.repository';
-import { AppService } from '@services/app/app.service';
-import { LanguageService } from '@services/app/language.service';
+import { ProfileService } from '@core/account/profile.service';
+import { ProfileRepository } from '@core/account/profile.repository';
+import { AppService } from '@core/app/app.service';
+import { LanguageService } from '@core/app/language.service';
 
 // El repositorio real arrastra firebase/firestore; aquí solo importa su contrato.
-jest.mock('@services/firestore/profile.repository', () => ({ ProfileRepository: class {} }));
+jest.mock('@core/account/profile.repository', () => ({ ProfileRepository: class {} }));
 
 const profileOf = (extra: Record<string, unknown> = {}): Profile =>
   ({ uid: 'u1', email: 'a@b.c', elo: 1500, ...extra } as unknown as Profile);

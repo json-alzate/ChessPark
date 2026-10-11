@@ -8,8 +8,8 @@ import { BehaviorSubject, of } from 'rxjs';
 import { Profile } from '@chesspark/models';
 import { getIsInitialized } from '@chesspark/state';
 
-import { AuthService } from '@services/account/auth.service';
-import { ProfileService } from '@services/account/profile.service';
+import { AuthService } from '@core/account/auth.service';
+import { ProfileService } from '@core/account/profile.service';
 import { LoginComponent } from '@shared/components/login/login.component';
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 import { provideTranslocoTesting } from '@tests/support/transloco-testing';

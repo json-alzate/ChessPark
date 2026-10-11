@@ -7,7 +7,7 @@ jest.mock('@chesspark/stockfish-wasm', () => ({}));
 import { Route } from '@angular/router';
 
 import { routes } from '@app/app.routes';
-import { AuthGuard } from '@app/guards/auth.guard';
+import { AuthGuard } from '@app/core/guards/auth.guard';
 import { CustomPlansGuard } from '@app/guards/custom-plans.guard';
 import { PublicPlansGuard } from '@app/guards/public-plans.guard';
 

@@ -2,7 +2,7 @@ import {
   minutesFromBlocks,
   routineMetaFromPlanType,
   screenNameFromUrl,
-} from '@services/analytics/analytics-events.util';
+} from '@core/analytics/analytics-events.util';
 
 describe('routineMetaFromPlanType', () => {
   it.each([

@@ -4,7 +4,7 @@ import { of } from 'rxjs';
 import { Plan } from '@chesspark/models';
 import { CustomPlansFacadeService } from '@chesspark/state';
 
-import { AnalyticsService } from '@services/analytics/analytics.service';
+import { AnalyticsService } from '@core/analytics/analytics.service';
 import { CustomPlanRepository } from '@services/firestore/custom-plan.repository';
 import { PublicPlanRepository } from '@services/firestore/public-plan.repository';
 import { CustomPlansService } from '@services/plans/custom-plans.service';

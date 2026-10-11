@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { getDoc, setDoc, updateDoc } from 'firebase/firestore';
 
-import { FirestoreConnection } from '@services/firestore/firestore-connection.service';
+import { FirestoreConnection } from '@core/firestore/firestore-connection.service';
 import { PublicPlanRepository } from '@services/firestore/public-plan.repository';
 import { PlanInteractionRepository } from '@services/firestore/plan-interaction.repository';
 

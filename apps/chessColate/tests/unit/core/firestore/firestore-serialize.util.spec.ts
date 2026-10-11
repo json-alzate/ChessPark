@@ -1,4 +1,4 @@
-import { serializeFirestoreData } from '@services/firestore/firestore-serialize.util';
+import { serializeFirestoreData } from '@core/firestore/firestore-serialize.util';
 
 describe('serializeFirestoreData', () => {
   afterEach(() => jest.restoreAllMocks());

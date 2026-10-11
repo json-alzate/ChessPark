@@ -5,7 +5,7 @@ import { Plan } from '@chesspark/models';
 
 import { CustomPlanRepository } from '@services/firestore/custom-plan.repository';
 import { PublicPlanRepository } from '@services/firestore/public-plan.repository';
-import { AnalyticsService } from '@services/analytics/analytics.service';
+import { AnalyticsService } from '@core/analytics/analytics.service';
 import { CustomPlansFacadeService } from '@chesspark/state';
 
 /**

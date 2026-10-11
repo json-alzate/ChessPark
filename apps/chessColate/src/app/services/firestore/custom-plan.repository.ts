@@ -10,7 +10,7 @@ import {
 } from 'firebase/firestore';
 
 import { Plan } from '@chesspark/models';
-import { FirestoreConnection } from './firestore-connection.service';
+import { FirestoreConnection } from '../../core/firestore/firestore-connection.service';
 
 /**
  * Repositorio del agregado Plan personalizado (colección `custom-plans`).
