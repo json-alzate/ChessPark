@@ -19,9 +19,9 @@ import { CommonModule } from '@angular/common';
 import { AnalyticsService } from '@services/analytics/analytics.service';
 import { ProfileService } from '@services/account/profile.service';
 import { LanguageService, SupportedLang } from '@services/app/language.service';
-import { AppReviewService } from '@services/app/app-review.service';
+import { AppReviewService } from '@features/app-review/services/app-review.service';
 import { PuzzleStorageService } from '@services/training/puzzle-storage.service';
-import { GamesService } from '@services/games/games.service';
+import { GamesService } from '@features/games/services/games.service';
 import { SettingsPage } from '@app/pages/settings/settings.page';
 
 import {

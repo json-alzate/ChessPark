@@ -54,7 +54,7 @@ import { TrainingReminderService } from '@features/reminders/services/training-r
 import { ReminderPermissionModalComponent } from '@features/reminders/containers/reminder-permission-modal/reminder-permission-modal.component';
 import { ProfileService } from '@services/account/profile.service';
 import { AnalyticsService } from '@services/analytics/analytics.service';
-import { AppReviewService } from '@services/app/app-review.service';
+import { AppReviewService } from '@features/app-review/services/app-review.service';
 import { AppService } from '@services/app/app.service';
 import { PlanStorageService } from '@services/plans/plan-storage.service';
 import { PlanService } from '@services/plans/plan.service';

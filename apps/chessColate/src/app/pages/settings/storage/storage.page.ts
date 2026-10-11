@@ -19,9 +19,9 @@ import {
   StorageFileItem,
   StorageGroup,
 } from '@services/training/puzzle-storage.service';
-import { GamesService } from '@services/games/games.service';
-import { GameAnalyticsService } from '@services/analytics/game-analytics.service';
-import { platformLabel } from '@services/analytics/game-analytics.util';
+import { GamesService } from '@features/games/services/games.service';
+import { GameAnalyticsService } from '@features/game-analytics/services/game-analytics.service';
+import { platformLabel } from '@features/game-analytics/utils/game-analytics.util';
 import { GameCollectionInfo } from '@chesspark/games-provider';
 import { AccountStorageSummary } from '@chesspark/game-reporter';
 

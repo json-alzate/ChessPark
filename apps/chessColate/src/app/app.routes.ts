@@ -79,28 +79,28 @@ export const routes: Routes = [
   {
     path: 'games',
     loadComponent: () =>
-      import('./pages/games/games.page').then((m) => m.GamesPage),
+      import('./features/games/pages/games.page').then((m) => m.GamesPage),
   },
   {
     // PGN que trae el usuario: no tiene id de colección
     path: 'games/pgn',
     loadComponent: () =>
-      import('./pages/games/player/player.page').then((m) => m.GamesPlayerPage),
+      import('./features/games/pages/player.page').then((m) => m.GamesPlayerPage),
   },
   {
     path: 'games/viewer',
     loadComponent: () =>
-      import('./pages/games/viewer/viewer.page').then((m) => m.GamesViewerPage),
+      import('./features/games/pages/viewer.page').then((m) => m.GamesViewerPage),
   },
   {
     path: 'games/:id',
     loadComponent: () =>
-      import('./pages/games/player/player.page').then((m) => m.GamesPlayerPage),
+      import('./features/games/pages/player.page').then((m) => m.GamesPlayerPage),
   },
   {
     path: 'analytics',
     loadComponent: () =>
-      import('./pages/analytics/analytics.page').then((m) => m.AnalyticsPage),
+      import('./features/game-analytics/pages/analytics.page').then((m) => m.AnalyticsPage),
   },
   {
     path: 'streak',

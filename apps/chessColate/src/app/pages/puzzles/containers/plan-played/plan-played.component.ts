@@ -22,8 +22,8 @@ import { PlanService } from '@services/plans/plan.service';
 import { PlanStorageService } from '@services/plans/plan-storage.service';
 import { AnalyticsService } from '@services/analytics/analytics.service';
 import { TrainingReminderService } from '@features/reminders/services/training-reminder.service';
-import { AppReviewService } from '@services/app/app-review.service';
-import { routineAccuracy } from '@services/app/app-review.util';
+import { AppReviewService } from '@features/app-review/services/app-review.service';
+import { routineAccuracy } from '@features/app-review/utils/app-review.util';
 import { LoadingController } from '@ionic/angular/standalone';
 
 import { BoardPuzzleSolutionComponent } from '@chesspark/board';

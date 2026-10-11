@@ -25,8 +25,8 @@ import { ProfileService } from '@services/account/profile.service';
 import { LanguageService, SupportedLang } from '@services/app/language.service';
 import { AnalyticsService } from '@services/analytics/analytics.service';
 import { PuzzleStorageService } from '@services/training/puzzle-storage.service';
-import { AppReviewService } from '@services/app/app-review.service';
-import { GamesService } from '@services/games/games.service';
+import { AppReviewService } from '@features/app-review/services/app-review.service';
+import { GamesService } from '@features/games/services/games.service';
 
 addIcons({
   languageOutline,
