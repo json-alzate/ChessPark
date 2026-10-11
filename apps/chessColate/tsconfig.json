@@ -50,6 +50,9 @@
       "@services/*": [
         "src/app/services/*"
       ],
+      "@tests/*": [
+        "tests/*"
+      ],
       "@app/*": [
         "src/app/*"
       ],

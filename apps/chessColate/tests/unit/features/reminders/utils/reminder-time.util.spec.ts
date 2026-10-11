@@ -88,6 +88,27 @@ describe('computeSuggestedTime', () => {
     });
   });
 
+  it('frontera de confianza: con 4 sesiones manda la más reciente aunque otra franja se repita más; con 5 manda la moda', () => {
+    const cuatro = [
+      eventAt(now, 9, 0, 1), // la más reciente → 9:00
+      eventAt(now, 21, 0, 2),
+      eventAt(now, 21, 0, 3),
+      eventAt(now, 21, 0, 4),
+    ];
+    expect(computeSuggestedTime(cuatro, now)).toEqual({
+      hour: 9,
+      minute: 0,
+      confident: false,
+    });
+
+    const cinco = [...cuatro, eventAt(now, 21, 0, 5)];
+    expect(computeSuggestedTime(cinco, now)).toEqual({
+      hour: 21,
+      minute: 0,
+      confident: true,
+    });
+  });
+
   it('ante empate de franjas gana la del evento más reciente', () => {
     const events = [
       // franja 9:00 — más antigua
