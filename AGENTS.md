@@ -24,3 +24,7 @@ If the user wants help with fixing an error in their CI pipeline, use the follow
 
 
 <!-- nx configuration end-->
+
+# Verificar la app en vivo
+
+- To check a change in the real app (not just tests), use `/chesscolate:probar`: it starts the app with `devctl`, drives a mobile browser through the flow and saves numbered screenshots in `docs/local/` (git-ignored). The Playwright E2E suite (`apps/chessColate-e2e`) is the regression net; run it after moving or renaming files.

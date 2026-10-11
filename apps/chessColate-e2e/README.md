@@ -17,6 +17,13 @@ npx nx e2e chessColate-e2e                                                  # v�
 Requiere `apps/chessColate/src/environments/private/keys.ts` (ignorado por git) para
 compilar. Esas claves **no se usan en las pruebas**: la red está cortada.
 
+## Recorrido en vivo con evidencia
+
+La suite E2E corre con la red cortada. Para recorrer la app **con datos reales** y dejar capturas
+numeradas (antes/después de un cambio, un bug, una pantalla nueva) usa el comando
+`/chesscolate:probar` (`.claude/commands/chesscolate/probar.md`): levanta la app con `devctl`,
+abre un navegador de móvil (Playwright MCP, `.mcp.json`) y guarda la evidencia en `docs/local/`.
+
 ## Cómo está armado
 
 | Pieza | Para qué |
