@@ -1,0 +1,23 @@
+<section class="now">
+  <div class="label">{{ countdown().headline }}</div>
+  <div class="big" [class.word]="countdown().bigIsText">{{ countdown().big }}</div>
+  <div class="bar"><b [style.width.%]="countdown().progress * 100"></b></div>
+</section>
+<section>
+  <div class="label">Theme</div>
+  <div class="value">{{ tema() }}</div>
+</section>
+<section>
+  <div class="label">ELO</div>
+  <div class="value gold">{{ elo() ?? '—' }}</div>
+</section>
+<hr />
+<section>
+  <div class="label">Next theme</div>
+  <div class="value small">{{ nextTopic() }}</div>
+</section>
+<section>
+  <canvas #qr class="qr" [attr.width]="qrModules" [attr.height]="qrModules" [style.width.px]="qrSize" [style.height.px]="qrSize"></canvas>
+  <div class="scan">Scan to practice</div>
+  <div class="brand">ChessColate</div>
+</section>

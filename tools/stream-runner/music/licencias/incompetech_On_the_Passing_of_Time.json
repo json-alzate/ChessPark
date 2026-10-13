@@ -1,0 +1,21 @@
+{
+ "catalog_source": "https://incompetech.com/music/royalty-free/pieces.json",
+ "record": {
+  "title": "On the Passing of Time",
+  "filename": "On the Passing of Time.mp3",
+  "length": "00:03:45",
+  "instruments": "Piano",
+  "genre": "5",
+  "bpm": "80",
+  "description": "A slow somber piano piece. Small amount of reverb to the notes.  Ends early, last 20 seconds dedicated to a fadeout.",
+  "feel": "Calming, Mystical, Somber",
+  "uploaded": "2008-11-26",
+  "isrc": "USUAN1100520",
+  "collection": "13",
+  "sheetmusic": null,
+  "video": null,
+  "itunes": "https://itunes.apple.com/us/album/on-the-passing-of-time/id941913727?i=941913765",
+  "filmmusicURL": null
+ },
+ "license_declared_by_site": "CC BY 4.0 https://creativecommons.org/licenses/by/4.0/ (see incompetech_faq.html, incompetech_licenses.html, incompetech_llms.txt)"
+}

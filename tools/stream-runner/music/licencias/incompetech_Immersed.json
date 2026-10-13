@@ -1,0 +1,21 @@
+{
+ "catalog_source": "https://incompetech.com/music/royalty-free/pieces.json",
+ "record": {
+  "title": "Immersed",
+  "filename": "Immersed.mp3",
+  "length": "00:04:09",
+  "instruments": "Piano, Strings",
+  "genre": "5",
+  "bpm": "64",
+  "description": "Minimal and somewhat droney in parts, this has a beautiful calmness about it. You can use it to sell anti-depressants or high performance automobile parts. Also useful for time-lapse photography of the night sky... or maybe a rocket launch.",
+  "feel": "Calming, Mystical, Relaxed, Somber",
+  "uploaded": "2016-02-12",
+  "isrc": "USUAN1600010",
+  "collection": "20",
+  "sheetmusic": null,
+  "video": "https://youtu.be/PKcYLipfY2M",
+  "itunes": "https://itunes.apple.com/us/album/immersed/id1187875707?i=1187876000",
+  "filmmusicURL": "https://incompetech.filmmusic.io/song/3900-immersed/"
+ },
+ "license_declared_by_site": "CC BY 4.0 https://creativecommons.org/licenses/by/4.0/ (see incompetech_faq.html, incompetech_licenses.html, incompetech_llms.txt)"
+}

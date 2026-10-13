@@ -1,0 +1,17 @@
+:host {
+  position: absolute;
+  inset: 0;
+  display: block;
+  overflow: hidden;
+}
+
+.scene {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 960px;
+  height: 540px;
+  transform: scale(2);
+  transform-origin: 0 0;
+  image-rendering: pixelated;
+}

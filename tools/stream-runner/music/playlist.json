@@ -1,0 +1,1762 @@
+[
+  {
+    "id": "ccmixter-51754",
+    "file": "normalized/01-nop-infinite-sorrows.m4a",
+    "title": "Infinite Sorrows",
+    "author": "@nop",
+    "durationSec": 225.5,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/Lancefield/51754",
+    "before": {
+      "lufs": -9.7,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 4.1,
+      "truePeak": -7.9
+    }
+  },
+  {
+    "id": "ccmixter-37481",
+    "file": "normalized/02-ghost-warm-ink.m4a",
+    "title": "Warm Ink",
+    "author": "_ghost",
+    "durationSec": 242.5,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/_ghost/37481",
+    "before": {
+      "lufs": -20.5,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 5.9,
+      "truePeak": -5.8
+    }
+  },
+  {
+    "id": "ccmixter-60909",
+    "file": "normalized/03-admiral-bob-confederation-line.m4a",
+    "title": "Confederation Line",
+    "author": "Admiral Bob",
+    "durationSec": 117.4,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/admiralbob77/60909",
+    "before": {
+      "lufs": -12.2,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 2.7,
+      "truePeak": -5.6
+    }
+  },
+  {
+    "id": "ccmixter-62876",
+    "file": "normalized/04-admiral-bob-high-above-the-darkness-my-star.m4a",
+    "title": "High Above the Darkness (My Star)",
+    "author": "Admiral Bob",
+    "durationSec": 221.4,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/admiralbob77/62876",
+    "before": {
+      "lufs": -13.5,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 9.3,
+      "truePeak": -3.1
+    }
+  },
+  {
+    "id": "ccmixter-48207",
+    "file": "normalized/05-admiral-bob-recovered-memory.m4a",
+    "title": "Recovered Memory",
+    "author": "Admiral Bob",
+    "durationSec": 199.9,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/admiralbob77/48207",
+    "before": {
+      "lufs": -9.8,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 6.6,
+      "truePeak": -7.5
+    }
+  },
+  {
+    "id": "ccmixter-33304",
+    "file": "normalized/06-admiral-bob-the-broken.m4a",
+    "title": "The Broken",
+    "author": "Admiral Bob",
+    "durationSec": 163.3,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/admiralbob77/33304",
+    "before": {
+      "lufs": -16.5,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 8,
+      "truePeak": -1.7
+    }
+  },
+  {
+    "id": "ccmixter-64427",
+    "file": "normalized/07-airtone-bluenotes.m4a",
+    "title": "bluenotes",
+    "author": "airtone",
+    "durationSec": 228.7,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/airtone/64427",
+    "before": {
+      "lufs": -13.9,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 7.1,
+      "truePeak": -3.9
+    }
+  },
+  {
+    "id": "ccmixter-66822",
+    "file": "normalized/08-airtone-bsides.m4a",
+    "title": "bsides",
+    "author": "airtone",
+    "durationSec": 228,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/airtone/66822",
+    "before": {
+      "lufs": -13.5,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 8.3,
+      "truePeak": -4.3
+    }
+  },
+  {
+    "id": "ccmixter-64772",
+    "file": "normalized/09-airtone-losttrack.m4a",
+    "title": "lostTrack",
+    "author": "airtone",
+    "durationSec": 201,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/airtone/64772",
+    "before": {
+      "lufs": -18.9,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 4.8,
+      "truePeak": -1.6
+    }
+  },
+  {
+    "id": "ccmixter-66098",
+    "file": "normalized/10-airtone-roboduck.m4a",
+    "title": "roboduck",
+    "author": "airtone",
+    "durationSec": 234,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/airtone/66098",
+    "before": {
+      "lufs": -13,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 4.1,
+      "truePeak": -5.1
+    }
+  },
+  {
+    "id": "ccmixter-64622",
+    "file": "normalized/11-airtone-shimmer.m4a",
+    "title": "shimmer",
+    "author": "airtone",
+    "durationSec": 195,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/airtone/64622",
+    "before": {
+      "lufs": -14.1,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 4.7,
+      "truePeak": -3.7
+    }
+  },
+  {
+    "id": "ccmixter-64741",
+    "file": "normalized/12-airtone-spacedust.m4a",
+    "title": "spacedust",
+    "author": "airtone",
+    "durationSec": 318,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/airtone/64741",
+    "before": {
+      "lufs": -16.33,
+      "truePeak": 1.51
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 5.3,
+      "truePeak": -2.1
+    }
+  },
+  {
+    "id": "ccmixter-17253",
+    "file": "normalized/13-alex-improvisation-on-friday.m4a",
+    "title": "Improvisation On Friday...",
+    "author": "Alex",
+    "durationSec": 217.3,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/AlexBeroza/17253",
+    "before": {
+      "lufs": -14.5,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 3.7,
+      "truePeak": -3.3
+    }
+  },
+  {
+    "id": "ccmixter-17112",
+    "file": "normalized/14-alex-improvisation-on-sunday.m4a",
+    "title": "Improvisation On Sunday...",
+    "author": "Alex",
+    "durationSec": 234.2,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/AlexBeroza/17112",
+    "before": {
+      "lufs": -14.2,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 6.1,
+      "truePeak": -3.4
+    }
+  },
+  {
+    "id": "ccmixter-27187",
+    "file": "normalized/15-alex-purple-nurple.m4a",
+    "title": "Purple Nurple",
+    "author": "Alex",
+    "durationSec": 190.6,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/AlexBeroza/27187",
+    "before": {
+      "lufs": -8.5,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 3,
+      "truePeak": -8
+    }
+  },
+  {
+    "id": "ccmixter-59143",
+    "file": "normalized/16-apoxode-out-for-a-stroll.m4a",
+    "title": "Out for a Stroll",
+    "author": "Apoxode",
+    "durationSec": 150.2,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/Apoxode/59143",
+    "before": {
+      "lufs": -19.7,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -17.9,
+      "lra": 4.4,
+      "truePeak": -4.3
+    }
+  },
+  {
+    "id": "ccmixter-57892",
+    "file": "normalized/17-aussens-iter-the-parting-glass-instrumental.m4a",
+    "title": "The Parting Glass (Instrumental)",
+    "author": "Aussens@iter",
+    "durationSec": 186.6,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/tobias_weber/57892",
+    "before": {
+      "lufs": -14.6,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 5.7,
+      "truePeak": -3.3
+    }
+  },
+  {
+    "id": "ccmixter-31612",
+    "file": "normalized/18-bocrew-good-night.m4a",
+    "title": "GOOD NIGHT",
+    "author": "Bocrew",
+    "durationSec": 172.6,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/BOCrew/31612",
+    "before": {
+      "lufs": -11.8,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 2.3,
+      "truePeak": -5.8
+    }
+  },
+  {
+    "id": "ccmixter-70818",
+    "file": "normalized/19-bocrew-passing-through.m4a",
+    "title": "Passing Through",
+    "author": "Bocrew",
+    "durationSec": 149,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/BOCrew/70818",
+    "before": {
+      "lufs": -12.4,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 1.2,
+      "truePeak": -5.8
+    }
+  },
+  {
+    "id": "ccmixter-38854",
+    "file": "normalized/20-bocrew-sunbirds.m4a",
+    "title": "SUNBIRDS",
+    "author": "Bocrew",
+    "durationSec": 232.1,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/BOCrew/38854",
+    "before": {
+      "lufs": -12,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 1.9,
+      "truePeak": -5.4
+    }
+  },
+  {
+    "id": "ccmixter-16992",
+    "file": "normalized/21-cdk-pieces-of-life.m4a",
+    "title": "pieces of life",
+    "author": "cdk",
+    "durationSec": 166.9,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/cdk/16992",
+    "before": {
+      "lufs": -18.8,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 7.2,
+      "truePeak": -1.9
+    }
+  },
+  {
+    "id": "ccmixter-57150",
+    "file": "normalized/22-cdk-millennials.m4a",
+    "title": "ＭＩＬＬＥＮＮＩＡＬＳ",
+    "author": "cdk",
+    "durationSec": 197.1,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/cdk/57150",
+    "before": {
+      "lufs": -13,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 6.1,
+      "truePeak": -4.3
+    }
+  },
+  {
+    "id": "commons-a-new-day-in-a-new-sector",
+    "file": "normalized/23-chris-zabriskie-a-new-day-in-a-new-sector.m4a",
+    "title": "A New Day in a New Sector",
+    "author": "Chris Zabriskie",
+    "durationSec": 186.4,
+    "source": "Wikimedia Commons (licencia confirmada en la web del autor)",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "pageUrl": "https://commons.wikimedia.org/wiki/File:Chris_Zabriskie_-_02_-_A_New_Day_in_a_New_Sector.ogg",
+    "before": {
+      "lufs": -12.7,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 9.8,
+      "truePeak": -5.2
+    }
+  },
+  {
+    "id": "commons-divider",
+    "file": "normalized/24-chris-zabriskie-divider.m4a",
+    "title": "Divider",
+    "author": "Chris Zabriskie",
+    "durationSec": 201.7,
+    "source": "Wikimedia Commons (licencia confirmada en la web del autor)",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "pageUrl": "https://commons.wikimedia.org/wiki/File:Chris_Zabriskie_-_06_-_Divider.ogg",
+    "before": {
+      "lufs": -21.4,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 5.8,
+      "truePeak": -2.5
+    }
+  },
+  {
+    "id": "commons-the-49th-street-galleria",
+    "file": "normalized/25-chris-zabriskie-the-49th-street-galleria.m4a",
+    "title": "The 49th Street Galleria",
+    "author": "Chris Zabriskie",
+    "durationSec": 236.1,
+    "source": "Wikimedia Commons (licencia confirmada en la web del autor)",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "pageUrl": "https://commons.wikimedia.org/wiki/File:Chris_Zabriskie_-_05_-_The_49th_Street_Galleria.ogg",
+    "before": {
+      "lufs": -18.3,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -17.9,
+      "lra": 9.8,
+      "truePeak": -1.5
+    }
+  },
+  {
+    "id": "commons-what-does-anybody-know-about-anything",
+    "file": "normalized/26-chris-zabriskie-what-does-anybody-know-about-anything.m4a",
+    "title": "What Does Anybody Know About Anything",
+    "author": "Chris Zabriskie",
+    "durationSec": 256.6,
+    "source": "Wikimedia Commons (licencia confirmada en la web del autor)",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "pageUrl": "https://commons.wikimedia.org/wiki/File:Chris_Zabriskie_-_02_-_What_Does_Anybody_Know_About_Anything.ogg",
+    "before": {
+      "lufs": -10.7,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 7.9,
+      "truePeak": -7.2
+    }
+  },
+  {
+    "id": "commons-your-mothers-daughter",
+    "file": "normalized/27-chris-zabriskie-your-mothers-daughter.m4a",
+    "title": "Your Mothers Daughter",
+    "author": "Chris Zabriskie",
+    "durationSec": 214,
+    "source": "Wikimedia Commons (licencia confirmada en la web del autor)",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "pageUrl": "https://commons.wikimedia.org/wiki/File:Chris_Zabriskie_-_03_-_Your_Mothers_Daughter.ogg",
+    "before": {
+      "lufs": -15.7,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 11,
+      "truePeak": -2.1
+    }
+  },
+  {
+    "id": "ccmixter-13876",
+    "file": "normalized/28-darkroom-down-the-lighted-path.m4a",
+    "title": "Down the Lighted Path",
+    "author": "Darkroom",
+    "durationSec": 320.1,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/mactonite/13876",
+    "before": {
+      "lufs": -13.3,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 3.4,
+      "truePeak": -4.5
+    }
+  },
+  {
+    "id": "ccmixter-29469",
+    "file": "normalized/29-darkroom-static.m4a",
+    "title": "Static",
+    "author": "Darkroom",
+    "durationSec": 211.2,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/mactonite/29469",
+    "before": {
+      "lufs": -13,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 6.6,
+      "truePeak": -4.3
+    }
+  },
+  {
+    "id": "ccmixter-48045",
+    "file": "normalized/30-doxent-zsigmond-distant-memory.m4a",
+    "title": "Distant Memory",
+    "author": "Doxent Zsigmond",
+    "durationSec": 199.9,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/doxent/48045",
+    "before": {
+      "lufs": -19.5,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 7.8,
+      "truePeak": -1.5
+    }
+  },
+  {
+    "id": "ccmixter-47748",
+    "file": "normalized/31-doxent-zsigmond-falling-leaves.m4a",
+    "title": "Falling Leaves",
+    "author": "Doxent Zsigmond",
+    "durationSec": 179.5,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/doxent/47748",
+    "before": {
+      "lufs": -19.9,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 9.9,
+      "truePeak": -1.9
+    }
+  },
+  {
+    "id": "ccmixter-39616",
+    "file": "normalized/32-doxent-zsigmond-mellow-piano.m4a",
+    "title": "Mellow Piano",
+    "author": "Doxent Zsigmond",
+    "durationSec": 182,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/doxent/39616",
+    "before": {
+      "lufs": -23.4,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 11.8,
+      "truePeak": -1.9
+    }
+  },
+  {
+    "id": "ccmixter-59384",
+    "file": "normalized/33-doxent-zsigmond-modest-gramz-phd-piano-improvisation.m4a",
+    "title": "Modest Gramz PhD (Piano Improvisation)",
+    "author": "Doxent Zsigmond",
+    "durationSec": 327.2,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/doxent/59384",
+    "before": {
+      "lufs": -21.9,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 8.8,
+      "truePeak": -1.9
+    }
+  },
+  {
+    "id": "ccmixter-51454",
+    "file": "normalized/34-doxent-zsigmond-nocturnal.m4a",
+    "title": "Nocturnal",
+    "author": "Doxent Zsigmond",
+    "durationSec": 321.6,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/doxent/51454",
+    "before": {
+      "lufs": -21.3,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -17.9,
+      "lra": 10.7,
+      "truePeak": -1.5
+    }
+  },
+  {
+    "id": "ccmixter-47797",
+    "file": "normalized/35-doxent-zsigmond-piano-song-for-goodnight.m4a",
+    "title": "Piano Song For Goodnight",
+    "author": "Doxent Zsigmond",
+    "durationSec": 279.8,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/doxent/47797",
+    "before": {
+      "lufs": -27.2,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 5.3,
+      "truePeak": -2.7
+    }
+  },
+  {
+    "id": "ccmixter-61458",
+    "file": "normalized/36-dub-alta-fidelidad-good-night.m4a",
+    "title": "Good Night",
+    "author": "Dub Alta Fidelidad",
+    "durationSec": 280.1,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/dubaltafidelidad/61458",
+    "before": {
+      "lufs": -15.9,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 1.8,
+      "truePeak": -2.3
+    }
+  },
+  {
+    "id": "ccmixter-34934",
+    "file": "normalized/37-duckett-solstice-contemplation.m4a",
+    "title": "Solstice Contemplation",
+    "author": "duckett",
+    "durationSec": 296.3,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/duckett/34934",
+    "before": {
+      "lufs": -19,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 5.7,
+      "truePeak": -3.8
+    }
+  },
+  {
+    "id": "ccmixter-31391",
+    "file": "normalized/38-geoffpeters-piece-of-quiet.m4a",
+    "title": "Piece of Quiet",
+    "author": "geoffpeters",
+    "durationSec": 180.2,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/geoffpeters/31391",
+    "before": {
+      "lufs": -17.4,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 10.9,
+      "truePeak": -1.9
+    }
+  },
+  {
+    "id": "ccmixter-39208",
+    "file": "normalized/39-go1dfish-alex-s-remix.m4a",
+    "title": "Alex's Remix",
+    "author": "go1dfish",
+    "durationSec": 141.5,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/go1dfish/39208",
+    "before": {
+      "lufs": -17,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18.1,
+      "lra": 6.6,
+      "truePeak": -1.9
+    }
+  },
+  {
+    "id": "ccmixter-29021",
+    "file": "normalized/40-gurdonark-homework.m4a",
+    "title": "Homework",
+    "author": "gurdonark",
+    "durationSec": 174.7,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/gurdonark/29021",
+    "before": {
+      "lufs": -18.1,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 7.5,
+      "truePeak": -2.4
+    }
+  },
+  {
+    "id": "ccmixter-43947",
+    "file": "normalized/41-gurdonark-longing.m4a",
+    "title": "Longing",
+    "author": "gurdonark",
+    "durationSec": 186.8,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/gurdonark/43947",
+    "before": {
+      "lufs": -18,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18.1,
+      "lra": 4.2,
+      "truePeak": -1.7
+    }
+  },
+  {
+    "id": "ccmixter-37767",
+    "file": "normalized/42-gurdonark-lost-in-memory.m4a",
+    "title": "Lost in Memory",
+    "author": "gurdonark",
+    "durationSec": 238.7,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/gurdonark/37767",
+    "before": {
+      "lufs": -17.4,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 9.5,
+      "truePeak": -2.7
+    }
+  },
+  {
+    "id": "ccmixter-17242",
+    "file": "normalized/43-gurdonark-playground.m4a",
+    "title": "Playground",
+    "author": "gurdonark",
+    "durationSec": 189.5,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/gurdonark/17242",
+    "before": {
+      "lufs": -18.3,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 8.7,
+      "truePeak": -2.3
+    }
+  },
+  {
+    "id": "ccmixter-35631",
+    "file": "normalized/44-gurdonark-sensitive.m4a",
+    "title": "Sensitive",
+    "author": "gurdonark",
+    "durationSec": 192.8,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/gurdonark/35631",
+    "before": {
+      "lufs": -19.6,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -17.9,
+      "lra": 6.2,
+      "truePeak": -1.5
+    }
+  },
+  {
+    "id": "ccmixter-19368",
+    "file": "normalized/45-gurdonark-statia.m4a",
+    "title": "Statia",
+    "author": "gurdonark",
+    "durationSec": 165,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/gurdonark/19368",
+    "before": {
+      "lufs": -16,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 9.7,
+      "truePeak": -3
+    }
+  },
+  {
+    "id": "ccmixter-34478",
+    "file": "normalized/46-hans-atom-death-of-a-music-box.m4a",
+    "title": "Death of a Music Box",
+    "author": "Hans Atom",
+    "durationSec": 152.6,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/hansatom/34478",
+    "before": {
+      "lufs": -13.8,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 4.7,
+      "truePeak": -4.2
+    }
+  },
+  {
+    "id": "ccmixter-35789",
+    "file": "normalized/47-ivan-chew-dream-on-this-side-instrumental.m4a",
+    "title": "Dream On This Side (instrumental)",
+    "author": "Ivan Chew",
+    "durationSec": 318.4,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/ramblinglibrarian/35789",
+    "before": {
+      "lufs": -10.5,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 2.2,
+      "truePeak": -7
+    }
+  },
+  {
+    "id": "ccmixter-34231",
+    "file": "normalized/48-ivan-chew-dreaming-of-the-ocean.m4a",
+    "title": "Dreaming of the Ocean",
+    "author": "Ivan Chew",
+    "durationSec": 209,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/ramblinglibrarian/34231",
+    "before": {
+      "lufs": -9.8,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 2.8,
+      "truePeak": -8.2
+    }
+  },
+  {
+    "id": "ccmixter-50957",
+    "file": "normalized/49-jaspertine-song-title-indicates-meaning.m4a",
+    "title": "Song Title Indicates Meaning",
+    "author": "jaspertine",
+    "durationSec": 291.4,
+    "source": "ccMixter",
+    "license": "CC0 1.0 (dominio público)",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "pageUrl": "https://ccmixter.org/files/jaspertine/50957",
+    "before": {
+      "lufs": -12.2,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 2.6,
+      "truePeak": -4.3
+    }
+  },
+  {
+    "id": "ccmixter-41544",
+    "file": "normalized/50-jeris-3-pound-universe.m4a",
+    "title": "3 pound universe",
+    "author": "Jeris",
+    "durationSec": 184.1,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/VJ_Memes/41544",
+    "before": {
+      "lufs": -12.4,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 3.3,
+      "truePeak": -6.2
+    }
+  },
+  {
+    "id": "ccmixter-37187",
+    "file": "normalized/51-joel-frijters-sitting-back-guitars.m4a",
+    "title": "Sitting Back - Guitars",
+    "author": "Joel Frijters",
+    "durationSec": 228.8,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/KungFuFrijters/37187",
+    "before": {
+      "lufs": -19.6,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 8,
+      "truePeak": -1.9
+    }
+  },
+  {
+    "id": "ccmixter-32432",
+    "file": "normalized/52-kirkoid-improvisation-on-a-beach-blanket.m4a",
+    "title": "Improvisation on a Beach Blanket",
+    "author": "Kirkoid",
+    "durationSec": 217.1,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/Kirkoid/32432",
+    "before": {
+      "lufs": -14.5,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 3.3,
+      "truePeak": -3.6
+    }
+  },
+  {
+    "id": "ccmixter-43938",
+    "file": "normalized/53-kirkoid-shiro-kirkoid-mix.m4a",
+    "title": "Shiro (Kirkoid Mix)",
+    "author": "Kirkoid",
+    "durationSec": 123.2,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/Kirkoid/43938",
+    "before": {
+      "lufs": -12.7,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 5.3,
+      "truePeak": -1.9
+    }
+  },
+  {
+    "id": "ccmixter-43005",
+    "file": "normalized/54-kirkoid-space-bazooka.m4a",
+    "title": "Space Bazooka",
+    "author": "Kirkoid",
+    "durationSec": 133.9,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/Kirkoid/43005",
+    "before": {
+      "lufs": -14,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 2.8,
+      "truePeak": -3.8
+    }
+  },
+  {
+    "id": "ccmixter-34419",
+    "file": "normalized/55-mana-junkie-reflections-in-the-rain.m4a",
+    "title": "Reflections in the Rain",
+    "author": "Mana Junkie",
+    "durationSec": 233.2,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/mana_junkie/34419",
+    "before": {
+      "lufs": -16.5,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 7.8,
+      "truePeak": -2.8
+    }
+  },
+  {
+    "id": "ccmixter-60242",
+    "file": "normalized/56-moscardo-staying-together-as-the-first-time.m4a",
+    "title": "Staying together as the first time",
+    "author": "moscardo",
+    "durationSec": 192.8,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/moscardo/60242",
+    "before": {
+      "lufs": -18.64,
+      "truePeak": -0.17
+    },
+    "after": {
+      "lufs": -18.2,
+      "lra": 6.7,
+      "truePeak": -2
+    }
+  },
+  {
+    "id": "ccmixter-10226",
+    "file": "normalized/57-olddog-harp-from-nube.m4a",
+    "title": "harp from Nube",
+    "author": "oldDog",
+    "durationSec": 210.7,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/oldDog/10226",
+    "before": {
+      "lufs": -16.8,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 5.3,
+      "truePeak": -2.3
+    }
+  },
+  {
+    "id": "ccmixter-17294",
+    "file": "normalized/58-olddog-too-quiet-instr.m4a",
+    "title": "too quiet (instr.)",
+    "author": "oldDog",
+    "durationSec": 193.6,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/oldDog/17294",
+    "before": {
+      "lufs": -15.1,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 5.4,
+      "truePeak": -3.1
+    }
+  },
+  {
+    "id": "ccmixter-17322",
+    "file": "normalized/59-olddog-too-quiet-piano.m4a",
+    "title": "too quiet (piano)",
+    "author": "oldDog",
+    "durationSec": 189.3,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/oldDog/17322",
+    "before": {
+      "lufs": -16.7,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 6.5,
+      "truePeak": -1.6
+    }
+  },
+  {
+    "id": "ccmixter-39658",
+    "file": "normalized/60-onlymeith-quiet-hours.m4a",
+    "title": "Quiet Hours",
+    "author": "onlymeith",
+    "durationSec": 340.1,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/onlymeith/39658",
+    "before": {
+      "lufs": -12.2,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 10.7,
+      "truePeak": -5.8
+    }
+  },
+  {
+    "id": "ccmixter-33867",
+    "file": "normalized/61-onlymeith-quiet-rain.m4a",
+    "title": "Quiet Rain",
+    "author": "onlymeith",
+    "durationSec": 157.8,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/onlymeith/33867",
+    "before": {
+      "lufs": -8.2,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 4.7,
+      "truePeak": -9.6
+    }
+  },
+  {
+    "id": "ccmixter-39461",
+    "file": "normalized/62-onlymeith-tendency.m4a",
+    "title": "Tendency",
+    "author": "onlymeith",
+    "durationSec": 224.1,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/onlymeith/39461",
+    "before": {
+      "lufs": -7.9,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 3.5,
+      "truePeak": -10
+    }
+  },
+  {
+    "id": "ccmixter-38010",
+    "file": "normalized/63-onlymeith-truth.m4a",
+    "title": "Truth?",
+    "author": "onlymeith",
+    "durationSec": 224.1,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/onlymeith/38010",
+    "before": {
+      "lufs": -11.7,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 9.3,
+      "truePeak": -1.7
+    }
+  },
+  {
+    "id": "ccmixter-29923",
+    "file": "normalized/64-pitx-bye-bye-2010.m4a",
+    "title": "Bye Bye 2010",
+    "author": "Pitx",
+    "durationSec": 160.5,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/Pitx/29923",
+    "before": {
+      "lufs": -9.2,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 2.5,
+      "truePeak": -7.9
+    }
+  },
+  {
+    "id": "ccmixter-26358",
+    "file": "normalized/65-pitx-kids.m4a",
+    "title": "Kids",
+    "author": "Pitx",
+    "durationSec": 90.4,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/Pitx/26358",
+    "before": {
+      "lufs": -23.6,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 4.5,
+      "truePeak": -1.5
+    }
+  },
+  {
+    "id": "ccmixter-19388",
+    "file": "normalized/66-pitx-long-winter.m4a",
+    "title": "Long Winter",
+    "author": "Pitx",
+    "durationSec": 100.9,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/Pitx/19388",
+    "before": {
+      "lufs": -18.8,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 4.3,
+      "truePeak": -1.8
+    }
+  },
+  {
+    "id": "ccmixter-29173",
+    "file": "normalized/67-pitx-sunday-afternoon.m4a",
+    "title": "Sunday Afternoon",
+    "author": "Pitx",
+    "durationSec": 215.5,
+    "source": "ccMixter",
+    "license": "CC0 1.0 (dominio público)",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "pageUrl": "https://ccmixter.org/files/Pitx/29173",
+    "before": {
+      "lufs": -14.6,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 4.1,
+      "truePeak": -3.4
+    }
+  },
+  {
+    "id": "ccmixter-59218",
+    "file": "normalized/68-robbero-long-live-blind-joe.m4a",
+    "title": "Long Live Blind Joe",
+    "author": "Robbero",
+    "durationSec": 208.8,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/Robbero/59218",
+    "before": {
+      "lufs": -10.6,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 2.5,
+      "truePeak": -6.9
+    }
+  },
+  {
+    "id": "ccmixter-42877",
+    "file": "normalized/69-robbero-mountains-hip-hop-instrumental.m4a",
+    "title": "Mountains (Hip hop instrumental)",
+    "author": "Robbero",
+    "durationSec": 288.4,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/Robbero/42877",
+    "before": {
+      "lufs": -11.1,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 8.9,
+      "truePeak": -2
+    }
+  },
+  {
+    "id": "ccmixter-40042",
+    "file": "normalized/70-robbero-mysterious-light-bells.m4a",
+    "title": "mysterious light bells",
+    "author": "Robbero",
+    "durationSec": 115.5,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/Robbero/40042",
+    "before": {
+      "lufs": -9.7,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 7.3,
+      "truePeak": -8.1
+    }
+  },
+  {
+    "id": "ccmixter-63869",
+    "file": "normalized/71-robbero-sad-night.m4a",
+    "title": "Sad Night",
+    "author": "Robbero",
+    "durationSec": 258.7,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/Robbero/63869",
+    "before": {
+      "lufs": -13.5,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 5.3,
+      "truePeak": -4.2
+    }
+  },
+  {
+    "id": "ccmixter-43483",
+    "file": "normalized/72-robbero-spheres-hip-hop-instrumental.m4a",
+    "title": "Spheres (Hip Hop Instrumental)",
+    "author": "Robbero",
+    "durationSec": 270.7,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/Robbero/43483",
+    "before": {
+      "lufs": -9.8,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 5,
+      "truePeak": -7.6
+    }
+  },
+  {
+    "id": "ccmixter-44803",
+    "file": "normalized/73-robbero-whisper.m4a",
+    "title": "Whisper",
+    "author": "Robbero",
+    "durationSec": 204.3,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/Robbero/44803",
+    "before": {
+      "lufs": -13.8,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 3.5,
+      "truePeak": -3.8
+    }
+  },
+  {
+    "id": "ccmixter-41751",
+    "file": "normalized/74-skill-borrower-klaus.m4a",
+    "title": "Klaus",
+    "author": "Skill_Borrower",
+    "durationSec": 217.4,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/Skill_Borrower/41751",
+    "before": {
+      "lufs": -10.9,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 8.2,
+      "truePeak": -7.1
+    }
+  },
+  {
+    "id": "ccmixter-62938",
+    "file": "normalized/75-skye-jordan-bloodonthesouthernstreets.m4a",
+    "title": "bloodonthesouthernstreets",
+    "author": "Skye Jordan",
+    "durationSec": 244.9,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/SkyeJordan/62938",
+    "before": {
+      "lufs": -11.2,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 10.7,
+      "truePeak": -6.2
+    }
+  },
+  {
+    "id": "ccmixter-48420",
+    "file": "normalized/76-smilingcynic-between-worlds.m4a",
+    "title": "between worlds",
+    "author": "smilingcynic",
+    "durationSec": 152.9,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/smilingcynic/48420",
+    "before": {
+      "lufs": -23.3,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 5.8,
+      "truePeak": -1.9
+    }
+  },
+  {
+    "id": "ccmixter-36568",
+    "file": "normalized/77-smilingcynic-one-track-piano-piece-2.m4a",
+    "title": "one track piano piece 2",
+    "author": "smilingcynic",
+    "durationSec": 147.7,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/smilingcynic/36568",
+    "before": {
+      "lufs": -22.9,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 5.7,
+      "truePeak": -3.6
+    }
+  },
+  {
+    "id": "ccmixter-39618",
+    "file": "normalized/78-smilingcynic-piano-impv-2.m4a",
+    "title": "piano impv 2",
+    "author": "smilingcynic",
+    "durationSec": 239.1,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/smilingcynic/39618",
+    "before": {
+      "lufs": -22.2,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 8.2,
+      "truePeak": -1.5
+    }
+  },
+  {
+    "id": "ccmixter-39598",
+    "file": "normalized/79-smilingcynic-si.m4a",
+    "title": "Si",
+    "author": "smilingcynic",
+    "durationSec": 254.1,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/smilingcynic/39598",
+    "before": {
+      "lufs": -12.6,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 4.3,
+      "truePeak": -5.1
+    }
+  },
+  {
+    "id": "ccmixter-50758",
+    "file": "normalized/80-speck-reiswerk-s-weather-dubwise.m4a",
+    "title": "Reiswerk's Weather (dubwise)",
+    "author": "Speck",
+    "durationSec": 260.1,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/speck/50758",
+    "before": {
+      "lufs": -12.3,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 6.7,
+      "truePeak": -5.6
+    }
+  },
+  {
+    "id": "ccmixter-21067",
+    "file": "normalized/81-spinmeister-intergalactic-journey.m4a",
+    "title": "Intergalactic Journey",
+    "author": "spinmeister",
+    "durationSec": 358.6,
+    "source": "ccMixter",
+    "license": "CC0 1.0 (dominio público)",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "pageUrl": "https://ccmixter.org/files/spinmeister/21067",
+    "before": {
+      "lufs": -13.7,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18.2,
+      "lra": 6.3,
+      "truePeak": -4.4
+    }
+  },
+  {
+    "id": "ccmixter-12093",
+    "file": "normalized/82-spinmeister-moments-in-space.m4a",
+    "title": "Moments in Space",
+    "author": "spinmeister",
+    "durationSec": 283.8,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/spinmeister/12093",
+    "before": {
+      "lufs": -11,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 5.5,
+      "truePeak": -5.9
+    }
+  },
+  {
+    "id": "ccmixter-57218",
+    "file": "normalized/83-stefan-kartenberg-moonrise.m4a",
+    "title": "Moonrise",
+    "author": "Stefan Kartenberg",
+    "durationSec": 188.8,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/JeffSpeed68/57218",
+    "before": {
+      "lufs": -13.4,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 5.9,
+      "truePeak": -4.4
+    }
+  },
+  {
+    "id": "ccmixter-56377",
+    "file": "normalized/84-stefan-kartenberg-smokey-eyes.m4a",
+    "title": "Smokey Eyes",
+    "author": "Stefan Kartenberg",
+    "durationSec": 161.7,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/JeffSpeed68/56377",
+    "before": {
+      "lufs": -10.5,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 5.3,
+      "truePeak": -5.9
+    }
+  },
+  {
+    "id": "ccmixter-57454",
+    "file": "normalized/85-stefan-kartenberg-two-pianos.m4a",
+    "title": "Two Pianos",
+    "author": "Stefan Kartenberg",
+    "durationSec": 207.6,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/JeffSpeed68/57454",
+    "before": {
+      "lufs": -15.2,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 4.8,
+      "truePeak": -2.9
+    }
+  },
+  {
+    "id": "ccmixter-29561",
+    "file": "normalized/86-unreal-dm-2011-even.m4a",
+    "title": "2011 Even",
+    "author": "unreal_dm",
+    "durationSec": 205,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/unreal_dm/29561",
+    "before": {
+      "lufs": -13,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 2.8,
+      "truePeak": -3.9
+    }
+  },
+  {
+    "id": "ccmixter-39945",
+    "file": "normalized/87-wired-ant-eternal-loop-of-glue-instrumental.m4a",
+    "title": "Eternal Loop of Glue - Instrumental",
+    "author": "Wired Ant",
+    "durationSec": 202.5,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/Wired_Ant/39945",
+    "before": {
+      "lufs": -18.43,
+      "truePeak": 0.1
+    },
+    "after": {
+      "lufs": -18.3,
+      "lra": 3,
+      "truePeak": -2.1
+    }
+  },
+  {
+    "id": "ccmixter-38273",
+    "file": "normalized/88-wired-ant-rio-sleeping-instrumental.m4a",
+    "title": "Rio sleeping (Instrumental)",
+    "author": "Wired Ant",
+    "durationSec": 152.8,
+    "source": "ccMixter",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "pageUrl": "https://ccmixter.org/files/Wired_Ant/38273",
+    "before": {
+      "lufs": -14,
+      "truePeak": null
+    },
+    "after": {
+      "lufs": -18,
+      "lra": 6.8,
+      "truePeak": -3.5
+    }
+  }
+]

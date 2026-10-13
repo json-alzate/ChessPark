@@ -1,0 +1,21 @@
+{
+ "catalog_source": "https://incompetech.com/music/royalty-free/pieces.json",
+ "record": {
+  "title": "Avec Soin",
+  "filename": "Avec Soin.mp3",
+  "length": "00:02:25",
+  "instruments": "Piano",
+  "genre": "5",
+  "bpm": "64",
+  "description": "Super easy-going slow piano piece. Ends quiet and rich.",
+  "feel": "Calming, Relaxed",
+  "uploaded": "2011-10-03",
+  "isrc": "USUAN1100860",
+  "collection": null,
+  "sheetmusic": null,
+  "video": null,
+  "itunes": "https://itunes.apple.com/us/album/avec-soin/id945466565?i=945466570",
+  "filmmusicURL": null
+ },
+ "license_declared_by_site": "CC BY 4.0 https://creativecommons.org/licenses/by/4.0/ (see incompetech_faq.html, incompetech_licenses.html, incompetech_llms.txt)"
+}

@@ -1,0 +1,21 @@
+{
+ "catalog_source": "https://incompetech.com/music/royalty-free/pieces.json",
+ "record": {
+  "title": "Comfortable Mystery",
+  "filename": "Comfortable Mystery.mp3",
+  "length": "00:03:56",
+  "instruments": "Electric Piano",
+  "genre": "5",
+  "bpm": "65",
+  "description": "Solo vintage electric piano. Not quite supernatural... more like surreal. Slow with descending arpeggios.",
+  "feel": "Relaxed, Eerie, Mystical, Calming",
+  "uploaded": "2005-01-01",
+  "isrc": "USUAN1100287",
+  "collection": "41",
+  "sheetmusic": null,
+  "video": null,
+  "itunes": "https://itunes.apple.com/us/album/comfortable-mystery-part-1/id945463110?i=945463111",
+  "filmmusicURL": "https://incompetech.filmmusic.io/song/3531-comfortable-mystery/"
+ },
+ "license_declared_by_site": "CC BY 4.0 https://creativecommons.org/licenses/by/4.0/ (see incompetech_faq.html, incompetech_licenses.html, incompetech_llms.txt)"
+}

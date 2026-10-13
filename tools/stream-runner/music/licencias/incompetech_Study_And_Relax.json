@@ -1,0 +1,21 @@
+{
+ "catalog_source": "https://incompetech.com/music/royalty-free/pieces.json",
+ "record": {
+  "title": "Study And Relax",
+  "filename": "Study And Relax.mp3",
+  "length": "00:03:43",
+  "instruments": "Saxophones, Piano, Bass, Percussion",
+  "genre": "11",
+  "bpm": "72",
+  "description": "Like a worn out record with a mis-punched spindle hole. Thanks, izope! :-)",
+  "feel": "Calming, Grooving, Relaxed",
+  "uploaded": "2020-01-08",
+  "isrc": "USUAN1900030",
+  "collection": "14",
+  "sheetmusic": null,
+  "video": "https://youtu.be/5Z_Ecyh6e7A",
+  "itunes": "https://music.apple.com/us/album/study-and-relax/1493090549?i=1493090550&app=itunes",
+  "filmmusicURL": "https://incompetech.filmmusic.io/song/5764-study-and-relax/"
+ },
+ "license_declared_by_site": "CC BY 4.0 https://creativecommons.org/licenses/by/4.0/ (see incompetech_faq.html, incompetech_licenses.html, incompetech_llms.txt)"
+}

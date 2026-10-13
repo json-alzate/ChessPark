@@ -1,0 +1,21 @@
+{
+ "catalog_source": "https://incompetech.com/music/royalty-free/pieces.json",
+ "record": {
+  "title": "Smoother Move",
+  "filename": "Smoother Move.mp3",
+  "length": "00:04:38",
+  "instruments": "Piano",
+  "genre": "5",
+  "bpm": "77",
+  "description": "Super rubato piano solo.",
+  "feel": "Calming, Somber",
+  "uploaded": "2009-01-20",
+  "isrc": "USUAN1100545",
+  "collection": null,
+  "sheetmusic": null,
+  "video": null,
+  "itunes": "https://itunes.apple.com/us/album/smoother-move/id941913727?i=941913769",
+  "filmmusicURL": "https://incompetech.filmmusic.io/song/4381-smoother-move/"
+ },
+ "license_declared_by_site": "CC BY 4.0 https://creativecommons.org/licenses/by/4.0/ (see incompetech_faq.html, incompetech_licenses.html, incompetech_llms.txt)"
+}

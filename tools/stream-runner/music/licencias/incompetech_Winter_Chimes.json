@@ -1,0 +1,21 @@
+{
+ "catalog_source": "https://incompetech.com/music/royalty-free/pieces.json",
+ "record": {
+  "title": "Winter Chimes",
+  "filename": "Winter Chimes.mp3",
+  "length": "00:02:38",
+  "instruments": "Piano",
+  "genre": "5",
+  "bpm": "83",
+  "description": "Interesting piano solo with a repeated pedal in the right hand. Counterpoint on the final repeat.",
+  "feel": "Calming, Bright",
+  "uploaded": "2006-01-01",
+  "isrc": "USUAN1100009",
+  "collection": "16",
+  "sheetmusic": null,
+  "video": null,
+  "itunes": "https://itunes.apple.com/us/album/winter-chimes/id945182460?i=945182487",
+  "filmmusicURL": "https://incompetech.filmmusic.io/song/4631-winter-chimes/"
+ },
+ "license_declared_by_site": "CC BY 4.0 https://creativecommons.org/licenses/by/4.0/ (see incompetech_faq.html, incompetech_licenses.html, incompetech_llms.txt)"
+}

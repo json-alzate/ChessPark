@@ -1,0 +1,21 @@
+{
+ "catalog_source": "https://incompetech.com/music/royalty-free/pieces.json",
+ "record": {
+  "title": "Almost Bliss",
+  "filename": "Almost Bliss.mp3",
+  "length": "00:05:17",
+  "instruments": "Guitars, Percussion",
+  "genre": "5",
+  "bpm": "90",
+  "description": "I love sipping lemonade by the lake when a storm approaches. I love walking through apple orchards in the fall.  I love the squeak of minivan tires being dragged onto the flatbed truck of the repo man. Memories of simpler times... so wonderful.",
+  "feel": "Bright, Calming, Relaxed",
+  "uploaded": "2019-06-14",
+  "isrc": "USUAN1900015",
+  "collection": "20",
+  "sheetmusic": null,
+  "video": null,
+  "itunes": "https://music.apple.com/us/album/almost-bliss/1467566903?i=1467566904&app=itunes",
+  "filmmusicURL": "https://incompetech.filmmusic.io/song/5032-almost-bliss/"
+ },
+ "license_declared_by_site": "CC BY 4.0 https://creativecommons.org/licenses/by/4.0/ (see incompetech_faq.html, incompetech_licenses.html, incompetech_llms.txt)"
+}

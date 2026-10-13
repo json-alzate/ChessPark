@@ -1,0 +1,21 @@
+{
+ "catalog_source": "https://incompetech.com/music/royalty-free/pieces.json",
+ "record": {
+  "title": "Soporific",
+  "filename": "Soporific.mp3",
+  "length": "00:04:50",
+  "instruments": "Electric Piano, Bells, Percussion",
+  "genre": "5",
+  "bpm": "84",
+  "description": "A laid-back chill, and chilling piece.",
+  "feel": "Dark, Grooving, Relaxed, Somber",
+  "uploaded": "2009-04-23",
+  "isrc": "USUAN1100582",
+  "collection": "7",
+  "sheetmusic": null,
+  "video": null,
+  "itunes": "https://itunes.apple.com/us/album/soporific/id942756205?i=942756233",
+  "filmmusicURL": "https://incompetech.filmmusic.io/song/4395-soporific/"
+ },
+ "license_declared_by_site": "CC BY 4.0 https://creativecommons.org/licenses/by/4.0/ (see incompetech_faq.html, incompetech_licenses.html, incompetech_llms.txt)"
+}

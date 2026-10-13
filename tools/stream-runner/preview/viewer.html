@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ChessColate · Lofi Chess Puzzles 24/7 (local preview)</title>
+<style>
+  :root { color-scheme: dark; --bg:#0f0f0f; --card:#272727; --text:#f1f1f1; --muted:#aaa; --red:#e62117; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:14px/1.45 system-ui,-apple-system,"Helvetica Neue",sans-serif; }
+  .preview-banner { background:#3b2f00; color:#ffd666; padding:8px 16px; text-align:center; font-size:13px; }
+  main { max-width:1280px; margin:0 auto; padding:20px 16px 48px; }
+  .player { position:relative; aspect-ratio:16/9; background:#000; border-radius:12px; overflow:hidden; }
+  video { width:100%; height:100%; display:block; background:#000; }
+  .sound { position:absolute; left:12px; bottom:56px; background:rgba(0,0,0,.72); color:#fff; border:0; border-radius:18px; padding:8px 14px; font:inherit; cursor:pointer; }
+  .sound[hidden] { display:none; }
+  .status { position:absolute; inset:0; display:grid; place-items:center; font-size:18px; color:#ddd; background:rgba(0,0,0,.55); }
+  .status[hidden] { display:none; }
+  h1 { font-size:20px; font-weight:600; margin:14px 0 6px; }
+  .live { display:inline-flex; align-items:center; gap:6px; background:var(--red); color:#fff; font-size:12px; font-weight:600; padding:2px 8px; border-radius:4px; margin-right:8px; vertical-align:2px; }
+  .live::before { content:""; width:7px; height:7px; border-radius:50%; background:#fff; }
+  .channel { display:flex; align-items:center; gap:12px; margin:12px 0; }
+  .avatar { width:40px; height:40px; border-radius:50%; background:#7a4a2e; display:grid; place-items:center; font-weight:700; }
+  .channel b { display:block; }
+  .channel small { color:var(--muted); }
+  .box { background:var(--card); border-radius:12px; padding:14px 16px; margin-top:12px; }
+  .box h2 { font-size:14px; margin:0 0 8px; color:var(--muted); font-weight:600; letter-spacing:.04em; text-transform:uppercase; }
+  pre { margin:0; white-space:pre-wrap; word-break:break-word; font:inherit; }
+  dl { display:grid; grid-template-columns:max-content 1fr; gap:4px 16px; margin:0; }
+  dt { color:var(--muted); } dd { margin:0; font-variant-numeric:tabular-nums; }
+</style>
+</head>
+<body>
+<div class="preview-banner">Local preview. This is how the stream looks and sounds. It is not connected to YouTube. · <a href="muestra" style="color:#ffd666">Listen to the music sample</a></div>
+<main>
+  <div class="player">
+    <video id="v" autoplay muted playsinline controls></video>
+    <div id="status" class="status">Connecting to the stream…</div>
+    <button id="sound" class="sound" hidden>🔊 Turn on sound</button>
+  </div>
+  <h1><span class="live">LIVE</span>ChessColate · Lofi Chess Puzzles 24/7</h1>
+  <div class="channel"><div class="avatar">C</div><div><b>ChessColate</b><small>Chess puzzles with lofi music</small></div></div>
+  <div class="box"><h2>Description</h2><pre id="description">Loading…</pre></div>
+  <div class="box"><h2>Technical status (for testing)</h2>
+    <dl>
+      <dt>State</dt><dd id="s-state">–</dd>
+      <dt>Video</dt><dd id="s-video">–</dd>
+      <dt>Delay behind live</dt><dd id="s-latency">–</dd>
+      <dt>Dropped frames</dt><dd id="s-dropped">–</dd>
+      <dt>Reconnections</dt><dd id="s-recon">0</dd>
+    </dl>
+  </div>
+</main>
+<script src="vendor/hls.min.js"></script>
+<script>
+(() => {
+  const SRC = 'hls/stream.m3u8';
+  const video = document.getElementById('v');
+  const statusBox = document.getElementById('status');
+  const soundBtn = document.getElementById('sound');
+  const $ = (id) => document.getElementById(id);
+  let hls = null, reconnections = 0, state = 'connecting';
+  const setState = (s, msg) => { state = s; $('s-state').textContent = s; if (msg !== undefined) { statusBox.textContent = msg; statusBox.hidden = !msg; } };
+
+  fetch('description.txt').then((r) => r.text()).then((t) => { $('description').textContent = t; }).catch(() => { $('description').textContent = '(description not available)'; });
+
+  function start() {
+    if (hls) { hls.destroy(); hls = null; }
+    if (window.Hls && Hls.isSupported()) {
+      hls = new Hls({ liveSyncDurationCount: 3, maxBufferLength: 20, manifestLoadingMaxRetry: 20, manifestLoadingRetryDelay: 1500, levelLoadingMaxRetry: 20 });
+      hls.loadSource(SRC);
+      hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(() => {}));
+      hls.on(Hls.Events.ERROR, (_, data) => {
+        if (!data.fatal) return;
+        reconnections++; $('s-recon').textContent = reconnections;
+        setState('reconnecting', 'Reconnecting…');
+        if (data.type === Hls.ErrorTypes.MEDIA_ERROR) hls.recoverMediaError();
+        else setTimeout(start, 2000);
+      });
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      video.src = SRC;   // Safari reproduce HLS por sí solo
+    } else {
+      setState('unsupported', 'This browser cannot play HLS');
+    }
+  }
+
+  video.addEventListener('playing', () => setState('playing', ''));
+  video.addEventListener('waiting', () => setState('buffering', 'Buffering…'));
+  video.addEventListener('volumechange', () => { soundBtn.hidden = !video.muted; });
+  video.addEventListener('play', () => { soundBtn.hidden = !video.muted; });
+  soundBtn.addEventListener('click', () => { video.muted = false; video.volume = 1; video.play(); soundBtn.hidden = true; });
+
+  setInterval(() => {
+    if (video.videoWidth) $('s-video').textContent = `${video.videoWidth}×${video.videoHeight}`;
+    if (hls && Number.isFinite(hls.latency)) $('s-latency').textContent = `${hls.latency.toFixed(1)} s`;
+    const q = video.getVideoPlaybackQuality?.();
+    if (q) $('s-dropped').textContent = `${q.droppedVideoFrames} of ${q.totalVideoFrames}`;
+  }, 1000);
+
+  start();
+})();
+</script>
+</body>
+</html>

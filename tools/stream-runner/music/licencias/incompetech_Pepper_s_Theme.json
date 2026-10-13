@@ -1,0 +1,21 @@
+{
+ "catalog_source": "https://incompetech.com/music/royalty-free/pieces.json",
+ "record": {
+  "title": "Pepper's Theme",
+  "filename": "Peppers Theme.mp3",
+  "length": "00:04:00",
+  "instruments": "Piano, Guitar, Bass, Flutes",
+  "genre": "22",
+  "bpm": "76",
+  "description": "Beautiful interplay between the piano and guitar, ending very upbeat. This was composed for the film \"Duel\" (2014).",
+  "feel": "Relaxed",
+  "uploaded": "2014-07-19",
+  "isrc": "USUAN1400033",
+  "collection": "28",
+  "sheetmusic": null,
+  "video": "https://youtu.be/2D2IPwsFZoA",
+  "itunes": "https://itunes.apple.com/us/album/peppers-theme/id945466565?i=945466579",
+  "filmmusicURL": null
+ },
+ "license_declared_by_site": "CC BY 4.0 https://creativecommons.org/licenses/by/4.0/ (see incompetech_faq.html, incompetech_licenses.html, incompetech_llms.txt)"
+}

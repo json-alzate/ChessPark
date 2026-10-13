@@ -1,0 +1,21 @@
+// Página de "kiosco" para el directo: sin scroll, sin cursor, sin interacción.
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+  cursor: none;
+  user-select: none;
+  font-family: system-ui, -apple-system, 'Helvetica Neue', sans-serif;
+}
+
+// Estilos de cm-chessboard. Salen de los assets de chessColate (ver `includePaths`
+// en project.json): aquí solo se trae lo que usa el reproductor (tablero y marcadores).
+@import 'assets/cm-chessboard/assets/chessboard.scss';
+@import 'assets/cm-chessboard/assets/extensions/markers/markers.scss';
+
+.cm-chessboard .markers .marker.marker-square-green {
+  fill: green;
+  opacity: 0.2;
+}

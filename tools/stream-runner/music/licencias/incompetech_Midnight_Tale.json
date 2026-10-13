@@ -1,0 +1,21 @@
+{
+ "catalog_source": "https://incompetech.com/music/royalty-free/pieces.json",
+ "record": {
+  "title": "Midnight Tale",
+  "filename": "Midnight Tale.mp3",
+  "length": "00:02:42",
+  "instruments": "Guitar, Lute",
+  "genre": "22",
+  "bpm": "73",
+  "description": "Gather 'round the tavern's fire and I will share a tale for as long as I have ale. Hah! \"Tale and ale!\" I'm not guaranteeing rhymes, though. That was a coincidence. I was playing lute for an uninterested group of tavern-goers, when all of a sudden, I remembered that I had a sandwich for lunch! It looks like I'm out of ale, so that is the end of my tale.",
+  "feel": "Calming, Relaxed",
+  "uploaded": "2019-04-05",
+  "isrc": "USUAN1900004",
+  "collection": "3",
+  "sheetmusic": null,
+  "video": "https://youtu.be/VNctLX9oOJc",
+  "itunes": "https://itunes.apple.com/us/album/midnight-tale-single/1458676779?app=itunes",
+  "filmmusicURL": "https://incompetech.filmmusic.io/song/4710-midnight-tale/"
+ },
+ "license_declared_by_site": "CC BY 4.0 https://creativecommons.org/licenses/by/4.0/ (see incompetech_faq.html, incompetech_licenses.html, incompetech_llms.txt)"
+}

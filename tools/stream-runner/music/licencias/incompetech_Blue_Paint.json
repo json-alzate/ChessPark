@@ -1,0 +1,21 @@
+{
+ "catalog_source": "https://incompetech.com/music/royalty-free/pieces.json",
+ "record": {
+  "title": "Blue Paint",
+  "filename": "Blue Paint.mp3",
+  "length": "00:02:11",
+  "instruments": "Piano",
+  "genre": "5",
+  "bpm": "64",
+  "description": "Calm piano solo centered around a repeating Ab motive.  20 seconds before end the motive expands slightly with an added harmony.",
+  "feel": "Calming, Relaxed, Somber",
+  "uploaded": "2009-03-14",
+  "isrc": "USUAN1100566",
+  "collection": "20",
+  "sheetmusic": null,
+  "video": null,
+  "itunes": "https://itunes.apple.com/us/album/blue-paint/id945137818?i=945137821",
+  "filmmusicURL": "https://incompetech.filmmusic.io/song/3450-blue-paint/"
+ },
+ "license_declared_by_site": "CC BY 4.0 https://creativecommons.org/licenses/by/4.0/ (see incompetech_faq.html, incompetech_licenses.html, incompetech_llms.txt)"
+}

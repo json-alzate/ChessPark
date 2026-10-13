@@ -1,0 +1,21 @@
+{
+ "catalog_source": "https://incompetech.com/music/royalty-free/pieces.json",
+ "record": {
+  "title": "Sunshine (version 2)",
+  "filename": "Sunshine ver 2.mp3",
+  "length": "00:03:45",
+  "instruments": "Guitar, Bass, Drum Kit, Piano",
+  "genre": "16",
+  "bpm": "79",
+  "description": "Slightly longer, slightly slower version of \"Sunshine\"",
+  "feel": "Bright, Calming, Relaxed",
+  "uploaded": "2009-12-02",
+  "isrc": "USUAN1100628",
+  "collection": "17",
+  "sheetmusic": null,
+  "video": null,
+  "itunes": null,
+  "filmmusicURL": "https://incompetech.filmmusic.io/song/4438-sunshine-version-2/"
+ },
+ "license_declared_by_site": "CC BY 4.0 https://creativecommons.org/licenses/by/4.0/ (see incompetech_faq.html, incompetech_licenses.html, incompetech_llms.txt)"
+}

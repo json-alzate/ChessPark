@@ -1,0 +1,21 @@
+{
+ "catalog_source": "https://incompetech.com/music/royalty-free/pieces.json",
+ "record": {
+  "title": "Thinking of You",
+  "filename": "Thinking of You.mp3",
+  "length": "00:01:50",
+  "instruments": "Electric Piano",
+  "genre": "5",
+  "bpm": "72",
+  "description": "Nice piece for a narrative voice-over of good times past, present or future.",
+  "feel": "Calming, Relaxed",
+  "uploaded": "2009-12-29",
+  "isrc": "USUAN1100637",
+  "collection": null,
+  "sheetmusic": null,
+  "video": null,
+  "itunes": "https://itunes.apple.com/us/album/thinking-of-you/id945466565?i=945466582",
+  "filmmusicURL": "https://incompetech.filmmusic.io/song/4524-thinking-of-you/"
+ },
+ "license_declared_by_site": "CC BY 4.0 https://creativecommons.org/licenses/by/4.0/ (see incompetech_faq.html, incompetech_licenses.html, incompetech_llms.txt)"
+}

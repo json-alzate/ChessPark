@@ -1,0 +1,21 @@
+{
+ "catalog_source": "https://incompetech.com/music/royalty-free/pieces.json",
+ "record": {
+  "title": "Water Lily",
+  "filename": "Water Lily.mp3",
+  "length": "00:02:24",
+  "instruments": "Piano, Basses, Cellos",
+  "genre": "22",
+  "bpm": "62",
+  "description": "Simple and elegant.",
+  "feel": "Relaxed, Calming",
+  "uploaded": "2014-07-30",
+  "isrc": "USUAN1400035",
+  "collection": "13",
+  "sheetmusic": null,
+  "video": "https://youtu.be/kPiCIrrH3xM",
+  "itunes": "https://itunes.apple.com/us/album/water-lily/id945466565?i=945466584",
+  "filmmusicURL": null
+ },
+ "license_declared_by_site": "CC BY 4.0 https://creativecommons.org/licenses/by/4.0/ (see incompetech_faq.html, incompetech_licenses.html, incompetech_llms.txt)"
+}

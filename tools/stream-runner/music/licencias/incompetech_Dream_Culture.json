@@ -1,0 +1,21 @@
+{
+ "catalog_source": "https://incompetech.com/music/royalty-free/pieces.json",
+ "record": {
+  "title": "Dream Culture",
+  "filename": "Dream Culture.mp3",
+  "length": "00:03:34",
+  "instruments": "Piano, Percussion",
+  "genre": "5",
+  "bpm": "70",
+  "description": "Dreamy watery piano bits over a tight percussion with some reverse effects to add to the dreamlike state of things.",
+  "feel": "Calming, Relaxed, Uplifting",
+  "uploaded": "2013-11-16",
+  "isrc": "USUAN1300046",
+  "collection": "16",
+  "sheetmusic": null,
+  "video": "https://youtu.be/dWYS_iQNZys",
+  "itunes": "https://itunes.apple.com/us/album/dream-culture/id941913727?i=941913757",
+  "filmmusicURL": null
+ },
+ "license_declared_by_site": "CC BY 4.0 https://creativecommons.org/licenses/by/4.0/ (see incompetech_faq.html, incompetech_licenses.html, incompetech_llms.txt)"
+}

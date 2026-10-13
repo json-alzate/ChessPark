@@ -1,0 +1,21 @@
+{
+ "catalog_source": "https://incompetech.com/music/royalty-free/pieces.json",
+ "record": {
+  "title": "Crossing the Divide",
+  "filename": "Crossing the Divide.mp3",
+  "length": "00:03:13",
+  "instruments": "Piano, Trumpet, French Horn, Basses, Cellos",
+  "genre": "22",
+  "bpm": "71",
+  "description": "Americana western-sounding piece. It kicks in around 1:14. This was composed for the film \"Duel\" (2014).",
+  "feel": "Relaxed",
+  "uploaded": "2014-07-24",
+  "isrc": "USUAN1400034",
+  "collection": "43",
+  "sheetmusic": null,
+  "video": "https://youtu.be/msFl49TN4ag",
+  "itunes": "https://itunes.apple.com/us/album/crossing-the-divide/id943124234?i=943124240",
+  "filmmusicURL": null
+ },
+ "license_declared_by_site": "CC BY 4.0 https://creativecommons.org/licenses/by/4.0/ (see incompetech_faq.html, incompetech_licenses.html, incompetech_llms.txt)"
+}

@@ -1,0 +1,21 @@
+{
+ "catalog_source": "https://incompetech.com/music/royalty-free/pieces.json",
+ "record": {
+  "title": "Cool Vibes",
+  "filename": "Cool Vibes.mp3",
+  "length": "00:03:38",
+  "instruments": "Vibraphone, Bass, Drum Kit",
+  "genre": "11",
+  "bpm": "83",
+  "description": "A simple little slow trio for use in such things that require a slow jazz trio. Modulates at the midpoint.",
+  "feel": "Calming, Relaxed",
+  "uploaded": "2011-10-14",
+  "isrc": "USUAN1100863",
+  "collection": "42",
+  "sheetmusic": null,
+  "video": null,
+  "itunes": "https://itunes.apple.com/us/album/cool-vibes/id945463110?i=945463116",
+  "filmmusicURL": "https://incompetech.filmmusic.io/song/3553-cool-vibes/"
+ },
+ "license_declared_by_site": "CC BY 4.0 https://creativecommons.org/licenses/by/4.0/ (see incompetech_faq.html, incompetech_licenses.html, incompetech_llms.txt)"
+}
