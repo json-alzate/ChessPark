@@ -35,7 +35,7 @@ import { Reto333StorageService } from '@features/records/services/reto333-storag
 import { UserRecordsService } from '@features/records/services/user-records.service';
 
 import { BlockPresentationComponent } from '@features/training/components/block-presentation/block-presentation.component';
-import { TrainingPage } from '@features/training/pages/training.page';
+import { TrainingPage } from '@features/training/pages/training/training.page';
 
 /**
  * Pruebas de la pantalla de entrenamiento, en dos grupos:

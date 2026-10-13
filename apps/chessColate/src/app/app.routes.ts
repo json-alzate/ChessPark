@@ -26,7 +26,7 @@ export const routes: Routes = [
   {
     path: 'puzzles/training',
     loadComponent: () =>
-      import('./features/training/pages/training.page').then(
+      import('./features/training/pages/training/training.page').then(
         (m) => m.TrainingPage
       ),
   },
@@ -34,21 +34,21 @@ export const routes: Routes = [
     path: 'puzzles/plan-played',
     loadComponent: () =>
       import(
-        './features/training/pages/plan-played.page'
+        './features/training/pages/plan-played/plan-played.page'
       ).then((m) => m.PlanPlayedPage),
   },
   {
     path: 'puzzles/plans-history',
     loadComponent: () =>
       import(
-        './features/training/pages/plans-history.page'
+        './features/training/pages/plans-history/plans-history.page'
       ).then((m) => m.PlansHistoryPage),
   },
   {
     path: 'puzzles/custom-plans',
     loadComponent: () =>
       import(
-        './features/training/pages/custom-plans-list.page'
+        './features/training/pages/custom-plans-list/custom-plans-list.page'
       ).then((m) => m.CustomPlansListPage),
     canActivate: [CustomPlansGuard],
   },
@@ -56,7 +56,7 @@ export const routes: Routes = [
     path: 'puzzles/custom-plans/create',
     loadComponent: () =>
       import(
-        './features/training/pages/custom-plan-form.page'
+        './features/training/pages/custom-plan-form/custom-plan-form.page'
       ).then((m) => m.CustomPlanFormPage),
     canActivate: [AuthGuard],
   },
@@ -64,7 +64,7 @@ export const routes: Routes = [
     path: 'puzzles/custom-plans/edit/:uid',
     loadComponent: () =>
       import(
-        './features/training/pages/custom-plan-form.page'
+        './features/training/pages/custom-plan-form/custom-plan-form.page'
       ).then((m) => m.CustomPlanFormPage),
     canActivate: [AuthGuard],
   },
@@ -72,30 +72,30 @@ export const routes: Routes = [
     path: 'puzzles/public-plans',
     loadComponent: () =>
       import(
-        './features/training/pages/public-plans.page'
+        './features/training/pages/public-plans/public-plans.page'
       ).then((m) => m.PublicPlansPage),
     canActivate: [PublicPlansGuard],
   },
   {
     path: 'games',
     loadComponent: () =>
-      import('./features/games/pages/games.page').then((m) => m.GamesPage),
+      import('./features/games/pages/games/games.page').then((m) => m.GamesPage),
   },
   {
     // PGN que trae el usuario: no tiene id de colección
     path: 'games/pgn',
     loadComponent: () =>
-      import('./features/games/pages/player.page').then((m) => m.GamesPlayerPage),
+      import('./features/games/pages/player/player.page').then((m) => m.GamesPlayerPage),
   },
   {
     path: 'games/viewer',
     loadComponent: () =>
-      import('./features/games/pages/viewer.page').then((m) => m.GamesViewerPage),
+      import('./features/games/pages/viewer/viewer.page').then((m) => m.GamesViewerPage),
   },
   {
     path: 'games/:id',
     loadComponent: () =>
-      import('./features/games/pages/player.page').then((m) => m.GamesPlayerPage),
+      import('./features/games/pages/player/player.page').then((m) => m.GamesPlayerPage),
   },
   {
     path: 'analytics',
@@ -134,12 +134,12 @@ export const routes: Routes = [
   {
     path: 'settings',
     loadComponent: () =>
-      import('./features/settings/pages/settings.page').then((m) => m.SettingsPage),
+      import('./features/settings/pages/settings/settings.page').then((m) => m.SettingsPage),
   },
   {
     path: 'settings/storage',
     loadComponent: () =>
-      import('./features/settings/pages/storage.page').then((m) => m.StoragePage),
+      import('./features/settings/pages/storage/storage.page').then((m) => m.StoragePage),
   },
   {
     path: 'reminders',

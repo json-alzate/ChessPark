@@ -13,7 +13,7 @@ import { SecondsToMinutesSecondsPipe } from '@chesspark/common-utils';
 import { AppService } from '@core/app/app.service';
 import { PlanStorageService } from '@features/training/services/plan-storage.service';
 
-import { PlansHistoryPage } from '@features/training/pages/plans-history.page';
+import { PlansHistoryPage } from '@features/training/pages/plans-history/plans-history.page';
 
 import {
   findButtonByIcon,

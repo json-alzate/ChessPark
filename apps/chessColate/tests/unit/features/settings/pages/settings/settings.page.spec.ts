@@ -22,7 +22,7 @@ import { LanguageService, SupportedLang } from '@core/app/language.service';
 import { AppReviewService } from '@features/app-review/services/app-review.service';
 import { PuzzleStorageService } from '@features/training/services/puzzle-storage.service';
 import { GamesService } from '@features/games/services/games.service';
-import { SettingsPage } from '@features/settings/pages/settings.page';
+import { SettingsPage } from '@features/settings/pages/settings/settings.page';
 
 import {
   NavbarFalsa,

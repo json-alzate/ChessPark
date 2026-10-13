@@ -25,7 +25,7 @@ import { CustomPlansService } from '@features/training/services/custom-plans.ser
 import { PlanService } from '@features/training/services/plan.service';
 import { LoginComponent } from '@shared/components/login/login.component';
 
-import { CustomPlansListPage } from '@features/training/pages/custom-plans-list.page';
+import { CustomPlansListPage } from '@features/training/pages/custom-plans-list/custom-plans-list.page';
 
 import {
   ELO_TO_START_CASES,

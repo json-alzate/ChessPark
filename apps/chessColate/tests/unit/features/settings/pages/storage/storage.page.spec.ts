@@ -20,7 +20,7 @@ import {
   StorageFileItem,
   StorageGroup,
 } from '@features/training/services/puzzle-storage.service';
-import { StoragePage } from '@features/settings/pages/storage.page';
+import { StoragePage } from '@features/settings/pages/storage/storage.page';
 
 import {
   NavbarFalsa,

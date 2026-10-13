@@ -87,7 +87,7 @@ private readonly POOL_STORE_NAME = 'infinityPool';  // keyPath: 'id'
 | **No hay `listAll()`** | Nada devuelve la lista de entradas con metadata. Lo más cercano es `getCachedUrlsMatchingElo`, que filtra por ELO. |
 | **No hay tamaño en bytes** | Las entradas son objetos estructurados (no blobs/strings) → IndexedDB no reporta bytes. ⚠️ `getCacheSize()` ([`cache.service.ts:244`](../../libs/puzzles-provider/src/lib/cache.service.ts#L244)) **devuelve un conteo de entradas, no bytes**, pese a su nombre y su docstring. |
 | **`puzzlesIndex` es anémico** | Solo `{ key: url, timestamp }` ([`cache.service.ts:181`](../../libs/puzzles-provider/src/lib/cache.service.ts#L181)). Sin tema, sin elo, sin count, sin bytes. |
-| **No hay UI de almacenamiento** | [`settings.page.html`](../../apps/chessColate/src/app/features/settings/pages/settings.page.html) solo tiene Idioma y Notificaciones (+ Apariencia comentada). |
+| **No hay UI de almacenamiento** | [`settings.page.html`](../../apps/chessColate/src/app/features/settings/pages/settings/settings.page.html) solo tiene Idioma y Notificaciones (+ Apariencia comentada). |
 | **`clearCache()` nunca se llama** | Existe en la lib pero ningún código de app lo invoca — solo el spec. |
 
 ---
@@ -241,7 +241,7 @@ export function parsePuzzleUrl(url: string): ParsedPuzzleUrl | null
 
 ### Entrada en Ajustes
 
-Una tercera `<section>` en [`settings.page.html`](../../apps/chessColate/src/app/features/settings/pages/settings.page.html), siguiendo el patrón exacto de las existentes (icono + `text-lg font-bold` + tarjeta `bg-base-200/40 border border-base-content/10 rounded-box`):
+Una tercera `<section>` en [`settings.page.html`](../../apps/chessColate/src/app/features/settings/pages/settings/settings.page.html), siguiendo el patrón exacto de las existentes (icono + `text-lg font-bold` + tarjeta `bg-base-200/40 border border-base-content/10 rounded-box`):
 
 ```html
 <!-- Almacenamiento -->
@@ -260,7 +260,7 @@ A diferencia de Notificaciones, **no** va condicionada a `isNativePlatform`: el 
 
 Página nueva **standalone** en `apps/chessColate/src/app/features/settings/pages/`, ruta `/settings/storage`. Va en página aparte y no inline en Ajustes porque la lista es larga, tiene accordion y estado de carga propio.
 
-Sigue las convenciones ya establecidas en `settings.page.ts`: `inject()`, `addIcons({...})`, imports `[CommonModule, TranslocoPipe, IonContent, IonIcon, NavbarComponent]`, y ojo con el `data-theme="halloween"` hardcodeado en el wrapper ([`settings.page.html:2`](../../apps/chessColate/src/app/features/settings/pages/settings.page.html#L2)).
+Sigue las convenciones ya establecidas en `settings.page.ts`: `inject()`, `addIcons({...})`, imports `[CommonModule, TranslocoPipe, IonContent, IonIcon, NavbarComponent]`, y ojo con el `data-theme="halloween"` hardcodeado en el wrapper ([`settings.page.html:2`](../../apps/chessColate/src/app/features/settings/pages/settings/settings.page.html#L2)).
 
 ### Servicio de fachada
 

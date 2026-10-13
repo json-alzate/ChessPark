@@ -46,7 +46,7 @@ confettiColors = ['#FFD700', '#FFA500', '#FF8C00', '#FF6347'];
 → Mapear a la paleta DaisyUI (`hsl(var(--wa))`, `hsl(var(--su))`, …).
 
 ### Confetti (segunda implementación duplicada)
-**Archivo:** `apps/chessColate/src/app/features/training/pages/plan-played.page.ts:293`
+**Archivo:** `apps/chessColate/src/app/features/training/pages/plan-played/plan-played.page.ts:293`
 ```ts
 const confettiColors = ['#FFD700', '#FFA500', '#FF8C00', '#FF6347'];
 ```
@@ -64,7 +64,7 @@ backgroundColor: 'rgba(255, 73, 97, 0.2)',  borderColor: 'rgba(224, 64, 85, 0.2)
 → `hsl(var(--su) / 0.2)` para barras de éxito y `hsl(var(--er) / 0.2)` para error.
 
 ### Training
-**Archivo:** `apps/chessColate/src/app/features/training/pages/training.page.html:225`
+**Archivo:** `apps/chessColate/src/app/features/training/pages/training/training.page.html:225`
 ```
 style="color: #bf811c;"   → text-warning
 ```

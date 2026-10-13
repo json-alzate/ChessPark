@@ -89,6 +89,17 @@ features/<nombre>/
 
 **Si algo está en `pages/`, tiene ruta; si no tiene ruta, no está ahí.**
 
+**Una funcionalidad con varias pantallas** (training, games, settings) **tiene una subcarpeta por pantalla** dentro de
+`pages/`, igual que cada componente tiene la suya: `pages/<pantalla>/<pantalla>.page.{ts,html,scss}`.
+Con una sola pantalla (chess960, streak, home…) los tres archivos van directo en `pages/`.
+
+```
+features/training/pages/
+  training/              training.page.ts · .html · .scss
+  plans-history/         plans-history.page.ts · .html · .scss
+  custom-plan-form/      …
+```
+
 ### La cadena de capas
 
 Dentro de una funcionalidad, una capa solo habla con la de abajo:

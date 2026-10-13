@@ -63,7 +63,7 @@ import {
 } from '@chesspark/board';
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 
-import { BlockPresentationComponent } from '../components/block-presentation/block-presentation.component';
+import { BlockPresentationComponent } from '../../components/block-presentation/block-presentation.component';
 import {
   BlockPresentationSources,
   buildBlockPresentation,

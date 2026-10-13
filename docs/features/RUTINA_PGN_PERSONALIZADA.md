@@ -260,7 +260,7 @@ Reusar `AnalyticsService` (catálogo en [OBSERVABILITY_TRACKING](../implementado
 - `chess.js` (ya en el repo) para parsear PGN y derivar FEN/jugadas.
 - [`PuzzlesProvider`](../../libs/puzzles-provider/src/lib/puzzles-provider.ts) / [`block.service.ts`](../../apps/chessColate/src/app/features/training/services/block.service.ts) — punto de integración (`getPuzzlesForBlock`).
 - [`Block`](../../libs/models/src/lib/block.model.ts) / [`Plan`](../../libs/models/src/lib/plan.model.ts) — extender con `puzzleSource` / `customPuzzleSetId`.
-- [`block-settings.component.ts`](../../apps/chessColate/src/app/features/training/components/block-settings/block-settings.component.ts) y [`custom-plan-form.component.ts`](../../apps/chessColate/src/app/features/training/pages/custom-plan-form.page.ts) — UI de selección de fuente + ajustar el `strip` de `puzzles` al guardar.
+- [`block-settings.component.ts`](../../apps/chessColate/src/app/features/training/components/block-settings/block-settings.component.ts) y [`custom-plan-form.component.ts`](../../apps/chessColate/src/app/features/training/pages/custom-plan-form/custom-plan-form.page.ts) — UI de selección de fuente + ajustar el `strip` de `puzzles` al guardar.
 - [`UidGeneratorService`](../../libs/common-utils) para los `uid`.
 - Import de archivos: plugin de Capacitor (`@capacitor/filesystem`) o file input web para leer el `.pgn`.
 - Storage local existente para `CustomPuzzleSet`.

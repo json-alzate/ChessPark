@@ -49,7 +49,7 @@ import { BoardPuzzleSolutionComponent } from '@chesspark/board';
 import { ConfettiService } from '@chesspark/common-utils';
 import { PlanFacadeService, PublicPlansFacadeService } from '@chesspark/state';
 
-import { PlanPlayedPage } from '@features/training/pages/plan-played.page';
+import { PlanPlayedPage } from '@features/training/pages/plan-played/plan-played.page';
 import { TrainingReminderService } from '@features/reminders/services/training-reminder.service';
 import { ReminderPermissionModalComponent } from '@features/reminders/containers/reminder-permission-modal/reminder-permission-modal.component';
 import { ProfileService } from '@core/account/profile.service';

@@ -36,7 +36,7 @@ Esta es la decisión central del feature. Se compone de **dos capas**: un _gate 
 
 Cuando el usuario es elegible, **NO** disparamos en cualquier rutina: esperamos el **próximo "momento de victoria"**, en este orden de preferencia:
 
-1. **Batió un récord personal** (`isNewRecord`) — pico emocional máximo. _(ya existe en [`plan-played.component.ts`](../../apps/chessColate/src/app/features/training/pages/plan-played.page.ts))_
+1. **Batió un récord personal** (`isNewRecord`) — pico emocional máximo. _(ya existe en [`plan-played.component.ts`](../../apps/chessColate/src/app/features/training/pages/plan-played/plan-played.page.ts))_
 2. **Hito de racha** (p. ej. racha de 3, 7, 14 días).
 3. **Reto 333 completado** con buen resultado (`completed: true`).
 4. **Rutina completada con buena precisión** / `eloDelta` positivo.
@@ -45,7 +45,7 @@ Cuando el usuario es elegible, **NO** disparamos en cualquier rutina: esperamos 
 
 ### Momento exacto en la UI
 
-El disparo se hace en la **pantalla de resultados** de la rutina ([`plan-played.component.ts`](../../apps/chessColate/src/app/features/training/pages/plan-played.page.ts)), **después** de que el usuario ve su resultado (récord, ELO ganado, etc.), con un pequeño retardo (~800 ms) para que primero disfrute el resultado y _luego_ aparezca la tarjeta. Nunca durante el juego ni de forma que interrumpa una acción.
+El disparo se hace en la **pantalla de resultados** de la rutina ([`plan-played.component.ts`](../../apps/chessColate/src/app/features/training/pages/plan-played/plan-played.page.ts)), **después** de que el usuario ve su resultado (récord, ELO ganado, etc.), con un pequeño retardo (~800 ms) para que primero disfrute el resultado y _luego_ aparezca la tarjeta. Nunca durante el juego ni de forma que interrumpa una acción.
 
 > ### ⚠️ Importante: qué NO se puede hacer (políticas de Google)
 > El In-App Review API de Google es estricto:
@@ -226,6 +226,6 @@ No hay toggle: el flujo automático es silencioso y de baja frecuencia por dise�
 
 - `@capacitor-community/in-app-review` (agregar al proyecto).
 - Storage local ya existente para `AppReviewState`.
-- Hook en la pantalla de resultados de rutina ([`plan-played.component.ts`](../../apps/chessColate/src/app/features/training/pages/plan-played.page.ts)) para llamar a `AppReviewService.maybeRequestReview(...)`.
+- Hook en la pantalla de resultados de rutina ([`plan-played.component.ts`](../../apps/chessColate/src/app/features/training/pages/plan-played/plan-played.page.ts)) para llamar a `AppReviewService.maybeRequestReview(...)`.
 - `AnalyticsService` existente para los eventos.
 - App publicada en Play Store (o track de testing) para poder ver la tarjeta nativa en dispositivo.

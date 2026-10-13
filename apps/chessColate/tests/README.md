@@ -8,6 +8,8 @@ src/app/features/reminders/utils/reminder-time.util.ts
 tests/unit/features/reminders/utils/reminder-time.util.spec.ts      ← espejo exacto
 ```
 
+- Las pantallas con subcarpeta propia (`pages/<pantalla>/`) tienen su espejo en
+  `tests/unit/features/<funcionalidad>/pages/<pantalla>/<pantalla>.page.spec.ts`.
 - **Una prueba por archivo fuente**, en la misma ruta relativa y con el mismo nombre
   más `.spec.ts`. Si un archivo fuente no tiene prueba, falta su espejo.
 - Las E2E son un proyecto aparte: `apps/chessColate-e2e` (Playwright).

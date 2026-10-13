@@ -29,7 +29,7 @@ import { TrainingReminderService } from '@features/reminders/services/training-r
 import { Reto333StorageService } from '@features/records/services/reto333-storage.service';
 import { UserRecordsService } from '@features/records/services/user-records.service';
 
-import { TrainingPage } from '@features/training/pages/training.page';
+import { TrainingPage } from '@features/training/pages/training/training.page';
 
 import {
   flushMicrotasks,

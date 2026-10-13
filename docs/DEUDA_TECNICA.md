@@ -113,7 +113,7 @@ Prioridad = impacto × frecuencia de cambio × riesgo. Cada hallazgo incluye ref
 
 *Lo que sigue es la descripción original del hallazgo, previa a estos cambios.*
 
-- `apps/chessColate/src/app/features/training/pages/training.page.ts:76` (953 líneas): cálculo de ELO por tipo de plan (`saveInitialMaxElo` `:221-255`), **persistencia directa a `localStorage`** con `JSON.parse`/`try-catch` inline (`showReto333Alert` `:656-715`), parseo de FEN en un getter (`playerColor` `:122-135`), y `onPuzzleCompleted` `:515-627` que mezcla dominio, sonidos y UI.
+- `apps/chessColate/src/app/features/training/pages/training/training.page.ts:76` (953 líneas): cálculo de ELO por tipo de plan (`saveInitialMaxElo` `:221-255`), **persistencia directa a `localStorage`** con `JSON.parse`/`try-catch` inline (`showReto333Alert` `:656-715`), parseo de FEN en un getter (`playerColor` `:122-135`), y `onPuzzleCompleted` `:515-627` que mezcla dominio, sonidos y UI.
 - `libs/board/src/lib/board-puzzle-solution/board-puzzle-solution.component.ts:54` (917 líneas): un componente de UI gestiona **todo el ciclo de vida de Stockfish** (init/terminate/reintentos/errores de worker) `:116-281`.
 - `libs/board/src/lib/board-puzzle/board-puzzle.component.ts:90` (871 líneas): motor de puzzle completo (validación, promoción, timers, hints) dentro del componente.
 
@@ -130,8 +130,8 @@ Prioridad = impacto × frecuencia de cambio × riesgo. Cada hallazgo incluye ref
 
 Existe infraestructura de facades (`plan-facade.service.ts`, `public-plans-facade.service.ts`) pero varios componentes la eluden, creando **dos caminos de datos** (Store vs Firestore directo):
 
-- `apps/chessColate/src/app/features/training/pages/public-plans.page.ts:113, :139, :165` — `getPublicPlan()` directo.
-- `apps/chessColate/src/app/features/training/pages/plan-played.page.ts:231` — `getPlanInteraction()` directo.
+- `apps/chessColate/src/app/features/training/pages/public-plans/public-plans.page.ts:113, :139, :165` — `getPublicPlan()` directo.
+- `apps/chessColate/src/app/features/training/pages/plan-played/plan-played.page.ts:231` — `getPlanInteraction()` directo.
 - Ya reconocido en el código: `// TODO: no llamar directamente a firestore, pasar por el facade o store` en `apps/chessColate/src/app/services/custom-plans.service.ts:38`.
 
 **Acción sugerida:** exponer estos accesos a través de los facades/Store y prohibir la inyección de `FirestoreService` en componentes (regla de lint de arquitectura).

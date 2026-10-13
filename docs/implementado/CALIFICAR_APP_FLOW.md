@@ -186,8 +186,8 @@ si casi todo entra por `new_record`.
 | [`services/app-review.util.spec.ts`](../../apps/chessColate/tests/unit/features/app-review/utils/app-review.util.spec.ts) | tests de la lógica |
 | [`services/app-review-storage.service.ts`](../../apps/chessColate/src/app/features/app-review/services/app-review-storage.service.ts) | `localStorage` |
 | [`services/app-review.service.ts`](../../apps/chessColate/src/app/features/app-review/services/app-review.service.ts) | fachada: plugin, ficha de la tienda, analítica |
-| [`plan-played.component.ts`](../../apps/chessColate/src/app/features/training/pages/plan-played.page.ts) | enganche y exclusión con el aviso del recordatorio |
-| [`settings.page.html`](../../apps/chessColate/src/app/features/settings/pages/settings.page.html) | sección *Apoya la app* |
+| [`plan-played.component.ts`](../../apps/chessColate/src/app/features/training/pages/plan-played/plan-played.page.ts) | enganche y exclusión con el aviso del recordatorio |
+| [`settings.page.html`](../../apps/chessColate/src/app/features/settings/pages/settings/settings.page.html) | sección *Apoya la app* |
 | `assets/i18n/{es,en}.json` | claves `SETTINGS.support` y `APP_REVIEW.*` |
 | `apps/chessColate/android/` | registro del plugin (`npx cap sync android`) |
 

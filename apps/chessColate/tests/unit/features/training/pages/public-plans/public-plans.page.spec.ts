@@ -16,7 +16,7 @@ import { ProfileService } from '@core/account/profile.service';
 import { PlanService } from '@features/training/services/plan.service';
 import { PublicPlansService } from '@features/training/services/public-plans.service';
 
-import { PublicPlansPage } from '@features/training/pages/public-plans.page';
+import { PublicPlansPage } from '@features/training/pages/public-plans/public-plans.page';
 
 import {
   ELO_TO_START_CASES,

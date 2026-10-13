@@ -34,7 +34,7 @@ import { PlanService } from '@features/training/services/plan.service';
 import { LoginComponent } from '@shared/components/login/login.component';
 
 import { BlockSettingsComponent } from '@features/training/components/block-settings/block-settings.component';
-import { CustomPlanFormPage } from '@features/training/pages/custom-plan-form.page';
+import { CustomPlanFormPage } from '@features/training/pages/custom-plan-form/custom-plan-form.page';
 
 import {
   ELO_TO_START_CASES,

@@ -20,7 +20,7 @@ import { ParsedGame } from '@chesspark/games-provider';
 import { GameReview, MoveReview, PieceRating, reviewGame } from '@chesspark/game-reporter';
 import { BoardGamePlayerComponent } from '@chesspark/board';
 
-import { GamesViewerPage } from '@features/games/pages/viewer.page';
+import { GamesViewerPage } from '@features/games/pages/viewer/viewer.page';
 import { AnalyticsService } from '@core/analytics/analytics.service';
 import { GameReviewService } from '@features/games/services/game-review.service';
 import { GamesService } from '@features/games/services/games.service';
