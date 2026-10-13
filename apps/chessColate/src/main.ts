@@ -34,15 +34,15 @@ import {
 } from '@chesspark/state';
 
 // Services
-import { AuthService } from './app/services/account/auth.service';
-import { ProfileService } from './app/services/account/profile.service';
-import { CustomPlanRepository } from './app/services/firestore/custom-plan.repository';
-import { PlanElosRepository } from './app/services/firestore/plan-elos.repository';
-import { PublicPlansFirestoreAdapter } from './app/services/firestore/public-plans-firestore.adapter';
-import { LanguageService } from './app/services/app/language.service';
-import { AppService } from './app/services/app/app.service';
-import { AppearanceService } from './app/services/app/appearance.service';
-import { CrashlyticsErrorHandler } from './app/services/analytics/crashlytics-error-handler';
+import { AuthService } from './app/core/account/auth.service';
+import { ProfileService } from './app/core/account/profile.service';
+import { CustomPlanRepository } from './app/features/training/data/custom-plan.repository';
+import { PlanElosRepository } from './app/features/training/data/plan-elos.repository';
+import { PublicPlansFirestoreAdapter } from './app/features/training/data/public-plans-firestore.adapter';
+import { LanguageService } from './app/core/app/language.service';
+import { AppService } from './app/core/app/app.service';
+import { AppearanceService } from './app/core/app/appearance.service';
+import { CrashlyticsErrorHandler } from './app/core/analytics/crashlytics-error-handler';
 import { PuzzlesProvider } from '@chesspark/puzzles-provider';
 
 import { register } from 'swiper/element/bundle';

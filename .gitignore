@@ -54,3 +54,10 @@ apps/chessColate/src/environments/private/keys.ts
 
 # Datos personales de prueba (PGN de cuentas reales): se conservan en local, no se versionan
 test_data/
+
+# Evidencia local de pruebas (capturas, reportes de Playwright)
+docs/local/
+# Registros y snapshots que deja el MCP de Playwright al recorrer la app
+.playwright-mcp/
+/playwright-report
+/test-results

@@ -18,7 +18,7 @@ import {
 } from '@chesspark/board';
 import { APP_THEMES, AppTheme, BoardStyle, PiecesStyle } from '@chesspark/models';
 
-import { AppearanceService } from '@services/app/appearance.service';
+import { AppearanceService } from '@core/app/appearance.service';
 
 type PickerTab = 'pieces' | 'board' | 'theme';
 

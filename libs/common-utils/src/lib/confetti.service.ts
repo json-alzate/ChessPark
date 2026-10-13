@@ -1,6 +1,13 @@
 import { Injectable } from '@angular/core';
 import confetti from 'canvas-confetti';
 
+/**
+ * Capa del confeti. Debe quedar por encima de las hojas y modales de Ionic (sus z-index parten de
+ * 20000 y suben con cada overlay abierto): con 0 el confeti de "nuevo récord" se dibujaba DETRÁS de
+ * la pantalla de resultados y solo asomaba por la franja de arriba. El canvas no recibe toques.
+ */
+export const CONFETTI_Z_INDEX = 100000;
+
 export interface ConfettiOptions {
   startVelocity?: number;
   spread?: number;
@@ -26,7 +33,7 @@ export class ConfettiService {
     startVelocity: 30,
     spread: 360,
     ticks: 60,
-    zIndex: 0
+    zIndex: CONFETTI_Z_INDEX
   };
 
   private readonly themes: Record<string, ConfettiTheme> = {

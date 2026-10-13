@@ -27,7 +27,8 @@ import {
   chevronBackOutline,
   chevronForwardOutline,
   playSkipForwardOutline,
-  playForwardOutline
+  playForwardOutline,
+  bulbOutline
 } from 'ionicons/icons';
 
 // Transloco
@@ -137,7 +138,8 @@ export class BoardPuzzleSolutionComponent implements OnInit, AfterViewInit, OnDe
       chevronBackOutline,
       chevronForwardOutline,
       playSkipForwardOutline,
-      playForwardOutline
+      playForwardOutline,
+      bulbOutline
     });
   }
 

@@ -197,7 +197,7 @@ El modelo es **cliente-autoritativo**, así que es técnicamente manipulable (lo
 
 - **[`board-puzzle`](../../libs/board/src/lib/board-puzzle/board-puzzle.component.ts):** se alimenta con `@Input() setPuzzle` puzzle a puzzle y se escuchan `@Output() puzzleCompleted` / `puzzleFailed` para avanzar. Se usa `setForceStopTimer` y se **oculta el timer por-puzzle** (`showBoardControls = false`): el racer usa un **reloj global** de carrera, no el del board.
 - **[`puzzles-provider`](../../libs/puzzles-provider/src/lib/puzzles-provider.ts) + caché IndexedDB:** el host obtiene el set con `getPuzzles({ eloMin, eloMax, count })`; el resto lo recibe ya resuelto por RTDB.
-- **[`AuthService`](../../apps/chessColate/src/app/services/auth.service.ts):** `uid` y nombre del jugador.
+- **[`AuthService`](../../apps/chessColate/src/app/core/account/auth.service.ts):** `uid` y nombre del jugador.
 - **`AnalyticsService`** ([catálogo](../implementado/OBSERVABILITY_TRACKING.md)): instrumentar `race_joined`, `race_started`, `race_finished`, `race_rank`.
 - **NgRx** (`libs/state`): un slice `racer` para el estado de la carrera en curso.
 

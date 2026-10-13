@@ -92,21 +92,21 @@ legible). El resto son **acciones semánticas**. Nombres y params en `snake_case
 | `puzzle_storage_cleared` | borra todo lo descargado | `files_count`, `size_mb` | `settings/storage/storage.page.ts` |
 | `app_review_requested` | se pide la tarjeta nativa de la tienda | `trigger` (`new_record`/`good_routine`/`grace_window`), `completed_routines` | `app-review.service.ts` |
 | `app_review_store_opened` | toca "Califícanos" en Ajustes | — | `app-review.service.ts` |
-| `games_catalog_opened` | se abre Partidas | `downloaded_count` | `pages/games/games.page.ts` |
+| `games_catalog_opened` | se abre Partidas | `downloaded_count` | `features/games/pages/games/games.page.ts` |
 | `games_pack_downloaded` | termina la descarga de un paquete | `player`, `games`, `size_kb` | `games.service.ts` |
 | `games_pack_deleted` | se borra un paquete | `player` | `games.service.ts` |
-| `game_opened` | se abre una partida | `source` (`catalog`/`tv`/`analytics`), `player` | `pages/games/viewer/viewer.page.ts` |
-| `game_heatmap_opened` | se abre el mapa de calor de una partida | `source` (`catalog`/`analytics`) | `pages/games/viewer/viewer.page.ts` |
-| `game_review_opened` | se abre la valoración de una partida | `source` (`catalog`/`analytics`) | `pages/games/viewer/viewer.page.ts` |
+| `game_opened` | se abre una partida | `source` (`catalog`/`tv`/`analytics`), `player` | `features/games/pages/viewer/viewer.page.ts` |
+| `game_heatmap_opened` | se abre el mapa de calor de una partida | `source` (`catalog`/`analytics`) | `features/games/pages/viewer/viewer.page.ts` |
+| `game_review_opened` | se abre la valoración de una partida | `source` (`catalog`/`analytics`) | `features/games/pages/viewer/viewer.page.ts` |
 | `game_review_completed` | termina de analizar una partida con Stockfish | `positions`, `depth`, `duration_s`, `failed_positions` | `game-review.service.ts` |
-| `games_tv_started` | arranca el modo TV | `player`, `games_count` | `pages/games/player/player.page.ts` |
-| `games_tv_next` | el TV encadena a la siguiente | `index` | `pages/games/viewer/viewer.page.ts` |
-| `games_speed_changed` | cambia la velocidad | `ms_per_move` | `pages/games/viewer/viewer.page.ts` |
+| `games_tv_started` | arranca el modo TV | `player`, `games_count` | `features/games/pages/player/player.page.ts` |
+| `games_tv_next` | el TV encadena a la siguiente | `index` | `features/games/pages/viewer/viewer.page.ts` |
+| `games_speed_changed` | cambia la velocidad | `ms_per_move` | `features/games/pages/viewer/viewer.page.ts` |
 | `games_pgn_load_failed` | un PGN propio no trae partidas | `reason` | `games.service.ts` |
-| `game_analytics_opened` | se abre Análisis de partidas | `connected`, `games_count` | `pages/analytics/analytics.page.ts` |
-| `game_analytics_connected` | se conecta una cuenta externa | `platforms`, `history_months` | `pages/analytics/analytics.page.ts` |
+| `game_analytics_opened` | se abre Análisis de partidas | `connected`, `games_count` | `features/game-analytics/pages/analytics.page.ts` |
+| `game_analytics_connected` | se conecta una cuenta externa | `platforms`, `history_months` | `features/game-analytics/pages/analytics.page.ts` |
 | `game_analytics_synced` | termina una descarga de partidas propias | `platforms`, `months`, `games_count` | `game-analytics.service.ts` |
-| `game_analytics_filtered` | se cambia el filtro de plataforma | `platform`, `time_classes` | `pages/analytics/analytics.page.ts` |
+| `game_analytics_filtered` | se cambia el filtro de plataforma | `platform`, `time_classes` | `features/game-analytics/pages/analytics.page.ts` |
 | `game_analytics_disconnected` | se desconecta una cuenta | `platform` | `game-analytics.service.ts` |
 
 \* `routine_uid`/`author_uid` solo en rutinas custom/públicas.

@@ -20,7 +20,7 @@ La diferencia crítica con una rutina normal de ChessColate: aquí el **conjunto
 - Permitir **configurar el set** de forma flexible: cantidad de puzzles, ELO, temas.
 - Soportar **múltiples vueltas** con **orden configurable** y **timing decreciente**.
 - **Medir la mejora entre vueltas** (precisión y tiempo) sobre el mismo material — el corazón del método.
-- Reutilizar el tablero y el motor de puzzles existentes (`@chesspark/board`, [`getPuzzlesForBlock`](../../apps/chessColate/src/app/services/block.service.ts), [`PuzzlesProvider`](../../libs/puzzles-provider/src/lib/puzzles-provider.ts)).
+- Reutilizar el tablero y el motor de puzzles existentes (`@chesspark/board`, [`getPuzzlesForBlock`](../../apps/chessColate/src/app/features/training/services/block.service.ts), [`PuzzlesProvider`](../../libs/puzzles-provider/src/lib/puzzles-provider.ts)).
 
 ---
 
@@ -221,7 +221,7 @@ Catálogo en [OBSERVABILITY_TRACKING](../implementado/OBSERVABILITY_TRACKING.md)
 ## Alcance inicial (MVP)
 
 1. Nuevo `planType: 'woodpecker'` + formulario de configuración (composición + repetición).
-2. Generación del set desde el catálogo ([`getPuzzlesForBlock`](../../apps/chessColate/src/app/services/block.service.ts) / [`PuzzlesProvider`](../../libs/puzzles-provider/src/lib/puzzles-provider.ts)) con validación de `minCount`.
+2. Generación del set desde el catálogo ([`getPuzzlesForBlock`](../../apps/chessColate/src/app/features/training/services/block.service.ts) / [`PuzzlesProvider`](../../libs/puzzles-provider/src/lib/puzzles-provider.ts)) con validación de `minCount`.
 3. **Congelar y persistir** el set (`WoodpeckerSet`) + `WoodpeckerProgress` reanudable.
 4. Juego por vueltas reutilizando el tablero de puzzles, con `order` y `timing` configurables.
 5. Resumen por vuelta + resumen global con comparación de precisión/tiempo.
@@ -251,7 +251,7 @@ Catálogo en [OBSERVABILITY_TRACKING](../implementado/OBSERVABILITY_TRACKING.md)
 
 ## Dependencias técnicas
 
-- [`PuzzlesProvider`](../../libs/puzzles-provider/src/lib/puzzles-provider.ts) / [`block.service.ts`](../../apps/chessColate/src/app/services/block.service.ts) para generar el set.
+- [`PuzzlesProvider`](../../libs/puzzles-provider/src/lib/puzzles-provider.ts) / [`block.service.ts`](../../apps/chessColate/src/app/features/training/services/block.service.ts) para generar el set.
 - [`Plan`](../../libs/models/src/lib/plan.model.ts) (`PlanTypes` += `'woodpecker'`), [`Block`](../../libs/models/src/lib/block.model.ts), [`Puzzle`](../../libs/models/src/lib/puzzle.model.ts), [`UserPuzzle`](../../libs/models/src/lib/user-puzzles.model.ts).
 - [`board-puzzle.component.ts`](../../libs/board/src/lib/board-puzzle/board-puzzle.component.ts) para el juego (soporta timer y `failByTime`).
 - Storage local existente para `WoodpeckerSet` / `WoodpeckerProgress` (mismo patrón que planes personalizados).

@@ -77,7 +77,7 @@ private readonly POOL_STORE_NAME = 'infinityPool';  // keyPath: 'id'
 - **Borrado total**: `clearCache()` ([`cache.service.ts:221`](../../libs/puzzles-provider/src/lib/cache.service.ts#L221)), expuesto en `PuzzlesProvider.clearCache()`.
 - **Listado de claves + parseo de ELO desde la URL**: `getCachedUrlsMatchingElo()` ([`cache.service.ts:395-442`](../../libs/puzzles-provider/src/lib/cache.service.ts#L395-L442)) ya hace exactamente el truco que esta UI necesita generalizar.
 - **Fecha de descarga y de último acceso**: `timestamp` y `lastAccessedAt` en `CacheEntry`.
-- **Acceso al servicio sin DI nueva**: `puzzlesProvider.getCacheService()` — patrón ya usado por [`infinity-puzzle-pool.service.ts:21-23`](../../apps/chessColate/src/app/services/infinity-puzzle-pool.service.ts#L21-L23).
+- **Acceso al servicio sin DI nueva**: `puzzlesProvider.getCacheService()` — patrón ya usado por [`infinity-puzzle-pool.service.ts:21-23`](../../apps/chessColate/src/app/features/training/services/infinity-puzzle-pool.service.ts#L21-L23).
 - **Limpieza automática**: expiración a 1 año + `evictStaleEntries()` a los 90 días sin acceso, disparada fire-and-forget en `init()`.
 
 ### ❌ Falta
@@ -87,7 +87,7 @@ private readonly POOL_STORE_NAME = 'infinityPool';  // keyPath: 'id'
 | **No hay `listAll()`** | Nada devuelve la lista de entradas con metadata. Lo más cercano es `getCachedUrlsMatchingElo`, que filtra por ELO. |
 | **No hay tamaño en bytes** | Las entradas son objetos estructurados (no blobs/strings) → IndexedDB no reporta bytes. ⚠️ `getCacheSize()` ([`cache.service.ts:244`](../../libs/puzzles-provider/src/lib/cache.service.ts#L244)) **devuelve un conteo de entradas, no bytes**, pese a su nombre y su docstring. |
 | **`puzzlesIndex` es anémico** | Solo `{ key: url, timestamp }` ([`cache.service.ts:181`](../../libs/puzzles-provider/src/lib/cache.service.ts#L181)). Sin tema, sin elo, sin count, sin bytes. |
-| **No hay UI de almacenamiento** | [`settings.page.html`](../../apps/chessColate/src/app/pages/settings/settings.page.html) solo tiene Idioma y Notificaciones (+ Apariencia comentada). |
+| **No hay UI de almacenamiento** | [`settings.page.html`](../../apps/chessColate/src/app/features/settings/pages/settings/settings.page.html) solo tiene Idioma y Notificaciones (+ Apariencia comentada). |
 | **`clearCache()` nunca se llama** | Existe en la lib pero ningún código de app lo invoca — solo el spec. |
 
 ---
@@ -121,7 +121,7 @@ Ajustes
 ### Detalle de la lista
 
 - **Agrupada por tema**, en un accordion (`collapse` de DaisyUI). 124 archivos planos serían ilegibles; agrupados son ~15 filas.
-- **Nombre del tema traducido**, no el slug: `fork` → "Horquilla" / "Fork". Viene de [`themes-puzzle.json`](../../apps/chessColate/src/assets/data/themes-puzzle.json) (`nameEs`/`nameEn`), ya cargado por `AppService.loadThemesPuzzle()` ([`app.service.ts:70-71`](../../apps/chessColate/src/app/services/app.service.ts#L70-L71)). Las **aperturas** salen de [`openings.json`](../../apps/chessColate/src/assets/data/openings.json).
+- **Nombre del tema traducido**, no el slug: `fork` → "Horquilla" / "Fork". Viene de [`themes-puzzle.json`](../../apps/chessColate/src/assets/data/themes-puzzle.json) (`nameEs`/`nameEn`), ya cargado por `AppService.loadThemesPuzzle()` ([`app.service.ts:70-71`](../../apps/chessColate/src/app/core/app/app.service.ts#L70-L71)). Las **aperturas** salen de [`openings.json`](../../apps/chessColate/src/assets/data/openings.json).
 - **Orden por defecto: tamaño descendente** — el usuario que entra aquí viene a liberar espacio, así que lo caro va primero.
 - **Rango de ELO** con guión en la fila hoja: `1500–1519`.
 - **Fecha**: en formato relativo ("hace 3 días") a partir de `timestamp`. Opcional en la primera versión.
@@ -241,7 +241,7 @@ export function parsePuzzleUrl(url: string): ParsedPuzzleUrl | null
 
 ### Entrada en Ajustes
 
-Una tercera `<section>` en [`settings.page.html`](../../apps/chessColate/src/app/pages/settings/settings.page.html), siguiendo el patrón exacto de las existentes (icono + `text-lg font-bold` + tarjeta `bg-base-200/40 border border-base-content/10 rounded-box`):
+Una tercera `<section>` en [`settings.page.html`](../../apps/chessColate/src/app/features/settings/pages/settings/settings.page.html), siguiendo el patrón exacto de las existentes (icono + `text-lg font-bold` + tarjeta `bg-base-200/40 border border-base-content/10 rounded-box`):
 
 ```html
 <!-- Almacenamiento -->
@@ -258,9 +258,9 @@ A diferencia de Notificaciones, **no** va condicionada a `isNativePlatform`: el 
 
 ### Página de gestión
 
-Página nueva **standalone** en `apps/chessColate/src/app/pages/settings/storage/`, ruta `/settings/storage`. Va en página aparte y no inline en Ajustes porque la lista es larga, tiene accordion y estado de carga propio.
+Página nueva **standalone** en `apps/chessColate/src/app/features/settings/pages/`, ruta `/settings/storage`. Va en página aparte y no inline en Ajustes porque la lista es larga, tiene accordion y estado de carga propio.
 
-Sigue las convenciones ya establecidas en `settings.page.ts`: `inject()`, `addIcons({...})`, imports `[CommonModule, TranslocoPipe, IonContent, IonIcon, NavbarComponent]`, y ojo con el `data-theme="halloween"` hardcodeado en el wrapper ([`settings.page.html:2`](../../apps/chessColate/src/app/pages/settings/settings.page.html#L2)).
+Sigue las convenciones ya establecidas en `settings.page.ts`: `inject()`, `addIcons({...})`, imports `[CommonModule, TranslocoPipe, IonContent, IonIcon, NavbarComponent]`, y ojo con el `data-theme="halloween"` hardcodeado en el wrapper ([`settings.page.html:2`](../../apps/chessColate/src/app/features/settings/pages/settings/settings.page.html#L2)).
 
 ### Servicio de fachada
 

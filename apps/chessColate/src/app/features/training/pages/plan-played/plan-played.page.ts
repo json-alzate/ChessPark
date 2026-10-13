@@ -1,0 +1,643 @@
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Router, ActivatedRoute } from '@angular/router';
+import { Capacitor } from '@capacitor/core';
+
+import {
+  ModalController,
+  IonContent,
+  IonIcon,
+} from '@ionic/angular/standalone';
+
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+
+import { Plan, Puzzle, UserPuzzle, Block, PlanTypes } from '@chesspark/models';
+import { PlanFacadeService, PublicPlansFacadeService } from '@chesspark/state';
+
+import { AppService } from '@core/app/app.service';
+import { ProfileService } from '@core/account/profile.service';
+import { PlansElosService } from '@features/training/services/plans-elos.service';
+import { BlockService } from '@features/training/services/block.service';
+import { PlanService } from '@features/training/services/plan.service';
+import { PlanStorageService } from '@features/training/services/plan-storage.service';
+import { AnalyticsService } from '@core/analytics/analytics.service';
+import { TrainingReminderService } from '@features/reminders/services/training-reminder.service';
+import { AppReviewService } from '@features/app-review/services/app-review.service';
+import { routineAccuracy } from '@features/app-review/utils/app-review.util';
+import { LoadingController } from '@ionic/angular/standalone';
+
+import { BoardPuzzleSolutionComponent } from '@chesspark/board';
+import { FenBoardComponent } from '@chesspark/board';
+import { PlanChartComponent } from '@features/training/components/plan-chart/plan-chart.component';
+import { LoginComponent } from '@shared/components/login/login.component';
+import { NavbarComponent } from '@shared/components/navbar/navbar.component';
+import { ReminderPermissionModalComponent } from '@features/reminders/containers/reminder-permission-modal/reminder-permission-modal.component';
+import { planImage } from '@features/training/config/training-plans.config';
+import { ConfettiService } from '@chesspark/common-utils';
+
+import { addIcons } from 'ionicons';
+import {
+  heartOutline,
+  heart,
+  homeOutline,
+  timeOutline,
+  trophyOutline,
+  lockClosed,
+} from 'ionicons/icons';
+import { Subject, Subscription } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { CountUpComponent } from '@shared/components/count-up/count-up.component';
+import { EloDeltaComponent } from '@shared/components/elo-delta/elo-delta.component';
+
+@Component({
+  selector: 'app-plan-played',
+  standalone: true,
+  imports: [
+    CommonModule,
+    TranslocoPipe,
+    FenBoardComponent,
+    PlanChartComponent,
+    IonContent,
+    IonIcon,
+    NavbarComponent,
+    CountUpComponent,
+    EloDeltaComponent,
+  ],
+  templateUrl: './plan-played.page.html',
+  styleUrl: './plan-played.page.scss',
+})
+export class PlanPlayedPage implements OnInit, OnDestroy {
+  private planFacade = inject(PlanFacadeService);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private modalController = inject(ModalController);
+  public appService = inject(AppService);
+  private profileService = inject(ProfileService);
+  private plansElosService = inject(PlansElosService);
+  private publicPlansFacade = inject(PublicPlansFacadeService);
+  private blockService = inject(BlockService);
+  private planService = inject(PlanService);
+  private planStorageService = inject(PlanStorageService);
+  private loadingController = inject(LoadingController);
+  private confettiService = inject(ConfettiService);
+  private translocoService = inject(TranslocoService);
+  private analyticsService = inject(AnalyticsService);
+  private trainingReminderService = inject(TrainingReminderService);
+  private appReviewService = inject(AppReviewService);
+
+  /**
+   * Menú minimalista de rutinas: animalito + duración (minutos).
+   * La imagen sale de la misma fuente que home/avatar (plan{N} = N minutos).
+   */
+  readonly quickRoutines: { plan: number; image: string; minutes: number }[] = [
+    1, 3, 5, 10, 20, 30,
+  ].map((plan) => ({
+    plan,
+    minutes: plan,
+    image: planImage(`plan${plan}` as PlanTypes),
+  }));
+
+  plan: Plan | null = null;
+  puzzlesPerPage = 4;
+  showMoreButtons: { [blockIndex: number]: boolean } = {};
+  userPuzzlesToShowInBoards: { [blockIndex: number]: UserPuzzle[] } = {};
+  eloTotal: number = 0;
+  // Puntos que subió (+) o bajó (-) el ELO total en esta rutina.
+  // null cuando el plan no guardó el ELO inicial (planes antiguos del historial).
+  eloDelta: number | null = null;
+  isLiked: boolean = false;
+  private likeStatusSub?: Subscription;
+  isLoadingLike: boolean = false;
+  isLoadingToPlay: boolean = false;
+  isNewRecord: boolean = false;
+  isConfettiLaunching: boolean = false;
+
+  isAuthenticated: boolean = false;
+  isLoadingPlan: boolean = false;
+  isFromHistory: boolean = false;
+  private hasHadPlan: boolean = false; // Flag para saber si alguna vez tuvimos un plan
+  // Evita evaluar/mostrar el prompt del recordatorio más de una vez por visita
+  private reminderPromptChecked: boolean = false;
+  // Igual para la invitación a calificar la app
+  private appReviewChecked = false;
+  // Cálculo del ELO total y del récord de la rutina recién terminada
+  private eloReady: Promise<void> = Promise.resolve();
+  private destroy$ = new Subject<void>();
+
+  constructor() {
+    addIcons({
+      heartOutline,
+      heart,
+      homeOutline,
+      timeOutline,
+      trophyOutline,
+      lockClosed,
+    });
+  }
+
+  ngOnInit() {
+    // Suscribirse al estado de autenticación
+    this.profileService.profile$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((profile) => {
+        this.isAuthenticated = !!profile;
+      });
+
+    // Suscribirse al estado de carga del plan
+    this.planFacade
+      .getLoadingPlan$()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((loading) => {
+        this.isLoadingPlan = loading;
+        // Si se está cargando un nuevo plan, limpiar el plan actual para mostrar skeletons
+        if (loading) {
+          this.plan = null;
+          this.userPuzzlesToShowInBoards = {};
+          this.showMoreButtons = {};
+        }
+      });
+
+    // Verificar si hay un uid en los query params (desde historial)
+    this.route.queryParams
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((params) => {
+        if (params['uid']) {
+          this.isFromHistory = true;
+        }
+        if (params['uid'] && !this.plan) {
+          // Intentar cargar el plan desde el historial
+          const planFromHistory = this.planStorageService.getPlanById(
+            params['uid']
+          );
+          if (planFromHistory) {
+            this.planFacade.updatePlan(planFromHistory);
+          }
+        }
+      });
+
+    // Suscribirse al plan
+    this.planFacade
+      .getPlan$()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(async (plan: Plan | null) => {
+        // Si hay un plan, solo procesarlo si está terminado (isFinished === true)
+        // Esto evita que plan-played reaccione a planes nuevos que se están creando
+        if (plan) {
+          // Solo procesar planes terminados en plan-played
+          if (plan.isFinished === true) {
+            this.hasHadPlan = true;
+            this.plan = plan;
+            // Se guarda la promesa (sin await, para no retrasar los tableros):
+            // los avisos posteriores necesitan el récord y el ELO ya calculados.
+            this.eloReady = this.getTotalElo();
+
+            this.plan.blocks.forEach((block, blockIndex) => {
+              // Inicialmente carga 4 tableros por bloque
+              this.userPuzzlesToShowInBoards[blockIndex] =
+                block.puzzlesPlayed.slice(0, this.puzzlesPerPage);
+              this.showMoreButtons[blockIndex] =
+                block.puzzlesPlayed.length > this.puzzlesPerPage;
+            });
+
+            // Si el plan es público, verificar si el usuario le ha dado me gusta
+            if (this.isPublicPlan && this.canLike) {
+              await this.checkLikeStatus();
+            }
+
+            // Momento oportuno (peak-end) para los avisos de fin de rutina
+            void this.runPostRoutinePrompts();
+          }
+          // Si el plan no está terminado, ignorarlo (es un plan nuevo que se está creando)
+        } else if (!plan && !this.isLoadingPlan && !this.hasHadPlan) {
+          // Intentar cargar desde query params si existe
+          const planUid = this.route.snapshot.queryParams['uid'];
+          if (planUid) {
+            const planFromHistory =
+              this.planStorageService.getPlanById(planUid);
+            if (planFromHistory) {
+              this.plan = planFromHistory;
+              this.hasHadPlan = true;
+              this.getTotalElo();
+              this.plan.blocks.forEach((block, blockIndex) => {
+                this.userPuzzlesToShowInBoards[blockIndex] =
+                  block.puzzlesPlayed.slice(0, this.puzzlesPerPage);
+                this.showMoreButtons[blockIndex] =
+                  block.puzzlesPlayed.length > this.puzzlesPerPage;
+              });
+              return;
+            }
+          }
+          // Solo navegar a home si nunca tuvimos un plan y no se está cargando uno
+          // Esto evita navegar cuando se limpia el plan para cargar uno nuevo
+          this.router.navigate(['/home']);
+          return;
+        }
+      });
+  }
+
+  /**
+   * Avisos que aprovechan el pico emocional del final de rutina. Como mucho
+   * uno por visita: si se propone el recordatorio, la invitación a calificar
+   * espera a otra rutina en vez de encadenar dos tarjetas seguidas.
+   */
+  private async runPostRoutinePrompts(): Promise<void> {
+    const reminderShown = await this.maybeShowReminderPrompt();
+    await this.maybeRequestAppReview(!reminderShown);
+  }
+
+  /**
+   * Propone activar el recordatorio de entrenamiento en el momento emocional
+   * correcto (acaba de completar una sesión): solo en nativo, una sola vez,
+   * con al menos 2 sesiones registradas y con el permiso aún sin decidir.
+   * Devuelve si se va a mostrar el modal.
+   */
+  private async maybeShowReminderPrompt(): Promise<boolean> {
+    if (this.reminderPromptChecked || this.isFromHistory) {
+      return false;
+    }
+    this.reminderPromptChecked = true;
+
+    if (!Capacitor.isNativePlatform()) {
+      return false;
+    }
+    const state = this.trainingReminderService.getState();
+    if (state.enabled || state.contextPromptShownAt !== null) {
+      return false;
+    }
+    if (this.trainingReminderService.getEventsCount() < 2) {
+      return false;
+    }
+    // Solo se descarta si el permiso está denegado en firme (no podría llegar
+    // la notificación). Si está 'granted' (p. ej. Android <= 12, que lo concede
+    // solo) o 'prompt', igual se ofrece: al aceptar, enable() pide el permiso
+    // únicamente si hace falta. Antes se exigía 'prompt', y eso bloqueaba el
+    // modal para siempre en dispositivos con el permiso ya concedido.
+    const permission =
+      await this.trainingReminderService.checkPermissionStatus();
+    if (permission === 'denied') {
+      return false;
+    }
+
+    // Pequeño retardo para no competir con la animación de resultados
+    setTimeout(() => void this.showReminderPrompt(), 800);
+    return true;
+  }
+
+  /**
+   * Suma esta rutina a los contadores de la invitación a calificar la app y,
+   * si el usuario ya lleva suficiente uso y la rutina salió bien, deja que
+   * salga la tarjeta nativa de la tienda. Los planes abiertos desde el
+   * historial no cuentan: no son una rutina recién terminada.
+   */
+  private async maybeRequestAppReview(canPrompt: boolean): Promise<void> {
+    if (this.appReviewChecked || this.isFromHistory || !this.plan) {
+      return;
+    }
+    this.appReviewChecked = true;
+
+    // El récord y el ELO ganado se calculan aparte; hay que esperarlos.
+    await this.eloReady;
+
+    await this.appReviewService.onRoutineFinished(
+      this.plan.uid,
+      {
+        isNewRecord: this.isNewRecord,
+        accuracy: routineAccuracy(this.plan.blocks),
+        eloDelta: this.eloDelta,
+      },
+      canPrompt
+    );
+  }
+
+  private async showReminderPrompt(): Promise<void> {
+    this.trainingReminderService.markContextPromptShown();
+    void this.analyticsService.logEvent('training_reminder_prompt_shown', {
+      source: 'plan_played',
+    });
+
+    const modal = await this.modalController.create({
+      component: ReminderPermissionModalComponent,
+      breakpoints: [0, 0.6],
+      initialBreakpoint: 0.6,
+    });
+    await modal.present();
+    const { role } = await modal.onWillDismiss();
+    if (role === 'accept') {
+      await this.trainingReminderService.enable('prompt');
+    }
+  }
+
+  /** Animalito (imagen) del plan, para el avatar del resumen. */
+  get planImageSrc(): string {
+    return this.plan ? planImage(this.plan.planType) : planImage('custom');
+  }
+
+  get isPublicPlan(): boolean {
+    return this.plan?.isPublic === true;
+  }
+
+  get canLike(): boolean {
+    // Solo mostrar botón si el plan es público y el usuario NO es el creador
+    const profile = this.profileService.getProfile;
+    return this.isPublicPlan && this.plan?.uidUser !== profile?.uid;
+  }
+
+  /**
+   * Refleja en el botón de like el estado de la interacción en el store. Se
+   * suscribe en vez de leer una vez, para que el botón siga a los cambios que
+   * el usuario hace desde esta pantalla. El store ya guarda la interacción
+   * cuando la carga, así que la vista nunca consulta Firestore directamente.
+   */
+  async checkLikeStatus(): Promise<void> {
+    if (!this.plan || !this.profileService.getProfile?.uid) return;
+
+    const uidUser = this.profileService.getProfile.uid;
+    const planUid = this.plan.uid;
+    this.likeStatusSub?.unsubscribe();
+    this.likeStatusSub = this.publicPlansFacade
+      .getUserInteractionByPlan$(planUid)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((interaction) => {
+        this.isLiked = interaction?.liked ?? false;
+      });
+    this.publicPlansFacade.loadPlanInteraction(uidUser, planUid);
+  }
+
+  async onToggleLike(): Promise<void> {
+    if (!this.plan || !this.canLike || this.isLoadingLike) return;
+
+    const profile = this.profileService.getProfile;
+    if (!profile?.uid) return;
+
+    this.isLoadingLike = true;
+    const newLikedState = !this.isLiked;
+
+    try {
+      this.publicPlansFacade.togglePlanLike(
+        profile.uid,
+        this.plan.uid,
+        newLikedState
+      );
+      this.isLiked = newLikedState;
+    } catch (error) {
+      console.error('Error toggling like', error);
+    } finally {
+      this.isLoadingLike = false;
+    }
+  }
+
+  async getTotalElo() {
+    if (!this.plan) {
+      return;
+    }
+
+    if (this.plan.planType === 'custom' && this.plan.uidCustomPlan) {
+      const planElos = await this.plansElosService.getOnePlanElo(
+        this.plan.uidCustomPlan
+      );
+      this.eloTotal = planElos?.total || 0;
+
+      // Verificar si se superó el máximo histórico inicial (antes de empezar este juego)
+      // Comparar con initialMaxElo guardado al empezar, o con maxTotal si no existe
+      const initialMax = this.plan.initialMaxElo ?? planElos?.maxTotal ?? 1500;
+      if (this.eloTotal > initialMax) {
+        this.isNewRecord = true;
+        if (!this.isFromHistory) {
+          this.launchConfetti();
+        }
+      }
+    } else {
+      this.eloTotal = this.profileService.getEloTotalByPlanType(
+        this.plan.planType
+      );
+
+      // Verificar si se superó el máximo histórico inicial (antes de empezar este juego)
+      // Comparar con initialMaxElo guardado al empezar
+      const initialMax = this.plan.initialMaxElo;
+      if (initialMax !== undefined && this.eloTotal > initialMax) {
+        this.isNewRecord = true;
+        if (!this.isFromHistory) {
+          this.launchConfetti();
+        }
+      }
+    }
+
+    // Puntos que subió o bajó el ELO total durante esta rutina
+    this.eloDelta =
+      this.plan.initialTotalElo !== undefined
+        ? this.eloTotal - this.plan.initialTotalElo
+        : null;
+  }
+
+  /**
+   * Lanza confetti para celebrar un nuevo récord de ELO total
+   */
+  launchConfetti() {
+    if (this.isConfettiLaunching) return;
+    this.isConfettiLaunching = true;
+
+    // Usar colores dorados para récord de ELO total
+    const confettiColors = ['#FFD700', '#FFA500', '#FF8C00', '#FF6347'];
+    const duration = 5000;
+    const intensity: 'high' = 'high';
+
+    this.confettiService.launch(confettiColors, duration, intensity);
+
+    setTimeout(() => {
+      this.isConfettiLaunching = false;
+    }, duration + 500);
+  }
+
+  loadMorePuzzles(blockIndex: number) {
+    if (!this.plan) {
+      return;
+    }
+
+    const block = this.plan.blocks[blockIndex];
+    const currentCount = this.userPuzzlesToShowInBoards[blockIndex].length;
+    // Añadir más tableros
+    const nextPuzzles = block.puzzlesPlayed.slice(
+      currentCount,
+      currentCount + this.puzzlesPerPage
+    );
+    this.userPuzzlesToShowInBoards[blockIndex] = [
+      ...this.userPuzzlesToShowInBoards[blockIndex],
+      ...nextPuzzles,
+    ];
+
+    // Ocultar el botón si ya se han cargado todos los tableros
+    if (
+      this.userPuzzlesToShowInBoards[blockIndex].length >=
+      block.puzzlesPlayed.length
+    ) {
+      this.showMoreButtons[blockIndex] = false;
+    }
+  }
+
+  async onPuzzleShowSolution(puzzle: Puzzle) {
+    const themesTranslated = puzzle.themes.map((theme) =>
+      this.appService.getNameThemePuzzleByValue(theme)
+    );
+
+    const modal = await this.modalController.create({
+      component: BoardPuzzleSolutionComponent,
+      cssClass: 'puzzle-solution-modal',
+      componentProps: {
+        puzzle,
+        themesTranslated,
+      },
+    });
+    await modal.present();
+  }
+
+  ngOnDestroy() {
+    // Completar destroy$ para cancelar todas las suscripciones
+    this.destroy$.next();
+    this.destroy$.complete();
+
+    // NO limpiar el plan aquí si se está navegando a training
+    // Solo limpiar si realmente se está saliendo de la aplicación o yendo a home
+    // El plan se limpiará cuando se cree uno nuevo en training-menu
+  }
+
+  openLoginModal() {
+    this.modalController
+      .create({
+        component: LoginComponent,
+        componentProps: {
+          segmentEmailPassword: 'login',
+        },
+      })
+      .then((modal) => modal.present());
+  }
+
+  get exampleEloTotal(): number {
+    // Elo de ejemplo para mostrar cuando no está logueado
+    return 1500;
+  }
+
+  get examplePlan(): Plan | null {
+    // Plan de ejemplo para mostrar estadísticas cuando no está logueado
+    if (!this.plan) return null;
+
+    return {
+      ...this.plan,
+      blocks: this.plan.blocks.map((block) => ({
+        ...block,
+        puzzlesPlayed: block.puzzlesPlayed.map((puzzle) => ({
+          ...puzzle,
+          resolved: Math.random() > 0.3, // 70% resueltos
+          failByTime: Math.random() > 0.8, // 20% por tiempo
+        })),
+      })),
+    };
+  }
+
+  async onRepeatPlan() {
+    if (!this.plan || this.isLoadingToPlay) return;
+
+    this.isLoadingToPlay = true;
+    const loader = await this.loadingController.create({
+      message: this.translocoService.translate('PUZZLES.loader.preparingRoutine'),
+    });
+    await loader.present();
+
+    try {
+      if (this.plan.planType === 'custom') {
+        // Para planes custom, usar makeCustomPlanForPlay
+        const planReadyToPlay = await this.planService.makeCustomPlanForPlay(
+          this.plan
+        );
+        this.planFacade.setPlan(planReadyToPlay);
+      } else {
+        // Para planes por defecto, generar nuevos bloques
+        const blocks: Block[] = await this.blockService.generateBlocksForPlan(
+          this.plan.planType
+        );
+
+        // Cargar puzzles de todos los bloques en paralelo
+        const total = blocks.length;
+        let loaded = 0;
+
+        const puzzlePromises = blocks.map(async (block) => {
+          const puzzles = await this.blockService.getPuzzlesForBlock(block);
+          block.puzzles = puzzles;
+          loaded++;
+
+          if (loader) {
+            loader.message = this.translocoService.translate(
+              'PUZZLES.loader.loadingPuzzlesProgress',
+              { loaded, total }
+            );
+          }
+
+          return block;
+        });
+
+        await Promise.all(puzzlePromises);
+        await this.planService.newPlan(blocks, this.plan.planType);
+      }
+
+      await loader.dismiss();
+      this.isLoadingToPlay = false;
+      this.router.navigate(['/puzzles/training']);
+    } catch (error) {
+      await loader.dismiss();
+      console.error('Error al repetir el plan:', error);
+      this.isLoadingToPlay = false;
+    }
+  }
+
+  /** Crea y arranca una rutina por defecto (plan{N}) desde el menú minimalista. */
+  async startRoutine(planNumber: number) {
+    if (this.isLoadingToPlay) return;
+
+    this.isLoadingToPlay = true;
+    const loader = await this.loadingController.create({
+      message: this.translocoService.translate('PUZZLES.loader.creatingRoutine'),
+    });
+    await loader.present();
+
+    try {
+      const planType = `plan${planNumber}` as PlanTypes;
+      const blocks: Block[] = await this.blockService.generateBlocksForPlan(
+        planType
+      );
+
+      const total = blocks.length;
+      let loaded = 0;
+
+      const puzzlePromises = blocks.map(async (block) => {
+        const puzzles = await this.blockService.getPuzzlesForBlock(block);
+        block.puzzles = puzzles;
+        loaded++;
+
+        loader.message = this.translocoService.translate(
+          'PUZZLES.loader.loadingPuzzlesProgress',
+          { loaded, total }
+        );
+
+        return block;
+      });
+
+      await Promise.all(puzzlePromises);
+      await this.planService.newPlan(blocks, planType);
+
+      await loader.dismiss();
+      this.isLoadingToPlay = false;
+      this.router.navigate(['/puzzles/training']);
+    } catch (error) {
+      await loader.dismiss();
+      console.error('Error al crear la rutina:', error);
+      this.isLoadingToPlay = false;
+    }
+  }
+
+  goToHome(): void {
+    this.router.navigate(['/home']);
+  }
+
+  goToHistory(): void {
+    this.router.navigate(['/puzzles/plans-history']);
+  }
+}

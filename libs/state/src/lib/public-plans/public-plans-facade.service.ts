@@ -45,7 +45,7 @@ import {
  * "Interacciones" (por uid), e interacción de un usuario con un plan.
  * Métodos de escritura: loadPublicPlans, togglePlanLike/Saved, markPlanAsPlayed.
  *
- * Consumido por: PublicPlansComponent, PlanPlayedComponent, y los guards de
+ * Consumido por: PublicPlansPage, PlanPlayedPage, y los guards de
  * public-plans (que cargan las interacciones del usuario al entrar).
  */
 @Injectable({ providedIn: 'root' })

@@ -20,9 +20,9 @@
   transition: opacity 0.3s ease-in-out;
   pointer-events: none;
   
+  // Son avisos: nunca deben tapar los botones de debajo (antes el de error bloqueaba "Iniciar sesión")
   &.active {
     opacity: 1;
-    pointer-events: auto;
   }
 }
 

@@ -125,7 +125,7 @@ Mismo principio de fachada que el `AnalyticsService`: **los componentes nunca
 llaman al plugin**. La pantalla solo informa de `{ isNewRecord, accuracy,
 eloDelta }` y el servicio decide.
 
-Toda la lógica de decisión vive en [`app-review.util.ts`](../../apps/chessColate/src/app/services/app-review.util.ts),
+Toda la lógica de decisión vive en [`app-review.util.ts`](../../apps/chessColate/src/app/features/app-review/utils/app-review.util.ts),
 sin Angular ni plugins, que es lo que la hace testeable: los 16 tests de
 `app-review.util.spec.ts` cubren el gate, la espera de 90 días, la ventana de
 gracia y la regla de la mala rutina sin necesidad de un dispositivo.
@@ -182,12 +182,12 @@ si casi todo entra por `new_record`.
 
 | Archivo | Rol |
 |---|---|
-| [`services/app-review.util.ts`](../../apps/chessColate/src/app/services/app-review.util.ts) | lógica pura: contadores, gate, disparador |
-| [`services/app-review.util.spec.ts`](../../apps/chessColate/src/app/services/app-review.util.spec.ts) | tests de la lógica |
-| [`services/app-review-storage.service.ts`](../../apps/chessColate/src/app/services/app-review-storage.service.ts) | `localStorage` |
-| [`services/app-review.service.ts`](../../apps/chessColate/src/app/services/app-review.service.ts) | fachada: plugin, ficha de la tienda, analítica |
-| [`plan-played.component.ts`](../../apps/chessColate/src/app/pages/puzzles/containers/plan-played/plan-played.component.ts) | enganche y exclusión con el aviso del recordatorio |
-| [`settings.page.html`](../../apps/chessColate/src/app/pages/settings/settings.page.html) | sección *Apoya la app* |
+| [`services/app-review.util.ts`](../../apps/chessColate/src/app/features/app-review/utils/app-review.util.ts) | lógica pura: contadores, gate, disparador |
+| [`services/app-review.util.spec.ts`](../../apps/chessColate/tests/unit/features/app-review/utils/app-review.util.spec.ts) | tests de la lógica |
+| [`services/app-review-storage.service.ts`](../../apps/chessColate/src/app/features/app-review/services/app-review-storage.service.ts) | `localStorage` |
+| [`services/app-review.service.ts`](../../apps/chessColate/src/app/features/app-review/services/app-review.service.ts) | fachada: plugin, ficha de la tienda, analítica |
+| [`plan-played.component.ts`](../../apps/chessColate/src/app/features/training/pages/plan-played/plan-played.page.ts) | enganche y exclusión con el aviso del recordatorio |
+| [`settings.page.html`](../../apps/chessColate/src/app/features/settings/pages/settings/settings.page.html) | sección *Apoya la app* |
 | `assets/i18n/{es,en}.json` | claves `SETTINGS.support` y `APP_REVIEW.*` |
 | `apps/chessColate/android/` | registro del plugin (`npx cap sync android`) |
 

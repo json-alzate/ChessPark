@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, inject } from '@angular/core';
 import { UntypedFormGroup, UntypedFormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -18,7 +18,7 @@ import {
 import { TranslocoPipe } from '@jsverse/transloco';
 
 // services
-import { AuthService } from '@services/account/auth.service';
+import { AuthService } from '@core/account/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -37,7 +37,7 @@ import { AuthService } from '@services/account/auth.service';
     TranslocoPipe
   ]
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
 
   authService = inject(AuthService);
   formBuilder = inject(UntypedFormBuilder);
@@ -53,6 +53,10 @@ export class LoginComponent implements OnInit {
   errorLogin!: string;
   errorSingUp!: string;
   showPasswordRestoreMessage = false;
+
+  /** Los avisos (error, correo enviado) se retiran solos a los pocos segundos. */
+  private static readonly TOAST_MS = 5000;
+  private toastTimers: ReturnType<typeof setTimeout>[] = [];
 
   emailRegexValidator = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$/;
 
@@ -93,6 +97,15 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
     // Inicialización adicional si es necesaria
+  }
+
+  ngOnDestroy() {
+    this.toastTimers.forEach(clearTimeout);
+  }
+
+  /** Ejecuta `clear` pasados unos segundos para que el aviso no se quede para siempre. */
+  private clearToastLater(clear: () => void) {
+    this.toastTimers.push(setTimeout(clear, LoginComponent.TOAST_MS));
   }
 
   listenAuthState() {
@@ -139,6 +152,7 @@ export class LoginComponent implements OnInit {
         console.error('Error en login', error);
         // El mensaje de error ahora viene de las traducciones en el HTML
         this.errorLogin = 'loginFailed'; // Solo marcamos que hay un error
+        this.clearToastLater(() => (this.errorLogin = ''));
       }
     } else {
       this.emailFieldLogin?.markAsDirty();
@@ -167,6 +181,7 @@ export class LoginComponent implements OnInit {
     if (this.formSingUp.valid) {
       if (this.passwordFieldSingUp?.value !== this.rePasswordFieldSingUp?.value) {
         this.errorSingUp = 'passwordsNoMatch'; // Error para las traducciones
+        this.clearToastLater(() => (this.errorSingUp = ''));
         return;
       } else {
         const credentials = {
@@ -181,6 +196,7 @@ export class LoginComponent implements OnInit {
         } catch (error) {
           console.error('Error en registro', error);
           this.errorSingUp = 'registerFailed'; // Error para las traducciones
+          this.clearToastLater(() => (this.errorSingUp = ''));
         }
       }
     } else {
@@ -206,6 +222,7 @@ export class LoginComponent implements OnInit {
         this.segmentEmailPassword = 'login';
         this.formResetPassword.reset();
         this.showPasswordRestoreMessage = true;
+        this.clearToastLater(() => (this.showPasswordRestoreMessage = false));
       }).catch((error) => {
         console.error('Error al enviar email de recuperación', error);
       });

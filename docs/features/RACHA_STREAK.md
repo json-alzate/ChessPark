@@ -33,7 +33,7 @@ La diferencia con las rutinas actuales de ChessColate: aquí **no hay un set fij
 - **Escalar la dificultad** puzzle a puzzle a partir de un ELO base.
 - Mecánica de **muerte súbita** (un fallo termina) con **un skip** por racha.
 - **Persistir el récord** (mejor racha) y permitir **compartirlo**.
-- Reutilizar el tablero y el catálogo existentes (`@chesspark/board`, [`getPuzzlesForBlock`](../../apps/chessColate/src/app/services/block.service.ts) / [`PuzzlesProvider`](../../libs/puzzles-provider/src/lib/puzzles-provider.ts)) — **sin backend nuevo**.
+- Reutilizar el tablero y el catálogo existentes (`@chesspark/board`, [`getPuzzlesForBlock`](../../apps/chessColate/src/app/features/training/services/block.service.ts) / [`PuzzlesProvider`](../../libs/puzzles-provider/src/lib/puzzles-provider.ts)) — **sin backend nuevo**.
 
 ---
 
@@ -233,7 +233,7 @@ Catálogo en [OBSERVABILITY_TRACKING](../implementado/OBSERVABILITY_TRACKING.md)
 
 ## Dependencias técnicas
 
-- [`PuzzlesProvider`](../../libs/puzzles-provider/src/lib/puzzles-provider.ts) / [`block.service.ts`](../../apps/chessColate/src/app/services/block.service.ts) para pedir cada puzzle por ELO objetivo (soporta `elo` y `eloMin`/`eloMax`).
+- [`PuzzlesProvider`](../../libs/puzzles-provider/src/lib/puzzles-provider.ts) / [`block.service.ts`](../../apps/chessColate/src/app/features/training/services/block.service.ts) para pedir cada puzzle por ELO objetivo (soporta `elo` y `eloMin`/`eloMax`).
 - [`Plan`](../../libs/models/src/lib/plan.model.ts) (`PlanTypes` += `'streak'`), [`Puzzle`](../../libs/models/src/lib/puzzle.model.ts), [`UserPuzzle`](../../libs/models/src/lib/user-puzzles.model.ts).
 - [`board-puzzle.component.ts`](../../libs/board/src/lib/board-puzzle/board-puzzle.component.ts) para el juego — ya expone `puzzleCompleted`, `puzzleFailed` y permite jugar **sin timer** (no setear `Puzzle.times`).
 - Storage local existente para `StreakRun` / `StreakRecord` (mismo patrón que el resto de estado local).

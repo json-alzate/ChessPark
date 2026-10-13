@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
-import { CustomPlansGuard } from './guards/custom-plans.guard';
-import { AuthGuard } from './guards/auth.guard';
-import { PublicPlansGuard } from './guards/public-plans.guard';
+import { CustomPlansGuard } from './features/training/guards/custom-plans.guard';
+import { AuthGuard } from './core/guards/auth.guard';
+import { PublicPlansGuard } from './features/training/guards/public-plans.guard';
 
 export const routes: Routes = [
   {
@@ -12,12 +12,12 @@ export const routes: Routes = [
   {
     path: 'home',
     loadComponent: () =>
-      import('./pages/home/home.page').then((m) => m.HomePage),
+      import('./features/home/pages/home.page').then((m) => m.HomePage),
   },
   {
     path: 'donation',
     loadComponent: () =>
-      import('./pages/donation/donation.page').then((m) => m.DonationPage),
+      import('./features/donation/pages/donation.page').then((m) => m.DonationPage),
   },
   // {
   //   path: 'puzzles',
@@ -26,124 +26,128 @@ export const routes: Routes = [
   {
     path: 'puzzles/training',
     loadComponent: () =>
-      import('./pages/puzzles/containers/training/training.component').then(
-        (m) => m.TrainingComponent
+      import('./features/training/pages/training/training.page').then(
+        (m) => m.TrainingPage
       ),
   },
   {
     path: 'puzzles/plan-played',
     loadComponent: () =>
       import(
-        './pages/puzzles/containers/plan-played/plan-played.component'
-      ).then((m) => m.PlanPlayedComponent),
+        './features/training/pages/plan-played/plan-played.page'
+      ).then((m) => m.PlanPlayedPage),
   },
   {
     path: 'puzzles/plans-history',
     loadComponent: () =>
       import(
-        './pages/puzzles/containers/plans-history/plans-history.component'
-      ).then((m) => m.PlansHistoryComponent),
+        './features/training/pages/plans-history/plans-history.page'
+      ).then((m) => m.PlansHistoryPage),
   },
   {
     path: 'puzzles/custom-plans',
     loadComponent: () =>
       import(
-        './pages/puzzles/containers/custom-plans-list/custom-plans-list.component'
-      ).then((m) => m.CustomPlansListComponent),
+        './features/training/pages/custom-plans-list/custom-plans-list.page'
+      ).then((m) => m.CustomPlansListPage),
     canActivate: [CustomPlansGuard],
   },
   {
     path: 'puzzles/custom-plans/create',
     loadComponent: () =>
       import(
-        './pages/puzzles/containers/custom-plan-form/custom-plan-form.component'
-      ).then((m) => m.CustomPlanFormComponent),
+        './features/training/pages/custom-plan-form/custom-plan-form.page'
+      ).then((m) => m.CustomPlanFormPage),
     canActivate: [AuthGuard],
   },
   {
     path: 'puzzles/custom-plans/edit/:uid',
     loadComponent: () =>
       import(
-        './pages/puzzles/containers/custom-plan-form/custom-plan-form.component'
-      ).then((m) => m.CustomPlanFormComponent),
+        './features/training/pages/custom-plan-form/custom-plan-form.page'
+      ).then((m) => m.CustomPlanFormPage),
     canActivate: [AuthGuard],
   },
   {
     path: 'puzzles/public-plans',
     loadComponent: () =>
       import(
-        './pages/puzzles/containers/public-plans/public-plans.component'
-      ).then((m) => m.PublicPlansComponent),
+        './features/training/pages/public-plans/public-plans.page'
+      ).then((m) => m.PublicPlansPage),
     canActivate: [PublicPlansGuard],
   },
   {
     path: 'games',
     loadComponent: () =>
-      import('./pages/games/games.page').then((m) => m.GamesPage),
+      import('./features/games/pages/games/games.page').then((m) => m.GamesPage),
   },
   {
     // PGN que trae el usuario: no tiene id de colección
     path: 'games/pgn',
     loadComponent: () =>
-      import('./pages/games/player/player.page').then((m) => m.GamesPlayerPage),
+      import('./features/games/pages/player/player.page').then((m) => m.GamesPlayerPage),
   },
   {
     path: 'games/viewer',
     loadComponent: () =>
-      import('./pages/games/viewer/viewer.page').then((m) => m.GamesViewerPage),
+      import('./features/games/pages/viewer/viewer.page').then((m) => m.GamesViewerPage),
   },
   {
     path: 'games/:id',
     loadComponent: () =>
-      import('./pages/games/player/player.page').then((m) => m.GamesPlayerPage),
+      import('./features/games/pages/player/player.page').then((m) => m.GamesPlayerPage),
   },
   {
     path: 'analytics',
     loadComponent: () =>
-      import('./pages/analytics/analytics.page').then((m) => m.AnalyticsPage),
+      import('./features/game-analytics/pages/analytics.page').then((m) => m.AnalyticsPage),
   },
   {
     path: 'streak',
     loadComponent: () =>
-      import('./pages/streak/streak.page').then((m) => m.StreakPage),
+      import('./features/streak/pages/streak.page').then((m) => m.StreakPage),
   },
   {
     path: 'coordinates',
     loadComponent: () =>
-      import('./pages/coordinates/coordinates.page').then(
+      import('./features/coordinates/pages/coordinates.page').then(
         (m) => m.CoordinatesPage
       ),
   },
   {
     path: 'knight-tour',
     loadComponent: () =>
-      import('./pages/knight-tour/knight-tour.page').then(
+      import('./features/knight-tour/pages/knight-tour.page').then(
         (m) => m.KnightTourPage
       ),
   },
   {
     path: 'chess960',
     loadComponent: () =>
-      import('./pages/chess960/chess960.page').then((m) => m.Chess960Page),
+      import('./features/chess960/pages/chess960.page').then((m) => m.Chess960Page),
   },
   {
     path: 'privacy',
     loadComponent: () =>
-      import('./pages/privacy/privacy.page').then((m) => m.PrivacyPage),
+      import('./features/privacy/pages/privacy.page').then((m) => m.PrivacyPage),
   },
   {
     path: 'settings',
     loadComponent: () =>
-      import('./pages/settings/settings.page').then((m) => m.SettingsPage),
+      import('./features/settings/pages/settings/settings.page').then((m) => m.SettingsPage),
   },
   {
     path: 'settings/storage',
     loadComponent: () =>
-      import('./pages/settings/storage/storage.page').then((m) => m.StoragePage),
+      import('./features/settings/pages/storage/storage.page').then((m) => m.StoragePage),
   },
   {
     path: 'reminders',
     loadComponent: () =>
-      import('./pages/reminders/reminders.page').then((m) => m.RemindersPage),
+      import('./features/reminders/pages/reminders.page').then((m) => m.RemindersPage),
+  },
+  {
+    path: '**',
+    redirectTo: 'home',
   },
 ];

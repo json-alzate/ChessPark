@@ -1,0 +1,547 @@
+<ion-content [fullscreen]="true">
+  <div class="main-container">
+    <app-navbar></app-navbar>
+
+    <!-- Max-width wrapper para pantallas grandes -->
+    <div class="lg:max-w-7xl lg:mx-auto">
+
+      <!--
+        Grid 2-col × 2-row en desktop:
+          Col1 Row1: menú de entrenamiento   |  Col2 Row1: tarjeta de entrenamiento continuo
+          Col1 Row2: botones + reto 333      |  Col2 Row2: donación
+        El grid equaliza la altura de cada fila, alineando menú y tarjeta perfectamente.
+        En mobile: 1 columna, orden HTML (menú → botones+reto → puzzle → donación).
+      -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-[5fr_4fr] lg:gap-x-3 lg:gap-y-2 lg:px-4 xl:px-6 lg:mt-2">
+
+        <!-- ===== CELDA 1: Menú de entrenamiento (desktop: row1 col1) ===== -->
+        <div class="order-1 lg:col-start-1 lg:row-start-1 lg:flex lg:flex-col">
+          @if (!isInitialized) {
+          <!-- Skeleton título + subtítulo -->
+          <div class="px-3 pt-4 pb-2 lg:px-1">
+            <div class="skeleton h-7 w-44 mb-2 rounded-md"></div>
+            <div class="skeleton h-4 w-60 max-w-[70vw] rounded-md"></div>
+          </div>
+          <!-- Plantilla de tarjeta skeleton: misma estructura que la tarjeta real -->
+          <ng-template #skeletonCard>
+            <div class="p-4">
+              <!-- Cabecera: ícono + título + duración | ELO -->
+              <div class="flex items-start justify-between gap-2">
+                <div class="flex items-center gap-3">
+                  <div class="skeleton h-9 w-9 shrink-0 rounded-xl"></div>
+                  <div class="flex flex-col gap-1.5">
+                    <div class="skeleton h-4 w-20 rounded-md"></div>
+                    <div class="skeleton h-3 w-24 rounded-sm"></div>
+                  </div>
+                </div>
+                <div class="flex flex-col items-end gap-1.5">
+                  <div class="skeleton h-5 w-12 rounded-md"></div>
+                  <div class="skeleton h-2.5 w-6 rounded-sm"></div>
+                </div>
+              </div>
+              <!-- Descripción (2 líneas) -->
+              <div class="mt-3 flex flex-col gap-1.5">
+                <div class="skeleton h-3.5 w-full rounded-sm"></div>
+                <div class="skeleton h-3.5 w-3/5 rounded-sm"></div>
+              </div>
+            </div>
+            <!-- Lista de bloques: título + 2 filas + "+N" -->
+            <div class="px-4 pb-4">
+              <div class="skeleton mb-2 h-2.5 w-20 rounded-sm"></div>
+              <div class="flex flex-col gap-2.5">
+                <div class="flex items-center justify-between gap-2">
+                  <div class="skeleton h-3 w-32 rounded-sm"></div>
+                  <div class="skeleton h-3 w-8 rounded-sm"></div>
+                </div>
+                <div class="flex items-center justify-between gap-2">
+                  <div class="skeleton h-3 w-28 rounded-sm"></div>
+                  <div class="skeleton h-3 w-8 rounded-sm"></div>
+                </div>
+                <div class="skeleton h-3 w-6 rounded-sm"></div>
+              </div>
+            </div>
+          </ng-template>
+
+          <!-- Skeleton slider mobile: tarjeta grande + asomo de la siguiente -->
+          <div class="flex gap-[10px] overflow-hidden px-4 lg:hidden">
+            @for (i of [1,2]; track i) {
+            <div class="card bg-base-100 border border-base-300 rounded-2xl shrink-0 w-[82vw] flex flex-col">
+              <ng-container [ngTemplateOutlet]="skeletonCard"></ng-container>
+            </div>
+            }
+          </div>
+          <!-- Skeleton desktop: grid 3x2 igual que training-menu -->
+          <div class="hidden lg:grid lg:grid-cols-3 lg:gap-3">
+            @for (i of [1,2,3,4,5,6]; track i) {
+            <div class="card bg-base-100 border border-base-300 rounded-2xl flex flex-col">
+              <ng-container [ngTemplateOutlet]="skeletonCard"></ng-container>
+            </div>
+            }
+          </div>
+          <!-- Skeleton accesos a rutinas (mobile) -->
+          <div class="mt-3 flex flex-row gap-3 px-3 lg:hidden">
+            <div class="skeleton h-[74px] flex-1 rounded-xl bg-base-100!"></div>
+            <div class="skeleton h-[74px] flex-1 rounded-xl bg-base-100!"></div>
+          </div>
+          } @else {
+          <!-- Título + subtítulo del menú -->
+          <div class="px-3 pt-4 pb-2 lg:px-1">
+            <h1 class="text-2xl font-extrabold tracking-tight">{{ 'PUZZLES.menu.title' | transloco }}</h1>
+            <p class="mt-1 text-sm text-base-content/50">{{ 'TRAINING.subtitle' | transloco }}</p>
+          </div>
+
+          <app-training-menu class="lg:flex-1"></app-training-menu>
+
+          <!-- Accesos a rutinas (mobile) -->
+          <div class="mt-3 flex flex-row gap-3 px-3 lg:hidden">
+            <a class="card flex-1 min-w-0 cursor-pointer rounded-xl border border-base-300 bg-base-100 p-3.5 transition-colors hover:bg-base-200/30"
+              [routerLink]="['/puzzles/custom-plans']">
+              <div class="flex items-center justify-between">
+                <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/15">
+                  <ion-icon name="options-outline" class="text-lg text-primary"></ion-icon>
+                </div>
+                <ion-icon name="chevron-forward-outline" class="text-base text-base-content/40"></ion-icon>
+              </div>
+              <div class="mt-2.5 min-w-0">
+                <div class="text-sm font-bold leading-tight">{{ 'CUSTOM_PLANS.shortTitle' | transloco }}</div>
+                <div class="mt-0.5 truncate text-[11px] leading-tight text-base-content/50">{{ 'CUSTOM_PLANS.cardSubtitle' | transloco }}</div>
+              </div>
+            </a>
+            <a class="card flex-1 min-w-0 cursor-pointer rounded-xl border border-base-300 bg-base-100 p-3.5 transition-colors hover:bg-base-200/30"
+              [routerLink]="['/puzzles/public-plans']">
+              <div class="flex items-center justify-between">
+                <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/15">
+                  <ion-icon name="globe-outline" class="text-lg text-primary"></ion-icon>
+                </div>
+                <ion-icon name="chevron-forward-outline" class="text-base text-base-content/40"></ion-icon>
+              </div>
+              <div class="mt-2.5 min-w-0">
+                <div class="text-sm font-bold leading-tight">{{ 'PUBLIC_PLANS.shortTitle' | transloco }}</div>
+                <div class="mt-0.5 truncate text-[11px] leading-tight text-base-content/50">{{ 'PUBLIC_PLANS.cardSubtitle' | transloco }}</div>
+              </div>
+            </a>
+          </div>
+          }
+        </div>
+
+        <!-- ===== CELDA 2: Botones + Reto 333 (desktop: row2 col1) ===== -->
+        <div class="order-3 lg:col-start-1 lg:row-start-2">
+          @if (isInitialized) {
+          <!-- Accesos a rutinas (desktop) -->
+          <div class="hidden lg:flex lg:flex-row lg:gap-3 lg:mt-2 lg:mb-2">
+            <a class="card flex-1 min-w-0 cursor-pointer rounded-xl border border-base-300 bg-base-100 p-3.5 transition-colors hover:bg-base-200/30"
+              [routerLink]="['/puzzles/custom-plans']">
+              <div class="flex items-center justify-between">
+                <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/15">
+                  <ion-icon name="options-outline" class="text-lg text-primary"></ion-icon>
+                </div>
+                <ion-icon name="chevron-forward-outline" class="text-base text-base-content/40"></ion-icon>
+              </div>
+              <div class="mt-2.5 min-w-0">
+                <div class="text-sm font-bold leading-tight">{{ 'CUSTOM_PLANS.shortTitle' | transloco }}</div>
+                <div class="mt-0.5 truncate text-xs leading-tight text-base-content/50">{{ 'CUSTOM_PLANS.cardSubtitle' | transloco }}</div>
+              </div>
+            </a>
+            <a class="card flex-1 min-w-0 cursor-pointer rounded-xl border border-base-300 bg-base-100 p-3.5 transition-colors hover:bg-base-200/30"
+              [routerLink]="['/puzzles/public-plans']">
+              <div class="flex items-center justify-between">
+                <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/15">
+                  <ion-icon name="globe-outline" class="text-lg text-primary"></ion-icon>
+                </div>
+                <ion-icon name="chevron-forward-outline" class="text-base text-base-content/40"></ion-icon>
+              </div>
+              <div class="mt-2.5 min-w-0">
+                <div class="text-sm font-bold leading-tight">{{ 'PUBLIC_PLANS.shortTitle' | transloco }}</div>
+                <div class="mt-0.5 truncate text-xs leading-tight text-base-content/50">{{ 'PUBLIC_PLANS.cardSubtitle' | transloco }}</div>
+              </div>
+            </a>
+          </div>
+          } @else {
+          <!-- Skeletons accesos a rutinas (desktop) -->
+          <div class="hidden lg:flex lg:flex-row lg:gap-3 lg:mt-2 lg:mb-2">
+            <div class="skeleton h-[74px] flex-1 rounded-xl"></div>
+            <div class="skeleton h-[74px] flex-1 rounded-xl"></div>
+          </div>
+          }
+
+          <!-- Retos (Reto 333 + Racha) — visible solo en desktop -->
+          <div class="hidden lg:mt-2 lg:grid lg:grid-cols-2 lg:gap-3">
+            @if (isLoadingReto333) {
+            <ng-container [ngTemplateOutlet]="reto333Skeleton"></ng-container>
+            } @else {
+            <ng-container [ngTemplateOutlet]="reto333Card"></ng-container>
+            }
+            <ng-container [ngTemplateOutlet]="streakCard"></ng-container>
+          </div>
+
+          <!-- Retos — visible solo en mobile -->
+          <div class="lg:hidden px-2 mt-4 flex flex-col gap-3">
+            @if (isLoadingReto333) {
+            <ng-container [ngTemplateOutlet]="reto333Skeleton"></ng-container>
+            } @else {
+            <ng-container [ngTemplateOutlet]="reto333Card"></ng-container>
+            }
+            <ng-container [ngTemplateOutlet]="streakCard"></ng-container>
+          </div>
+        </div>
+
+        <!-- Racha — tarjeta (mismo lenguaje visual que el Reto 333) -->
+        <ng-template #streakCard>
+          <div
+            class="card bg-base-100 border border-base-300 rounded-2xl shadow-sm overflow-hidden cursor-pointer transition-all hover:-translate-y-0.5 active:scale-[0.98]"
+            (click)="goToStreak()">
+            <div class="relative p-4 pl-6">
+              <!-- Barra de acento lateral -->
+              <div class="absolute left-0 top-3.5 bottom-3.5 w-1 bg-primary rounded-r-sm"></div>
+
+              <!-- Título + etiqueta de modalidad -->
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="font-bold text-[15px] leading-none flex items-center gap-1.5">
+                  <ion-icon name="flame" class="text-base text-primary"></ion-icon>
+                  {{ 'STREAK.title' | transloco }}
+                </span>
+                <span class="rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-primary">
+                  {{ 'STREAK.suddenDeath' | transloco }}
+                </span>
+              </div>
+
+              <!-- Descripción -->
+              <p class="mt-1.5 text-xs leading-snug text-base-content/60">
+                {{ 'STREAK.homeCard.description' | transloco }}
+              </p>
+
+              @if (streakRecord && streakRecord.runsPlayed > 0) {
+              <!-- Última racha y récord -->
+              <div class="mt-3.5 flex items-baseline justify-between gap-2">
+                <div class="leading-none">
+                  <span class="text-xl font-extrabold text-base-content">{{ streakRecord.lastScore }}</span>
+                  <span class="text-[13px] font-semibold text-base-content/50"> {{ 'STREAK.homeCard.lastRun' | transloco }}</span>
+                </div>
+                @if (streakRecord.bestScore > 0) {
+                <span class="text-[11px] text-base-content/50">{{ 'STREAK.record' | transloco }}:
+                  <b class="font-bold text-[var(--cc-elo)]">{{ streakRecord.bestScore }}</b></span>
+                }
+              </div>
+              }
+
+              <!-- CTA -->
+              <button class="btn btn-outline btn-primary btn-sm w-full mt-3.5 font-bold">
+                {{ ((streakRecord && streakRecord.runsPlayed > 0) ? 'STREAK.actions.retry' : 'STREAK.actions.start') | transloco }}
+              </button>
+            </div>
+          </div>
+        </ng-template>
+
+        <!-- Reto 333 — skeleton (vertical, acorde al nuevo diseño) -->
+        <ng-template #reto333Skeleton>
+          <div class="card bg-base-100 border border-base-300 rounded-2xl shadow-sm overflow-hidden">
+            <div class="relative p-4 pl-6">
+              <div class="absolute left-0 top-3.5 bottom-3.5 w-1 bg-base-300 rounded-r-sm"></div>
+              <div class="flex items-center gap-2">
+                <div class="skeleton h-4 w-20 rounded-md"></div>
+                <div class="skeleton h-4 w-16 rounded-full"></div>
+              </div>
+              <div class="skeleton h-3 w-full rounded-sm mt-3"></div>
+              <div class="skeleton h-3 w-2/3 rounded-sm mt-1.5"></div>
+              <div class="skeleton h-1.5 w-full rounded-full mt-4"></div>
+              <div class="skeleton h-9 w-full rounded-xl mt-4"></div>
+            </div>
+          </div>
+        </ng-template>
+
+        <!-- Reto 333 — tarjeta (vertical: acento + progreso + CTA outline) -->
+        <ng-template #reto333Card>
+          <div
+            class="card bg-base-100 border border-base-300 rounded-2xl shadow-sm overflow-hidden cursor-pointer transition-all hover:-translate-y-0.5 active:scale-[0.98]"
+            (click)="startReto333Plan()">
+            <div class="relative p-4 pl-6">
+              <!-- Barra de acento lateral -->
+              <div class="absolute left-0 top-3.5 bottom-3.5 w-1 bg-primary rounded-r-sm"></div>
+
+              <!-- Título + etiqueta de modalidad -->
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="font-bold text-[15px] leading-none">{{ 'RETO_333.survival' | transloco }}</span>
+                <span class="rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-primary">
+                  {{ 'RETO_333.mateIn1' | transloco }}
+                </span>
+              </div>
+
+              <!-- Descripción -->
+              <p class="mt-1.5 text-xs leading-snug text-base-content/60">
+                {{ 'RETO_333.description' | transloco }}
+              </p>
+
+              @if (reto333Stats) {
+              <!-- Progreso de la última racha -->
+              <div class="mt-3.5">
+                <div class="flex items-baseline justify-between gap-2">
+                  <div class="leading-none">
+                    <span class="text-xl font-extrabold text-base-content">{{ reto333Stats.lastScore }}</span>
+                    <span class="text-[13px] font-semibold text-base-content/50"> / 333</span>
+                  </div>
+                  @if (reto333Stats.bestScore) {
+                  <span class="text-[11px] text-base-content/50">{{ 'RETO_333.record' | transloco }}:
+                    <b class="font-bold text-[var(--cc-elo)]">{{ reto333Stats.bestScore }}</b></span>
+                  }
+                </div>
+                <div class="mt-2 h-1.5 overflow-hidden rounded-full bg-base-300">
+                  <div class="h-full rounded-full bg-primary transition-all"
+                    [style.width.%]="(reto333Stats.lastScore / 333) * 100"></div>
+                </div>
+              </div>
+
+              <!-- Tiempo de la racha -->
+              <div class="mt-3 flex items-center gap-1.5 text-xs text-base-content/50">
+                <ion-icon name="time-outline" class="text-sm"></ion-icon>
+                <span>{{ 'RETO_333.time' | transloco }} · <b class="font-semibold text-base-content/80">{{ reto333Stats.timeString }}</b></span>
+              </div>
+
+              @if (reto333Stats.completed) {
+              <!-- Insignia de reto coronado -->
+              <div class="mt-3 flex items-center justify-center gap-1.5 rounded-lg border border-success/20 bg-success/10 px-2 py-1 text-success">
+                <ion-icon name="trophy" class="text-sm"></ion-icon>
+                <span class="text-[10px] font-bold uppercase tracking-widest">{{ 'RETO_333.crowned' | transloco }}</span>
+              </div>
+              }
+              }
+
+              <!-- CTA -->
+              <button class="btn btn-outline btn-primary btn-sm w-full mt-3.5 font-bold">
+                {{ (reto333Stats ? 'RETO_333.tryAgain' : 'RETO_333.acceptChallenge') | transloco }}
+              </button>
+            </div>
+          </div>
+        </ng-template>
+
+        <!-- ===== CELDA 3: Tarjeta de Entrenamiento Continuo (desktop: row1 col2) ===== -->
+        <div class="order-2 px-2 mt-4 lg:px-0 lg:mt-0 lg:mb-0 lg:col-start-2 lg:row-start-1 lg:flex lg:flex-col">
+          @if (isLoadingPuzzle) {
+          <!-- Skeleton hero: cabecera · tablero · estado · CTA (apilado) -->
+          <div class="card bg-base-100 border border-base-300 rounded-2xl shadow-sm overflow-hidden lg:flex-1">
+            <div class="card-body flex flex-col gap-4 p-4 w-full max-w-full lg:justify-center">
+
+              <!-- Cabecera -->
+              <div class="flex items-start justify-between gap-2">
+                <div class="flex w-full flex-col gap-2">
+                  <div class="skeleton h-5 w-40 rounded-md"></div>
+                  <div class="skeleton h-3 w-28 rounded-md"></div>
+                </div>
+                <div class="skeleton h-6 w-20 rounded-full shrink-0"></div>
+              </div>
+
+              <!-- Tablero protagonista -->
+              <div class="skeleton mx-auto aspect-square w-full max-w-[440px] rounded-xl"></div>
+
+              <!-- Estado -->
+              <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2">
+                  <div class="skeleton h-8 w-8 rounded-full shrink-0"></div>
+                  <div class="flex flex-col gap-1">
+                    <div class="skeleton h-3 w-20 rounded-md"></div>
+                    <div class="skeleton h-2 w-24 rounded-md"></div>
+                  </div>
+                </div>
+                <div class="skeleton h-8 w-14 rounded-md"></div>
+              </div>
+
+              <div class="skeleton h-12 w-full rounded-xl shadow-sm"></div>
+            </div>
+          </div>
+          } @else if (infinitePuzzle) {
+          <div class="card bg-base-100 border border-base-300 rounded-2xl shadow-sm overflow-hidden lg:flex-1">
+            <div class="card-body flex flex-col gap-3 p-4 w-full max-w-full lg:justify-center lg:gap-4">
+
+              <!-- Cabecera: título + subtítulo · badge ilimitado -->
+              <div class="flex items-start justify-between gap-2">
+                <div class="min-w-0">
+                  <h3 class="text-lg md:text-xl font-extrabold leading-tight">
+                    {{ 'PUZZLES.general.continuousTraining' | transloco }}
+                  </h3>
+                  <p class="mt-0.5 text-xs md:text-sm text-base-content/60 leading-snug">
+                    {{ 'PUZZLES.general.resolveUnlimited' | transloco }}
+                  </p>
+                </div>
+                <span
+                  class="shrink-0 rounded-full bg-primary/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-primary">
+                  {{ 'COMMON.time.unlimited' | transloco }}
+                </span>
+              </div>
+
+              <!-- Tablero protagonista -->
+              <div class="relative mx-auto w-full max-w-[440px]">
+                <lib-board-puzzle [setPuzzle]="infinitePuzzle" [setForceStopTimer]="false" [showBoardControls]="false"
+                  (puzzleCompleted)="onInfinitePuzzleCompleted('good')"
+                  (puzzleFailed)="onInfinitePuzzleCompleted('bad')"
+                  (puzzleEndByTime)="onInfinitePuzzleCompleted('timeOut')">
+                </lib-board-puzzle>
+              </div>
+
+              <!-- Fila de estado: turno · Elo + stats -->
+              <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2 min-w-0">
+                  <img [src]="playerColor | kingImage" [alt]="playerColor"
+                    class="h-7 w-7 md:h-8 md:w-8 shrink-0" />
+                  <div class="flex flex-col min-w-0">
+                    <span class="text-sm font-semibold leading-tight">{{ 'PUZZLES.help.yourTurn' | transloco }}</span>
+                    <span class="text-xs text-base-content/70 leading-tight whitespace-nowrap">
+                      @if (playerColor === 'white') { {{ 'PUZZLES.help.whiteToMove' | transloco }} }
+                      @else { {{ 'PUZZLES.help.blackToMove' | transloco }} }
+                    </span>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                  <div class="text-right" [class.opacity-50]="infinityElo === '1500?'">
+                    <div class="text-lg font-extrabold leading-none text-primary">{{ infinityElo }}</div>
+                    <div class="mt-0.5 text-[10px] font-bold uppercase tracking-wide text-[var(--cc-elo)]">
+                      {{ 'TRAINING.elo' | transloco }}
+                    </div>
+                  </div>
+                  <button class="btn btn-circle btn-xs md:btn-sm btn-ghost" (click)="isStatsModalOpen = true">
+                    <ion-icon name="stats-chart-outline" class="text-base"></ion-icon>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Feedback (resuelto) + CTA -->
+              <div class="flex flex-col w-full gap-2">
+                @if (isInfinitePuzzleSolved) {
+                @if (infinitePuzzleProblemState === 'bad' ||
+                infinitePuzzleProblemState === 'timeOut') {
+                <div class="text-error font-bold text-center text-xs md:text-sm animate-pulse">{{
+                  'PUZZLE_SOLUTION.feedback.wrong' | transloco }}</div>
+                <button class="btn btn-sm md:btn-md btn-outline btn-error w-full font-bold"
+                  (click)="showSolution()">
+                  <span>{{ 'PUZZLE_SOLUTION.actions.solution' | transloco }}</span>
+                  <ion-icon name="eye" class="hidden md:inline"></ion-icon>
+                </button>
+                } @else if (infinitePuzzleProblemState === 'good') {
+                <div class="text-success font-bold text-center text-xs md:text-sm animate-bounce">{{
+                  'PUZZLE_SOLUTION.feedback.excellent' | transloco }}</div>
+                }
+                <button class="btn btn-md btn-primary w-full shadow-md font-bold"
+                  (click)="startInfinityPlan()">
+                  <span>{{ 'COMMON.actions.continue' | transloco }}</span>
+                  <ion-icon name="arrow-forward"></ion-icon>
+                </button>
+                } @else {
+                <button class="btn btn-md btn-primary w-full shadow-md font-bold"
+                  (click)="startInfinityPlan()">
+                  <span>{{ 'PUZZLES.general.trainNow' | transloco }}</span>
+                  <ion-icon name="arrow-forward"></ion-icon>
+                </button>
+                }
+              </div>
+            </div>
+          </div>
+          }
+        </div>
+
+        <!-- ===== CELDA 4: Donación (nativo) / Descarga app (web) ===== -->
+        <div class="order-4 lg:col-start-2 lg:row-start-2 lg:relative">
+
+          @if (isNativePlatform) {
+          <!-- NATIVO: tarjeta de donación -->
+          <!-- Mobile -->
+          <a [routerLink]="['/donation']"
+            class="flex items-center gap-3 mx-2 mt-4 mb-8 p-4 bg-base-100 border border-base-200 rounded-2xl shadow-sm lg:hidden">
+            <div class="w-9 h-9 rounded-xl bg-error/10 flex items-center justify-center flex-shrink-0">
+              <ion-icon name="heart" class="text-error text-xl"></ion-icon>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="text-sm font-semibold leading-tight">{{ 'DONATION.homeCard.title' | transloco }}</div>
+              <div class="text-xs text-base-content/60 leading-snug"
+                [innerHTML]="'DONATION.homeCard.description' | transloco"></div>
+            </div>
+            <ion-icon name="chevron-forward" class="text-base-content/40 text-lg flex-shrink-0"></ion-icon>
+          </a>
+          <!-- Desktop -->
+          <a [routerLink]="['/donation']"
+            class="hidden lg:absolute lg:inset-0 lg:top-2 lg:flex items-center gap-3 px-5 bg-base-100 rounded-xl shadow-sm border border-base-200">
+            <div class="w-10 h-10 rounded-xl bg-error/10 flex items-center justify-center flex-shrink-0">
+              <ion-icon name="heart" class="text-error text-2xl"></ion-icon>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="text-sm font-semibold leading-tight">{{ 'DONATION.homeCard.title' | transloco }}</div>
+              <div class="text-xs text-base-content/60 leading-snug line-clamp-2"
+                [innerHTML]="'DONATION.homeCard.description' | transloco"></div>
+            </div>
+            <ion-icon name="chevron-forward" class="text-base-content/40 text-lg flex-shrink-0"></ion-icon>
+          </a>
+
+          } @else {
+          <!-- WEB: tarjeta próximamente en tiendas -->
+          <!-- Mobile -->
+          <div class="px-2 mt-4 mb-8 lg:hidden">
+            <div class="card bg-base-100 shadow-sm border border-base-200 text-center">
+              <div class="card-body p-5 space-y-3">
+                <div class="flex justify-center">
+                  <img src="assets/images/home_icon.png" alt="ChessColate" class="w-14 h-14 object-contain" />
+                </div>
+                <div>
+                  <h3 class="font-bold text-base leading-tight">{{ 'DOWNLOAD.homeCard.title' | transloco }}</h3>
+                  <p class="text-xs text-base-content/60 mt-1 leading-snug">{{ 'DOWNLOAD.homeCard.description' |
+                    transloco }}</p>
+                </div>
+                <div class="flex gap-2 justify-center pt-1 opacity-50">
+                  <ion-icon name="logo-google-playstore" class="text-2xl"></ion-icon>
+                  <ion-icon name="logo-apple" class="text-2xl"></ion-icon>
+                </div>
+                <div class="badge badge-outline badge-sm mx-auto">{{ 'DOWNLOAD.homeCard.comingSoon' | transloco }}</div>
+              </div>
+            </div>
+          </div>
+          <!-- Desktop -->
+          <div
+            class="hidden lg:absolute lg:inset-0 lg:top-2 lg:flex lg:flex-col items-center justify-center gap-3 px-5 py-4 bg-base-100 rounded-xl shadow-sm border border-base-200 text-center">
+            <img src="assets/images/home_icon.png" alt="ChessColate" class="w-12 h-12 object-contain" />
+            <div>
+              <p class="font-bold text-base leading-tight mb-1">{{ 'DOWNLOAD.homeCard.title' | transloco }}</p>
+              <p class="text-sm text-base-content/70 leading-snug line-clamp-3">{{ 'DOWNLOAD.homeCard.description' |
+                transloco }}</p>
+            </div>
+            <div class="flex gap-3 justify-center opacity-50">
+              <ion-icon name="logo-google-playstore" class="text-2xl"></ion-icon>
+              <ion-icon name="logo-apple" class="text-2xl"></ion-icon>
+            </div>
+            <div class="badge badge-outline badge-sm">{{ 'DOWNLOAD.homeCard.comingSoon' | transloco }}</div>
+          </div>
+          }
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Modal Statistics Continuous Training -->
+    <ion-modal #statsModal [isOpen]="isStatsModalOpen" (didDismiss)="isStatsModalOpen = false"
+      [initialBreakpoint]="0.65" [breakpoints]="[0, 0.65, 0.85]" handleBehavior="cycle">
+      <ng-template>
+        <ion-content>
+          <div class="min-h-full bg-base-100 text-base-content flex flex-col">
+            <div class="p-4 flex-1">
+              <!-- Modal Header -->
+              <div class="flex items-start justify-between mb-4 mt-2">
+                <div class="flex flex-col gap-1 pr-2">
+                  <h2 class="text-2xl font-bold leading-tight text-base-content">{{ 'PLAN_PLAYED.statistics' | transloco
+                    }}</h2>
+                  <span class="text-sm font-medium text-base-content/60">{{ 'PUZZLES.general.continuousTraining' |
+                    transloco }}</span>
+                  <div class="text-lg mt-1">
+                    <span class="font-bold text-base-content">{{ 'PLAN_PLAYED.totalElo' | transloco }}: </span>
+                    <span class="font-bold text-primary">{{ infinityElo }}</span>
+                  </div>
+                </div>
+                <button class="btn btn-sm btn-circle btn-ghost bg-base-200 flex-shrink-0 mt-1"
+                  (click)="isStatsModalOpen = false">
+                  <ion-icon name="close"></ion-icon>
+                </button>
+              </div>
+              <app-plan-chart [plan]="infinityPlanProps" [showEloPlanHeader]="false"></app-plan-chart>
+            </div>
+          </div>
+        </ion-content>
+      </ng-template>
+    </ion-modal>
+
+  </div>
+</ion-content>

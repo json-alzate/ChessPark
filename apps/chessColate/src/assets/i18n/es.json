@@ -403,6 +403,16 @@
     "day": "día",
     "today": "Hoy",
     "yesterday": "Ayer",
+    "planSaved": "{{ count }} plan guardado",
+    "plansSaved": "{{ count }} planes guardados",
+    "correct": "{{ percent }}% correctos",
+    "types": {
+      "warmup": "Calentamiento",
+      "backToCalm": "Vuelta a la calma",
+      "custom": "Personalizado",
+      "infinity": "Infinito",
+      "reto333": "Reto 333"
+    },
     "daysAgo": "Hace {{ days }} días"
   },
   "CUSTOM_PLANS": {
@@ -877,6 +887,8 @@
     },
     "components": {
       "loading": "Cargando…",
+      "openMenu": "Abrir menú",
+      "reminders": "Recordatorios",
       "donate": "Donar",
       "googleLogo": "Logo de Google",
       "chessColateLogo": "Logo de ChessColate",
@@ -1003,6 +1015,9 @@
   },
   "KNIGHT_TOUR": {
     "title": "Recorrido del caballo",
+    "gameOver": "Game Over",
+    "noMoreMoves": "No hay más movimientos válidos disponibles.",
+    "close": "Cerrar",
     "restart": "Reiniciar",
     "visitedSquares": "Casillas visitadas",
     "time": "Tiempo",

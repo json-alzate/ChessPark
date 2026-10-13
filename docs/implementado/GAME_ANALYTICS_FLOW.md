@@ -359,6 +359,6 @@ Lo mismo que decía la propuesta, salvo el mapa de actividad, que sí entró:
 
 **App**
 
-- [`services/game-analytics.service.ts`](../../apps/chessColate/src/app/services/game-analytics.service.ts) — fachada de la pantalla
-- [`services/game-analytics.util.ts`](../../apps/chessColate/src/app/services/game-analytics.util.ts) — lógica pura de la pantalla
-- [`pages/analytics/`](../../apps/chessColate/src/app/pages/analytics/) — pantalla y sus tres componentes
+- [`services/game-analytics.service.ts`](../../apps/chessColate/src/app/features/game-analytics/services/game-analytics.service.ts) — fachada de la pantalla
+- [`services/game-analytics.util.ts`](../../apps/chessColate/src/app/features/game-analytics/utils/game-analytics.util.ts) — lógica pura de la pantalla
+- [`features/game-analytics/`](../../apps/chessColate/src/app/features/game-analytics/) — pantalla y sus tres componentes

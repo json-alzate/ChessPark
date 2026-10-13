@@ -187,6 +187,100 @@ const setupSolution: Setup = async () => {
   };
 };
 
+describe('BoardPuzzleComponent: el diálogo de coronación no sobrevive al puzzle', () => {
+  let h: Harness;
+  const dialog = { state: { callback: jest.fn() as unknown }, setDisplayState: jest.fn() };
+
+  beforeEach(async () => {
+    jest.spyOn(console, 'log').mockImplementation(() => undefined);
+    jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+    h = await setupPuzzle();
+    dialog.state.callback = jest.fn();
+    dialog.setDisplayState.mockClear();
+    Object.assign(h.board, { isPromotionDialogShown: jest.fn(() => true), getExtension: jest.fn(() => dialog) });
+    h.calls.length = 0;
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+    TestBed.resetTestingModule();
+  });
+
+  it('al agotarse el tiempo (stopTimer) con el diálogo abierto lo cierra y devuelve la posición del motor', () => {
+    h.handle({ type: 'validateMoveInput', squareFrom: 'a7', squareTo: 'a8', piece: 'wp' });
+    h.calls.length = 0;
+
+    (h.component as { stopTimer(): void }).stopTimer();
+
+    expect(dialog.setDisplayState).toHaveBeenCalledWith('hidden');
+    expect(dialog.state.callback).toBeNull();
+    expect(h.calls).toEqual([`setPosition:${START_FEN}:false`]);
+  });
+
+  it('al cargar un puzzle nuevo (initPuzzle) cierra el diálogo que quedó abierto', async () => {
+    (h.component as { puzzle: unknown }).puzzle = { fen: START_FEN, moves: SOLUTION_MOVES, times: undefined };
+    jest.spyOn(h.component as { puzzleMoveResponse(): Promise<void> }, 'puzzleMoveResponse').mockResolvedValue(undefined);
+
+    await (h.component as { initPuzzle(): Promise<void> }).initPuzzle();
+
+    expect(dialog.setDisplayState).toHaveBeenCalledWith('hidden');
+    expect(dialog.state.callback).toBeNull();
+  });
+
+  describe('con una pieza en la mano', () => {
+    const entrada = () => ({
+      moveInputState: 'dragTo',
+      fromSquare: 'a7' as string | null,
+      toSquare: null,
+      movedPiece: 'wp' as string | null,
+      setMoveInputState: jest.fn(),
+    });
+
+    it('si el tiempo se acaba (stopTimer) suelta el arrastre: el soltar ya no va a llegar', () => {
+      const input = entrada();
+      Object.assign(h.board, { view: { visualMoveInput: input } });
+      (h.board as unknown as { isPromotionDialogShown: jest.Mock }).isPromotionDialogShown.mockReturnValue(false);
+
+      (h.component as { stopTimer(): void }).stopTimer();
+
+      expect(input.setMoveInputState).toHaveBeenCalledWith('reset');
+      expect(input.fromSquare).toBeNull();
+    });
+
+    it('al cargar el puzzle nuevo (initPuzzle) también descarta la pieza elegida con un toque', async () => {
+      const input = { ...entrada(), moveInputState: 'clickTo' };
+      Object.assign(h.board, { view: { visualMoveInput: input } });
+      (h.board as unknown as { isPromotionDialogShown: jest.Mock }).isPromotionDialogShown.mockReturnValue(false);
+      (h.component as { puzzle: unknown }).puzzle = { fen: START_FEN, moves: SOLUTION_MOVES, times: undefined };
+      jest.spyOn(h.component as { puzzleMoveResponse(): Promise<void> }, 'puzzleMoveResponse').mockResolvedValue(undefined);
+
+      await (h.component as { initPuzzle(): Promise<void> }).initPuzzle();
+
+      expect(input.setMoveInputState).toHaveBeenCalledWith('reset');
+    });
+
+    it('en pleno movimiento aceptado (moveDone) no se toca: stopTimer corre dentro de la propia jugada', () => {
+      const input = { ...entrada(), moveInputState: 'moveDone' };
+      Object.assign(h.board, { view: { visualMoveInput: input } });
+      (h.board as unknown as { isPromotionDialogShown: jest.Mock }).isPromotionDialogShown.mockReturnValue(false);
+
+      (h.component as { stopTimer(): void }).stopTimer();
+
+      expect(input.setMoveInputState).not.toHaveBeenCalled();
+      expect(input.fromSquare).toBe('a7');
+    });
+  });
+
+  it('sin diálogo abierto, parar el puzzle no toca el tablero', () => {
+    (h.board as unknown as { isPromotionDialogShown: jest.Mock }).isPromotionDialogShown.mockReturnValue(false);
+
+    (h.component as { stopTimer(): void }).stopTimer();
+
+    expect(h.calls).toEqual([]);
+    expect(dialog.setDisplayState).not.toHaveBeenCalled();
+  });
+});
+
 describe.each([
   ['BoardPuzzleComponent', setupPuzzle],
   ['BoardPuzzleSolutionComponent', setupSolution],

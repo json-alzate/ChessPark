@@ -199,7 +199,10 @@
               <input formControlName="rePassword" type="password" required
                 [placeholder]="'AUTH.register.confirmPasswordPlaceholder' | transloco" maxlength="100" minlength="8" />
             </label>
-            <span class="validator-hint ion-no-margin">
+            <!-- El campo es válido para el navegador cuando solo no coincide: daisyUI no mostraría el aviso por sí solo -->
+            <span class="validator-hint ion-no-margin"
+              [style.visibility]="rePasswordFieldSingUp?.hasError('notMatch') ? 'visible' : null"
+              [style.color]="rePasswordFieldSingUp?.hasError('notMatch') ? 'var(--color-error)' : null">
               @if ( rePasswordFieldSingUp?.touched && rePasswordFieldSingUp?.hasError('required')) {
               {{ 'AUTH.register.confirmPasswordRequired' | transloco }}
               } @else if ( rePasswordFieldSingUp?.hasError('notMatch')) {
@@ -228,7 +231,7 @@
       <div class="message-error" [class.active]="errorSingUp">
         <div class="toast toast-bottom toast-center">
           <div class="alert alert-error">
-            <span>{{ ('AUTH.errors.' + errorSingUp) | transloco }}</span>
+            <span>{{ errorSingUp ? (('AUTH.errors.' + errorSingUp) | transloco) : '' }}</span>
           </div>
         </div>
       </div>
