@@ -30,10 +30,10 @@ describe('KingImagePipe', () => {
   });
 
   it('usa el set de piezas que eligió el usuario', () => {
-    pieces.set('staunty');
+    pieces.set('spatial');
 
-    expect(pipe.transform('white')).toBe('assets/images/pieces/staunty-wk.svg');
-    expect(pipe.transform('b')).toBe('assets/images/pieces/staunty-bk.svg');
+    expect(pipe.transform('white')).toBe('assets/images/pieces/spatial-wk.svg');
+    expect(pipe.transform('b')).toBe('assets/images/pieces/spatial-bk.svg');
   });
 
   it('es impura: en una plantilla el rey cambia de estilo aunque el color de entrada no cambie', () => {

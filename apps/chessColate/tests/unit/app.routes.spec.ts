@@ -34,6 +34,7 @@ const PANTALLAS: ReadonlyArray<readonly [path: string, clase: string]> = [
   ['privacy', 'PrivacyPage'],
   ['settings', 'SettingsPage'],
   ['settings/storage', 'StoragePage'],
+  ['settings/credits', 'CreditsPage'],
   ['reminders', 'RemindersPage'],
 ];
 

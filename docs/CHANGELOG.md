@@ -15,6 +15,19 @@ y el versionado sigue [SemVer](https://semver.org/lang/es/) para `versionName`.
 
 ---
 
+## [Sin publicar]
+
+### Añadido
+- **Créditos y licencias** (Ajustes → Acerca de): autores y licencias de los sets de piezas, de los
+  puzzles de Lichess y de la música del directo de YouTube. Es una pantalla pública
+  (`/settings/credits`): su URL va en la descripción del canal.
+
+### Eliminado
+- **Set de piezas Staunty**: su licencia (CC BY-NC-SA) no permite uso comercial y la app acepta
+  donaciones. Quien lo tenía elegido vuelve a las piezas clásicas.
+
+---
+
 ## [2.1.0] — 2026-10-08 · `versionCode 23`
 
 ### Añadido

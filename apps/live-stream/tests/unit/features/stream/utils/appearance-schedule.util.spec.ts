@@ -46,8 +46,11 @@ describe('appearanceAt', () => {
 describe('APPEARANCE_POOLS', () => {
   const all = (Object.keys(APPEARANCE_POOLS) as DayPhase[]).flatMap((phase) => APPEARANCE_POOLS[phase]);
 
-  it('nunca usa piezas de licencia no comercial: el canal es monetizable', () => {
-    all.forEach((a) => expect(a.pieces).not.toBe('staunty'));
+  // GPL, MIT, Apache y CC0: sin atribución obligatoria en la descripción del directo. Los sets CC BY
+  // (kiwen-suwi, firi, totoy, papercut) quedan fuera a propósito.
+  it('solo usa sets de piezas de licencia libre sin atribución obligatoria', () => {
+    const PERMITIDAS = ['cburnett', 'celtic', 'chessnut', 'rhosgfx'];
+    all.forEach((a) => expect(PERMITIDAS).toContain(a.pieces));
   });
 
   it('cada fase tiene al menos dos combinaciones para poder rotar', () => {

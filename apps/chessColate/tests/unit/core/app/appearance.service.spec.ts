@@ -13,7 +13,7 @@ const mockSet = jest.fn((next: { pieces?: string; board?: string }) => {
 jest.mock('@chesspark/board', () => ({
   getChessboardAppearance: () => ({ ...mockAppearance }),
   setChessboardAppearance: (next: { pieces?: string; board?: string }) => mockSet(next),
-  isPiecesStyle: (v: unknown) => ['cburnett', 'fantasy', 'staunty'].includes(v as string),
+  isPiecesStyle: (v: unknown) => ['cburnett', 'fantasy', 'spatial'].includes(v as string),
   isBoardStyle: (v: unknown) => ['chessboard-js', 'green', 'blue'].includes(v as string),
 }));
 
@@ -47,6 +47,15 @@ describe('AppearanceService', () => {
     expect(service.board()).toBe('green');
   });
 
+  it('un set retirado (staunty) que venía en el perfil se ignora y se conserva el del dispositivo', () => {
+    localStorage.setItem('chessColate_pieces', 'fantasy');
+    service.init();
+
+    profile$.next({ pieces: 'staunty', board: 'green' });
+
+    expect(service.pieces()).toBe('fantasy');
+  });
+
   it('ignora valores guardados que ya no existen', () => {
     localStorage.setItem('chessColate_pieces', 'borrado');
 
@@ -58,15 +67,15 @@ describe('AppearanceService', () => {
   it('una elección se guarda en el dispositivo y se pide también al perfil', () => {
     service.init();
 
-    service.setPieces('staunty');
+    service.setPieces('spatial');
     service.setBoard('blue');
 
-    expect(localStorage.getItem('chessColate_pieces')).toBe('staunty');
+    expect(localStorage.getItem('chessColate_pieces')).toBe('spatial');
     expect(localStorage.getItem('chessColate_board')).toBe('blue');
-    expect(service.pieces()).toBe('staunty');
+    expect(service.pieces()).toBe('spatial');
     expect(service.board()).toBe('blue');
     // Sin sesión, requestUpdateProfile ya ignora la llamada: no hay perfil que actualizar
-    expect(requestUpdateProfile).toHaveBeenCalledWith({ pieces: 'staunty' });
+    expect(requestUpdateProfile).toHaveBeenCalledWith({ pieces: 'spatial' });
     expect(requestUpdateProfile).toHaveBeenCalledWith({ board: 'blue' });
   });
 
@@ -81,7 +90,7 @@ describe('AppearanceService', () => {
   });
 
   it('lo que trae el perfil predomina sobre lo guardado en el dispositivo', () => {
-    localStorage.setItem('chessColate_pieces', 'staunty');
+    localStorage.setItem('chessColate_pieces', 'spatial');
     service.init();
 
     profile$.next({ pieces: 'fantasy', board: 'green' });
@@ -104,11 +113,11 @@ describe('AppearanceService', () => {
     service.init();
     profile$.next({ pieces: 'fantasy', board: 'green' });
 
-    service.setPieces('staunty');
+    service.setPieces('spatial');
     // llega el perfil (p. ej. por un cambio de elo) todavía con el valor anterior
     profile$.next({ pieces: 'fantasy', board: 'green' });
 
-    expect(service.pieces()).toBe('staunty');
+    expect(service.pieces()).toBe('spatial');
   });
 
   describe('tema de DaisyUI', () => {

@@ -142,6 +142,11 @@ export const routes: Routes = [
       import('./features/settings/pages/storage/storage.page').then((m) => m.StoragePage),
   },
   {
+    path: 'settings/credits',
+    loadComponent: () =>
+      import('./features/settings/pages/credits/credits.page').then((m) => m.CreditsPage),
+  },
+  {
     path: 'reminders',
     loadComponent: () =>
       import('./features/reminders/pages/reminders.page').then((m) => m.RemindersPage),

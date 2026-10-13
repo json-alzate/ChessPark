@@ -543,7 +543,8 @@
     "appearance": "Apariencia",
     "notifications": "Notificaciones",
     "storage": "Almacenamiento",
-    "support": "Apoya la app"
+    "support": "Apoya la app",
+    "about": "Acerca de"
   },
   "APPEARANCE": {
     "themeTab": "Tema",
@@ -553,7 +554,6 @@
     "piecesNames": {
       "cburnett": "Clásicas",
       "fantasy": "Fantasía",
-      "staunty": "Staunty",
       "spatial": "Espacial",
       "celtic": "Celta",
       "chessnut": "Chessnut",
@@ -761,6 +761,21 @@
       "colorBlack": "Negras",
       "colorBoth": "Ambos"
     }
+  },
+  "CREDITS": {
+    "pageTitle": "Créditos y licencias",
+    "intro": "ChessColate usa el trabajo de otras personas. Aquí están sus autores y las licencias bajo las que lo usamos.",
+    "piecesTitle": "Piezas y tableros",
+    "piecesIntro": "Los sets de piezas y los colores de tablero planos vienen del repositorio de Lichess.",
+    "puzzlesTitle": "Puzzles",
+    "puzzlesText": "Los puzzles vienen de la base de datos abierta de Lichess, publicada con licencia CC0.",
+    "musicTitle": "Música del directo",
+    "musicIntro": "El canal de YouTube de ChessColate emite puzzles las 24 horas con esta música instrumental, con licencias Creative Commons.",
+    "musicSummary": "{{tracks}} pistas de {{authors}} autores",
+    "musicShowAll": "Ver todas las pistas",
+    "musicSource": "Ver en {{source}}",
+    "settingsRowTitle": "Créditos y licencias",
+    "settingsRowDesc": "Autores de las piezas, los puzzles y la música"
   },
   "STORAGE": {
     "pageTitle": "Ejercicios descargados",

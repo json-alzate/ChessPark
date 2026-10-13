@@ -30,7 +30,7 @@ export function dayPhaseAt(nowMs: number, dayMs: number): DayPhase {
  * - De noche, casillas claras menos brillantes (no deslumbra) y tonos fríos.
  * - De día, casillas claras y cálidas; al amanecer y atardecer, tonos de transición.
  * - Solo sets de piezas fáciles de leer y con licencia que permite un canal monetizado
- *   (nunca `staunty`, que es no comercial). Se evitan también los de licencia CC BY, que
+ *   (la app ya no incluye sets no comerciales). Se evitan también los de licencia CC BY, que
  *   exigirían atribución en la descripción del directo.
  */
 export const APPEARANCE_POOLS: Record<DayPhase, readonly Appearance[]> = {

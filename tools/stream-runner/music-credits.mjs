@@ -3,12 +3,13 @@
  * Genera, a partir de `music/manifest.json`:
  *   - docs/CREDITOS_MUSICA.md                  → registro de pistas, licencias y evidencia
  *   - tools/stream-runner/music/DESCRIPCION_MUSICA.txt → bloque de atribución para pegar en la descripción del directo
+ *   - apps/chessColate/src/app/features/settings/config/music-credits.config.ts → lista que muestra la pantalla de créditos
  *
  * Las licencias CC BY exigen atribución, y YouTube limita la descripción a 5000 caracteres: el bloque
  * lista a los autores por licencia y enlaza a los créditos pista por pista. Hay que publicar esa
- * página y poner su URL en `--credits-url` (o editar el texto) antes de salir en vivo.
+ * página (la pantalla de créditos de ChessColate, por defecto) y su URL va en la descripción.
  *
- *   node tools/stream-runner/music-credits.mjs --credits-url=https://…
+ *   node tools/stream-runner/music-credits.mjs [--credits-url=https://…]
  *
  * Títulos y autores vienen de internet (datos no confiables): se limpian y escapan antes de escribirlos.
  */
@@ -23,7 +24,7 @@ const args = Object.fromEntries(process.argv.slice(2).filter((a) => a.startsWith
   const [k, ...v] = a.slice(2).split('=');
   return [k, v.join('=')];
 }));
-const creditsUrl = args['credits-url'] || '<PONER AQUÍ LA URL PÚBLICA DE LOS CRÉDITOS>';
+const creditsUrl = args['credits-url'] || 'https://chesscolate.web.app/settings/credits';
 
 /** Texto plano seguro: sin saltos de línea ni caracteres de control, longitud acotada. */
 const clean = (s, max = 120) =>
@@ -124,6 +125,40 @@ ${rows.join('\n')}
 ${sampleRows.join('\n') || '_Ninguna._'}
 `;
 writeFileSync(join(REPO, 'docs', 'CREDITOS_MUSICA.md'), doc);
+
+// ---- pantalla de créditos de ChessColate -------------------------------------------------------
+// Las URLs vienen de internet: solo se aceptan https y los dos sitios de los que se descargó.
+const SOURCES = { 'ccmixter.org': 'ccmixter', 'commons.wikimedia.org': 'commons' };
+const LICENSE_ID = { 'CC BY 3.0': 'CC-BY-3.0', 'CC BY 4.0': 'CC-BY-4.0', CC0: 'CC0-1.0' };
+const tracks = manifest.map((t) => {
+  const url = new URL(t.page_url);
+  const source = SOURCES[url.hostname];
+  if (url.protocol !== 'https:' || !source) {
+    throw new Error(`URL de pista no admitida: ${t.page_url}`);
+  }
+  return {
+    title: clean(t.title, 70),
+    author: clean(t.author, 60),
+    source,
+    url: url.href,
+    license: LICENSE_ID[licenseKey(t)],
+    durationSec: Math.round(t.duration_sec),
+  };
+});
+if (tracks.some((t) => !t.license)) {
+  throw new Error('Hay una pista con una licencia que la pantalla de créditos no conoce');
+}
+const appConfig = `import type { MusicCredit } from '../models/credits.model';
+
+/**
+ * Música del directo 24/7 (${tracks.length} pistas). **Generado** por \`tools/stream-runner/music-credits.mjs\`
+ * a partir de \`music/manifest.json\`; no se edita a mano. Se muestra en la pantalla de créditos.
+ */
+export const MUSIC_CREDITS: readonly MusicCredit[] = [
+${tracks.map((t) => `  ${JSON.stringify(t)},`).join('\n')}
+];
+`;
+writeFileSync(join(REPO, 'apps', 'chessColate', 'src', 'app', 'features', 'settings', 'config', 'music-credits.config.ts'), appConfig);
 
 console.log(`docs/CREDITOS_MUSICA.md: ${manifest.length} pistas, ${authors(manifest).length} autores, ${totalMin.toFixed(1)} min`);
 console.log(`descripción: ${description.length} caracteres (límite de YouTube: 5000)`);

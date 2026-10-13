@@ -204,7 +204,7 @@ ruta está en `features/<funcionalidad>/pages/`.
 | `analytics` | `game-analytics` · Análisis de partidas | `GameAnalyticsService` |
 | `reminders` | `reminders` · Recordatorios | `TrainingReminderService` |
 | `coordinates`, `knight-tour`, `chess960` | una funcionalidad cada una · Minijuegos | Servicios propios / `libs/board` |
-| `settings`, `settings/storage` | `settings` · Ajustes y descargas | `AppService`, `AppearanceService`, `LanguageService`, caché de `puzzles-provider` |
+| `settings`, `settings/storage`, `settings/credits` | `settings` · Ajustes, descargas y créditos (la de créditos es pública y solo lee `config/credits.config.ts` y el `music-credits.config.ts` generado) | `AppService`, `AppearanceService`, `LanguageService`, caché de `puzzles-provider` |
 | `donation`, `privacy` | `donation`, `privacy` | `RevenueCatService` (donación) |
 
 ---

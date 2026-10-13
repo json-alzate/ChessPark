@@ -36,6 +36,8 @@ describe('chessboard-appearance', () => {
   it('valida los nombres que llegan de fuera (perfil, localStorage)', () => {
     expect(isPiecesStyle('fantasy')).toBe(true);
     expect(isPiecesStyle('inventado')).toBe(false);
+    // Se retiró por su licencia no comercial: quien lo tenía elegido vuelve al set de siempre
+    expect(isPiecesStyle('staunty')).toBe(false);
     expect(isPiecesStyle(undefined)).toBe(false);
     expect(isBoardStyle('green')).toBe(true);
     expect(isBoardStyle('inventado')).toBe(false);
@@ -77,11 +79,11 @@ describe('chessboard-appearance', () => {
     document.body.innerHTML = `<div id="${CHESSBOARD_SPRITE_WRAPPER_ID}"><svg id="viejo"></svg></div>`;
     (globalThis as { fetch: unknown }).fetch = jest.fn().mockRejectedValue(new Error('sin red'));
 
-    setChessboardAppearance({ pieces: 'staunty' });
+    setChessboardAppearance({ pieces: 'spatial' });
     await new Promise((resolve) => setTimeout(resolve));
 
     expect(document.getElementById(CHESSBOARD_SPRITE_WRAPPER_ID)?.innerHTML).toBe('<svg id="viejo"></svg>');
-    expect(getChessboardAppearance().pieces).toBe('staunty');
+    expect(getChessboardAppearance().pieces).toBe('spatial');
   });
 
   it('sin tableros dibujados no descarga nada: el primero traerá el sprite vigente', async () => {

@@ -15,14 +15,16 @@ y quedan en `apps/chessColate/src/assets/cm-chessboard/assets/pieces/`.
 | firi | [James Faure](https://github.com/jfaure/Firi-pieceset) | CC BY 4.0 |
 | totoy | Kosal Sen | CC BY 4.0 |
 | papercut | [Nikolay Anzarov](https://nikoichu.itch.io/) | CC BY 4.0 |
-| staunty | sadsnake1 | **CC BY-NC-SA 4.0 (no comercial)** |
 
-Los sets con licencia CC BY exigen **atribución**: mostrar estos créditos en la app
-(por ejemplo en una pantalla "Acerca de") antes de publicar.
+Los sets con licencia CC BY exigen **atribución**. Los créditos se muestran en la app, en
+**Ajustes → Créditos y licencias** (`/settings/credits`, pública y sin sesión). Su tabla de piezas sale de
+`features/settings/config/credits.config.ts`: es un `Record<PiecesStyle, …>`, así que al añadir un set
+nuevo el compilador exige darle su crédito (y hay que actualizar también esta tabla).
 
 ## Lichess que no se trajeron, y por qué
 
-- **No comerciales (CC BY-NC-SA)**: california, caliente, maestro, fresca, cardinal,
+- **No comerciales (CC BY-NC-SA)**: staunty (estuvo en la app hasta la 2.1.0 y se retiró; quien lo tenía
+  elegido vuelve a las piezas clásicas), california, caliente, maestro, fresca, cardinal,
   icpieces, gioco, tatiana, dubrovny, anarcandy, disguised, cooke, monarchy, xkcd,
   minimal-warmth, horsey. No son compatibles con una app con donaciones.
 - **No libres** (alpha, chess7, companion, leipzig, reillycraig, riohacha, shahi-ivory-brown).

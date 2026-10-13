@@ -9,4 +9,4 @@ Chris Zabriskie
 CC0 (public domain) - https://creativecommons.org/publicdomain/zero/1.0/
 jaspertine, Pitx, spinmeister
 
-Full track-by-track credits and links: <PONER AQUÍ LA URL PÚBLICA DE LOS CRÉDITOS>
+Full track-by-track credits and links: https://chesscolate.web.app/settings/credits

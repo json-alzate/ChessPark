@@ -16,6 +16,7 @@ import {
   chevronForwardOutline,
   serverOutline,
   starOutline,
+  informationCircleOutline,
 } from 'ionicons/icons';
 import { Subscription } from 'rxjs';
 
@@ -39,6 +40,7 @@ addIcons({
   chevronForwardOutline,
   serverOutline,
   starOutline,
+  informationCircleOutline,
 });
 
 interface LanguageOption {
@@ -136,6 +138,10 @@ export class SettingsPage implements OnInit, OnDestroy {
 
   goToStorage(): void {
     this.router.navigate(['/settings/storage']);
+  }
+
+  goToCredits(): void {
+    this.router.navigate(['/settings/credits']);
   }
 
   /**

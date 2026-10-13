@@ -1,7 +1,6 @@
 export type PiecesStyle =
     | 'cburnett'
     | 'fantasy'
-    | 'staunty'
     | 'spatial'
     | 'celtic'
     | 'chessnut'
