@@ -1,0 +1,21 @@
+{
+ "catalog_source": "https://incompetech.com/music/royalty-free/pieces.json",
+ "record": {
+  "title": "Clear Air",
+  "filename": "Clear Air.mp3",
+  "length": "00:03:04",
+  "instruments": "Guitar, Piano",
+  "genre": "16",
+  "bpm": "68",
+  "description": "Very easy-going piece for acoustic steel string guitar and classical guitar. Second A section includes deep and soft piano.",
+  "feel": "Bright, Calming, Relaxed",
+  "uploaded": "2009-11-12",
+  "isrc": "USUAN1100626",
+  "collection": "13",
+  "sheetmusic": null,
+  "video": null,
+  "itunes": "https://itunes.apple.com/us/album/clear-air/id945454501?i=945454503",
+  "filmmusicURL": "https://incompetech.filmmusic.io/song/3515-clear-air/"
+ },
+ "license_declared_by_site": "CC BY 4.0 https://creativecommons.org/licenses/by/4.0/ (see incompetech_faq.html, incompetech_licenses.html, incompetech_llms.txt)"
+}

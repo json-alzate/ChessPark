@@ -1,0 +1,21 @@
+{
+ "catalog_source": "https://incompetech.com/music/royalty-free/pieces.json",
+ "record": {
+  "title": "Windswept",
+  "filename": "Windswept.mp3",
+  "length": "00:03:28",
+  "instruments": "Guitar, Strings",
+  "genre": "5",
+  "bpm": "79",
+  "description": "A relaxed guitar and strings piece for the denouement of a story or exposition of the scenic outdoors. The guitar is peaceful as the strings gently build in prominence. The tempo is regular overall, but slows down in key moments to build a sense of tranquility.",
+  "feel": "Calming, Relaxed",
+  "uploaded": "2010-09-18",
+  "isrc": "USUAN1100757",
+  "collection": "17",
+  "sheetmusic": null,
+  "video": null,
+  "itunes": "https://itunes.apple.com/us/album/windswept/id941913727?i=941913772",
+  "filmmusicURL": "https://incompetech.filmmusic.io/song/4629-windswept/"
+ },
+ "license_declared_by_site": "CC BY 4.0 https://creativecommons.org/licenses/by/4.0/ (see incompetech_faq.html, incompetech_licenses.html, incompetech_llms.txt)"
+}

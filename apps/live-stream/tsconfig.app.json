@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../dist/out-tsc",
+    "types": []
+  },
+  // cm-chessboard no trae tipos: la lib `board` declara los suyos y los usa cualquier app que la importe.
+  "include": ["src/**/*.ts", "../../libs/board/src/types/*.d.ts"],
+  "exclude": [
+    "jest.config.ts",
+    "src/test-setup.ts",
+    "src/**/*.test.ts",
+    "src/**/*.spec.ts"
+  ]
+}

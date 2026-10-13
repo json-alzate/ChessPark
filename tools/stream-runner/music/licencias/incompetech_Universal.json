@@ -1,0 +1,21 @@
+{
+ "catalog_source": "https://incompetech.com/music/royalty-free/pieces.json",
+ "record": {
+  "title": "Universal",
+  "filename": "Universal.mp3",
+  "length": "00:04:30",
+  "instruments": "Piano, Bass, Drums, Synths, Mellotron",
+  "genre": "5",
+  "bpm": "80",
+  "description": "Floating and grounding, this piece has a lot of bass guts but still a lot of reach on the high end. Perfect for retrospectives, automobile time lapses, drunken frat parties (black and white), and studying montages.",
+  "feel": "Relaxed, Mystical",
+  "uploaded": "2015-05-21",
+  "isrc": "USUAN1500035",
+  "collection": null,
+  "sheetmusic": null,
+  "video": "https://youtu.be/EgnDGb4OqUM",
+  "itunes": "https://itunes.apple.com/us/album/universal/id1110322082?i=1110322194",
+  "filmmusicURL": "https://incompetech.filmmusic.io/song/4565-universal/"
+ },
+ "license_declared_by_site": "CC BY 4.0 https://creativecommons.org/licenses/by/4.0/ (see incompetech_faq.html, incompetech_licenses.html, incompetech_llms.txt)"
+}

@@ -10,7 +10,7 @@ jest.mock('@chesspark/board', () => {
   Input()(FenBoardComponent.prototype, 'fen');
   return {
     FenBoardComponent,
-    PIECES_STYLE_OPTIONS: ['cburnett', 'fantasy', 'staunty'],
+    PIECES_STYLE_OPTIONS: ['cburnett', 'fantasy', 'spatial'],
     BOARD_STYLE_OPTIONS: [
       { name: 'chessboard-js', light: '#f0d9b5', dark: '#b58863' },
       { name: 'green', light: '#e0ddcc', dark: '#4c946a' },
@@ -100,7 +100,7 @@ describe('AppearancePickerComponent', () => {
       expect(options.map((b) => b.querySelector('img')?.getAttribute('src'))).toEqual([
         'assets/images/pieces/cburnett-wn.svg',
         'assets/images/pieces/fantasy-wn.svg',
-        'assets/images/pieces/staunty-wn.svg',
+        'assets/images/pieces/spatial-wn.svg',
       ]);
     });
 
@@ -116,19 +116,19 @@ describe('AppearancePickerComponent', () => {
     it('al elegir uno lo manda al servicio de apariencia', () => {
       render();
 
-      (root().querySelector('[aria-label="APPEARANCE.piecesNames.staunty"]') as HTMLButtonElement).click();
+      (root().querySelector('[aria-label="APPEARANCE.piecesNames.spatial"]') as HTMLButtonElement).click();
 
-      expect(appearance.setPieces).toHaveBeenCalledWith('staunty');
+      expect(appearance.setPieces).toHaveBeenCalledWith('spatial');
     });
 
     it('si el servicio cambia el estilo desde fuera, la selección se mueve', () => {
       render();
 
-      appearance.pieces.set('staunty');
+      appearance.pieces.set('spatial');
       fixture.detectChanges();
 
       const selected = pressed().find((b) => b.getAttribute('aria-label')?.startsWith('APPEARANCE.piecesNames'));
-      expect(selected?.getAttribute('aria-label')).toBe('APPEARANCE.piecesNames.staunty');
+      expect(selected?.getAttribute('aria-label')).toBe('APPEARANCE.piecesNames.spatial');
     });
   });
 

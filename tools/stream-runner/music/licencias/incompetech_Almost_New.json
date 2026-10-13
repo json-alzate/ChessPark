@@ -1,0 +1,21 @@
+{
+ "catalog_source": "https://incompetech.com/music/royalty-free/pieces.json",
+ "record": {
+  "title": "Almost New",
+  "filename": "Almost New.mp3",
+  "length": "00:03:23",
+  "instruments": "Piano, Basses",
+  "genre": "22",
+  "bpm": "80",
+  "description": "Remember when you went on summer holiday to your Auntie's house outside Nether Wallop in Hampshire while your parents went to Cyprus to broker a secret deal with the Ottoman Empire?  Remember the times in the Magic Garden? This piece of music is more \"Magic Garden\" than \"Inter-Empire Diplomacy\".",
+  "feel": "Bright, Calming, Mysterious",
+  "uploaded": "2018-08-05",
+  "isrc": "USUAN1800008",
+  "collection": "28",
+  "sheetmusic": null,
+  "video": "https://youtu.be/MiP8oA4pEFE",
+  "itunes": "https://itunes.apple.com/us/album/almost-new/1422505867?i=1422506657&app=itunes",
+  "filmmusicURL": "https://incompetech.filmmusic.io/song/3353-almost-new/"
+ },
+ "license_declared_by_site": "CC BY 4.0 https://creativecommons.org/licenses/by/4.0/ (see incompetech_faq.html, incompetech_licenses.html, incompetech_llms.txt)"
+}

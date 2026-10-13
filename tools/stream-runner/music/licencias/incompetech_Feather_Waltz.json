@@ -1,0 +1,21 @@
+{
+ "catalog_source": "https://incompetech.com/music/royalty-free/pieces.json",
+ "record": {
+  "title": "Feather Waltz",
+  "filename": "Feather Waltz.mp3",
+  "length": "00:01:30",
+  "instruments": "Piano",
+  "genre": "5",
+  "bpm": "75",
+  "description": null,
+  "feel": "Calming, Relaxed, Somber",
+  "uploaded": "2009-12-31",
+  "isrc": "USUAN1100658",
+  "collection": null,
+  "sheetmusic": null,
+  "video": null,
+  "itunes": "https://itunes.apple.com/us/album/feather-waltz/id945466565?i=945466572",
+  "filmmusicURL": "https://incompetech.filmmusic.io/song/3743-feather-waltz/"
+ },
+ "license_declared_by_site": "CC BY 4.0 https://creativecommons.org/licenses/by/4.0/ (see incompetech_faq.html, incompetech_licenses.html, incompetech_llms.txt)"
+}

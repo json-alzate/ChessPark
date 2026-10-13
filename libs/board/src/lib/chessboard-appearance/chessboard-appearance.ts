@@ -22,7 +22,6 @@ export const DEFAULT_CHESSBOARD_APPEARANCE: ChessboardAppearance = {
 export const PIECES_FILES: Record<PiecesStyle, string> = {
   cburnett: 'pieces/standard.svg',
   fantasy: 'pieces/fantasy.svg',
-  staunty: 'pieces/staunty.svg',
   spatial: 'pieces/spatial.svg',
   celtic: 'pieces/celtic.svg',
   chessnut: 'pieces/chessnut.svg',
@@ -64,7 +63,6 @@ export const BOARD_STYLE_OPTIONS: readonly BoardStyleOption[] = [
 export const PIECES_STYLE_OPTIONS: readonly PiecesStyle[] = [
   'cburnett',
   'fantasy',
-  'staunty',
   'spatial',
   'celtic',
   'chessnut',

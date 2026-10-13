@@ -1,0 +1,21 @@
+{
+ "catalog_source": "https://incompetech.com/music/royalty-free/pieces.json",
+ "record": {
+  "title": "Memory Lane",
+  "filename": "Memory Lane.mp3",
+  "length": "00:01:51",
+  "instruments": "Piano",
+  "genre": "5",
+  "bpm": "89",
+  "description": "Casual, quiet piano solo for those introspective moments. 3/4",
+  "feel": "Calming, Dark, Relaxed, Somber",
+  "uploaded": "2008-07-22",
+  "isrc": "USUAN1100485",
+  "collection": "20",
+  "sheetmusic": null,
+  "video": null,
+  "itunes": "https://itunes.apple.com/us/album/memory-lane/id945466565?i=945466576",
+  "filmmusicURL": "https://incompetech.filmmusic.io/song/4036-memory-lane/"
+ },
+ "license_declared_by_site": "CC BY 4.0 https://creativecommons.org/licenses/by/4.0/ (see incompetech_faq.html, incompetech_licenses.html, incompetech_llms.txt)"
+}

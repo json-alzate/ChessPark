@@ -1,0 +1,7 @@
+# Audio: pesa ~1 GB y se regenera (ver sourcing/ y prepare-music.mjs). NO se versiona.
+source/
+normalized/
+muestra/
+optional/*.mp3
+optional/*.ogg
+# licencias/ SÍ se versiona: es la prueba de la licencia de cada pista.

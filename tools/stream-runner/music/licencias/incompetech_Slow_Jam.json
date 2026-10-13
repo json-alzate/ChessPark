@@ -1,0 +1,21 @@
+{
+ "catalog_source": "https://incompetech.com/music/royalty-free/pieces.json",
+ "record": {
+  "title": "Slow Jam",
+  "filename": "Slow Jam.mp3",
+  "length": "00:04:26",
+  "instruments": "Electric Piano, Piano, Synths, Percussion",
+  "genre": "24",
+  "bpm": "75",
+  "description": "Well, this is interesting... Smooth sine bass contrasted with a lovely excited drum machine and then... the magic! Genre bending magic! You're a cool kid right? This is for you. You're welcome. Think 'trap' meets 'R&B' meets 'shoegaze' meets some other genre that is SO COOL there isn't even a name for it yet. Download comes with a not-quite-so-slow version that is not quite so slow.",
+  "feel": "Grooving, Relaxed",
+  "uploaded": "2016-03-04",
+  "isrc": "USUAN1600015",
+  "collection": "7",
+  "sheetmusic": null,
+  "video": "https://youtu.be/z5VxAMkNC68",
+  "itunes": null,
+  "filmmusicURL": "https://incompetech.filmmusic.io/song/4374-slow-jam/"
+ },
+ "license_declared_by_site": "CC BY 4.0 https://creativecommons.org/licenses/by/4.0/ (see incompetech_faq.html, incompetech_licenses.html, incompetech_llms.txt)"
+}

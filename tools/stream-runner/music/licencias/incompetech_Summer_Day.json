@@ -1,0 +1,21 @@
+{
+ "catalog_source": "https://incompetech.com/music/royalty-free/pieces.json",
+ "record": {
+  "title": "Summer Day",
+  "filename": "Summer Day.mp3",
+  "length": "00:03:18",
+  "instruments": "Guitar, Electric Piano, Bass, Drum Kit",
+  "genre": "5",
+  "bpm": "60",
+  "description": "Soothing piece with an interesting harmonic left-turn. You got a savage beast? This is just the ticket.",
+  "feel": "Calming, Relaxed",
+  "uploaded": "2012-07-08",
+  "isrc": "USUAN1200083",
+  "collection": "17",
+  "sheetmusic": null,
+  "video": "https://youtu.be/yp_yGWaknDE",
+  "itunes": "https://itunes.apple.com/us/album/summer-day/id945182460?i=945182473",
+  "filmmusicURL": "https://incompetech.filmmusic.io/song/4433-summer-day/"
+ },
+ "license_declared_by_site": "CC BY 4.0 https://creativecommons.org/licenses/by/4.0/ (see incompetech_faq.html, incompetech_licenses.html, incompetech_llms.txt)"
+}

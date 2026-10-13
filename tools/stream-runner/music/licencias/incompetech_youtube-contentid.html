@@ -1,0 +1,136 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Music FAQ - incompetech</title>
+  <meta name="description" content="Custom graph paper generators and royalty-free music.">
+  <link rel="icon" href="/images/zicon.ico" type="image/x-icon">
+  <link rel="describedby" href="/llms.txt">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=PT+Sans+Narrow:wght@700&family=Droid+Sans:wght@400;700&display=swap" rel="stylesheet">
+
+  <!-- New CSS -->
+  <link rel="stylesheet" href="/2025css/base.css">
+  <link rel="stylesheet" href="/2025css/layout.css">
+  <link rel="stylesheet" href="/2025css/components.css">
+  <link rel="stylesheet" href="/2025css/graphpaper.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="container header-inner">
+<a href="/" class="logo" aria-label="Incompetech">
+  <span class="logo-word">INC</span>
+  <span class="play-badge" aria-hidden="true">
+    <!-- Square badge; large centered triangle -->
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+  <!-- smaller badge -->
+  <rect x="18" y="18" width="64" height="64" rx="10" class="badge-rect"/>
+  <!-- same triangle size -->
+  <polygon points="34,24 34,76 78,50" class="badge-play"/>
+</svg>
+  </span>
+  <span class="logo-word">MPETECH</span>
+</a>
+
+    <!-- Main nav: keeps your existing UL structure -->
+    <nav class="main-nav">
+      <ul id="menu-main-menu" class="menu">
+        <li><a href="/music/royalty-free/music.html">Royalty-Free Music</a></li>
+        <li><a href="/music/royalty-free/faq.html">Music FAQ</a></li>
+        <li><a href="/music/royalty-free/licenses/">Music Licenses</a></li>
+        <li><a href="/graphpaper/">Graph Paper</a></li>
+        <li><a href="/calendars/">Calendars</a></li>
+        <li><a href="/gallimaufry/">and More</a></li>
+        <li><a href="/email.html">Contact</a></li>
+      </ul>
+    </nav>
+
+    <!-- Dark-mode toggle -->
+    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+  </div>
+</header>
+<main class="site-content container">
+
+
+
+
+
+
+<H1>YouTube Content ID</H1>
+
+<P>If you've ever gotten hit with a copyright claim on your video before, you know how much of a pain it is to get that resolved and how long it took. It was even worse for me.
+</P><P>
+We are changing that, and (in theory) no one will get an illegal claim ever again! 
+</P>
+<HR>
+
+<H4>So, why did I just get a copyright claim?</H4>
+
+<P>
+Probably has something to do with the Attribution part of the license.
+It's likely someone forgot to add the credit, or the credit was placed in the video itself, and the credit could not be read automatically.
+</P>
+<OL>
+<LI> Place Credit. Somewhere in the text description, you should put a credit, something like: "SongTitle" by Kevin MacLeod. Be sure to add credits BEFORE YOU DISPUTE THE CLAIM.<BR><BR></LI>
+<LI>Dispute the claim.  The claim will come directly from YouTube, and be released within 72 hours and likely much faster.  You simply need to follow YouTube's instructions on disputing the claim.  If you need to add attribution language to the description, this is the time to do that so that this video won't have this issue again.</LI>
+</OL>
+
+<P>
+If your channel has many (dozens) of videos with this problem, you can bulk release these videos by filling out this form here:  <A HREF="https://forms.gle/xSmgLPuXtkvTxPHe6">https://forms.gle/xSmgLPuXtkvTxPHe6</A>  This is a courtesy to you for your legacy posts - going forward, please use the attribution language provided on my <A HREF="faq.html">FAQ page</A>.
+</P>
+
+<P>That's it! That clears it up.</P>
+
+<P>If there are still problems, send an email to <A HREF="mailto:help@incompetech.com">help@incompetech.com</A>.
+Include the video / channel(s) that are still having an issue and we'll have our people work through this for you.
+</P>
+
+
+<H3>Why the change?</H3>
+<P>
+It is becoming increasingly difficult to challenge all of the false claims people are filing with my music. If someone registers my music as belonging to them, it can take months to unwind the false claim, and creators were losing out on revenue.
+</P><P>
+By making this change, and having the music pre-registered, it stops the baddies and bad data from claiming my music incorrectly.
+</P>
+
+
+
+
+
+
+
+</main>
+<footer class="site-footer">
+  <div class="container">
+    <p>&copy; 1997–2026 Incompetech Inc.</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  const root = document.documentElement;
+  const btn  = document.getElementById('theme-toggle');
+  const key  = 'theme';
+
+  const sysPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const initial = localStorage.getItem(key) || (sysPrefersDark ? 'dark' : 'light');
+  setTheme(initial);
+
+  btn.addEventListener('click', () => setTheme(root.dataset.theme === 'dark' ? 'light' : 'dark'));
+
+  function setTheme(mode) {
+    root.dataset.theme = mode;
+    localStorage.setItem(key, mode);
+    btn.textContent = mode === 'dark' ? '🌙' : '☀️';
+    btn.setAttribute('aria-label', mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+  }
+})();
+</script>
+</body>
+</html>
+
+
+

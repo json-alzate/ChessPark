@@ -16,6 +16,7 @@
     "baseUrl": ".",
     "paths": {
       "@chesspark/board": ["libs/board/src/index.ts"],
+      "@chesspark/board/stream": ["libs/board/src/stream.ts"],
       "@chesspark/chess-com-provider": [
         "libs/chess-com-provider/src/index.ts"
       ],

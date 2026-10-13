@@ -147,7 +147,7 @@ Decisiones de diseño:
 ## Contenido: licencias y política de YouTube
 
 - **Puzzles:** la base de puzzles de Lichess es **CC0**. Sin atribución obligatoria, aunque conviene citarla en la descripción del canal.
-- **Piezas del tablero:** el canal es **monetizable**, lo que cambia el cálculo de [`CREDITOS_PIEZAS.md`](../CREDITOS_PIEZAS.md). Usar solo sets permitidos para uso comercial (cburnett GPL, MIT, Apache, CC0, CC BY con atribución). **Nunca `staunty` (CC BY-NC-SA).** Los sets CC BY exigen atribución → ponerla en la descripción del directo.
+- **Piezas del tablero:** el canal es **monetizable**, lo que cambia el cálculo de [`CREDITOS_PIEZAS.md`](../CREDITOS_PIEZAS.md). Usar solo sets permitidos para uso comercial (cburnett GPL, MIT, Apache, CC0, CC BY con atribución). `staunty` (CC BY-NC-SA) **se retiró de la app**. Los sets que usa el directo (cburnett, celtic, chessnut, rhosgfx) no exigen atribución en la descripción; los créditos de todas las piezas están en la pantalla pública `/settings/credits` de ChessColate.
 - **Música:** "libre de derechos" **no evita reclamos de Content ID**. Usar fuentes verificables (YouTube Audio Library, CC0, Pixabay, Free Music Archive) y **guardar la prueba de licencia** de cada pista.
 - **Política de contenido repetitivo / reutilizado:** los directos 24/7 en bucle pueden marcarse. Que el contenido cambie constantemente (puzzles distintos, escena evolutiva) ayuda, pero **hay que revisar las reglas vigentes de YouTube** (monetización, límites de archivo de directos, restricciones de 24/7) antes de invertir en el pulido final. *No verificado en este documento.*
 - **Marca:** fijar en el directo un enlace/QR a la app (CTA discreta en el HUD).
@@ -235,9 +235,9 @@ LaunchAgent (con aprobación), `pmset`, avisos por push, créditos y descripció
 - [ ] Duración del ciclo del día (60–90 min comprimido vs. hora local real) y si **ELO se liga al ciclo** (escalera de dificultad) o es independiente.
 - [ ] Programa de rotación: lista de temas, rangos de ELO y duración de bloque.
 - [ ] Tiempo de la cuenta atrás (¿8, 10, 15 s?) y ritmo de las jugadas de la solución.
-- [ ] **Fuente de música** concreta, cantidad de pistas y registro de licencias (`CREDITOS_MUSICA.md`).
+- [x] **Fuente de música** concreta, cantidad de pistas y registro de licencias: 88 pistas CC BY/CC0 de ccMixter y Wikimedia Commons, en `CREDITOS_MUSICA.md`. La lista pública está en `https://chesscolate.web.app/settings/credits` (hay que **publicar la app** para que esa URL exista antes de salir en vivo).
 - [ ] Revisar la **política vigente de YouTube** sobre directos 24/7 y contenido repetitivo, y los límites del archivo de directos.
-- [ ] Revisar licencias de las **piezas** permitidas para uso comercial (excluir `staunty`).
+- [x] Revisar licencias de las **piezas** permitidas para uso comercial: `staunty` retirado de la app; el directo solo usa sets GPL/MIT/Apache/CC0.
 - [ ] Dónde y cómo guardar la **clave de stream** (Keychain vs `.env`).
 - [ ] Aprobar el **LaunchAgent** para el runner (excepción a la regla de `devctl`) y la configuración de energía del Mac mini.
 - [ ] Mecanismo de **aviso** cuando el directo cae (push, correo…).

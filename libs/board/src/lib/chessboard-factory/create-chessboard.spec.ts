@@ -35,7 +35,7 @@ describe('apariencia elegida por el usuario', () => {
   });
 
   it('withChessboardAppearance reemplaza solo color y piezas de una configuración ya armada', () => {
-    setChessboardAppearance({ pieces: 'staunty', board: 'blue' });
+    setChessboardAppearance({ pieces: 'spatial', board: 'blue' });
 
     const config = withChessboardAppearance({
       position: START_FEN,
@@ -46,7 +46,7 @@ describe('apariencia elegida por el usuario', () => {
     expect(config.style).toEqual({
       cssClass: 'blue',
       showCoordinates: true,
-      pieces: { file: 'pieces/staunty.svg' },
+      pieces: { file: 'pieces/spatial.svg' },
     });
   });
 });

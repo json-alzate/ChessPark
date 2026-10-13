@@ -1,0 +1,25 @@
+<div
+  class="stage"
+  [style.width.px]="stageWidth"
+  [style.height.px]="stageHeight"
+  [style.transform]="'scale(' + scale() + ')'"
+>
+  <ls-scene-host [renderer]="renderer" [dayMs]="dayMs" />
+
+  <div class="board">
+    <lib-board-game-player
+      [fens]="fens()"
+      [moveSquares]="moveSquares()"
+      [orientation]="orientation()"
+      [msPerMove]="msPerMove"
+      [soundEnabled]="false"
+    />
+  </div>
+
+  <ls-hud-panel
+    [tema]="tema()"
+    [elo]="elo()"
+    [countdown]="countdown()"
+    [nextTopic]="nextTopic()"
+  />
+</div>

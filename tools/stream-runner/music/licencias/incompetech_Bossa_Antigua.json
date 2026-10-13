@@ -1,0 +1,21 @@
+{
+ "catalog_source": "https://incompetech.com/music/royalty-free/pieces.json",
+ "record": {
+  "title": "Bossa Antigua",
+  "filename": "Bossa Antigua.mp3",
+  "length": "00:04:43",
+  "instruments": "Guitar, Bass, Drums",
+  "genre": "11",
+  "bpm": "70",
+  "description": "Oh hello. I didn't see you there. Welcome to my pad. My favorite parts are the view of the beach, and this very groovy orange shag-carpeting on the walls. I still haven't been able to teach my Roombas to get up by the ceiling, though.",
+  "feel": "Bright, Grooving, Relaxed",
+  "uploaded": "2017-11-17",
+  "isrc": "USUAN1700069",
+  "collection": "14",
+  "sheetmusic": "Bossa 1 (C Chart).pdf",
+  "video": "https://youtu.be/A25zUqFEJr4",
+  "itunes": "https://itunes.apple.com/us/album/bossa-antigua/1312683881?i=1312683883",
+  "filmmusicURL": "https://incompetech.filmmusic.io/song/3454-bossa-antigua/"
+ },
+ "license_declared_by_site": "CC BY 4.0 https://creativecommons.org/licenses/by/4.0/ (see incompetech_faq.html, incompetech_licenses.html, incompetech_llms.txt)"
+}

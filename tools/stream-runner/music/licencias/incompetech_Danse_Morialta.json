@@ -1,0 +1,21 @@
+{
+ "catalog_source": "https://incompetech.com/music/royalty-free/pieces.json",
+ "record": {
+  "title": "Danse Morialta",
+  "filename": "Danse Morialta.mp3",
+  "length": "00:03:56",
+  "instruments": "Piano",
+  "genre": "5",
+  "bpm": "70",
+  "description": "Simple, simple, effective piano piece. This one is hard to pin down emotionally, so I marked it at both somber and uplifting. It is really quite good... though not quite Satie.",
+  "feel": "Calming, Relaxed, Somber, Uplifting",
+  "uploaded": "2012-03-08",
+  "isrc": "USUAN1200026",
+  "collection": "13",
+  "sheetmusic": "Danse_Morialta.pdf",
+  "video": "https://youtu.be/7N28-7ZllKY",
+  "itunes": "https://itunes.apple.com/us/album/danse-morialta/id941913727?i=941913746",
+  "filmmusicURL": null
+ },
+ "license_declared_by_site": "CC BY 4.0 https://creativecommons.org/licenses/by/4.0/ (see incompetech_faq.html, incompetech_licenses.html, incompetech_llms.txt)"
+}

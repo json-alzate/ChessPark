@@ -1,0 +1,21 @@
+{
+ "catalog_source": "https://incompetech.com/music/royalty-free/pieces.json",
+ "record": {
+  "title": "Groove Grove",
+  "filename": "Groove Grove.mp3",
+  "length": "00:03:26",
+  "instruments": "Percussion, Electric Piano, Synth",
+  "genre": "11",
+  "bpm": "70",
+  "description": "Background music for ethereal storytelling. It maintains interest, without driving and usurping attention away from the story or visuals.",
+  "feel": "Calming, Grooving, Mysterious, Relaxed",
+  "uploaded": "2012-04-25",
+  "isrc": "USUAN1200054",
+  "collection": "7",
+  "sheetmusic": null,
+  "video": "https://youtu.be/IUJdYbeZoFk",
+  "itunes": "https://itunes.apple.com/us/album/groove-grove/id945167360?i=945167394",
+  "filmmusicURL": "https://incompetech.filmmusic.io/song/3831-groove-grove/"
+ },
+ "license_declared_by_site": "CC BY 4.0 https://creativecommons.org/licenses/by/4.0/ (see incompetech_faq.html, incompetech_licenses.html, incompetech_llms.txt)"
+}

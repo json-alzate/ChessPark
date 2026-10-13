@@ -1,0 +1,26 @@
+:host {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+// Lienzo de 1920×1080. Se escala entero para caber en la ventana (en el runner, escala 1).
+.stage {
+  position: relative;
+  transform-origin: 0 0;
+  // Fondo de reserva: lo cubre la escena (y se ve solo con `?renderer=none`).
+  background: linear-gradient(#96c2e2, #d8ebf5);
+}
+
+// Mismas medidas que la maqueta: 784 px, a 400 px del borde izquierdo y 56 del superior.
+.board {
+  position: absolute;
+  left: 400px;
+  top: 56px;
+  width: 784px;
+  height: 784px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 22px 56px rgba(24, 40, 64, 0.34);
+}

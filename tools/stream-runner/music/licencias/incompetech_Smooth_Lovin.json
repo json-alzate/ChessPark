@@ -1,0 +1,21 @@
+{
+ "catalog_source": "https://incompetech.com/music/royalty-free/pieces.json",
+ "record": {
+  "title": "Smooth Lovin",
+  "filename": "Smooth Lovin.mp3",
+  "length": "00:04:19",
+  "instruments": "Bass, Guitar, Drums, Piano, Organ",
+  "genre": "11",
+  "bpm": "75",
+  "description": "This one got turned up to 11. I started producing this as a parody... then I really started liking it, so I guess it is a pastiche now? Oh, man... I wish there was an allowance for pastiche in copyright like there is for parody.",
+  "feel": "Grooving, Calming, Relaxed",
+  "uploaded": "2017-11-26",
+  "isrc": "USUAN1700077",
+  "collection": "14",
+  "sheetmusic": null,
+  "video": "https://youtu.be/z6j690YzFFY",
+  "itunes": "https://itunes.apple.com/us/album/smooth-lovin/1312683881?i=1312683891",
+  "filmmusicURL": "https://incompetech.filmmusic.io/song/4379-smooth-lovin/"
+ },
+ "license_declared_by_site": "CC BY 4.0 https://creativecommons.org/licenses/by/4.0/ (see incompetech_faq.html, incompetech_licenses.html, incompetech_llms.txt)"
+}

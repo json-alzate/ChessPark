@@ -1,0 +1,104 @@
+<ion-content [fullscreen]="true">
+  <div class="min-h-screen bg-base-100">
+    <app-navbar></app-navbar>
+
+    <div class="container mx-auto px-4 py-8 max-w-2xl pb-16">
+
+      <!-- Header -->
+      <div class="mb-6">
+        <div class="breadcrumbs text-sm mb-1">
+          <ul>
+            <li>
+              <a (click)="goToHome()" class="cursor-pointer gap-1">
+                <ion-icon name="home-outline" class="h-4 w-4"></ion-icon>
+                <span>{{ 'MENU.navigation.home' | transloco }}</span>
+              </a>
+            </li>
+            <li>
+              <a (click)="goToSettings()" class="cursor-pointer gap-1">
+                <ion-icon name="settings-outline" class="h-4 w-4"></ion-icon>
+                <span>{{ 'SETTINGS.title' | transloco }}</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <h2 class="text-2xl font-bold">{{ 'CREDITS.pageTitle' | transloco }}</h2>
+        <p class="text-sm opacity-70 mt-2">{{ 'CREDITS.intro' | transloco }}</p>
+      </div>
+
+      <!-- Piezas y tableros -->
+      <section class="mb-8">
+        <h3 class="text-lg font-bold mb-1">{{ 'CREDITS.piecesTitle' | transloco }}</h3>
+        <p class="text-sm opacity-70 mb-3">
+          {{ 'CREDITS.piecesIntro' | transloco }}
+          <a [href]="lichessLilaUrl" target="_blank" rel="noopener noreferrer" class="link link-primary">lichess-org/lila</a>
+        </p>
+
+        <ul class="bg-base-200/40 border border-base-content/10 rounded-box divide-y divide-base-content/10">
+          @for (piece of pieces; track piece.id) {
+            <li class="flex items-center justify-between gap-3 px-4 py-3" [attr.data-piece]="piece.id">
+              <div class="min-w-0">
+                <div class="text-base">{{ 'APPEARANCE.piecesNames.' + piece.id | transloco }}</div>
+                <div class="text-xs opacity-70">
+                  @if (piece.url) {
+                    <a [href]="piece.url" target="_blank" rel="noopener noreferrer" class="link">{{ piece.author }}</a>
+                  } @else {
+                    {{ piece.author }}
+                  }
+                </div>
+              </div>
+              <a
+                [href]="licenses[piece.license].url"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="badge badge-outline whitespace-nowrap"
+              >{{ licenses[piece.license].label }}</a>
+            </li>
+          }
+        </ul>
+      </section>
+
+      <!-- Puzzles -->
+      <section class="mb-8">
+        <h3 class="text-lg font-bold mb-1">{{ 'CREDITS.puzzlesTitle' | transloco }}</h3>
+        <p class="text-sm opacity-70">
+          {{ 'CREDITS.puzzlesText' | transloco }}
+          <a [href]="lichessPuzzlesUrl" target="_blank" rel="noopener noreferrer" class="link link-primary">database.lichess.org</a>
+        </p>
+      </section>
+
+      <!-- Música del directo -->
+      <section class="mb-8">
+        <h3 class="text-lg font-bold mb-1">{{ 'CREDITS.musicTitle' | transloco }}</h3>
+        <p class="text-sm opacity-70 mb-1">{{ 'CREDITS.musicIntro' | transloco }}</p>
+        <p class="text-sm font-semibold mb-3">{{ 'CREDITS.musicSummary' | transloco: musicSummary }}</p>
+
+        @for (group of musicGroups; track group.license) {
+          <details class="collapse collapse-arrow bg-base-200/40 border border-base-content/10 mb-2" [attr.data-license]="group.license">
+            <summary class="collapse-title font-semibold">
+              {{ licenses[group.license].label }} · {{ group.tracks.length }}
+            </summary>
+            <div class="collapse-content">
+              <a
+                [href]="licenses[group.license].url"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="link link-primary text-xs"
+              >{{ licenses[group.license].url }}</a>
+              <ul class="mt-2 divide-y divide-base-content/10">
+                @for (track of group.tracks; track track.url) {
+                  <li class="py-2 text-sm">
+                    <a [href]="track.url" target="_blank" rel="noopener noreferrer" class="link">{{ track.title }}</a>
+                    <span class="opacity-70"> — {{ track.author }}</span>
+                    <span class="opacity-50"> · {{ sourceNames[track.source] }} · {{ formatDuration(track.durationSec) }}</span>
+                  </li>
+                }
+              </ul>
+            </div>
+          </details>
+        }
+      </section>
+
+    </div>
+  </div>
+</ion-content>

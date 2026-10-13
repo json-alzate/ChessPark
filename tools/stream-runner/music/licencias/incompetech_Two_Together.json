@@ -1,0 +1,21 @@
+{
+ "catalog_source": "https://incompetech.com/music/royalty-free/pieces.json",
+ "record": {
+  "title": "Two Together",
+  "filename": "Two Together.mp3",
+  "length": "00:01:57",
+  "instruments": "Piano",
+  "genre": "5",
+  "bpm": "78",
+  "description": "Sparkly open voicings.",
+  "feel": "Calming, Bright",
+  "uploaded": "2006-01-01",
+  "isrc": "USUAN1100031",
+  "collection": "16",
+  "sheetmusic": null,
+  "video": null,
+  "itunes": "https://itunes.apple.com/us/album/two-together/id945134234?i=945134260",
+  "filmmusicURL": "https://incompetech.filmmusic.io/song/4555-two-together/"
+ },
+ "license_declared_by_site": "CC BY 4.0 https://creativecommons.org/licenses/by/4.0/ (see incompetech_faq.html, incompetech_licenses.html, incompetech_llms.txt)"
+}

@@ -251,6 +251,14 @@ describe('SettingsPage', () => {
       expect(router.navigate).toHaveBeenCalledWith(['/settings/storage']);
     });
 
+    it('la fila de créditos abre /settings/credits', async () => {
+      await crear();
+
+      enlace('CREDITS.settingsRowTitle').click();
+
+      expect(router.navigate).toHaveBeenCalledWith(['/settings/credits']);
+    });
+
     it('incluye el selector de apariencia', async () => {
       await crear();
 

@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Muestra de la música del directo</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:#0f0f0f; color:#f1f1f1; font:15px/1.5 system-ui,-apple-system,"Helvetica Neue",sans-serif; }
+  main { max-width:760px; margin:0 auto; padding:24px 16px 80px; }
+  h1 { font-size:20px; margin:0 0 4px; }
+  p { color:#aaa; margin:0 0 16px; }
+  audio { width:100%; position:sticky; top:8px; z-index:1; margin-bottom:12px; }
+  ol { list-style:none; margin:0; padding:0; }
+  li { margin:0; }
+  button { display:grid; grid-template-columns:52px 1fr auto; gap:10px; width:100%; text-align:left; background:#1c1c1c; color:inherit; border:0; border-bottom:1px solid #2a2a2a; padding:10px 12px; font:inherit; cursor:pointer; }
+  button:hover { background:#272727; }
+  button.now { background:#2b3a2b; }
+  .t { color:#8fd18f; font-variant-numeric:tabular-nums; }
+  .a { font-weight:600; } .a small { display:block; font-weight:400; color:#aaa; }
+  .lic { color:#888; font-size:12px; align-self:center; }
+  .back { display:inline-block; margin-bottom:16px; color:#8ab4f8; text-decoration:none; }
+</style>
+</head>
+<body>
+<main>
+  <a class="back" href="/">← Volver a la vista previa</a>
+  <h1>Muestra de la música del directo</h1>
+  <p>Un fragmento de 25 s de cada autor (37 en total). Pulsa un autor para saltar a él. Si algo no te gusta (voces, ruido, demasiado movido), anota el nombre.</p>
+  <audio id="a" controls preload="auto" src="muestra/muestra-por-autor.m4a"></audio>
+  <ol id="list"><li>Cargando…</li></ol>
+</main>
+<script>
+(async () => {
+  const audio = document.getElementById('a');
+  const list = document.getElementById('list');
+  const text = await (await fetch('muestra/muestra-por-autor.txt')).text();
+  const items = text.trim().split('\n').map((line) => {
+    const m = /^(\d+):(\d{2})\s+(.*?) — «(.*)» \((.*)\)$/.exec(line);
+    return m ? { sec: Number(m[1]) * 60 + Number(m[2]), stamp: `${m[1]}:${m[2]}`, author: m[3], title: m[4], lic: m[5] } : null;
+  }).filter(Boolean);
+  list.textContent = '';
+  const buttons = items.map((it) => {
+    const li = document.createElement('li'); const b = document.createElement('button');
+    const t = Object.assign(document.createElement('span'), { className: 't', textContent: it.stamp });
+    const a = Object.assign(document.createElement('span'), { className: 'a', textContent: it.author });
+    const small = Object.assign(document.createElement('small'), { textContent: it.title }); a.append(small);
+    const l = Object.assign(document.createElement('span'), { className: 'lic', textContent: it.lic });
+    b.append(t, a, l);
+    b.addEventListener('click', () => { audio.currentTime = it.sec; audio.play(); });
+    li.append(b); list.append(li); return b;
+  });
+  audio.addEventListener('timeupdate', () => {
+    let idx = 0; items.forEach((it, i) => { if (audio.currentTime >= it.sec) idx = i; });
+    buttons.forEach((b, i) => b.classList.toggle('now', i === idx));
+  });
+})();
+</script>
+</body>
+</html>

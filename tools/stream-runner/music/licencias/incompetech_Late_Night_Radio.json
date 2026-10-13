@@ -1,0 +1,21 @@
+{
+ "catalog_source": "https://incompetech.com/music/royalty-free/pieces.json",
+ "record": {
+  "title": "Late Night Radio",
+  "filename": "Late Night Radio.mp3",
+  "length": "00:04:24",
+  "instruments": "Electric Piano, Bass, Drums, Synth",
+  "genre": "5",
+  "bpm": "72",
+  "description": "You know when you're at a friend's house overnight for an experimental airplane convention and there are people sleeping on various sofas, so you don't want to turn on the lights - but then you run your shin smack into the metal coffee table, knocking over 3 mostly empty bottles and somehow breaking your friends glasses? This music is the nice feeling before the coffee table incident.",
+  "feel": "Calming, Relaxed",
+  "uploaded": "2021-03-25",
+  "isrc": "USUAN2100003",
+  "collection": "27",
+  "sheetmusic": null,
+  "video": "https://youtu.be/QhtL-6Cf5Xk",
+  "itunes": "https://music.apple.com/us/album/late-night-radio/1555520331?i=1555520333",
+  "filmmusicURL": "https://incompetech.filmmusic.io/song/7613-late-night-radio"
+ },
+ "license_declared_by_site": "CC BY 4.0 https://creativecommons.org/licenses/by/4.0/ (see incompetech_faq.html, incompetech_licenses.html, incompetech_llms.txt)"
+}

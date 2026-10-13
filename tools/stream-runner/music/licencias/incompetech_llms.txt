@@ -1,0 +1,69 @@
+# Incompetech
+
+> Royalty-free music and custom graph paper generators by Kevin MacLeod, online since 1997. Nearly all music is free to use under Creative Commons Attribution 4.0; graph paper is public domain (CC0). Machine-readable catalog data is available — see the Agent Section below. Experimental projects live at https://danger.academy/.
+
+## Music
+
+- [Royalty-Free Music Search](https://incompetech.com/music/royalty-free/music.html): Searchable catalog of ~2,000 original tracks by genre, mood (feel), tempo, and length.
+- [Music FAQ](https://incompetech.com/music/royalty-free/faq.html): Answers to common usage questions.
+- [Music Licenses](https://incompetech.com/music/royalty-free/licenses/): Free use requires attribution (CC BY 4.0). Paid licenses available to remove the attribution requirement.
+- [YouTube Content ID info](https://incompetech.com/music/royalty-free/youtube-contentid.html): How claims on Kevin's music are handled on YouTube.
+- [Spotify podcast claims](https://incompetech.com/music/royalty-free/spotify-podcasts.html): If a podcast is flagged, dispute with licensor "Kelvin Ruijters t/as Frequency"; escalate to support@frequencydigital.com.
+
+## Music Catalog Data endpoints:
+
+- Full catalog (all tracks): https://incompetech.com/music/royalty-free/pieces.json
+- Genre key (id → name): https://incompetech.com/music/royalty-free/genre.json
+- Collections key (id → name): https://incompetech.com/music/royalty-free/collections.json
+- Audio files: https://incompetech.com/music/royalty-free/mp3-royaltyfree/ + `filename` from the catalog
+
+Fields in pieces.json:
+
+- uuid: Unique identifier for each track.
+- title: Name of the track.
+- filename: Audio filename; prepend the mp3 directory URL above to download.
+- length: Duration, "hh:mm:ss".
+- instruments: Instruments used in the composition.
+- genre: Musical style; ids resolve via genre.json.
+- bpm: Beats per minute.
+- description: Brief overview of the track — mood, inspiration, structure.
+- feel: Emotional atmosphere (aka "mood").
+- uploaded: Date the track was added.
+- isrc: International Standard Recording Code, for royalty tracking and rights management.
+- collection: Groups related tracks; ids resolve via collections.json.
+- sheetmusic: Available sheet music, if any.
+- video: Associated videos, if any.
+- itunes: Link to the track on Apple's platform.
+- wav: High-quality WAV download, if available (extra charges may apply).
+- filmmusicURL: Currently defunct.
+
+Licensing metadata common to every piece (schema.org MusicComposition): composer and copyrightHolder are Kevin MacLeod (Person); offer category "Creative Commons License", license https://creativecommons.org/licenses/by/4.0/. Attribution is required unless a no-attribution license is purchased.
+
+## Graph Paper
+
+- [Graph Paper Generator v2](https://incompetech.com/graphpaper/): Free custom graph paper as PDF, PNG, or SVG. Runs entirely in the browser (serverless, no cookies), with live previews. Output is public domain (CC0). Includes standard grids plus numbered axes, engineering pad, ternary plot, cross-stitch, hex maps, Go board, two-point perspective, habit tracker, bead paper, battle mat, spirals, copperplate, and more.
+
+
+## Other
+
+- [Calendars and More (Gallimaufry)](https://incompetech.com/gallimaufry/): Calendars and assorted printables.
+- [Offline Maze Generator](https://incompetech.com/gallimaufry/incompetech-maze.html): Free local maze generator (beta).
+- [News Archive](https://incompetech.com/wordpress/): Site news and announcements.
+
+## Contact
+
+- Errors or catalog problems: Kevin MacLeod, kevin@incompetech.com (include as much detail as possible).
+- Legal questions or special-rights deals: Tim Kulig, timkulig@gmail.com.
+- General contact: https://incompetech.com/email.html
+
+## Related Sites
+
+- [Danger Academy](https://danger.academy/): Kevin's experimental games, music tools, and ambiance pages. Its own index is at https://danger.academy/llms.txt.
+
+## Notes
+
+- Attribution format for free music use: "Music: [Title] by Kevin MacLeod (incompetech.com), Licensed under Creative Commons: By Attribution 4.0" — see the licenses page for specifics.
+- The music is royalty-free, not public domain (except tracks on FreePD, which are CC0).
+
+
+

@@ -1,0 +1,131 @@
+{
+ "logical": {
+  "w": 960,
+  "h": 540
+ },
+ "backgrounds": {
+  "day": "bg-day.png",
+  "night": "bg-night.png"
+ },
+ "sprites": {
+  "dog-sit": {
+   "file": "dog-sit.png",
+   "frameW": 44,
+   "frameH": 42,
+   "frames": 2,
+   "fps": 3
+  },
+  "dog-walk": {
+   "file": "dog-walk.png",
+   "frameW": 52,
+   "frameH": 40,
+   "frames": 4,
+   "fps": 8
+  },
+  "dog-run": {
+   "file": "dog-run.png",
+   "frameW": 52,
+   "frameH": 40,
+   "frames": 2,
+   "fps": 10
+  },
+  "dog-bark": {
+   "file": "dog-bark.png",
+   "frameW": 52,
+   "frameH": 40,
+   "frames": 2,
+   "fps": 5
+  },
+  "dog-dig": {
+   "file": "dog-dig.png",
+   "frameW": 54,
+   "frameH": 42,
+   "frames": 2,
+   "fps": 6
+  },
+  "dog-sleep": {
+   "file": "dog-sleep.png",
+   "frameW": 50,
+   "frameH": 22,
+   "frames": 2,
+   "fps": 1.5
+  },
+  "cat-tease": {
+   "file": "cat-tease.png",
+   "frameW": 28,
+   "frameH": 30,
+   "frames": 2,
+   "fps": 3
+  },
+  "cat-sit": {
+   "file": "cat-sit.png",
+   "frameW": 28,
+   "frameH": 30,
+   "frames": 2,
+   "fps": 1
+  },
+  "hand": {
+   "file": "hand.png",
+   "frameW": 30,
+   "frameH": 16,
+   "frames": 1,
+   "fps": 1
+  },
+  "bone": {
+   "file": "bone.png",
+   "frameW": 18,
+   "frameH": 10,
+   "frames": 1,
+   "fps": 1
+  },
+  "heart": {
+   "file": "heart.png",
+   "frameW": 9,
+   "frameH": 8,
+   "frames": 1,
+   "fps": 1
+  },
+  "hole-open": {
+   "file": "hole-open.png",
+   "frameW": 34,
+   "frameH": 12,
+   "frames": 1,
+   "fps": 1
+  },
+  "hole-half": {
+   "file": "hole-half.png",
+   "frameW": 34,
+   "frameH": 12,
+   "frames": 1,
+   "fps": 1
+  },
+  "hole-mound": {
+   "file": "hole-mound.png",
+   "frameW": 34,
+   "frameH": 12,
+   "frames": 1,
+   "fps": 1
+  },
+  "cloud-0": {
+   "file": "cloud-0.png",
+   "frameW": 96,
+   "frameH": 30,
+   "frames": 1,
+   "fps": 1
+  },
+  "cloud-1": {
+   "file": "cloud-1.png",
+   "frameW": 84,
+   "frameH": 30,
+   "frames": 1,
+   "fps": 1
+  },
+  "cloud-2": {
+   "file": "cloud-2.png",
+   "frameW": 90,
+   "frameH": 30,
+   "frames": 1,
+   "fps": 1
+  }
+ }
+}

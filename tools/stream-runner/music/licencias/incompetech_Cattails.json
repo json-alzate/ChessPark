@@ -1,0 +1,21 @@
+{
+ "catalog_source": "https://incompetech.com/music/royalty-free/pieces.json",
+ "record": {
+  "title": "Cattails",
+  "filename": "Cattails.mp3",
+  "length": "00:02:39",
+  "instruments": "Banjo, Accordion, Guitar, Erhu, Violins",
+  "genre": "5",
+  "bpm": "77",
+  "description": "An acoustic guitar and a banjo create a drifting lull as an accordion and erhu play a languid melody. The accordion is slightly forceful, while the tremolo of the erhu is uncertain, creating an intertwined dialogue of two vastly different characters. The piece is calm and pensive, with subtle notes of East Asian and Country Western influences.",
+  "feel": "Bouncy, Calming, Relaxed",
+  "uploaded": "2010-07-01",
+  "isrc": "USUAN1100743",
+  "collection": "17",
+  "sheetmusic": null,
+  "video": null,
+  "itunes": "https://itunes.apple.com/us/album/cattails/id945160470?i=945160475",
+  "filmmusicURL": "https://incompetech.filmmusic.io/song/3482-cattails/"
+ },
+ "license_declared_by_site": "CC BY 4.0 https://creativecommons.org/licenses/by/4.0/ (see incompetech_faq.html, incompetech_licenses.html, incompetech_llms.txt)"
+}
