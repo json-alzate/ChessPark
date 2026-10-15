@@ -50,8 +50,8 @@ y el versionado sigue [SemVer](https://semver.org/lang/es/) para `versionName`.
   «Borrar todo»; ahora dicen qué borran.
 - **Teléfono apaisado:** el tablero de las pantallas de ejercicios ya no pasa del alto de la pantalla (antes era un cuadrado
   del ancho completo, mayor que la ventana, y había que desplazarse para verlo entero).
-- **Accesibilidad:** los botones de solo icono (cerrar, ajustes, estadísticas, girar el tablero, navegar la solución, guardar una
-  sesión pública, color aleatorio) ya tienen nombre para los lectores de pantalla; el campo de Chess960 está asociado a su
+- **Accesibilidad:** los botones de solo icono (cerrar, salir, ajustes, estadísticas, girar el tablero, navegar la solución, guardar una
+  sesión pública, color aleatorio, marcar leída, editar y borrar un recordatorio) ya tienen nombre para los lectores de pantalla; el campo de Chess960 está asociado a su
   etiqueta; y el idioma del documento (`lang`) sigue al de la app en vez de quedarse en inglés.
 - **Legibilidad:** el texto de apoyo (pistas, notas, rótulos pequeños) pasa de 50 % a 60 % de opacidad: en el tema por defecto
   el contraste subía solo a 3,7:1 y ahora es de 4,8:1 (el mínimo recomendado es 4,5:1).

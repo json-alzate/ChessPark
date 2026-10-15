@@ -3,7 +3,7 @@
     <h2 class="text-xl font-bold">
       {{ (isEdit ? 'TRAINING_REMINDER.manual.editTitle' : 'TRAINING_REMINDER.manual.newTitle') | transloco }}
     </h2>
-    <button class="btn btn-ghost btn-sm btn-circle" (click)="cancel()">
+    <button class="btn btn-ghost btn-sm btn-circle" (click)="cancel()" [attr.aria-label]="'COMMON.actions.close' | transloco">
       <ion-icon name="close-outline" class="text-xl"></ion-icon>
     </button>
   </div>

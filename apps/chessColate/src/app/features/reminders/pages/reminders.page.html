@@ -111,10 +111,10 @@
                     class="toggle toggle-sm toggle-primary"
                     [checked]="reminder.enabled"
                     (change)="toggleManual(reminder, $event)" />
-                  <button class="btn btn-ghost btn-sm btn-circle" (click)="openManualModal(reminder)">
+                  <button class="btn btn-ghost btn-sm btn-circle" (click)="openManualModal(reminder)" [attr.aria-label]="'TRAINING_REMINDER.manual.editTitle' | transloco">
                     <ion-icon name="create-outline"></ion-icon>
                   </button>
-                  <button class="btn btn-ghost btn-sm btn-circle text-error" (click)="confirmDeleteManual(reminder)">
+                  <button class="btn btn-ghost btn-sm btn-circle text-error" (click)="confirmDeleteManual(reminder)" [attr.aria-label]="'TRAINING_REMINDER.manual.deleteTitle' | transloco">
                     <ion-icon name="trash-outline"></ion-icon>
                   </button>
                 </li>

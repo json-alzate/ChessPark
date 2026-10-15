@@ -107,7 +107,7 @@
     <!-- Header -->
     <div class="p-4 border-b border-base-200 flex justify-between items-center bg-base-200/50">
       <h2 class="text-xl font-bold">{{ 'APP.navigation.notifications' | transloco }}</h2>
-      <button class="btn btn-sm btn-ghost btn-circle" (click)="closeNotificationsMenu()">
+      <button class="btn btn-sm btn-ghost btn-circle" (click)="closeNotificationsMenu()" [attr.aria-label]="'COMMON.actions.close' | transloco">
         <ion-icon name="close-outline" class="text-xl"></ion-icon>
       </button>
     </div>
@@ -146,7 +146,7 @@
             </div>
 
             @if (!notification.read) {
-            <button class="btn btn-xs btn-ghost btn-circle absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity" (click)="markAsRead(notification.id)">
+            <button class="btn btn-xs btn-ghost btn-circle absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity" (click)="markAsRead(notification.id)" [attr.aria-label]="'APP.components.markAsRead' | transloco">
               <ion-icon name="checkmark-outline" class="text-base"></ion-icon>
             </button>
             <div class="w-2.5 h-2.5 rounded-full bg-primary absolute top-4 right-4 group-hover:hidden"></div>

@@ -4,7 +4,7 @@
     <!-- Header -->
     <div class="sticky top-0 z-10 bg-base-100 flex items-center justify-between px-4 py-3 border-b border-base-content/10">
       <h3 class="text-lg font-bold">{{ 'NEW_BLOCK.form.title' | transloco }}</h3>
-      <button type="button" class="btn btn-circle btn-ghost btn-sm" (click)="close()">
+      <button type="button" class="btn btn-circle btn-ghost btn-sm" (click)="close()" [attr.aria-label]="'COMMON.actions.close' | transloco">
         <ion-icon name="close" class="text-xl"></ion-icon>
       </button>
     </div>

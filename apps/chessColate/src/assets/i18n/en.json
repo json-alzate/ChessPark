@@ -909,6 +909,7 @@
       "installApp": "Install App"
     },
     "components": {
+      "markAsRead": "Mark as read",
       "settings": "Settings",
       "viewStats": "View statistics",
       "exit": "Exit",
