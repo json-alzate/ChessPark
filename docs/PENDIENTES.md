@@ -197,4 +197,6 @@ Salieron al recorrer la app entera en móvil y escritorio, y no se arreglaron po
 - **El contador del bloque cuenta ejercicios jugados, no resueltos** — tras fallar el primero del Reto 333 el encabezado dice
   «1 / 333» y el resultado «0 / 333». Es el comportamiento de siempre en todas las rutinas; decidir si se quiere cambiar.
 - **Errores 401 de RevenueCat en la web** — esperados sin credenciales de la tienda; ensucian la consola en desarrollo.
+- **`libs/stockfish-wasm` registra cada comando y cada mensaje del motor con `console.log`** (~48 llamadas): un análisis de
+  una partida deja cientos de líneas en la consola. Conviene dejarlos tras un interruptor de depuración o quitarlos.
 
