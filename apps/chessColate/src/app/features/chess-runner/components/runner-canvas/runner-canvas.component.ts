@@ -298,7 +298,7 @@ export class RunnerCanvasComponent implements AfterViewInit, OnDestroy {
       return;
     }
     event.preventDefault();
-    (this.zoneElement ?? this.canvasRef.nativeElement).setPointerCapture?.(event.pointerId);
+    this.capturePointer('set', event.pointerId);
     this.clearGesture();
     // Hasta que pasa un instante no se sabe si es un toque o el principio de un deslizamiento
     const timer = setTimeout(() => this.settleGesture(), GESTURE_DECISION_MS);
@@ -342,8 +342,25 @@ export class RunnerCanvasComponent implements AfterViewInit, OnDestroy {
     }
   };
 
+  /**
+   * Captura o suelta el puntero. El navegador lanza `NotFoundError` si ese puntero ya no está activo (un toque
+   * cancelado justo al empezar): el gesto sigue adelante sin captura en vez de perderse con la excepción.
+   */
+  private capturePointer(action: 'set' | 'release', pointerId: number): void {
+    const element = this.zoneElement ?? this.canvasRef.nativeElement;
+    try {
+      if (action === 'set') {
+        element.setPointerCapture?.(pointerId);
+      } else {
+        element.releasePointerCapture?.(pointerId);
+      }
+    } catch {
+      /* el puntero ya no está activo */
+    }
+  }
+
   private readonly pointerUp = (event: PointerEvent) => {
-    (this.zoneElement ?? this.canvasRef.nativeElement).releasePointerCapture?.(event.pointerId);
+    this.capturePointer('release', event.pointerId);
     // Un toque que se suelta antes de decidir: salto corto, sin mantener
     if (this.gesture && !this.gesture.decided) {
       this.decide('tap');

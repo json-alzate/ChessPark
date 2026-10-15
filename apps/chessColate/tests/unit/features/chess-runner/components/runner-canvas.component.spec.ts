@@ -406,6 +406,18 @@ describe('RunnerCanvasComponent', () => {
       expect(eventos).toEqual(['jump']);
     });
 
+    it('si el navegador no deja capturar el puntero (ya no está activo), el toque salta igualmente', () => {
+      const noActivo = () => {
+        throw new DOMException('The object can not be found here.', 'NotFoundError');
+      };
+      Object.assign(canvas(), { setPointerCapture: noActivo, releasePointerCapture: noActivo });
+
+      puntero('pointerdown', 100, 100);
+      puntero('pointerup', 100, 100);
+
+      expect(eventos).toEqual(['jump']);
+    });
+
     it('un toque rápido no flota: aterriza en lo que dura un salto normal', () => {
       puntero('pointerdown', 100, 100);
       puntero('pointerup', 100, 100);
