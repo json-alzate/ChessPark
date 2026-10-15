@@ -64,7 +64,7 @@ export interface ObstacleShape {
  */
 export const OBSTACLE_SHAPES: Record<RunnerPieceKind, ObstacleShape> = {
   pawn: { width: 10, bottom: 0, height: 18, gapBefore: 150, hint: 'jump' },
-  rook: { width: 20, bottom: 20, height: 30, gapBefore: 150, hint: 'slide' },
+  rook: { width: 20, bottom: 20, height: 28, gapBefore: 150, hint: 'slide' },
   bishop: { width: 46, bottom: 0, height: 22, gapBefore: 190, hint: 'long' },
   knight: { width: 24, bottom: 0, height: 36, gapBefore: 190, hint: 'hold' },
   queen: { width: 12, bottom: 0, height: 58, gapBefore: 190, hint: 'double' },

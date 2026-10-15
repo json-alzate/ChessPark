@@ -78,7 +78,7 @@ describe('configuración del Chess Runner', () => {
   });
 
   it('lo que choca nunca es más alto que el dibujo de la pieza', () => {
-    const altoDelDibujo: Record<string, number> = { pawn: 24, rook: 30, bishop: 26, knight: 40, queen: 60, king: 46 };
+    const altoDelDibujo: Record<string, number> = { pawn: 24, rook: 29, bishop: 25, knight: 39, queen: 58, king: 45 };
     for (const [kind, forma] of Object.entries(OBSTACLE_SHAPES)) {
       expect(forma.height).toBeLessThanOrEqual(altoDelDibujo[kind]);
     }
@@ -118,7 +118,7 @@ describe('assets y traducciones del Chess Runner', () => {
   });
 
   it('existen las poses de Chocolate, el escenario y el manifiesto', () => {
-    for (const nombre of ['dog-run', 'dog-jump', 'dog-slide', 'dog-hurt', 'dog-happy', 'scene-floor', 'scene-hills', 'scene-sky', 'runner']) {
+    for (const nombre of ['dog-run', 'dog-jump', 'dog-slide', 'dog-hurt', 'dog-happy', 'scene-floor', 'scene-hills', 'scene-sky', 'scene-skyline', 'fx-dust', 'fx-spark', 'runner']) {
       expect(existsSync(join(ASSETS, nombre === 'runner' ? 'runner.json' : `${nombre}.png`))).toBe(true);
     }
   });

@@ -60,6 +60,30 @@ class Contenido(unittest.TestCase):
         for pista in PISTAS:
             self.assertIn(f'hint-{pista}', self.sprites)
 
+    def test_las_pistas_son_globos_del_mismo_tamano(self):
+        # El juego las coloca por su colita: todas tienen que medir lo mismo
+        tamanos = {self.sprites[f'hint-{p}'][0][0].size for p in PISTAS}
+        self.assertEqual(tamanos, {(19, 21)})
+
+    def test_estan_los_efectos_y_el_horizonte(self):
+        self.assertEqual(len(self.sprites['fx-dust'][0]), 3)
+        self.assertEqual(len(self.sprites['fx-spark'][0]), 3)
+        self.assertIn('scene-skyline', self.sprites)
+
+    def test_el_horizonte_se_repite_sin_costura(self):
+        # Ninguna pieza del horizonte toca el borde del tile: al repetirlo no se cortan ni se pegan
+        skyline = self.sprites['scene-skyline'][0][0]
+        for x in (0, skyline.size[0] - 1):
+            self.assertTrue(all(skyline.getpixel((x, y))[3] == 0 for y in range(skyline.size[1])), x)
+
+    def test_las_piezas_no_flotan_sobre_su_peana(self):
+        # La base toca el borde de abajo del sprite y no hay filas vacías dentro de la silueta
+        for kind in PIEZAS:
+            sprite = self.sprites[f'piece-{kind}-w'][0][0]
+            filas = [any(sprite.getpixel((x, y))[3] for x in range(sprite.size[0])) for y in range(sprite.size[1])]
+            primera = filas.index(True)
+            self.assertTrue(all(filas[primera:]), f'{kind} tiene filas vacías dentro de su silueta')
+
     def test_las_poses_tienen_los_cuadros_que_espera_la_animacion(self):
         frames = {name: len(f) for name, (f, _fps) in self.sprites.items()}
         self.assertEqual(frames['dog-run'], 4)
@@ -75,11 +99,13 @@ class Contenido(unittest.TestCase):
 
     def test_las_medidas_de_las_piezas_son_las_que_documenta_el_modulo(self):
         medidas = {name: frames[0].size for name, (frames, _) in self.sprites.items() if name.startswith('piece-')}
-        self.assertEqual(medidas['piece-pawn-w'], (18, 24))   # 16×22 + contorno
-        self.assertEqual(medidas['piece-rook-w'], (22, 30))
-        self.assertEqual(medidas['piece-knight-w'], (30, 40))
-        self.assertEqual(medidas['piece-queen-w'], (22, 60))
-        self.assertEqual(medidas['piece-king-w'], (20, 46))
+        # Ancho y alto con el contorno de 1 px y sin filas vacías abajo
+        self.assertEqual(medidas['piece-pawn-w'], (18, 24))
+        self.assertEqual(medidas['piece-rook-w'], (22, 29))
+        self.assertEqual(medidas['piece-bishop-w'], (48, 25))
+        self.assertEqual(medidas['piece-knight-w'], (30, 39))
+        self.assertEqual(medidas['piece-queen-w'], (22, 58))
+        self.assertEqual(medidas['piece-king-w'], (20, 45))
 
     def test_ningun_sprite_esta_vacio(self):
         for name, (frames, _fps) in self.sprites.items():

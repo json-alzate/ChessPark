@@ -80,7 +80,7 @@
 
     @case ('running') {
     <!-- Cualquier toque de esta zona cuenta: el pulgar está abajo, no sobre el lienzo -->
-    <div #zone class="running-zone mx-auto w-full max-w-[720px] pt-3" data-testid="running">
+    <div #zone class="running-zone mx-auto flex w-full max-w-[720px] flex-col justify-center pb-40 pt-3" data-testid="running">
       <!-- Lo que falta por saltar: las piezas del ejercicio, tachadas a medida que se superan -->
       <div class="flex items-end justify-center gap-1.5 px-3 pb-2" data-testid="pips">
         @for (piece of sequence; track $index) {

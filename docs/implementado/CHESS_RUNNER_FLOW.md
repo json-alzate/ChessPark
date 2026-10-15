@@ -97,8 +97,8 @@ En pantallas de alta densidad el lienzo se dibuja a resolución nativa sin cambi
 bucle corre **fuera de la zona de Angular** y solo entra en ella cuando hay algo que contar; con un paso fijo y un
 tope por fotograma, una pestaña dormida no se «pone al día» de golpe.
 
-`runner-renderer.ts` no sabe de Angular: recibe el estado y dibuja cielo, nubes y colinas con paralaje, el suelo de
-tablero, las sombras, los obstáculos, a Chocolate (animación según lo que hace) y las pistas.
+`runner-renderer.ts` no sabe de Angular: recibe el estado y dibuja cielo, nubes, horizonte y colinas con paralaje, el
+suelo de tablero, las sombras, los obstáculos, a Chocolate (animación según lo que hace), los efectos y las pistas.
 
 ## Los assets
 
@@ -108,8 +108,14 @@ Pixel art generado por código, determinista y verificable, en el pipeline que y
 
 - **Chocolate** (el mismo cuerpo y paleta que en el directo): correr (4 cuadros), saltar (subir, cima, bajar),
   agacharse, tropezar y contento.
-- **Las 6 piezas en los dos bandos**: la torre «flota», el alfil es un trío, el caballo y la dama son más grandes.
-- **Iconos de pista**, y los **tiles** del suelo (un tablero), colinas, cielo y nubes.
+- **Las 6 piezas en los dos bandos**, con un sombreado de volumen común (luz arriba a la izquierda: cada fila se
+  sombrea según dónde cae el píxel entre el borde izquierdo y el derecho de la silueta) y siluetas de revolución
+  para el cuello, la falda y la mitra. La torre «flota», el alfil es un trío, el caballo y la dama son más grandes.
+  Las blancas son marfil cálido y las negras ébano con un matiz ciruela; los detalles (bolitas, cruz, joyas) van en dorado.
+- **Pistas**: un globo de cómic con su colita hacia abajo que se lee sobre cualquier fondo.
+- **Escenario con capas de paralaje**: cielo, nubes, un **horizonte de piezas de ajedrez gigantes** (que ata el
+  escenario con la temática), colinas y el suelo, que es un tablero.
+- **Efectos**: polvo al despegar y aterrizar, chispa al dejar una pieza atrás.
 
 `export_runner.py --check` comprueba píxel a píxel que lo versionado coincide con lo que generan los scripts.
 

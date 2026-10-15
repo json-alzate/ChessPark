@@ -36,6 +36,8 @@ def all_sprites():
         sprites[name] = ([sprite], 1)
     for name, sprite in runner.scenery().items():
         sprites[f'scene-{name}'] = ([sprite], 1)
+    sprites['fx-dust'] = (runner.fx_dust(), 12)
+    sprites['fx-spark'] = (runner.fx_spark(), 14)
     return sprites
 
 

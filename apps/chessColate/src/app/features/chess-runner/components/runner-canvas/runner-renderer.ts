@@ -20,11 +20,24 @@ const WOOD = '#3a2418';
 
 type Sprites = ReadonlyMap<string, RunnerSprite>;
 
+/** Un efecto breve (polvo, chispa) que se dibuja mientras dura su animación. */
+export type RunnerFxKind = 'dust' | 'spark';
+
+interface ActiveFx {
+  kind: RunnerFxKind;
+  x: number;
+  y: number;
+  /** Segundo de la carrera en que nació. */
+  start: number;
+}
+
 /**
  * Dibuja un instante del runner. No sabe de Angular ni del bucle: recibe el estado y pinta. Todo en
  * píxeles lógicos; quien lo crea fija la escala del lienzo y desactiva el suavizado.
  */
 export class RunnerRenderer {
+  private fx: ActiveFx[] = [];
+
   constructor(
     private readonly ctx: CanvasRenderingContext2D,
     private readonly sprites: Sprites,
@@ -33,6 +46,11 @@ export class RunnerRenderer {
 
   resize(width: number): void {
     this.width = width;
+  }
+
+  /** Suelta un efecto en (x, y): `y` es la altura sobre el suelo. */
+  addFx(kind: RunnerFxKind, x: number, y: number, time: number): void {
+    this.fx.push({ kind, x, y, start: time });
   }
 
   draw(state: RunnerState, options: { hints: boolean }): void {
@@ -45,10 +63,36 @@ export class RunnerRenderer {
     for (const obstacle of state.obstacles) {
       this.drawObstacle(obstacle);
     }
+    this.drawFx(state);
     this.drawDog(state);
     if (options.hints) {
       this.drawHints(state);
     }
+  }
+
+  private drawFx(state: RunnerState): void {
+    this.fx = this.fx.filter((effect) => {
+      const sprite = this.sprites.get(`fx-${effect.kind}`);
+      if (!sprite) {
+        return false;
+      }
+      const frame = Math.floor((state.time - effect.start) * sprite.fps);
+      if (frame >= sprite.frames) {
+        return false;
+      }
+      this.ctx.drawImage(
+        sprite.image,
+        frame * sprite.frameW,
+        0,
+        sprite.frameW,
+        sprite.frameH,
+        Math.round(effect.x - sprite.frameW / 2),
+        Math.round(FEET_Y - effect.y - sprite.frameH),
+        sprite.frameW,
+        sprite.frameH
+      );
+      return true;
+    });
   }
 
   // ------------------------------------------------------------------ fondo
@@ -69,6 +113,15 @@ export class RunnerRenderer {
         const span = this.width + cloud.frameW * 2;
         const x = ((((state.distance * speed + (name === 'scene-cloud-1' ? 120 : 0)) % span) + span) % span);
         ctx.drawImage(cloud.image, Math.round(this.width - x), y);
+      }
+    }
+
+    // Un horizonte de piezas de ajedrez gigantes, muy lejos (lo que más tarda en pasar)
+    const skyline = this.sprites.get('scene-skyline');
+    if (skyline) {
+      const offset = (state.distance * 0.1) % skyline.frameW;
+      for (let x = -offset; x < this.width; x += skyline.frameW) {
+        ctx.drawImage(skyline.image, Math.round(x), GROUND_Y - skyline.frameH + 14);
       }
     }
 
@@ -223,7 +276,8 @@ export class RunnerRenderer {
         ctx.drawImage(
           hint.image,
           Math.round(obstacle.x + shape.width / 2 - hint.frameW / 2),
-          Math.round(FEET_Y - shape.bottom - shape.height - hint.frameH - 6 + bob)
+          // La colita del globo apunta al obstáculo
+          Math.round(FEET_Y - shape.bottom - shape.height - hint.frameH - 1 + bob)
         );
       }
       if (obstacle.kind === 'king' && ahead > 22 && ahead < 36) {

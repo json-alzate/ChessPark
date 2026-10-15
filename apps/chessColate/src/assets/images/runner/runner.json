@@ -52,35 +52,35 @@
   "piece-rook-w": {
    "file": "piece-rook-w.png",
    "frameW": 22,
-   "frameH": 30,
+   "frameH": 29,
    "frames": 1,
    "fps": 1
   },
   "piece-bishop-w": {
    "file": "piece-bishop-w.png",
    "frameW": 48,
-   "frameH": 26,
+   "frameH": 25,
    "frames": 1,
    "fps": 1
   },
   "piece-knight-w": {
    "file": "piece-knight-w.png",
    "frameW": 30,
-   "frameH": 40,
+   "frameH": 39,
    "frames": 1,
    "fps": 1
   },
   "piece-queen-w": {
    "file": "piece-queen-w.png",
    "frameW": 22,
-   "frameH": 60,
+   "frameH": 58,
    "frames": 1,
    "fps": 1
   },
   "piece-king-w": {
    "file": "piece-king-w.png",
    "frameW": 20,
-   "frameH": 46,
+   "frameH": 45,
    "frames": 1,
    "fps": 1
   },
@@ -94,77 +94,77 @@
   "piece-rook-b": {
    "file": "piece-rook-b.png",
    "frameW": 22,
-   "frameH": 30,
+   "frameH": 29,
    "frames": 1,
    "fps": 1
   },
   "piece-bishop-b": {
    "file": "piece-bishop-b.png",
    "frameW": 48,
-   "frameH": 26,
+   "frameH": 25,
    "frames": 1,
    "fps": 1
   },
   "piece-knight-b": {
    "file": "piece-knight-b.png",
    "frameW": 30,
-   "frameH": 40,
+   "frameH": 39,
    "frames": 1,
    "fps": 1
   },
   "piece-queen-b": {
    "file": "piece-queen-b.png",
    "frameW": 22,
-   "frameH": 60,
+   "frameH": 58,
    "frames": 1,
    "fps": 1
   },
   "piece-king-b": {
    "file": "piece-king-b.png",
    "frameW": 20,
-   "frameH": 46,
+   "frameH": 45,
    "frames": 1,
    "fps": 1
   },
   "hint-double": {
    "file": "hint-double.png",
-   "frameW": 13,
-   "frameH": 13,
+   "frameW": 19,
+   "frameH": 21,
    "frames": 1,
    "fps": 1
   },
   "hint-hold": {
    "file": "hint-hold.png",
-   "frameW": 13,
-   "frameH": 13,
+   "frameW": 19,
+   "frameH": 21,
    "frames": 1,
    "fps": 1
   },
   "hint-jump": {
    "file": "hint-jump.png",
-   "frameW": 13,
-   "frameH": 13,
+   "frameW": 19,
+   "frameH": 21,
    "frames": 1,
    "fps": 1
   },
   "hint-long": {
    "file": "hint-long.png",
-   "frameW": 13,
-   "frameH": 13,
+   "frameW": 19,
+   "frameH": 21,
    "frames": 1,
    "fps": 1
   },
   "hint-precise": {
    "file": "hint-precise.png",
-   "frameW": 13,
-   "frameH": 13,
+   "frameW": 19,
+   "frameH": 21,
    "frames": 1,
    "fps": 1
   },
   "hint-slide": {
    "file": "hint-slide.png",
-   "frameW": 13,
-   "frameH": 13,
+   "frameW": 19,
+   "frameH": 21,
    "frames": 1,
    "fps": 1
   },
@@ -202,6 +202,27 @@
    "frameH": 22,
    "frames": 1,
    "fps": 1
+  },
+  "scene-skyline": {
+   "file": "scene-skyline.png",
+   "frameW": 192,
+   "frameH": 92,
+   "frames": 1,
+   "fps": 1
+  },
+  "fx-dust": {
+   "file": "fx-dust.png",
+   "frameW": 12,
+   "frameH": 8,
+   "frames": 3,
+   "fps": 12
+  },
+  "fx-spark": {
+   "file": "fx-spark.png",
+   "frameW": 11,
+   "frameH": 11,
+   "frames": 3,
+   "fps": 14
   }
  }
 }

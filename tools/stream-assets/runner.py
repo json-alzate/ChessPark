@@ -11,7 +11,7 @@ Medidas lógicas (1 px del sprite = 1 px lógico; la app escala por un entero):
 """
 import random
 
-from PIL import ImageDraw
+from PIL import Image, ImageDraw
 
 import dog as dog_mod
 from pixel import C, R, layer, lerp, outlined
@@ -54,72 +54,136 @@ def dog_animations(palette=dog_mod.CHOCOLATE):
 
 
 class PiecePalette:
-    """Colores de un bando. `light` y `shade` dan volumen; `outline` es común a ambos."""
+    """Colores de un bando. Cuatro tonos para el volumen más un acento dorado y un brillo."""
 
-    def __init__(self, base, light, shade, accent):
-        self.base, self.light, self.shade, self.accent = C(base), C(light), C(shade), C(accent)
+    def __init__(self, base, light, shade, deep, accent, spark):
+        self.base, self.light, self.shade, self.deep = C(base), C(light), C(shade), C(deep)
+        self.accent, self.spark = C(accent), C(spark)
 
 
-WHITE = PiecePalette('#f1e6d0', '#ffffff', '#c3ae8d', '#d99a3d')
-BLACK = PiecePalette('#46343b', '#765b66', '#271a1f', '#d99a3d')
+# Blancas: marfil cálido. Negras: ébano con un matiz ciruela, para que no sean un negro plano.
+WHITE = PiecePalette('#efe2c8', '#fff8e8', '#c9b48f', '#a98f68', '#e0a33c', '#ffffff')
+BLACK = PiecePalette('#4b3a45', '#7d6574', '#33252e', '#1f161c', '#e0a33c', '#b79aac')
 OUTLINE = C('#1d120d')
 PIECE_PALETTES = {'w': WHITE, 'b': BLACK}
 
+_MARK = (1, 2, 3, 255)  # color interno «sin sombrear»: lo que la pasada de volumen convierte en tonos
 
-def _base(d, p, x0, x1, y0, y1):
-    """Peana común: una losa ancha con reflejo arriba y sombra abajo."""
-    R(d, x0, y0, x1, y1, p.base)
+
+def _volume(sp, p):
+    """
+    Da volumen cilíndrico a todo lo pintado con `_MARK`: en cada fila, el tono depende de dónde cae el
+    píxel entre el borde izquierdo y el derecho de la silueta (luz arriba a la izquierda). Así todas las
+    piezas comparten el mismo sombreado sin dibujarlo a mano en cada una.
+    """
+    px = sp.load()
+    w, h = sp.size
+    for y in range(h):
+        xs = [x for x in range(w) if px[x, y] == _MARK]
+        if not xs:
+            continue
+        x0, x1 = xs[0], xs[-1]
+        span = x1 - x0 + 1
+        for x in xs:
+            if span <= 3:
+                px[x, y] = p.base
+                continue
+            u = (x - x0) / (span - 1)
+            if u < 0.14:
+                px[x, y] = p.light
+            elif u < 0.34:
+                px[x, y] = p.base
+            elif u < 0.68:
+                px[x, y] = p.base if span < 8 else p.base
+            elif u < 0.86:
+                px[x, y] = p.shade
+            else:
+                px[x, y] = p.deep if span >= 7 else p.shade
+    return sp
+
+
+def _slab(d, p, x0, x1, y0, y1):
+    """Losa horizontal (peana o collar): canto iluminado arriba, sombra abajo; el resto lo sombrea el volumen."""
+    R(d, x0, y0, x1, y1, _MARK)
     R(d, x0, y0, x1, y0, p.light)
-    R(d, x0, y1, x1, y1, p.shade)
+    R(d, x0, y1, x1, y1, p.deep)
+
+
+def _ring(d, p, x0, x1, y):
+    """Una línea de sombra que separa las secciones de la pieza."""
+    R(d, x0, y, x1, y, p.deep)
+
+
+def _lathe(d, width, y0, halfwidths):
+    """
+    Dibuja una silueta de revolución: `halfwidths[i]` es el semiancho de la fila `y0 + i`, centrada en el
+    sprite. Es la forma más limpia de sacar curvas suaves (cuellos, faldas, mitras) a mano en pixel art.
+    """
+    cx = width / 2
+    for i, w in enumerate(halfwidths):
+        left, right = round(cx - w), round(cx + w) - 1
+        if right >= left:
+            R(d, left, y0 + i, right, y0 + i, _MARK)
+
+
+def _finish(sp, p):
+    """Volumen y contorno, y se recorta lo vacío de abajo: la base tiene que tocar el borde del sprite
+    o la pieza se vería flotando sobre el suelo."""
+    out = outlined(_volume(sp, p), OUTLINE)
+    bottom = out.getbbox()[3]
+    return out.crop((0, 0, out.size[0], bottom))
 
 
 def pawn(p):
     sp = layer(16, 22)
     d = ImageDraw.Draw(sp)
-    d.polygon([(5, 10), (10, 10), (12, 18), (3, 18)], fill=p.base)
-    R(d, 5, 10, 6, 17, p.light)
-    R(d, 10, 12, 11, 18, p.shade)
-    d.ellipse([4, 0, 11, 8], fill=p.base)
-    R(d, 5, 1, 6, 3, p.light)
-    R(d, 3, 9, 12, 10, p.base)
-    R(d, 3, 10, 12, 10, p.shade)
-    _base(d, p, 1, 14, 19, 21)
-    return outlined(sp, OUTLINE)
+    d.polygon([(5, 10), (10, 10), (12, 18), (3, 18)], fill=_MARK)  # cuerpo
+    d.ellipse([4, 0, 11, 8], fill=_MARK)  # cabeza
+    R(d, 3, 9, 12, 10, _MARK)  # collar
+    _ring(d, p, 3, 12, 11)
+    _ring(d, p, 4, 11, 8)
+    _slab(d, p, 1, 14, 19, 21)
+    R(d, 5, 2, 6, 3, p.spark)  # brillo en la cabeza
+    return _finish(sp, p)
 
 
 def rook(p):
-    sp = layer(20, 28)
+    sp = layer(20, 27)
     d = ImageDraw.Draw(sp)
-    R(d, 2, 0, 17, 7, p.base)
-    for x in (6, 13):  # huecos de las almenas
+    R(d, 2, 0, 17, 7, _MARK)  # almenas
+    for x in (6, 13):  # los dos huecos entre merlones
         R(d, x, 0, x + 1, 2, (0, 0, 0, 0))
-    R(d, 2, 0, 3, 7, p.light)
-    R(d, 16, 2, 17, 7, p.shade)
-    R(d, 4, 8, 15, 9, p.shade)
-    R(d, 5, 10, 14, 19, p.base)
-    R(d, 5, 10, 6, 19, p.light)
-    R(d, 13, 10, 14, 19, p.shade)
-    R(d, 3, 20, 16, 22, p.base)
+    R(d, 2, 3, 17, 3, p.light)  # cornisa
+    _ring(d, p, 2, 17, 7)
+    R(d, 4, 8, 15, 9, _MARK)  # cuello
+    R(d, 5, 10, 14, 19, _MARK)  # fuste
+    R(d, 8, 12, 11, 14, p.deep)  # tronera
+    R(d, 9, 12, 10, 13, p.shade)
+    _ring(d, p, 5, 14, 19)
+    R(d, 3, 20, 16, 22, _MARK)  # zócalo
     R(d, 3, 20, 16, 20, p.light)
-    _base(d, p, 1, 18, 23, 26)
-    return outlined(sp, OUTLINE)
+    _slab(d, p, 1, 18, 23, 26)
+    return _finish(sp, p)
 
 
 def bishop(p):
-    sp = layer(16, 24)
+    sp = layer(16, 23)
     d = ImageDraw.Draw(sp)
-    d.ellipse([7, 0, 9, 2], fill=p.accent)
-    d.ellipse([4, 2, 11, 13], fill=p.base)
-    R(d, 5, 4, 6, 9, p.light)
-    R(d, 10, 6, 11, 11, p.shade)
-    R(d, 8, 5, 9, 7, p.shade)  # el corte de la mitra
-    R(d, 7, 6, 8, 6, p.shade)
-    R(d, 3, 13, 12, 14, p.base)
-    R(d, 3, 14, 12, 14, p.shade)
-    d.polygon([(5, 15), (10, 15), (11, 19), (4, 19)], fill=p.base)
-    R(d, 5, 15, 6, 18, p.light)
-    _base(d, p, 2, 13, 20, 22)
-    return outlined(sp, OUTLINE)
+    d.ellipse([7, 0, 8, 1], fill=p.accent)  # bolita
+    d.point((7, 0), fill=p.spark)
+    # mitra apuntada, cuello, collar, pie y la peana
+    _lathe(d, 16, 2, [1.4, 2.4, 3.1, 3.7, 4.0, 4.1, 4.1, 4.0, 3.7, 3.2, 2.7, 2.5])
+    _lathe(d, 16, 14, [5.0, 5.0, 2.8, 3.0, 3.3, 3.8, 4.6, 5.4])
+    _ring(d, p, 3, 12, 13)
+    _ring(d, p, 5, 10, 16)
+    R(d, 3, 13, 12, 13, p.deep)
+    # corte diagonal de la mitra
+    for i in range(6):
+        d.point((9 - i, 4 + i), fill=p.deep)
+        d.point((10 - i, 4 + i), fill=p.shade)
+    _slab(d, p, 2, 13, 20, 22)
+    R(d, 6, 4, 6, 5, p.spark)
+    return _finish(sp, p)
 
 
 def bishop_trio(p):
@@ -136,45 +200,51 @@ def bishop_trio(p):
 def knight(p):
     sp = layer(28, 38)
     d = ImageDraw.Draw(sp)
-    # silueta del caballo mirando a la derecha: cuello, hocico, orejas
-    d.polygon([(6, 31), (7, 25), (10, 19), (9, 14), (11, 9), (13, 4), (15, 0), (17, 4), (22, 6),
-               (26, 11), (26, 16), (21, 17), (17, 19), (19, 25), (22, 31)], fill=p.base)
-    d.polygon([(6, 31), (7, 25), (10, 19), (9, 14), (11, 9), (13, 4), (15, 3), (13, 12), (13, 20), (12, 31)],
-              fill=p.light)
-    d.polygon([(19, 25), (22, 31), (17, 31), (16, 24)], fill=p.shade)
-    R(d, 23, 11, 25, 12, p.shade)  # nariz
-    R(d, 17, 8, 18, 9, p.nose if hasattr(p, 'nose') else OUTLINE)  # ojo
-    # crin
-    for i, (x, y) in enumerate(((9, 12), (9, 16), (8, 20), (7, 24))):
-        R(d, x - 1, y, x, y + 2, p.shade)
-    R(d, 14, 1, 15, 3, p.accent)  # copete
-    _base(d, p, 3, 24, 32, 36)
-    return outlined(sp, OUTLINE)
+    # silueta del caballo mirando a la derecha: pecho, cuello arqueado, frente, hocico y mandíbula
+    d.polygon([(6, 31), (7, 25), (9, 19), (8, 14), (10, 9), (12, 5), (14, 1), (16, 4), (19, 5), (23, 7),
+               (26, 12), (26, 16), (22, 17), (18, 19), (17, 22), (19, 26), (22, 31)], fill=_MARK)
+    # el volumen del cuello: luz a la izquierda, sombra bajo la mandíbula
+    d.polygon([(6, 31), (7, 25), (9, 19), (8, 14), (10, 9), (12, 5), (13, 3), (13, 12), (12, 20), (12, 31)], fill=p.light)
+    d.polygon([(17, 22), (19, 26), (22, 31), (15, 31), (15, 25)], fill=p.shade)
+    d.polygon([(18, 19), (22, 17), (26, 16), (25, 18), (20, 20)], fill=p.shade)
+    # oreja
+    d.polygon([(15, 4), (16, 0), (18, 4)], fill=_MARK)
+    R(d, 16, 1, 16, 3, p.shade)
+    # ojo, nariz y boca
+    R(d, 18, 9, 19, 10, OUTLINE)
+    R(d, 19, 9, 19, 9, p.spark)
+    R(d, 24, 12, 25, 13, p.deep)
+    R(d, 20, 17, 23, 17, p.deep)
+    # crin: mechones a lo largo del cuello
+    for x, y in ((9, 8), (8, 12), (7, 16), (6, 20), (6, 24)):
+        R(d, x, y, x + 2, y + 2, p.deep)
+        R(d, x + 1, y, x + 1, y + 1, p.shade)
+    R(d, 13, 2, 14, 4, p.accent)  # copete dorado
+    _slab(d, p, 3, 24, 32, 36)
+    return _finish(sp, p)
 
 
 def queen(p):
     sp = layer(20, 58)
     d = ImageDraw.Draw(sp)
-    # corona: cuatro puntas con una bolita en cada una y huecos en V entre ellas
-    for cx in (4, 8, 12, 16):
-        d.polygon([(cx - 2, 11), (cx, 4), (cx + 2, 11)], fill=p.base)
-        R(d, cx - 1, 4, cx - 1, 9, p.light)
-        d.ellipse([cx - 1, 0, cx + 1, 2], fill=p.accent)
-    R(d, 2, 10, 17, 11, p.base)
-    R(d, 2, 10, 17, 10, p.light)
-    R(d, 3, 12, 16, 14, p.base)
-    R(d, 3, 14, 16, 14, p.shade)
-    # cuerpo esbelto
-    d.polygon([(6, 15), (13, 15), (16, 42), (3, 42)], fill=p.base)
-    R(d, 6, 15, 7, 41, p.light)
-    R(d, 13, 18, 15, 41, p.shade)
-    R(d, 3, 28, 16, 29, p.shade)
-    R(d, 3, 43, 16, 46, p.base)
-    R(d, 3, 43, 16, 43, p.light)
-    R(d, 4, 47, 15, 49, p.base)
-    R(d, 4, 49, 15, 49, p.shade)
-    _base(d, p, 1, 18, 50, 55)
-    return outlined(sp, OUTLINE)
+    # corona: tres puntas anchas con una bolita dorada en cada una
+    for cx in (4, 10, 16):
+        d.polygon([(cx - 3, 12), (cx, 4), (cx + 3, 12)], fill=_MARK)
+        d.ellipse([cx - 1, 0, cx + 1, 3], fill=p.accent)
+        d.point((cx - 1, 1), fill=p.spark)
+    # aro de la corona, cuello, busto, talle y falda que se abre
+    _lathe(d, 20, 11, [7.6, 7.6, 7.2, 5.2])
+    _lathe(d, 20, 15, [3.8, 4.0, 4.3, 4.7, 5.0, 5.3, 5.5, 5.8, 6.0, 4.4])
+    _lathe(d, 20, 25, [3.6, 3.5, 3.4, 3.4, 3.4, 3.5, 3.6, 3.8, 4.0, 4.3, 4.6, 5.0, 5.4, 5.9, 6.4, 6.9, 7.3, 7.7, 8.0, 8.2, 8.3, 8.4])
+    _lathe(d, 20, 47, [8.4, 7.2, 8.2, 8.4])
+    R(d, 3, 11, 16, 11, p.light)
+    _ring(d, p, 4, 15, 14)
+    _ring(d, p, 4, 15, 24)
+    _ring(d, p, 3, 16, 46)
+    R(d, 9, 17, 10, 18, p.accent)  # joya del pecho
+    R(d, 9, 17, 9, 17, p.spark)
+    _slab(d, p, 1, 18, 51, 55)
+    return _finish(sp, p)
 
 
 def king(p):
@@ -183,22 +253,20 @@ def king(p):
     # cruz
     R(d, 8, 0, 9, 6, p.accent)
     R(d, 6, 2, 11, 3, p.accent)
-    # corona
-    R(d, 3, 7, 14, 9, p.base)
+    R(d, 8, 0, 8, 6, p.spark)
+    # corona: arco, aro, collar, cuerpo con hombros y peana
+    _lathe(d, 18, 7, [5.2, 5.8, 6.4, 6.8, 7.0, 7.1, 7.1, 7.2, 7.4])
+    _lathe(d, 18, 16, [7.8, 7.8, 5.0, 4.4, 4.4, 4.6, 4.8, 5.0, 5.3, 5.6, 5.9, 6.2, 6.5, 6.8, 7.1, 7.4,
+                       7.6, 7.7, 7.9, 8.1, 8.3])
     R(d, 3, 7, 14, 7, p.light)
-    d.polygon([(3, 10), (14, 10), (15, 16), (2, 16)], fill=p.base)
-    R(d, 4, 10, 5, 15, p.light)
-    R(d, 12, 11, 14, 15, p.shade)
-    R(d, 2, 16, 15, 17, p.base)
-    R(d, 2, 17, 15, 17, p.shade)
-    # cuerpo
-    d.polygon([(5, 18), (12, 18), (14, 33), (3, 33)], fill=p.base)
-    R(d, 5, 18, 6, 32, p.light)
-    R(d, 11, 20, 13, 32, p.shade)
-    R(d, 3, 34, 14, 36, p.base)
-    R(d, 3, 34, 14, 34, p.light)
-    _base(d, p, 1, 16, 37, 42)
-    return outlined(sp, OUTLINE)
+    R(d, 7, 11, 10, 12, p.accent)  # joya de la corona
+    R(d, 7, 11, 7, 11, p.spark)
+    _ring(d, p, 2, 15, 15)
+    _ring(d, p, 4, 13, 18)
+    _ring(d, p, 3, 14, 26)
+    _ring(d, p, 2, 15, 33)
+    _slab(d, p, 1, 16, 37, 42)
+    return _finish(sp, p)
 
 
 PIECES = {'pawn': pawn, 'rook': rook, 'bishop': bishop_trio, 'knight': knight, 'queen': queen, 'king': king}
@@ -215,11 +283,13 @@ def piece_sprites():
 
 # ---------------------------------------------------------------------------- Pistas
 
-HINT_INK = C('#ffb347')
-HINT_SHADE = C('#d9792b')
+HINT_INK = C('#e0661f')
+HINT_SHADE = C('#a8431a')
 HINT_OUT = C('#3a1f10')
+BUBBLE = C('#fff4d9')
+BUBBLE_SHADE = C('#f1d9a6')
 
-# 11×11. '#' = tinta, 'o' = sombra
+# 11×11. '#' = tinta
 _HINTS = {
     # un salto
     'jump': ['.....#.....', '....###....', '...#####...', '..#######..', '.#########.', '....###....',
@@ -239,18 +309,32 @@ _HINTS = {
 }
 
 
-def _long_jump_hint():
+def _long_jump_icon():
     """Flecha diagonal hacia arriba y adelante: salto largo."""
     sp = layer(11, 11)
     d = ImageDraw.Draw(sp)
     d.line([(1, 9), (7, 3)], fill=HINT_INK, width=3)
     d.polygon([(10, 0), (3, 1), (9, 7)], fill=HINT_INK)
-    d.line([(1, 10), (7, 4)], fill=HINT_SHADE, width=1)
-    return outlined(sp, HINT_OUT)
+    return sp
+
+
+def _bubble(icon):
+    """El icono dentro de un globo de cómic con su colita hacia abajo: se lee sobre cualquier fondo."""
+    sp = layer(19, 21)
+    d = ImageDraw.Draw(sp)
+    d.rounded_rectangle([0, 0, 18, 16], radius=4, fill=BUBBLE)
+    R(d, 1, 12, 17, 15, BUBBLE_SHADE)
+    d.rounded_rectangle([0, 0, 18, 16], radius=4, outline=HINT_OUT)
+    # colita
+    d.polygon([(7, 16), (11, 16), (9, 20)], fill=BUBBLE)
+    d.line([(7, 16), (9, 20), (11, 16)], fill=HINT_OUT)
+    R(d, 8, 16, 10, 16, BUBBLE)
+    sp.paste(icon, (4, 3), icon)
+    return sp
 
 
 def hint_icons():
-    """Nombre -> icono de pista de 13×13 (con contorno)."""
+    """Nombre -> globo de pista de 19×21."""
     icons = {}
     for name, rows in _HINTS.items():
         sp = layer(11, 11)
@@ -259,8 +343,8 @@ def hint_icons():
             for x, ch in enumerate(row):
                 if ch == '#':
                     px[x, y] = HINT_INK if (y + x) % 5 else HINT_SHADE
-        icons[f'hint-{name}'] = outlined(sp, HINT_OUT)
-    icons['hint-long'] = _long_jump_hint()
+        icons[f'hint-{name}'] = _bubble(sp)
+    icons['hint-long'] = _bubble(_long_jump_icon())
     return dict(sorted(icons.items()))
 
 
@@ -332,6 +416,63 @@ def cloud(w):
     return cl
 
 
+def skyline_tile():
+    """
+    192×92, repetible: monumentos de piezas de ajedrez gigantes en la bruma del horizonte. Ata el escenario
+    con la temática: Chocolate corre por un tablero hacia una ciudad de piezas.
+    """
+    sp = layer(192, 92)
+    lit, dim = C('#b9d0de'), C('#a6bfd0')
+    sprites = piece_sprites()
+    plan = [(4, 'rook', 2), (50, 'pawn', 2), (84, 'knight', 1), (122, 'bishop', 2), (160, 'queen', 1)]
+    for x, kind, scale in plan:
+        # el alfil es un trío: solo se usa uno de los tres como monumento
+        base = bishop(WHITE) if kind == 'bishop' else sprites[f'piece-{kind}-w']
+        w, h = base.size
+        mask = base.resize((w * scale, h * scale), Image.NEAREST)
+        px = mask.load()
+        for yy in range(mask.size[1]):
+            for xx in range(mask.size[0]):
+                if px[xx, yy][3] > 0:
+                    px[xx, yy] = lit if xx < mask.size[0] * 0.45 else dim
+        sp.paste(mask, (x, 92 - mask.size[1]), mask)
+    return sp
+
+
+def fx_dust():
+    """Tres cuadros de una nube de polvo que crece y se apaga (12×8)."""
+    frames = []
+    for i, (r, a) in enumerate(((2, 235), (3, 180), (4, 110))):
+        sp = layer(12, 8)
+        d = ImageDraw.Draw(sp)
+        col = C('#f3e6c8', a)
+        d.ellipse([6 - r - 1, 7 - r - 1, 6 - r + 2, 7], fill=col)
+        d.ellipse([6 + r - 2, 7 - r - 1, 6 + r + 1, 7], fill=col)
+        d.ellipse([5 - r // 2, 7 - r - 2, 6 + r // 2, 7], fill=col)
+        frames.append(sp)
+    return frames
+
+
+def fx_spark():
+    """Tres cuadros de una chispa de acierto (11×11)."""
+    frames = []
+    for arm in (2, 4, 5):
+        sp = layer(11, 11)
+        d = ImageDraw.Draw(sp)
+        gold, white = C('#ffd24a'), C('#ffffff')
+        R(d, 5 - arm, 5, 5 + arm, 5, gold)
+        R(d, 5, 5 - arm, 5, 5 + arm, gold)
+        if arm >= 4:
+            for k in (2, 3):
+                d.point((5 - k, 5 - k), fill=gold)
+                d.point((5 + k, 5 - k), fill=gold)
+                d.point((5 - k, 5 + k), fill=gold)
+                d.point((5 + k, 5 + k), fill=gold)
+        d.point((5, 5), fill=white)
+        frames.append(sp)
+    return frames
+
+
 def scenery():
     return {'floor': floor_tile(), 'hills': hills_tile(), 'sky': sky_tile(),
-            'cloud-0': cloud(46), 'cloud-1': cloud(36)}
+            'cloud-0': cloud(46), 'cloud-1': cloud(36), 'skyline': skyline_tile()}

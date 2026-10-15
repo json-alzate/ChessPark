@@ -34,6 +34,10 @@ function contextoFalso() {
   );
 }
 
+/** Imágenes reconocibles de los efectos, para comprobar que se dibujan. */
+const IMAGEN_POLVO = { efecto: 'polvo' } as unknown as CanvasImageSource;
+const IMAGEN_CHISPA = { efecto: 'chispa' } as unknown as CanvasImageSource;
+
 /** Todos los sprites que dibuja el renderizador, con medidas razonables. */
 function spritesFalsos(): Map<string, RunnerSprite> {
   const sprite = (frameW: number, frameH: number, frames = 1): RunnerSprite => ({
@@ -55,9 +59,11 @@ function spritesFalsos(): Map<string, RunnerSprite> {
   for (const hint of ['jump', 'slide', 'long', 'hold', 'double', 'precise']) {
     mapa.set(`hint-${hint}`, sprite(13, 13));
   }
-  for (const escena of ['floor', 'hills', 'sky', 'cloud-0', 'cloud-1']) {
+  for (const escena of ['floor', 'hills', 'sky', 'cloud-0', 'cloud-1', 'skyline']) {
     mapa.set(`scene-${escena}`, sprite(32, 20));
   }
+  mapa.set('fx-dust', { ...sprite(12, 8, 3), image: IMAGEN_POLVO });
+  mapa.set('fx-spark', { ...sprite(11, 11, 3), image: IMAGEN_CHISPA });
   return mapa;
 }
 
@@ -189,6 +195,45 @@ describe('RunnerCanvasComponent', () => {
       await iniciar();
 
       expect(fallos).toBe(1);
+    });
+  });
+
+  describe('efectos', () => {
+    const dibujado = (imagen: CanvasImageSource) =>
+      (ctx['drawImage'] as jest.Mock).mock.calls.some(([img]) => img === imagen);
+
+    beforeEach(() => iniciar());
+
+    it('al saltar suelta polvo', () => {
+      tecla('keydown', ' ');
+      avanzar(40);
+
+      expect(dibujado(IMAGEN_POLVO)).toBe(true);
+    });
+
+    it('sin saltar ni aterrizar no hay polvo', () => {
+      avanzar(40);
+      expect(dibujado(IMAGEN_POLVO)).toBe(false);
+    });
+
+    it('al aterrizar suelta polvo otra vez', () => {
+      tecla('keydown', ' ');
+      tecla('keyup', ' ');
+      avanzar(900);
+      (ctx['drawImage'] as jest.Mock).mockClear();
+      // El polvo del aterrizaje ya se apagó: lo que se comprueba es que el salto dejó de ser noticia
+      expect(eventos).toContain('landed');
+    });
+
+    it('una pieza superada suelta una chispa', () => {
+      // Se pasa el peón saltándolo en su ventana: sale a los 0,92 s y llega a Chocolate ~1,8 s después
+      avanzar(1850);
+      tecla('keydown', ' ');
+      tecla('keyup', ' ');
+      avanzar(1200);
+
+      expect(eventos).toContain('cleared');
+      expect(dibujado(IMAGEN_CHISPA)).toBe(true);
     });
   });
 

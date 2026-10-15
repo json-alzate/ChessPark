@@ -15,6 +15,7 @@ import {
   GESTURE_DECISION_MS,
   GESTURE_MAX_WAIT_MS,
   GESTURE_SLOP_PX,
+  OBSTACLE_SHAPES,
   RUNNER_CANVAS_HEIGHT,
 } from '../../config/runner.config';
 import {
@@ -226,14 +227,23 @@ export class RunnerCanvasComponent implements AfterViewInit, OnDestroy {
       this.state = state;
       this.accumulator -= STEP;
 
-      if (events.landed) collected.push('landed');
+      if (events.landed) {
+        collected.push('landed');
+        this.renderer?.addFx('dust', state.dog.x, 0, state.time);
+      }
       if (events.cleared.length > 0) {
         collected.push('cleared');
         progressed = true;
+        // Una chispa sobre cada pieza que se acaba de dejar atrás
+        for (const obstacle of events.cleared) {
+          const shape = OBSTACLE_SHAPES[obstacle.kind];
+          this.renderer?.addFx('spark', obstacle.x + shape.width / 2, shape.bottom + shape.height + 4, state.time);
+        }
       }
       if (events.stumbled) {
         collected.push('stumble');
         progressed = true;
+        this.renderer?.addFx('dust', state.dog.x, 0, state.time);
       }
       if (events.finishing) collected.push('finishing');
       if (events.done) finishedNow = true;
@@ -272,6 +282,8 @@ export class RunnerCanvasComponent implements AfterViewInit, OnDestroy {
     const result = perform(this.state, action);
     this.state = result.state;
     if (result.jumped || result.doubleJumped) {
+      // Polvo al despegar; el doble salto lo suelta en el aire
+      this.renderer?.addFx('dust', this.state.dog.x, result.doubleJumped ? this.state.dog.y : 0, this.state.time);
       const name: RunnerEventName = result.doubleJumped ? 'doubleJump' : 'jump';
       this.zone.run(() => this.runnerEvent.emit(name));
     }
