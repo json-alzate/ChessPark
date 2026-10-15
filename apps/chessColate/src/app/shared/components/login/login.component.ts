@@ -1,5 +1,7 @@
 import { Component, OnInit, OnDestroy, Input, inject } from '@angular/core';
-import { UntypedFormGroup, UntypedFormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
+import {
+  AbstractControl, UntypedFormGroup, UntypedFormBuilder, ValidationErrors, Validators, ReactiveFormsModule
+} from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
 import {
@@ -19,6 +21,15 @@ import { TranslocoPipe } from '@jsverse/transloco';
 
 // services
 import { AuthService } from '@core/account/auth.service';
+
+/**
+ * La confirmación debe ser igual a la contraseña. Sin confirmación escrita no marca nada: ya lo dice
+ * `required`.
+ */
+function matchesPassword(control: AbstractControl): ValidationErrors | null {
+  const password = control.parent?.get('password')?.value;
+  return control.value && control.value !== password ? { notMatch: true } : null;
+}
 
 @Component({
   selector: 'app-login',
@@ -165,15 +176,11 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.formSingUp = this.formBuilder.group({
       email: ['', [Validators.required, Validators.pattern(this.emailRegexValidator)]],
       password: ['', [Validators.required, Validators.minLength(8)]],
-      rePassword: ['', [Validators.required, Validators.minLength(8)]]
+      rePassword: ['', [Validators.required, Validators.minLength(8), matchesPassword]]
     });
 
-    // Valida que las contraseñas coincidan
-    this.rePasswordFieldSingUp?.valueChanges.subscribe(() => {
-      if (this.rePasswordFieldSingUp?.value !== this.passwordFieldSingUp?.value) {
-        this.rePasswordFieldSingUp?.setErrors({ notMatch: true });
-      }
-    });
+    // Cambiar la contraseña obliga a revisar la confirmación: puede pasar a coincidir o a dejar de hacerlo
+    this.passwordFieldSingUp?.valueChanges.subscribe(() => this.rePasswordFieldSingUp?.updateValueAndValidity());
   }
 
   async onSubmitSingUp($event: Event) {

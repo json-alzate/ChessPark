@@ -36,6 +36,9 @@ y el versionado sigue [SemVer](https://semver.org/lang/es/) para `versionName`.
   todo un grupo de archivos falla por error del servidor, la búsqueda se corta en vez de encadenar esperas
   (antes la pantalla podía quedarse en «Creando sesión…» o «Buscando un ejercicio…» sin fin).
 - **Temas sin traducción:** un tema de Lichess que no está en la lista de nombres ya no sale como etiqueta vacía.
+- **Registro:** si te equivocabas en la confirmación de la contraseña y corregías la contraseña principal, el botón
+  seguía bloqueado con «Las contraseñas no coinciden» hasta reescribir la confirmación; ahora coinciden en cuanto
+  son iguales. El campo de confirmación también se pinta en rojo (antes seguía verde).
 
 ---
 
