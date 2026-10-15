@@ -280,6 +280,67 @@ describe('GamesViewerPage', () => {
       expect(tablero()['toEnd']).toHaveBeenCalledTimes(1);
     });
 
+    describe('atajos de teclado', () => {
+      const pulsar = (key: string, init: KeyboardEventInit = {}, target: EventTarget = document.body) => {
+        const event = new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true, ...init });
+        target.dispatchEvent(event);
+        return event;
+      };
+
+      it('las flechas recorren la partida y Inicio y Fin van a los extremos', () => {
+        abrir();
+        pulsar('ArrowRight');
+        pulsar('ArrowRight');
+        pulsar('ArrowLeft');
+        pulsar('Home');
+        pulsar('End');
+
+        expect(tablero()['next']).toHaveBeenCalledTimes(2);
+        expect(tablero()['previous']).toHaveBeenCalledTimes(1);
+        expect(tablero()['toStart']).toHaveBeenCalledTimes(1);
+        expect(tablero()['toEnd']).toHaveBeenCalledTimes(1);
+      });
+
+      it('evita el desplazamiento de la página solo con las teclas que usa', () => {
+        abrir();
+
+        expect(pulsar('ArrowRight').defaultPrevented).toBe(true);
+        expect(pulsar('a').defaultPrevented).toBe(false);
+      });
+
+      it('con un campo de texto enfocado o un modificador pulsado no hace nada', () => {
+        abrir();
+        const campo = document.createElement('input');
+        document.body.appendChild(campo);
+
+        pulsar('ArrowRight', {}, campo);
+        pulsar('ArrowRight', { ctrlKey: true });
+        pulsar('ArrowRight', { metaKey: true });
+        pulsar('ArrowRight', { altKey: true });
+
+        expect(tablero()['next']).not.toHaveBeenCalled();
+        campo.remove();
+      });
+
+      it('si Ionic la dejó oculta en segundo plano, las teclas no son para ella', () => {
+        abrir();
+        fixture.nativeElement.classList.add('ion-page-hidden');
+
+        pulsar('ArrowRight');
+
+        expect(tablero()['next']).not.toHaveBeenCalled();
+      });
+
+      it('en el mapa de calor no recorre nada', () => {
+        abrir();
+        page.mode = 'heatmap';
+
+        pulsar('ArrowRight');
+
+        expect(tablero()['next']).not.toHaveBeenCalled();
+      });
+    });
+
     it('al empezar a reproducir mantiene la pantalla encendida y cambia el icono', () => {
       abrir();
       const stub = fixture.debugElement.query((d) => d.name === 'lib-board-game-player').componentInstance;

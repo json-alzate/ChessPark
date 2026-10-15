@@ -30,6 +30,8 @@ y el versionado sigue [SemVer](https://semver.org/lang/es/) para `versionName`.
   ejercicio. Cada pieza se esquiva distinto (el peón, un salto; la torre, agacharse; el alfil, salto largo; el
   caballo, mantener en el aire; la dama, doble salto; el rey, un salto justo). Se juega con el dedo, con el
   teclado y con pistas en pantalla; tropezar no es castigo. Al superar las piezas aparece el tablero con su reloj.
+- **Reproductor de partidas en escritorio:** las flechas del teclado recorren la partida y Inicio y Fin saltan a
+  los extremos.
 
 ### Corregido
 - **Descargas de ejercicios:** una descarga que no responde se abandona a los 8 s y se reintenta una vez; si

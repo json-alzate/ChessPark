@@ -1,7 +1,9 @@
 import {
   Component,
+  ElementRef,
   OnInit,
   OnDestroy,
+  HostListener,
   ViewChild,
   inject,
 } from '@angular/core';
@@ -111,6 +113,7 @@ type ViewerMode = 'game' | 'heatmap' | 'review';
 export class GamesViewerPage implements OnInit, OnDestroy {
   @ViewChild(BoardGamePlayerComponent) board?: BoardGamePlayerComponent;
 
+  private host = inject<ElementRef<HTMLElement>>(ElementRef);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private gamesService = inject(GamesService);
@@ -560,6 +563,45 @@ export class GamesViewerPage implements OnInit, OnDestroy {
 
   goToMove(index: number): void {
     this.board?.goTo(index);
+  }
+
+  /**
+   * Atajos de teclado para escritorio: flechas para avanzar o retroceder una jugada, Inicio y Fin para
+   * ir a los extremos. No actúan en el mapa de calor (no hay partida que recorrer), con un campo de
+   * texto enfocado ni con modificadores, que son del navegador. Ionic puede conservar la página oculta
+   * en segundo plano: entonces las teclas no son para ella.
+   */
+  @HostListener('window:keydown', ['$event'])
+  onKeydown(event: KeyboardEvent): void {
+    if (
+      this.mode === 'heatmap' ||
+      event.defaultPrevented ||
+      event.altKey ||
+      event.ctrlKey ||
+      event.metaKey ||
+      this.host.nativeElement.closest('.ion-page-hidden') ||
+      (event.target as HTMLElement | null)?.closest?.('input, textarea, select, [contenteditable="true"]')
+    ) {
+      return;
+    }
+
+    switch (event.key) {
+      case 'ArrowLeft':
+        this.previousMove();
+        break;
+      case 'ArrowRight':
+        this.nextMove();
+        break;
+      case 'Home':
+        this.toStart();
+        break;
+      case 'End':
+        this.toEnd();
+        break;
+      default:
+        return;
+    }
+    event.preventDefault();
   }
 
   flipBoard(): void {
