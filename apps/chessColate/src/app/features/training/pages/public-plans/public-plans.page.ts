@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { map, takeUntil, filter, take, switchMap, tap } from 'rxjs/operators';
-import { Observable, Subject, combineLatest } from 'rxjs';
+import { Observable, Subject, combineLatest, firstValueFrom } from 'rxjs';
 
 import {
     IonContent,
@@ -68,6 +68,7 @@ export class PublicPlansPage implements OnInit, OnDestroy {
     // Observables
     publicPlans$ = this.publicPlansFacade.getPublicPlans$();
     loading$ = this.publicPlansFacade.getPublicPlansLoading$();
+    error$ = this.publicPlansFacade.getPublicPlansError$();
     loadingMore$ = this.publicPlansFacade.getPublicPlansLoadingMore$();
     hasMore$ = this.publicPlansFacade.getPublicPlansHasMore$();
     filter$ = this.publicPlansFacade.getPublicPlansFilter$();
@@ -141,6 +142,13 @@ export class PublicPlansPage implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.destroy$.next();
         this.destroy$.complete();
+    }
+
+    /** La carga falló (sin conexión, Firestore caído): vuelve a pedir la lista con el filtro actual. */
+    async retryLoad(): Promise<void> {
+        const filter = await firstValueFrom(this.filter$);
+        this.publicPlansFacade.clearError();
+        this.publicPlansFacade.loadPublicPlans(filter, 20);
     }
 
     setFilter(filter: PublicPlanFilter): void {

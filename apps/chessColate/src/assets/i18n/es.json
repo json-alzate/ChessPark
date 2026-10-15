@@ -436,6 +436,8 @@
     "authRequired": "Inicia sesión para crear y gestionar tus sesiones personalizadas"
   },
   "PUBLIC_PLANS": {
+    "loadError": "No pudimos traer las sesiones públicas. Revisa tu conexión e inténtalo de nuevo.",
+    "retry": "Reintentar",
       "saveSession": "Guardar sesión",
       "unsaveSession": "Quitar de guardadas",
     "title": "Sesiones públicas",

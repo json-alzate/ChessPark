@@ -436,6 +436,8 @@
     "authRequired": "Log in to create and manage your custom sessions"
   },
   "PUBLIC_PLANS": {
+    "loadError": "We couldn't load the public sessions. Check your connection and try again.",
+    "retry": "Try again",
       "saveSession": "Save session",
       "unsaveSession": "Remove from saved",
     "title": "Public sessions",

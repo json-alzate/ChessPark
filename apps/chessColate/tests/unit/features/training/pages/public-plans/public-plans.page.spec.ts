@@ -85,6 +85,7 @@ describe('PublicPlansPage', () => {
   let publicPlans$: BehaviorSubject<PublicPlan[]>;
   let loading$: BehaviorSubject<boolean>;
   let loadingMore$: BehaviorSubject<boolean>;
+  let error$: BehaviorSubject<string | null>;
   let hasMore$: BehaviorSubject<boolean>;
   let filter$: BehaviorSubject<PublicPlanFilter>;
   let interactions$: BehaviorSubject<PlanInteraction[]>;
@@ -122,6 +123,7 @@ describe('PublicPlansPage', () => {
     publicPlans$ = new BehaviorSubject<PublicPlan[]>([]);
     loading$ = new BehaviorSubject(false);
     loadingMore$ = new BehaviorSubject(false);
+    error$ = new BehaviorSubject<string | null>(null);
     hasMore$ = new BehaviorSubject(false);
     filter$ = new BehaviorSubject<PublicPlanFilter>('recent');
     interactions$ = new BehaviorSubject<PlanInteraction[]>([]);
@@ -136,6 +138,8 @@ describe('PublicPlansPage', () => {
       getPublicPlans$: jest.fn(() => publicPlans$),
       getPublicPlansLoading$: jest.fn(() => loading$),
       getPublicPlansLoadingMore$: jest.fn(() => loadingMore$),
+      getPublicPlansError$: jest.fn(() => error$),
+      clearError: jest.fn(),
       getPublicPlansHasMore$: jest.fn(() => hasMore$),
       getPublicPlansFilter$: jest.fn(() => filter$),
       getUserInteractions$: jest.fn(() => interactions$),
@@ -239,6 +243,30 @@ describe('PublicPlansPage', () => {
 
       expect(textOf(el)).toContain('PUBLIC_PLANS.empty');
       expect(items()).toHaveLength(0);
+    });
+
+    it('si la carga falló no dice que no hay sesiones: avisa del error y deja reintentar', async () => {
+      error$.next('sin red');
+      filter$.next('mostLiked');
+      render();
+
+      expect(textOf(el)).toContain('PUBLIC_PLANS.loadError');
+      expect(textOf(el)).not.toContain('PUBLIC_PLANS.empty');
+
+      (el.querySelector('[data-testid=retry-load]') as HTMLButtonElement).click();
+      await fixture.whenStable();
+
+      expect(facade['clearError']).toHaveBeenCalledTimes(1);
+      expect(facade['loadPublicPlans']).toHaveBeenCalledWith('mostLiked', 20);
+    });
+
+    it('con sesiones ya cargadas un error posterior no tapa la lista', () => {
+      publicPlans$.next([pub('a')]);
+      error$.next('sin red');
+      render();
+
+      expect(items()).toHaveLength(1);
+      expect(textOf(el)).not.toContain('PUBLIC_PLANS.loadError');
     });
 
     it('mientras carga más rutinas muestra el indicador al final', () => {

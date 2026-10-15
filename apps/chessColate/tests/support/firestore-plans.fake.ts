@@ -91,11 +91,15 @@ export function fakeDocSnap<T extends object>(id: string, data?: T) {
 }
 
 /** Snapshot de una consulta con los documentos indicados, en orden. */
-export function fakeQuerySnap<T extends object>(docs: Array<{ id: string; data: T }>) {
+export function fakeQuerySnap<T extends object>(
+  docs: Array<{ id: string; data: T }>,
+  opciones: { fromCache?: boolean } = {}
+) {
   const items = docs.map((d) => ({ id: d.id, data: () => d.data }));
   return {
     docs: items,
     size: items.length,
+    metadata: { fromCache: !!opciones.fromCache },
     forEach: (fn: (d: (typeof items)[number]) => void) => items.forEach(fn),
   };
 }

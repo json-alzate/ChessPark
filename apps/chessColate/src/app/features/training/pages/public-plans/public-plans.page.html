@@ -107,7 +107,15 @@
             } @else if (enrichedPublicPlans.length === 0 && !(loading$ | async)) {
             <div class="card bg-base-100 shadow-sm">
                 <div class="card-body items-center text-center py-8">
+                    @if (error$ | async) {
+                    <!-- Un fallo de red no es una lista vacía: se dice y se puede reintentar -->
+                    <p class="text-base-content/70" data-testid="load-error">{{ 'PUBLIC_PLANS.loadError' | transloco }}</p>
+                    <button type="button" class="btn btn-primary btn-sm mt-3 font-bold" (click)="retryLoad()" data-testid="retry-load">
+                        {{ 'PUBLIC_PLANS.retry' | transloco }}
+                    </button>
+                    } @else {
                     <p class="text-base-content/70">{{ 'PUBLIC_PLANS.empty' | transloco }}</p>
+                    }
                 </div>
             </div>
             } @else {
