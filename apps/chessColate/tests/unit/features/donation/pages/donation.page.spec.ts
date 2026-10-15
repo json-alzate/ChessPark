@@ -244,7 +244,7 @@ describe('DonationPage', () => {
       expect(page.isLoading).toBe(false);
       expect(avisoMostrado()).toEqual([
         expect.objectContaining({
-          message: 'Error al cargar opciones de donación',
+          message: 'DONATION.messages.loadFailed',
           color: 'danger',
         }),
       ]);
@@ -270,12 +270,12 @@ describe('DonationPage', () => {
       await donarMedio();
 
       expect(loadingController.create).toHaveBeenCalledWith(
-        expect.objectContaining({ message: 'Procesando donación...' })
+        expect.objectContaining({ message: 'DONATION.messages.processing' })
       );
       expect(loading.present).toHaveBeenCalledTimes(1);
       expect(loading.dismiss).toHaveBeenCalledTimes(1);
       expect(avisoMostrado()).toEqual([
-        expect.objectContaining({ message: '¡Gracias por tu donación!', color: 'success' }),
+        expect.objectContaining({ message: 'DONATION.messages.thanks', color: 'success' }),
       ]);
       expect(analytics.logEvent).toHaveBeenCalledWith('donation_completed', {
         value: 5.99,
@@ -291,7 +291,7 @@ describe('DonationPage', () => {
       await donarMedio();
 
       expect(avisoMostrado()).toEqual([
-        expect.objectContaining({ message: 'Opción de donación no disponible', color: 'danger' }),
+        expect.objectContaining({ message: 'DONATION.messages.optionUnavailable', color: 'danger' }),
       ]);
       expect(loadingController.create).not.toHaveBeenCalled();
       expect(revenueCat.purchasePackage).not.toHaveBeenCalled();
@@ -311,9 +311,9 @@ describe('DonationPage', () => {
     });
 
     it.each([
-      [PURCHASES_ERROR_CODE.PURCHASE_NOT_ALLOWED, 'Las compras no están permitidas en este dispositivo', 'warning'],
-      [PURCHASES_ERROR_CODE.NETWORK_ERROR, 'Error de conexión. Verifica tu internet.', 'danger'],
-      [PURCHASES_ERROR_CODE.PRODUCT_NOT_AVAILABLE_FOR_PURCHASE, 'Esta opción no está disponible en este momento', 'warning'],
+      [PURCHASES_ERROR_CODE.PURCHASE_NOT_ALLOWED, 'DONATION.messages.purchasesNotAllowed', 'warning'],
+      [PURCHASES_ERROR_CODE.NETWORK_ERROR, 'DONATION.messages.networkError', 'danger'],
+      [PURCHASES_ERROR_CODE.PRODUCT_NOT_AVAILABLE_FOR_PURCHASE, 'DONATION.messages.notAvailableNow', 'warning'],
     ])('el error %s se explica con "%s"', async (codigo, mensaje, color) => {
       await crear({ sesion: true });
       revenueCat.purchasePackage.mockRejectedValue(new PurchasesError(codigo, 'x'));
@@ -333,7 +333,7 @@ describe('DonationPage', () => {
       await donarMedio();
 
       expect(avisoMostrado()).toEqual([
-        expect.objectContaining({ message: 'Error: La tienda no responde', color: 'danger' }),
+        expect.objectContaining({ message: 'DONATION.messages.errorWith', color: 'danger' }),
       ]);
     });
 
@@ -344,7 +344,7 @@ describe('DonationPage', () => {
       await donarMedio();
 
       expect(avisoMostrado()).toEqual([
-        expect.objectContaining({ message: 'Error al procesar la donación', color: 'danger' }),
+        expect.objectContaining({ message: 'DONATION.messages.processFailed', color: 'danger' }),
       ]);
       expect(loading.dismiss).toHaveBeenCalledTimes(1);
     });
@@ -359,7 +359,7 @@ describe('DonationPage', () => {
       expect(revenueCat.restorePurchases).toHaveBeenCalledTimes(1);
       expect(loading.dismiss).toHaveBeenCalledTimes(1);
       expect(avisoMostrado()).toEqual([
-        expect.objectContaining({ message: 'Compras restauradas exitosamente', color: 'success' }),
+        expect.objectContaining({ message: 'DONATION.messages.restored', color: 'success' }),
       ]);
     });
 
@@ -371,7 +371,7 @@ describe('DonationPage', () => {
 
       expect(loading.dismiss).toHaveBeenCalledTimes(1);
       expect(avisoMostrado()).toEqual([
-        expect.objectContaining({ message: 'Error al restaurar compras', color: 'danger' }),
+        expect.objectContaining({ message: 'DONATION.messages.restoreFailed', color: 'danger' }),
       ]);
     });
 

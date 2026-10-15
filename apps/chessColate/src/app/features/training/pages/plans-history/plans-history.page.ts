@@ -272,15 +272,15 @@ export class PlansHistoryPage implements OnInit, OnDestroy {
     event.stopPropagation(); // Evitar que se active el click del card
 
     const alert = await this.alertController.create({
-      header: 'Eliminar plan',
-      message: '¿Estás seguro de que deseas eliminar este plan del historial?',
+      header: this.translocoService.translate('PLANS_HISTORY.deleteConfirm.title'),
+      message: this.translocoService.translate('PLANS_HISTORY.deleteConfirm.message'),
       buttons: [
         {
-          text: 'Cancelar',
+          text: this.translocoService.translate('COMMON.actions.cancel'),
           role: 'cancel',
         },
         {
-          text: 'Eliminar',
+          text: this.translocoService.translate('PLANS_HISTORY.delete'),
           role: 'destructive',
           handler: () => {
             this.planStorageService.deletePlan(plan.uid);

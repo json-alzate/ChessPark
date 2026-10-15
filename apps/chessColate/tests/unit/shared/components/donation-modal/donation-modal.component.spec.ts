@@ -152,7 +152,7 @@ describe('DonationModalComponent', () => {
 
       await create(true);
 
-      expect(toastCalls()).toEqual([expect.objectContaining({ message: 'Error al cargar opciones de donación', color: 'danger' })]);
+      expect(toastCalls()).toEqual([expect.objectContaining({ message: 'DONATION.messages.loadFailed', color: 'danger' })]);
       expect(component.isLoading).toBe(false);
     });
   });
@@ -163,7 +163,7 @@ describe('DonationModalComponent', () => {
 
       await component.processDonation(component.donationOptions[0]);
 
-      expect(toastCalls()[0]).toMatchObject({ color: 'warning', message: expect.stringContaining('solo están disponibles en dispositivos móviles') });
+      expect(toastCalls()[0]).toMatchObject({ color: 'warning', message: 'DONATION.messages.mobileOnly' });
       expect(revenueCat.purchasePackage).not.toHaveBeenCalled();
     });
 
@@ -173,7 +173,7 @@ describe('DonationModalComponent', () => {
 
       await component.processDonation(medium);
 
-      expect(toastCalls()[0]).toMatchObject({ color: 'danger', message: 'Opción de donación no disponible' });
+      expect(toastCalls()[0]).toMatchObject({ color: 'danger', message: 'DONATION.messages.optionUnavailable' });
       expect(revenueCat.purchasePackage).not.toHaveBeenCalled();
       expect(loadingController.create).not.toHaveBeenCalled();
     });
@@ -188,7 +188,7 @@ describe('DonationModalComponent', () => {
       expect(loading.present).toHaveBeenCalledTimes(1);
       expect(revenueCat.purchasePackage).toHaveBeenCalledWith(component.availablePackages[0]);
       expect(loading.dismiss).toHaveBeenCalledTimes(1);
-      expect(toastCalls()[0]).toMatchObject({ color: 'success', message: '¡Gracias por tu donación!' });
+      expect(toastCalls()[0]).toMatchObject({ color: 'success', message: 'DONATION.messages.thanks' });
       expect(modal.dismiss).not.toHaveBeenCalled();
 
       jest.advanceTimersByTime(1500);
@@ -223,9 +223,9 @@ describe('DonationModalComponent', () => {
       });
 
       it.each([
-        [PURCHASES_ERROR_CODE.PURCHASE_NOT_ALLOWED, 'warning', 'Las compras no están permitidas en este dispositivo'],
-        [PURCHASES_ERROR_CODE.NETWORK_ERROR, 'danger', 'Error de conexión. Verifica tu internet.'],
-        [PURCHASES_ERROR_CODE.PRODUCT_NOT_AVAILABLE_FOR_PURCHASE, 'warning', 'Esta opción no está disponible en este momento'],
+        [PURCHASES_ERROR_CODE.PURCHASE_NOT_ALLOWED, 'warning', 'DONATION.messages.purchasesNotAllowed'],
+        [PURCHASES_ERROR_CODE.NETWORK_ERROR, 'danger', 'DONATION.messages.networkError'],
+        [PURCHASES_ERROR_CODE.PRODUCT_NOT_AVAILABLE_FOR_PURCHASE, 'warning', 'DONATION.messages.notAvailableNow'],
       ])('con %s avisa con el mensaje adecuado', async (code, color, message) => {
         await failWith(new PurchasesError(code, 'x'));
 
@@ -236,13 +236,13 @@ describe('DonationModalComponent', () => {
       it('otro código de RevenueCat muestra su propio mensaje', async () => {
         await failWith(new PurchasesError(PURCHASES_ERROR_CODE.STORE_PROBLEM, 'la tienda falló'));
 
-        expect(toastCalls()).toEqual([expect.objectContaining({ color: 'danger', message: 'Error: la tienda falló' })]);
+        expect(toastCalls()).toEqual([expect.objectContaining({ color: 'danger', message: 'DONATION.messages.errorWith' })]);
       });
 
       it('un error que no es de RevenueCat da un aviso genérico', async () => {
         await failWith(new Error('boom'));
 
-        expect(toastCalls()).toEqual([expect.objectContaining({ color: 'danger', message: 'Error al procesar la donación' })]);
+        expect(toastCalls()).toEqual([expect.objectContaining({ color: 'danger', message: 'DONATION.messages.processFailed' })]);
         expect(loading.dismiss).toHaveBeenCalledTimes(1);
       });
     });
@@ -265,7 +265,7 @@ describe('DonationModalComponent', () => {
 
       expect(revenueCat.restorePurchases).toHaveBeenCalledTimes(1);
       expect(loading.dismiss).toHaveBeenCalledTimes(1);
-      expect(toastCalls()).toEqual([expect.objectContaining({ color: 'success', message: 'Compras restauradas exitosamente' })]);
+      expect(toastCalls()).toEqual([expect.objectContaining({ color: 'success', message: 'DONATION.messages.restored' })]);
     });
 
     it('si falla avisa del error y cierra el cargando', async () => {
@@ -275,7 +275,7 @@ describe('DonationModalComponent', () => {
       await component.restorePurchases();
 
       expect(loading.dismiss).toHaveBeenCalledTimes(1);
-      expect(toastCalls()).toEqual([expect.objectContaining({ color: 'danger', message: 'Error al restaurar compras' })]);
+      expect(toastCalls()).toEqual([expect.objectContaining({ color: 'danger', message: 'DONATION.messages.restoreFailed' })]);
     });
   });
 

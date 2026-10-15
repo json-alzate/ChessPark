@@ -241,7 +241,7 @@ export class HomePage implements OnInit, ViewWillEnter, ViewWillLeave {
 
   async startInfinityPlan() {
     const loader = await this.loadingController.create({
-      message: 'Iniciando entrenamiento...',
+      message: this.translocoService.translate('TRAINING.starting'),
     });
     await loader.present();
 

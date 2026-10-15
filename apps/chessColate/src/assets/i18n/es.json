@@ -163,6 +163,7 @@
     }
   },
   "TRAINING": {
+    "starting": "Iniciando entrenamiento…",
     "menu": {
       "customTrainingSlideTitle": "Tus creaciones",
       "warmup": "Calentamiento",
@@ -388,6 +389,7 @@
     "list": "Lista"
   },
   "PLANS_HISTORY": {
+    "deleteConfirm": {"title": "Eliminar sesión", "message": "¿Seguro que quieres eliminar esta sesión del historial?"},
     "title": "Historial",
     "more": "Ver más",
     "empty": "No hay planes guardados",
@@ -966,6 +968,22 @@
       "button": "Realizar una donación",
       "woodpeckerTitle": "Nuevas funciones en camino",
       "comingSoon": "Próximamente…"
+    },
+    "messages": {
+      "loadFailed": "Error al cargar opciones de donación",
+      "optionUnavailable": "Opción de donación no disponible",
+      "thanks": "¡Gracias por tu donación!",
+      "purchasesNotAllowed": "Las compras no están permitidas en este dispositivo",
+      "networkError": "Error de conexión. Verifica tu internet.",
+      "notAvailableNow": "Esta opción no está disponible en este momento",
+      "errorWith": "Error: {{message}}",
+      "unknownError": "Error desconocido",
+      "processFailed": "Error al procesar la donación",
+      "processing": "Procesando donación...",
+      "restoring": "Restaurando compras...",
+      "restored": "Compras restauradas exitosamente",
+      "restoreFailed": "Error al restaurar compras",
+      "mobileOnly": "Las donaciones solo están disponibles en dispositivos móviles"
     }
   },
   "DOWNLOAD": {

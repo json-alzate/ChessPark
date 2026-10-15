@@ -39,6 +39,8 @@ y el versionado sigue [SemVer](https://semver.org/lang/es/) para `versionName`.
   (antes la pantalla podía quedarse en «Creando sesión…» o «Buscando un ejercicio…» sin fin). Con el catálogo
   sin responder, el Chess Runner da el aviso a los ~17 s y la Racha a los ~32 s (antes 64 s y más de 2 min).
 - **Temas sin traducción:** un tema de Lichess que no está en la lista de nombres ya no sale como etiqueta vacía.
+- **Textos sin traducir:** los avisos de la donación (cargas, errores y agradecimiento), el aviso «Iniciando entrenamiento» y el
+  diálogo de borrar una sesión del historial salían siempre en español; ahora siguen el idioma de la app.
 - **Registro:** si te equivocabas en la confirmación de la contraseña y corregías la contraseña principal, el botón
   seguía bloqueado con «Las contraseñas no coinciden» hasta reescribir la confirmación; ahora coinciden en cuanto
   son iguales. El campo de confirmación también se pinta en rojo (antes seguía verde).

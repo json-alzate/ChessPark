@@ -163,6 +163,7 @@
     }
   },
   "TRAINING": {
+    "starting": "Starting training…",
     "menu": {
       "customTrainingSlideTitle": "Your custom plans",
       "warmup": "Warmup",
@@ -388,6 +389,7 @@
     "list": "List"
   },
   "PLANS_HISTORY": {
+    "deleteConfirm": {"title": "Delete session", "message": "Are you sure you want to delete this session from your history?"},
     "title": "History",
     "more": "All history",
     "empty": "No saved plans",
@@ -966,6 +968,22 @@
       "button": "Make a donation",
       "woodpeckerTitle": "New features on the way",
       "comingSoon": "Coming soon…"
+    },
+    "messages": {
+      "loadFailed": "Could not load the donation options",
+      "optionUnavailable": "Donation option not available",
+      "thanks": "Thank you for your donation!",
+      "purchasesNotAllowed": "Purchases are not allowed on this device",
+      "networkError": "Connection error. Check your internet.",
+      "notAvailableNow": "This option is not available right now",
+      "errorWith": "Error: {{message}}",
+      "unknownError": "Unknown error",
+      "processFailed": "The donation could not be processed",
+      "processing": "Processing donation...",
+      "restoring": "Restoring purchases...",
+      "restored": "Purchases restored",
+      "restoreFailed": "Could not restore purchases",
+      "mobileOnly": "Donations are only available on mobile devices"
     }
   },
   "DOWNLOAD": {
