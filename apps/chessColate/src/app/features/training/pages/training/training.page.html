@@ -136,7 +136,7 @@
     <div class="lg:flex lg:justify-center lg:gap-8 lg:items-start lg:px-6 lg:pt-4">
 
       <!-- COLUMNA IZQUIERDA: Tablero -->
-      <div class="lg:w-[480px] lg:flex-shrink-0">
+      <div class="lg:w-[clamp(480px,calc(100vh_-_190px),640px)] lg:flex-shrink-0">
         <lib-board-puzzle
           [setPuzzle]="puzzleToPlay"
           [setForceStopTimer]="forceStopTimerInPuzzleBoard"

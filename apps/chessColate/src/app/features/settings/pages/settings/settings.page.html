@@ -1,8 +1,8 @@
 <ion-content [fullscreen]="true">
-  <div class="min-h-screen bg-base-100">
+  <div class="main-container">
     <app-navbar></app-navbar>
 
-    <div class="container mx-auto px-4 py-8 max-w-lg pb-16">
+    <div class="container mx-auto px-4 pt-2 max-w-lg pb-16">
 
       <!-- Header -->
       <div class="mb-8">
@@ -27,7 +27,7 @@
             <h2 class="text-lg font-bold">{{ 'SETTINGS.notifications' | transloco }}</h2>
           </div>
 
-          <ul class="menu bg-base-200/40 border border-base-content/10 w-full rounded-box gap-1 p-2">
+          <ul class="menu bg-base-100 border border-base-content/10 w-full rounded-box gap-1 p-2">
             <li>
               <a (click)="goToReminders()" class="flex items-center justify-between py-3">
                 <div>
@@ -48,7 +48,7 @@
           <h2 class="text-lg font-bold">{{ 'SETTINGS.appearance' | transloco }}</h2>
         </div>
 
-        <div class="bg-base-200/40 border border-base-content/10 w-full rounded-box p-4">
+        <div class="bg-base-100 border border-base-content/10 w-full rounded-box p-4">
           <app-appearance-picker [tabbed]="true"></app-appearance-picker>
         </div>
       </section>
@@ -60,7 +60,7 @@
           <h2 class="text-lg font-bold">{{ 'SETTINGS.language' | transloco }}</h2>
         </div>
 
-        <ul class="menu bg-base-200/40 border border-base-content/10 w-full rounded-box gap-1 p-2">
+        <ul class="menu bg-base-100 border border-base-content/10 w-full rounded-box gap-1 p-2">
           @for (language of languages; track language.code) {
             <li>
               <a (click)="changeLanguage(language.code)"
@@ -83,7 +83,7 @@
           <h2 class="text-lg font-bold">{{ 'SETTINGS.support' | transloco }}</h2>
         </div>
 
-        <ul class="menu bg-base-200/40 border border-base-content/10 w-full rounded-box gap-1 p-2">
+        <ul class="menu bg-base-100 border border-base-content/10 w-full rounded-box gap-1 p-2">
           <li>
             <a (click)="rateApp()" class="flex items-center justify-between py-3">
               <div>
@@ -103,7 +103,7 @@
           <h2 class="text-lg font-bold">{{ 'SETTINGS.storage' | transloco }}</h2>
         </div>
 
-        <ul class="menu bg-base-200/40 border border-base-content/10 w-full rounded-box gap-1 p-2">
+        <ul class="menu bg-base-100 border border-base-content/10 w-full rounded-box gap-1 p-2">
           <li>
             <a (click)="goToStorage()" class="flex items-center justify-between py-3">
               <div>
@@ -129,7 +129,7 @@
           <h2 class="text-lg font-bold">{{ 'SETTINGS.about' | transloco }}</h2>
         </div>
 
-        <ul class="menu bg-base-200/40 border border-base-content/10 w-full rounded-box gap-1 p-2">
+        <ul class="menu bg-base-100 border border-base-content/10 w-full rounded-box gap-1 p-2">
           <li>
             <a (click)="goToCredits()" class="flex items-center justify-between py-3">
               <div>

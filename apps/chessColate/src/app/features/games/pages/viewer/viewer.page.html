@@ -1,7 +1,7 @@
 <ion-content [fullscreen]="true">
-  <div class="min-h-screen bg-base-100">
+  <div class="main-container">
 
-    <div class="container mx-auto px-4 py-4 max-w-lg pb-16">
+    <div class="container mx-auto px-4 pt-2 max-w-lg pb-16">
 
       <!-- Cabecera: quién juega contra quién, siempre visible -->
       <div class="viewer-header flex items-start gap-2 mb-3">
@@ -35,7 +35,7 @@
       </div>
 
       @if (notFound) {
-        <div class="bg-base-200/40 border border-base-content/10 rounded-box p-6 text-center">
+        <div class="bg-base-100 border border-base-content/10 rounded-box p-6 text-center">
           <p class="text-sm opacity-70">{{ 'GAMES.gameUnreadable' | transloco }}</p>
         </div>
       } @else if (game) {
@@ -144,7 +144,7 @@
           <!-- En el mapa de calor la lista se parte en líneas: así se ven todas
                las jugadas resaltadas de la pieza sin tener que desplazarse -->
           <div class="overflow-x-auto text-sm font-mono
-                      bg-base-200/40 border border-base-content/10 rounded-box px-3 py-2"
+                      bg-base-100 border border-base-content/10 rounded-box px-3 py-2"
             [class.whitespace-nowrap]="!heatmapMode">
             @for (san of game.sanMoves; track $index) {
               @if ($index % 2 === 0) {
@@ -176,7 +176,7 @@
             <h3 class="text-xs font-bold uppercase tracking-wide opacity-60 mb-2">
               {{ 'GAMES.moveTimes.title' | transloco }}
             </h3>
-            <div class="overflow-x-auto bg-base-200/40 border border-base-content/10 rounded-box px-2 py-2">
+            <div class="overflow-x-auto bg-base-100 border border-base-content/10 rounded-box px-2 py-2">
               <div class="flex items-end gap-px h-16 min-w-max">
                 @for (seconds of moveTimeSeconds; track $index) {
                   <button class="w-1.5 shrink-0 rounded-t-sm transition-colors"
@@ -251,7 +251,7 @@
         @if (reviewMode) {
           <section class="mt-4">
             @if (reviewing) {
-              <div class="bg-base-200/40 border border-base-content/10 rounded-box p-4">
+              <div class="bg-base-100 border border-base-content/10 rounded-box p-4">
                 <div class="flex items-center justify-between gap-3 text-sm">
                   <span>{{ 'GAMES.review.analyzing' | transloco }}</span>
                   <span class="font-mono opacity-60">{{ reviewProgress }}%</span>
@@ -282,7 +282,7 @@
 
               <!-- Mejor y peor pieza del partido -->
               <div class="grid grid-cols-2 gap-2 mb-4">
-                <div class="bg-base-200/40 border border-base-content/10 rounded-box p-3">
+                <div class="bg-base-100 border border-base-content/10 rounded-box p-3">
                   <div class="text-xs opacity-60">{{ 'GAMES.review.best' | transloco }}</div>
                   @if (bestPiece; as piece) {
                     <div class="flex items-baseline justify-between gap-2 mt-1">
@@ -302,7 +302,7 @@
                   }
                 </div>
 
-                <div class="bg-base-200/40 border border-base-content/10 rounded-box p-3">
+                <div class="bg-base-100 border border-base-content/10 rounded-box p-3">
                   <div class="text-xs opacity-60">{{ 'GAMES.review.worst' | transloco }}</div>
                   @if (worstPiece; as piece) {
                     <div class="flex items-baseline justify-between gap-2 mt-1">
@@ -328,7 +328,7 @@
                 {{ 'GAMES.review.ranking' | transloco }}
               </h3>
               <ul class="flex flex-col divide-y divide-base-content/10
-                         bg-base-200/40 border border-base-content/10 rounded-box">
+                         bg-base-100 border border-base-content/10 rounded-box">
                 @for (piece of rankedPieces; track piece.id; let position = $index) {
                   <li class="flex items-center gap-3 px-3 py-2">
                     <span class="text-xs font-mono opacity-50 w-4 text-right">{{ position + 1 }}</span>

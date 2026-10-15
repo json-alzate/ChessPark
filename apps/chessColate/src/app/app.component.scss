@@ -1,0 +1,13 @@
+// Menú lateral: sombra de scroll. Solo se ve en el borde donde queda contenido oculto, así
+// en pantallas bajas se nota que "Ajustes" y "Cerrar sesión" siguen más abajo.
+// Truco con `background-attachment`: las capas `local` tapan la sombra cuando se llega al borde.
+.menu-scroll {
+  background:
+    linear-gradient(var(--color-base-100) 30%, transparent) center top,
+    linear-gradient(transparent, var(--color-base-100) 70%) center bottom,
+    radial-gradient(farthest-side at 50% 0, rgb(0 0 0 / 45%), transparent) center top,
+    radial-gradient(farthest-side at 50% 100%, rgb(0 0 0 / 45%), transparent) center bottom;
+  background-repeat: no-repeat;
+  background-size: 100% 36px, 100% 36px, 100% 12px, 100% 12px;
+  background-attachment: local, local, scroll, scroll;
+}

@@ -74,11 +74,19 @@
                     <ion-icon name="time-outline" aria-hidden="true"></ion-icon>
                     {{ preset.minutes }}
                 </span>
-                <button type="button" class="btn btn-soft btn-circle btn-sm text-base-content/70"
-                    [attr.aria-label]="'TRAINING.viewBlocks' | transloco"
-                    (click)="toggleBlocks(preset.plan, $event)">
-                    <ion-icon name="eye-outline" aria-hidden="true"></ion-icon>
-                </button>
+                <div class="flex items-center gap-2">
+                    <button type="button" class="btn btn-soft btn-circle btn-sm text-base-content/70"
+                        [attr.aria-label]="'TRAINING.viewBlocks' | transloco"
+                        (click)="toggleBlocks(preset.plan, $event)">
+                        <ion-icon name="eye-outline" aria-hidden="true"></ion-icon>
+                    </button>
+                    <!-- Acción principal a la vista: sin ella, la tarjeta solo se sabe tocable por costumbre -->
+                    <button type="button" class="btn btn-primary btn-circle btn-sm"
+                        [attr.aria-label]="'TRAINING.startRoutine' | transloco"
+                        (click)="createPlan(preset.plan)">
+                        <ion-icon name="play-outline" aria-hidden="true"></ion-icon>
+                    </button>
+                </div>
             </div>
 
             <!-- Qué entrenas: panel sobre el cuerpo (no empuja el contenido ni tapa la cabecera) -->

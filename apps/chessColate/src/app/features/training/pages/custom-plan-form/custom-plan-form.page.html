@@ -174,7 +174,11 @@
           <!-- Botón añadir bloque -->
           <button
             type="button"
-            class="btn btn-outline btn-block btn-sm border-dashed"
+            class="btn btn-block"
+            [class.btn-primary]="blocks.length === 0"
+            [class.btn-outline]="blocks.length > 0"
+            [class.btn-sm]="blocks.length > 0"
+            [class.border-dashed]="blocks.length > 0"
             [disabled]="blocks.length >= 5 || !canModifyBlocks(planElos)"
             (click)="openBlockSettingsModal()"
           >

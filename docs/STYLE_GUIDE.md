@@ -73,6 +73,18 @@ Todas las páginas deben seguir esta estructura base:
 2. **Contenedor principal**: Usar `main-container` (el tema lo pone `<html>`)
 3. **Contenedor de contenido**: Usar `container mx-auto px-4 py-6` para el contenido principal
 
+### Superficies: fondo de página y tarjetas
+
+El fondo de **toda** página es `main-container` (`bg-base-200`) y las tarjetas, listas y paneles van
+encima con `bg-base-100` (+ `border border-base-content/10` si hace falta separarlas). No envuelvas una
+página en `min-h-screen bg-base-100`: el fondo salta de tono al navegar entre pantallas y los paneles
+`bg-base-200/40` quedan casi invisibles. Un panel dentro de otra tarjeta sí puede ser `bg-base-200/40`
+(queda "hundido"). El aire entre el navbar y el breadcrumb es el mismo en todas las pantallas
+(`pt-2`, sin `py-8`): en móvil cada píxel de alto cuenta.
+
+En pruebas E2E no se localizan elementos por clases de color (`bg-base-100`…): son decoración y
+cambian con el diseño; usa la estructura (`section.grid-cols-2 > div`) o el texto.
+
 ---
 
 ## ✍️ Tipografía

@@ -115,11 +115,11 @@
 
                   <!-- Botones de acción -->
                   <div class="flex gap-2 flex-shrink-0" (click)="$event.stopPropagation()">
-                    <button type="button" class="btn btn-sm btn-ghost" (click)="viewPlanDetails(plan)"
+                    <button type="button" class="btn btn-circle btn-ghost" (click)="viewPlanDetails(plan)"
                       [attr.aria-label]="'PLANS_HISTORY.viewDetails' | transloco">
                       <ion-icon name="eye-outline"></ion-icon>
                     </button>
-                    <button type="button" class="btn btn-sm btn-ghost btn-error" (click)="deletePlan(plan, $event)"
+                    <button type="button" class="btn btn-circle btn-ghost btn-error" (click)="deletePlan(plan, $event)"
                       [attr.aria-label]="'PLANS_HISTORY.delete' | transloco">
                       <ion-icon name="trash-outline"></ion-icon>
                     </button>

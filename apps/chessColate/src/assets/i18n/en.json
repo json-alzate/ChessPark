@@ -35,7 +35,7 @@
   },
   "AUTH": {
     "login": {
-      "menuBar": "Login / Sing up",
+      "menuBar": "Login / Sign up",
       "withGoogle": "Login with Google",
       "emailPassword": "Email and Password",
       "emailPlaceholder": "Email",

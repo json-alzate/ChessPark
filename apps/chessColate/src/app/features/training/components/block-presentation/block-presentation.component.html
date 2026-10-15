@@ -1,24 +1,14 @@
 <ion-content [fullscreen]="true" class="ion-padding">
-
-
-
-  <div class="block-presentation ion-padding-vertical">
-    <div>
-
-      <div>
-        <h1 class="ion-text-center">{{ title }}</h1>
-      </div>
-      <div>
-        <p class="ion-text-center">{{ description }}</p>
-      </div>
+  <div class="block-presentation">
+    <div class="block-presentation__text">
+      <h1>{{ title }}</h1>
+      <p>{{ description }}</p>
     </div>
 
     <img [src]="image" [alt]="title" />
 
-    <div>
-      <ion-button color="light" (click)="closeAndStart()">
-        {{ 'PUZZLES.general.start' | transloco }} &nbsp; <small> ({{ timer }}) </small>
-      </ion-button>
-    </div>
+    <ion-button size="large" (click)="closeAndStart()">
+      {{ 'PUZZLES.general.start' | transloco }} &nbsp; <small> ({{ timer }}) </small>
+    </ion-button>
   </div>
 </ion-content>
