@@ -943,6 +943,24 @@ describe('TrainingPage · caracterización del flujo de entrenamiento', () => {
       expect(mocks.analyticsService.logEvent).not.toHaveBeenCalled();
     });
 
+    it('si no llegó ni un ejercicio en toda la sesión avisa y vuelve, sin enseñar un resumen vacío', async () => {
+      jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+      mocks.blockService.getPuzzlesForBlock.mockResolvedValue([]);
+      component = await createComponent(mocks);
+      component.plan = makePlan({ blocks: [makeBlock({ time: -1, puzzles: [] })] });
+      component.currentIndexBlock = 0;
+
+      await component.selectPuzzleToPlay();
+      await flushMicrotasks();
+
+      expect(mocks.alertController.create).toHaveBeenCalledWith(
+        expect.objectContaining({ header: 'TRAINING.noPuzzles.title', message: 'TRAINING.noPuzzles.message' })
+      );
+      expect(mocks.router.navigateByUrl).toHaveBeenCalled();
+      expect(mocks.router.navigate).not.toHaveBeenCalledWith(['/puzzles/plan-played']);
+      expect(mocks.planStorageService.savePlan).not.toHaveBeenCalled();
+    });
+
     it('si la descarga falla tampoco deja la pantalla esperando: salta al siguiente bloque', async () => {
       jest.spyOn(console, 'warn').mockImplementation(() => undefined);
       jest.spyOn(console, 'error').mockImplementation(() => undefined);

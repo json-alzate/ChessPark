@@ -65,6 +65,8 @@ y el versionado sigue [SemVer](https://semver.org/lang/es/) para `versionName`.
   reintenta al volver la conexión.
 - **Sesiones públicas sin conexión:** decía «No hay sesiones públicas disponibles» (Firestore responde vacío desde su caché);
   ahora avisa de que no pudo cargarlas y ofrece «Reintentar».
+- **Sesión sin ejercicios:** si el catálogo no responde y no llega ni un ejercicio, la sesión avisa («No pudimos traer los
+  ejercicios») y vuelve al inicio en vez de abrir un resumen vacío.
 - **Ortografía:** «05:00 o 3 ejercicios» ya no lleva tilde en la «o».
 - **Textos sin traducir:** los avisos de la donación (cargas, errores y agradecimiento), el aviso «Iniciando entrenamiento» y el
   diálogo de borrar una sesión del historial salían siempre en español; ahora siguen el idioma de la app.

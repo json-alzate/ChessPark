@@ -163,6 +163,7 @@
     }
   },
   "TRAINING": {
+    "noPuzzles": {"title": "No pudimos traer los ejercicios", "message": "Revisa tu conexión e inténtalo de nuevo."},
     "loadingPuzzles": "Cargando ejercicios…",
     "starting": "Iniciando entrenamiento…",
     "menu": {

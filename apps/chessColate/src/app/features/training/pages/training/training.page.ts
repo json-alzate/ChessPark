@@ -583,8 +583,15 @@ export class TrainingPage implements OnInit, OnDestroy {
         countPuzzlesPlayedBlock: this.countPuzzlesPlayedBlock,
       });
       if (this.plan.planType !== 'infinity') {
-        // El catálogo no dio nada para este bloque: seguir con el siguiente en vez de dejar la pantalla parada
-        this.playNextBlock();
+        const isLastBlock = this.currentIndexBlock >= this.plan.blocks.length - 1;
+        const nothingPlayed = this.plan.blocks.every((block) => (block.puzzlesPlayed?.length ?? 0) === 0);
+        if (isLastBlock && nothingPlayed) {
+          // Ni un ejercicio en toda la sesión: se avisa en vez de enseñar un resumen vacío
+          void this.abortWithoutPuzzles();
+        } else {
+          // El catálogo no dio nada para este bloque: seguir con el siguiente en vez de dejar la pantalla parada
+          this.playNextBlock();
+        }
       }
       return;
     }
@@ -1094,6 +1101,18 @@ export class TrainingPage implements OnInit, OnDestroy {
 
     // Limpiar el estado del plan en Redux
     this.planFacade.clearPlan();
+  }
+
+  /** El catálogo no respondió y no hay nada que jugar: avisa, limpia la sesión y vuelve a donde se vino. */
+  private async abortWithoutPuzzles(): Promise<void> {
+    this.cleanupResources();
+    const alert = await this.alertController.create({
+      header: this.translocoService.translate('TRAINING.noPuzzles.title'),
+      message: this.translocoService.translate('TRAINING.noPuzzles.message'),
+      buttons: [{ text: this.translocoService.translate('COMMON.actions.close'), role: 'cancel' }],
+    });
+    void this.router.navigateByUrl(this.returnUrl);
+    await alert.present();
   }
 
   async onExitTraining() {
