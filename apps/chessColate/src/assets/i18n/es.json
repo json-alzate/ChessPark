@@ -163,6 +163,7 @@
     }
   },
   "TRAINING": {
+    "loadingPuzzles": "Cargando ejercicios…",
     "starting": "Iniciando entrenamiento…",
     "menu": {
       "customTrainingSlideTitle": "Tus creaciones",
@@ -309,7 +310,7 @@
     "form": {
       "title": "Nuevo bloque",
       "duration": "Duración",
-      "or": "ó"
+      "or": "o"
     },
     "fields": {
       "minSec": "min:seg",
@@ -793,6 +794,8 @@
     "oneFile": "1 archivo",
     "puzzlesCount": "{{count}} ejercicios",
     "deleteAll": "Borrar todo",
+    "deleteGroup": "Borrar {{name}}",
+    "deleteFile": "Borrar el archivo de {{range}}",
     "confirm": {
       "delete": "Borrar",
       "fileTitle": "¿Borrar este archivo?",

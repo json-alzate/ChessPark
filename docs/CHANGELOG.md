@@ -42,6 +42,13 @@ y el versionado sigue [SemVer](https://semver.org/lang/es/) para `versionName`.
 - **Racha:** si falla la descarga del siguiente ejercicio, «Reintentar» lo vuelve a pedir y conserva la racha; antes la
   única salida era «Otra racha», que la daba por terminada.
 - **Pájaro carpintero:** en la evolución, «100 %» y los tiempos de más de una hora se partían en dos líneas.
+- **Sesiones con bloques:** si un bloque se quedaba sin ejercicios (un tema sin archivos a ese nivel o la red lenta), la pantalla
+  dejaba el tablero del bloque anterior con el reloj corriendo y nunca se recuperaba. Ahora, al crear la sesión, un tema
+  sorteado que no da ejercicios se cambia por otros; en la pantalla se espera la descarga con un aviso de carga y el reloj
+  del bloque parado, y un bloque que sigue vacío se salta. Los ejercicios repetidos en una misma lista se descartan.
+- **Almacenamiento:** los botones de papelera de cada tema y de cada archivo se anunciaban a los lectores de pantalla como
+  «Borrar todo»; ahora dicen qué borran.
+- **Ortografía:** «05:00 o 3 ejercicios» ya no lleva tilde en la «o».
 - **Textos sin traducir:** los avisos de la donación (cargas, errores y agradecimiento), el aviso «Iniciando entrenamiento» y el
   diálogo de borrar una sesión del historial salían siempre en español; ahora siguen el idioma de la app.
 - **Registro:** si te equivocabas en la confirmación de la contraseña y corregías la contraseña principal, el botón

@@ -26,6 +26,9 @@ export class PlanService {
   private analyticsService = inject(AnalyticsService);
   private trainingReminderService = inject(TrainingReminderService);
 
+  /** Otros temas que se prueban cuando el sorteado deja un bloque sin ejercicios. */
+  private readonly MAX_THEME_RETRIES = 2;
+
   /**
    * Prepara un plan personalizado para jugar: resuelve temas (all/weakness), carga puzzles
    * por bloque y devuelve un plan con uid nuevo listo para setPlan y navegar a training.
@@ -54,8 +57,21 @@ export class PlanService {
       const eloForBlock = (b.eloMin !== undefined && b.eloMax !== undefined)
         ? b.eloMin + Math.floor(Math.random() * (b.eloMax - b.eloMin + 1))
         : (planElos?.themes?.[theme] ?? planElos?.total ?? eloToStart);
-      const blockWithTheme = { ...b, theme, elo: eloForBlock };
-      const puzzles = await this.blockService.getPuzzlesForBlock(blockWithTheme);
+      let blockWithTheme = { ...b, theme, elo: eloForBlock };
+      let puzzles = await this.blockService.getPuzzlesForBlock(blockWithTheme);
+
+      // Un tema sorteado puede no tener ejercicios a ese nivel y color: se prueba con otros antes de dejar
+      // el bloque vacío (un tema elegido a mano se respeta tal cual)
+      const drawn = b.theme === 'all' || b.theme === 'weakness';
+      for (let retry = 0; retry < this.MAX_THEME_RETRIES && drawn && puzzles.length === 0; retry++) {
+        const otherTheme = this.blockService.getRandomTheme();
+        blockWithTheme = {
+          ...b,
+          theme: otherTheme,
+          elo: planElos?.themes?.[otherTheme] ?? eloForBlock,
+        };
+        puzzles = await this.blockService.getPuzzlesForBlock(blockWithTheme);
+      }
       blockUpdatedToAdd.push({
         ...blockWithTheme,
         puzzles,

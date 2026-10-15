@@ -133,7 +133,7 @@
                   </div>
                 </button>
                 <button class="btn btn-ghost btn-sm btn-square text-error shrink-0"
-                  [attr.aria-label]="'STORAGE.deleteAll' | transloco"
+                  [attr.aria-label]="'STORAGE.deleteGroup' | transloco: { name: group.name }"
                   (click)="confirmDeleteGroup(group)">
                   <ion-icon name="trash-outline" class="text-lg"></ion-icon>
                 </button>
@@ -152,7 +152,7 @@
                         <span class="opacity-60"> · {{ fileSizeLabel(file) }}</span>
                       </div>
                       <button class="btn btn-ghost btn-xs btn-square text-error shrink-0"
-                        [attr.aria-label]="'STORAGE.confirm.delete' | transloco"
+                        [attr.aria-label]="'STORAGE.deleteFile' | transloco: { range: file.eloLabel }"
                         (click)="confirmDeleteFile(group, file)">
                         <ion-icon name="trash-outline" class="text-base"></ion-icon>
                       </button>

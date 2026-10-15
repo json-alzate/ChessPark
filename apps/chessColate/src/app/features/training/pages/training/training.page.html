@@ -146,6 +146,13 @@
           (puzzleEndByTime)="onPuzzleCompleted($any($event), 'timeOut')"
           (streamSolutionFinished)="onStreamSolutionFinished()"
         ></lib-board-puzzle>
+        @if (isLoadingPuzzles) {
+        <!-- Sin ejercicio que jugar todavía: se tapa el tablero y el reloj del bloque espera -->
+        <div class="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-base-300/90" data-testid="loading-puzzles">
+          <span class="loading loading-spinner loading-lg text-primary"></span>
+          <span class="text-sm font-semibold">{{ 'TRAINING.loadingPuzzles' | transloco }}</span>
+        </div>
+        }
         <app-board-resize-handle></app-board-resize-handle>
       </div>
 

@@ -163,6 +163,7 @@
     }
   },
   "TRAINING": {
+    "loadingPuzzles": "Loading exercises…",
     "starting": "Starting training…",
     "menu": {
       "customTrainingSlideTitle": "Your custom plans",
@@ -793,6 +794,8 @@
     "oneFile": "1 file",
     "puzzlesCount": "{{count}} exercises",
     "deleteAll": "Delete all",
+    "deleteGroup": "Delete {{name}}",
+    "deleteFile": "Delete the {{range}} file",
     "confirm": {
       "delete": "Delete",
       "fileTitle": "Delete this file?",

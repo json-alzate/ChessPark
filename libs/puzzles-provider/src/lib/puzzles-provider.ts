@@ -147,6 +147,9 @@ export class PuzzlesProvider {
       if (allPuzzles.length >= count) break;
     }
 
+    // Un mismo ejercicio no debe salir dos veces en la lista (archivos vecinos con contenido repetido)
+    allPuzzles = this.withoutRepeated(allPuzzles);
+
     // Filtrar por color si se especificó
     if (color !== 'N/A') {
       allPuzzles = filterByColor(allPuzzles, color);
@@ -155,6 +158,21 @@ export class PuzzlesProvider {
     // Mezclar y limitar a la cantidad solicitada
     const shuffled = shuffleArray(allPuzzles);
     return shuffled.slice(0, count);
+  }
+
+  /** Conserva la primera aparición de cada `uid`; los ejercicios sin `uid` no se comparan entre sí. */
+  private withoutRepeated(puzzles: Puzzle[]): Puzzle[] {
+    const seen = new Set<string>();
+    return puzzles.filter((puzzle) => {
+      if (!puzzle.uid) {
+        return true;
+      }
+      if (seen.has(puzzle.uid)) {
+        return false;
+      }
+      seen.add(puzzle.uid);
+      return true;
+    });
   }
 
   /**

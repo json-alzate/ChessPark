@@ -286,6 +286,8 @@ export class TrainingPage implements OnInit, OnDestroy {
   streamSolutionActive = false;
 
   isGoshHelperShow = false;
+  /** Se espera la descarga de los ejercicios del bloque: el tablero va tapado. */
+  isLoadingPuzzles = false;
   isDropdownOpen = false;
   private closeDropdownTimeout: ReturnType<typeof setTimeout> | null = null;
 
@@ -499,12 +501,18 @@ export class TrainingPage implements OnInit, OnDestroy {
 
     await modal.present();
 
-    modal.onDidDismiss().then(() => {
+    modal.onDidDismiss().then(async () => {
       // Con la presentación cerrada la sesión vuelve a aceptar resultados;
       // el tablero se libera antes de recibir el puzzle nuevo.
       this.session.blockReady();
       this.forceStopTimerInPuzzleBoard = false;
-      this.selectPuzzleToPlay();
+      const blockShown = this.currentIndexBlock;
+      // El reloj del bloque no corre mientras se espera un ejercicio que aún no llegó
+      await this.selectPuzzleToPlay();
+      if (this.currentIndexBlock !== blockShown || !this.session.currentBlock) {
+        // Un bloque sin ejercicios se saltó (o la sesión terminó): lo que toca ya lo arrancó otro camino
+        return;
+      }
       if (this.plan.blocks[this.currentIndexBlock].time !== -1) {
         this.showBlockTimer = true;
         this.initTimeToEndBlock(this.plan.blocks[this.currentIndexBlock].time);
@@ -536,7 +544,7 @@ export class TrainingPage implements OnInit, OnDestroy {
       if (this.plan.planType === 'reto333') {
         currentBlock.elo = this.reto333EloLocal;
       }
-      this.blockService
+      const reload = this.blockService
         .getPuzzlesForBlock(currentBlock)
         .then((puzzlesToAdd: Puzzle[]) => {
           if (puzzlesToAdd.length > 0) {
@@ -546,6 +554,12 @@ export class TrainingPage implements OnInit, OnDestroy {
         .catch((error) => {
           console.error('Error cargando más puzzles:', error);
         });
+
+      // Sin nada que jugar no hay más que esperar la descarga: con el tablero anterior a la vista y el
+      // reloj en marcha el usuario jugaría (o perdería tiempo) sobre un ejercicio ya resuelto.
+      if (puzzlesLeftToPlay <= 0) {
+        await this.waitForPuzzles(reload);
+      }
     }
 
     // Para infinity: el siguiente puzzle se pide de a uno, en el momento que se
@@ -568,6 +582,10 @@ export class TrainingPage implements OnInit, OnDestroy {
         currentIndexBlock: this.currentIndexBlock,
         countPuzzlesPlayedBlock: this.countPuzzlesPlayedBlock,
       });
+      if (this.plan.planType !== 'infinity') {
+        // El catálogo no dio nada para este bloque: seguir con el siguiente en vez de dejar la pantalla parada
+        this.playNextBlock();
+      }
       return;
     }
 
@@ -593,6 +611,27 @@ export class TrainingPage implements OnInit, OnDestroy {
         puzzle,
       })
     );
+  }
+
+  /**
+   * Espera la descarga de ejercicios del bloque con el tablero tapado por el aviso de carga.
+   * Si el reloj del bloque estaba corriendo (se agotaron los ejercicios a mitad de bloque) se congela
+   * mientras tanto: esperar la red no debe gastar el tiempo del usuario.
+   */
+  private async waitForPuzzles(download: Promise<void>): Promise<void> {
+    const timerWasRunning = this.blockTimer.isRunning;
+    if (timerWasRunning) {
+      this.pauseBlockTimer();
+    }
+    this.isLoadingPuzzles = true;
+    try {
+      await download;
+    } finally {
+      this.isLoadingPuzzles = false;
+      if (timerWasRunning) {
+        this.resumeBlockTimer();
+      }
+    }
   }
 
   /**

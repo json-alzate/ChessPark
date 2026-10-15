@@ -109,6 +109,22 @@ describe('PuzzlesProvider', () => {
       expect(puzzles.length).toBeLessThanOrEqual(200);
     });
 
+    it('no devuelve el mismo ejercicio dos veces aunque varios archivos lo traigan', async () => {
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        json: async () => [
+          { uid: 'a', fen: 'f', moves: 'e2e4', rating: 1500, themes: ['fork'] },
+          { uid: 'b', fen: 'f', moves: 'e2e4', rating: 1500, themes: ['fork'] },
+        ],
+      });
+      const p = new PuzzlesProvider({ enableCache: false, batchSize: 3 });
+
+      const puzzles = await p.getPuzzles({ elo: 1500, theme: 'fork', count: 50 });
+
+      expect(puzzles.map((x) => x.uid).sort()).toEqual(['a', 'b']);
+      p.close();
+    });
+
     it('debe filtrar por color cuando se especifica', async () => {
       const mockPuzzlesWithColor: Partial<Puzzle>[] = [
         {
