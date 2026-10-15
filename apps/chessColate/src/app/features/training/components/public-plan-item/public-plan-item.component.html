@@ -11,7 +11,7 @@
 
     <!-- Accordion para bloques -->
     <div class="collapse collapse-arrow bg-base-200 mb-3">
-      <input type="checkbox" />
+      <input type="checkbox" [attr.aria-label]="'PUBLIC_PLANS.viewBlocks' | transloco" />
       <div class="collapse-title text-sm font-medium">
         {{ 'PUBLIC_PLANS.viewBlocks' | transloco }} ({{ plan.blocks.length ?? 0 }})
       </div>
@@ -85,6 +85,8 @@
           class="btn btn-sm"
           [class.btn-primary]="isSaved"
           [class.btn-ghost]="!isSaved"
+          [attr.aria-label]="(isSaved ? 'PUBLIC_PLANS.unsaveSession' : 'PUBLIC_PLANS.saveSession') | transloco"
+          [attr.aria-pressed]="isSaved"
           (click)="onToggleSaved()">
           <ion-icon [name]="isSaved ? 'bookmark' : 'bookmark-outline'"></ion-icon>
         </button>

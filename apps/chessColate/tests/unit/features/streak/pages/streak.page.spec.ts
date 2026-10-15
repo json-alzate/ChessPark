@@ -817,6 +817,13 @@ describe('StreakPage', () => {
   });
 
   describe('botón de salir (X)', () => {
+    it('el botón de solo icono tiene nombre accesible', async () => {
+      await entrar();
+
+      const cerrar = fixture.nativeElement.querySelector('button.btn-error') as HTMLButtonElement;
+      expect(cerrar.getAttribute('aria-label')).toBe('APP.components.exit');
+    });
+
     it('con la racha viva pide confirmación y no sale todavía', async () => {
       await entrar();
       await acertar();

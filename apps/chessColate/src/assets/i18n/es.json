@@ -436,6 +436,8 @@
     "authRequired": "Inicia sesión para crear y gestionar tus sesiones personalizadas"
   },
   "PUBLIC_PLANS": {
+      "saveSession": "Guardar sesión",
+      "unsaveSession": "Quitar de guardadas",
     "title": "Sesiones públicas",
     "shortTitle": "Público",
     "cardSubtitle": "Sesiones listas para jugar",
@@ -871,6 +873,7 @@
     }
   },
   "PUZZLE_SOLUTION": {
+    "controls": {"flip": "Girar el tablero", "start": "Ir al inicio", "previous": "Jugada anterior", "next": "Jugada siguiente", "end": "Ir al final", "close": "Cerrar"},
     "game": {
       "turn": "Tu turno",
       "findBestMove": "Encuentra el mejor movimiento para las",
@@ -906,6 +909,10 @@
       "installApp": "Instalar App"
     },
     "components": {
+      "settings": "Ajustes",
+      "viewStats": "Ver estadísticas",
+      "exit": "Salir",
+      "randomColor": "Color aleatorio",
       "loading": "Cargando…",
       "openMenu": "Abrir menú",
       "resizeBoard": "Cambiar el tamaño del tablero",

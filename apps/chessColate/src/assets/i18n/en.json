@@ -436,6 +436,8 @@
     "authRequired": "Log in to create and manage your custom sessions"
   },
   "PUBLIC_PLANS": {
+      "saveSession": "Save session",
+      "unsaveSession": "Remove from saved",
     "title": "Public sessions",
     "shortTitle": "Public",
     "cardSubtitle": "Sessions ready to play",
@@ -871,6 +873,7 @@
     }
   },
   "PUZZLE_SOLUTION": {
+    "controls": {"flip": "Flip the board", "start": "Go to start", "previous": "Previous move", "next": "Next move", "end": "Go to end", "close": "Close"},
     "game": {
       "turn": "Your turn",
       "findBestMove": "Find the best move for the",
@@ -906,6 +909,10 @@
       "installApp": "Install App"
     },
     "components": {
+      "settings": "Settings",
+      "viewStats": "View statistics",
+      "exit": "Exit",
+      "randomColor": "Random color",
       "loading": "Loading…",
       "openMenu": "Open menu",
       "resizeBoard": "Resize the board",

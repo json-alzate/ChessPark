@@ -161,7 +161,7 @@
         [class.border-primary]="pace === option" [class.bg-primary/10]="pace === option"
         [class.border-base-content/10]="pace !== option" [attr.aria-pressed]="pace === option"
         (click)="setPace(option)">
-        <input type="radio" name="pace" class="radio radio-sm mt-0.5 shrink-0" [checked]="pace === option" tabindex="-1" />
+        <input type="radio" name="pace" class="radio radio-sm mt-0.5 shrink-0" [checked]="pace === option" tabindex="-1" aria-hidden="true" />
         <span class="min-w-0 flex-1">
           <span class="block text-sm font-medium">{{ 'WOODPECKER.setup.pace.' + option | transloco }}</span>
           <span class="block text-xs text-base-content/50">

@@ -50,6 +50,9 @@ y el versionado sigue [SemVer](https://semver.org/lang/es/) para `versionName`.
   «Borrar todo»; ahora dicen qué borran.
 - **Teléfono apaisado:** el tablero de las pantallas de ejercicios ya no pasa del alto de la pantalla (antes era un cuadrado
   del ancho completo, mayor que la ventana, y había que desplazarse para verlo entero).
+- **Accesibilidad:** los botones de solo icono (cerrar, ajustes, estadísticas, girar el tablero, navegar la solución, guardar una
+  sesión pública, color aleatorio) ya tienen nombre para los lectores de pantalla; el campo de Chess960 está asociado a su
+  etiqueta; y el idioma del documento (`lang`) sigue al de la app en vez de quedarse en inglés.
 - **Ortografía:** «05:00 o 3 ejercicios» ya no lleva tilde en la «o».
 - **Textos sin traducir:** los avisos de la donación (cargas, errores y agradecimiento), el aviso «Iniciando entrenamiento» y el
   diálogo de borrar una sesión del historial salían siempre en español; ahora siguen el idioma de la app.

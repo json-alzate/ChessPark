@@ -454,7 +454,8 @@
                       {{ 'TRAINING.elo' | transloco }}
                     </div>
                   </div>
-                  <button class="btn btn-circle btn-xs md:btn-sm btn-ghost" (click)="isStatsModalOpen = true">
+                  <button class="btn btn-circle btn-xs md:btn-sm btn-ghost" (click)="isStatsModalOpen = true"
+                    [attr.aria-label]="'APP.components.viewStats' | transloco">
                     <ion-icon name="stats-chart-outline" class="text-base"></ion-icon>
                   </button>
                 </div>

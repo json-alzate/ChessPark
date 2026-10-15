@@ -18,6 +18,7 @@
       [class.btn-neutral]="boardOrientation === 'random'"
       [class.btn-ghost]="boardOrientation !== 'random'"
       (click)="onOrientationChange('random')"
+      [attr.aria-label]="'APP.components.randomColor' | transloco"
     >
       <ion-icon name="shuffle-outline" class="size-6"></ion-icon>
     </button>

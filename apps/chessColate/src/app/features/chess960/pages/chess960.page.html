@@ -54,10 +54,11 @@
             <div class="card-body">
               <div class="flex items-end gap-4">
                 <div class="form-control flex-1">
-                  <label class="label">
+                  <label class="label" for="chess960-position">
                     <span class="label-text font-bold">{{ 'CHESS960.controls.positionLabel' | transloco }}</span>
                   </label>
                   <input
+                    id="chess960-position"
                     type="number"
                     [(ngModel)]="currentPositionId"
                     (ngModelChange)="onIdChange()"

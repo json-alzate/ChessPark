@@ -23,7 +23,7 @@
         </span>
       </button>
       }
-      <button class="btn btn-ghost btn-square" (click)="turnRoundBoard()">
+      <button class="btn btn-ghost btn-square" (click)="turnRoundBoard()" [attr.aria-label]="'PUZZLE_SOLUTION.controls.flip' | transloco">
         <ion-icon name="swap-vertical-outline" class="text-lg"></ion-icon>
       </button>
     </div>
