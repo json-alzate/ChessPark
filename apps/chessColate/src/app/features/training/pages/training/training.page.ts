@@ -61,6 +61,7 @@ import {
   BoardPuzzleComponent,
   BoardPuzzleSolutionComponent,
 } from '@chesspark/board';
+import { BoardResizeHandleComponent } from '@shared/components/board-resize-handle/board-resize-handle.component';
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 
 import { BlockPresentationComponent } from '../../components/block-presentation/block-presentation.component';
@@ -131,6 +132,7 @@ import { KingImagePipe } from '@shared/pipes/king-image.pipe';
 @Component({
   selector: 'app-training',
   imports: [
+    BoardResizeHandleComponent,
     KingImagePipe,
     CommonModule,
     BoardPuzzleComponent,

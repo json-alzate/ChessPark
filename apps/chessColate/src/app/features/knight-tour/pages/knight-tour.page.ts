@@ -21,6 +21,7 @@ import { homeOutline, refreshOutline, playOutline, settingsOutline, closeOutline
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
 import { BoardComponent } from '@chesspark/board';
+import { BoardResizeHandleComponent } from '@shared/components/board-resize-handle/board-resize-handle.component';
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 import { AnalyticsService } from '@core/analytics/analytics.service';
 
@@ -34,6 +35,7 @@ type StartPosition = 'random' | 'a1' | 'h1' | 'a8' | 'h8';
   styleUrls: ['knight-tour.page.scss'],
   standalone: true,
   imports: [
+    BoardResizeHandleComponent,
     CommonModule,
     FormsModule,
     IonContent,

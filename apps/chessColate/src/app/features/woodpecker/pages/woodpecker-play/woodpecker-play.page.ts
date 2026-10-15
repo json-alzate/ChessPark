@@ -30,6 +30,7 @@ import { AnalyticsService } from '@core/analytics/analytics.service';
 import { ProfileService } from '@core/account/profile.service';
 import { TrainingReminderService } from '@features/reminders/services/training-reminder.service';
 import { KingImagePipe } from '@shared/pipes/king-image.pipe';
+import { BoardResizeHandleComponent } from '@shared/components/board-resize-handle/board-resize-handle.component';
 
 import { WoodpeckerCycleResultComponent } from '../../components/woodpecker-cycle-result/woodpecker-cycle-result.component';
 import {
@@ -66,6 +67,7 @@ interface Feedback {
   selector: 'app-woodpecker-play',
   standalone: true,
   imports: [
+    BoardResizeHandleComponent,
     CommonModule,
     TranslocoPipe,
     IonContent,

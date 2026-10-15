@@ -34,13 +34,14 @@
       <div class="lg:flex lg:justify-center lg:gap-8 lg:items-start">
 
         <!-- COLUMNA IZQUIERDA: Tablero + Timer -->
-        <div class="lg:w-[480px] lg:flex-shrink-0">
+        <div class="cc-board-column cc-board-column--compact lg:flex-shrink-0">
           <!-- Wrapper relative para el overlay del puzzle actual -->
           <div class="relative">
             <lib-board (squareSelected)="onSquareSelected($event)"></lib-board>
             @if (currentPuzzle) {
             <h1 class="current-puzzle">{{ currentPuzzle }}</h1>
             }
+            <app-board-resize-handle [reserve]="240"></app-board-resize-handle>
           </div>
 
           <!-- Timer -->

@@ -49,6 +49,7 @@ import {
   nextTargetElo,
 } from '@features/streak/utils/streak.util';
 import { KingImagePipe } from '@shared/pipes/king-image.pipe';
+import { BoardResizeHandleComponent } from '@shared/components/board-resize-handle/board-resize-handle.component';
 
 /** En qué punto está la pantalla. */
 type StreakStatus = 'loading' | 'playing' | 'finished' | 'error';
@@ -65,6 +66,7 @@ type StreakStatus = 'loading' | 'playing' | 'finished' | 'error';
   selector: 'app-streak',
   standalone: true,
   imports: [
+    BoardResizeHandleComponent,
     KingImagePipe,
     CommonModule,
     TranslocoPipe,

@@ -35,6 +35,7 @@ import {
   ejercicio,
 } from '@tests/support/pajaro-carpintero';
 import {
+  AsaRedimensionarFalsa,
   controladorFalso,
   superposicionFalsa,
   TableroPuzzleFalso,
@@ -162,6 +163,7 @@ describe('WoodpeckerPlayPage', () => {
             IonContent,
             IonIcon,
             TableroPuzzleFalso,
+            AsaRedimensionarFalsa,
             KingImagePipe,
             WoodpeckerCycleResultComponent,
           ],

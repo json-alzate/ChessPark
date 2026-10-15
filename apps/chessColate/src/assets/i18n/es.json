@@ -903,6 +903,8 @@
     "components": {
       "loading": "Cargando…",
       "openMenu": "Abrir menú",
+      "resizeBoard": "Cambiar el tamaño del tablero",
+      "resizeBoardHint": "Arrastra para cambiar el tamaño. Doble clic para volver al original.",
       "reminders": "Recordatorios",
       "donate": "Donar",
       "googleLogo": "Logo de Google",

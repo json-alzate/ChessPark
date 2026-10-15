@@ -30,11 +30,12 @@
       <div class="lg:flex lg:justify-center lg:gap-8 lg:items-start">
 
         <!-- COLUMNA IZQUIERDA: Tablero + info + botones -->
-        <div class="lg:w-[480px] lg:flex-shrink-0">
+        <div class="cc-board-column cc-board-column--compact lg:flex-shrink-0">
 
           <!-- Tablero -->
-          <div class="mb-4">
+          <div class="relative mb-4">
             <lib-board (squareSelected)="onSquareSelected($event)"></lib-board>
+            <app-board-resize-handle [reserve]="240"></app-board-resize-handle>
           </div>
 
           <!-- Información del juego (solo mobile) -->

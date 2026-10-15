@@ -53,7 +53,7 @@ src/app/
   core/        Lo que usa toda la app                       (@core/*)
     account/     sesión (AuthService) y perfil (ProfileService + ProfileRepository)
     analytics/   AnalyticsService, eventos y manejador de errores de Crashlytics
-    app/         ajustes de la app: idioma, apariencia, PWA, AppService
+    app/         ajustes de la app: idioma, apariencia, tamaño del tablero, PWA, AppService
     firestore/   conexión única a Firestore y serialización
     guards/      auth.guard
   features/    Una carpeta por funcionalidad                (@features/*)
@@ -68,7 +68,7 @@ src/app/
     app-review/    pedir la calificación de la app
     home/ settings/ donation/ privacy/ coordinates/ knight-tour/ chess960/
   shared/      Lo que usan varias funcionalidades            (@shared/*)
-    components/  navbar, login, onboarding, donación, selector de apariencia, count-up…
+    components/  navbar, login, onboarding, donación, selector de apariencia, asa para redimensionar el tablero, count-up…
     pipes/ utils/
 ```
 
@@ -344,6 +344,7 @@ una facade). Las pantallas leen el store; los guards (`custom-plans.guard` y
 | Puzzles descargados / pool infinito | IndexedDB | `libs/puzzles-provider` (`CacheService`) |
 | Partidas de chess.com/lichess | IndexedDB | `libs/game-reporter` (`createGamesArchive`) |
 | Ajustes de análisis | `localStorage` | `GameAnalyticsService` |
+| Tamaño del tablero en escritorio | `localStorage` (`chessColate_board_size`) + variable CSS `--cc-board-size` | `BoardSizeService` |
 
 ### Cosas que no son obvias leyendo el código
 
@@ -395,6 +396,7 @@ una facade). Las pantallas leen el store; los guards (`custom-plans.guard` y
 | Añadir una estadística a Análisis | `libs/game-reporter` (reporte) + `features/game-analytics/utils/game-analytics.util.ts` (presentación) |
 | Añadir un dato a Firestore | un `*.repository.ts` en `data/` de la funcionalidad + su service (la página nunca lo inyecta) |
 | Cambiar cómo se arma el set del Pájaro Carpintero o cómo baja el tiempo por vuelta | `features/woodpecker/utils/woodpecker-set.util.ts` · `woodpecker-cycle.util.ts` · `config/woodpecker.config.ts` |
+| Cambiar el tamaño del tablero en escritorio o añadir el asa a una pantalla | [`implementado/TABLERO_REDIMENSIONABLE_FLOW.md`](./implementado/TABLERO_REDIMENSIONABLE_FLOW.md) |
 | Añadir un evento de analítica | `core/analytics/analytics-events.util.ts` y `AnalyticsService` |
 
 ---

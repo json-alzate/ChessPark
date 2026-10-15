@@ -42,6 +42,7 @@ import { PublicPlansFirestoreAdapter } from './app/features/training/data/public
 import { LanguageService } from './app/core/app/language.service';
 import { AppService } from './app/core/app/app.service';
 import { AppearanceService } from './app/core/app/appearance.service';
+import { BoardSizeService } from './app/core/app/board-size.service';
 import { CrashlyticsErrorHandler } from './app/core/analytics/crashlytics-error-handler';
 import { PuzzlesProvider } from '@chesspark/puzzles-provider';
 
@@ -60,6 +61,8 @@ async function initializeApp(): Promise<void> {
 
   // Estilo de piezas y tablero antes de que se dibuje el primer tablero
   inject(AppearanceService).init();
+  // Tamaño del tablero que el usuario fijó en escritorio
+  inject(BoardSizeService).init();
 
   // Inicializar el idioma primero (esto cargará y esperará las traducciones)
   await languageService.initializeLanguage();

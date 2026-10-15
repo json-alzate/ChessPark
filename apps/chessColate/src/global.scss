@@ -56,6 +56,37 @@
   --cc-elo: #e8a857;
 }
 
+/* Tablero redimensionable en escritorio
+ * ----------------------------------------------------------------------------
+ * La columna del tablero (cuadrado que lo llena) toma su ancho de `--cc-board-size`, la
+ * preferencia que el usuario fija arrastrando el asa de la esquina (BoardSizeService). Mientras
+ * no haya elegido nada la variable no existe y cada pantalla usa el tamaño de siempre:
+ *   - `.cc-board-column`            pantallas de ejercicios (Entrenamiento, Racha, Pájaro carpintero)
+ *   - `.cc-board-column--compact`   pantallas con título y ajustes sobre el tablero
+ * Lo elegido nunca pasa del alto que cabe en la ventana; las reservas (150 y 240 px) son las de
+ * BOARD_RESERVE_PUZZLE y BOARD_RESERVE_COMPACT en core/app/board-size.util.ts: si cambias una,
+ * cambia la otra. En móvil el tablero sigue llenando el ancho. */
+@media (min-width: 1024px) {
+  .cc-board-column {
+    width: max(320px, min(var(--cc-board-size, clamp(480px, calc(100vh - 190px), 640px)), calc(100vh - 150px)));
+
+    &.cc-board-column--compact {
+      width: max(320px, min(var(--cc-board-size, 480px), calc(100vh - 240px)));
+    }
+  }
+}
+
+/* Mientras se arrastra el asa no se selecciona texto y el cursor no parpadea al pasar por encima de otros elementos */
+body.cc-board-resizing {
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: nwse-resize;
+
+  * {
+    cursor: nwse-resize !important;
+  }
+}
+
 /* Importar estilos de cm-chessboard */
 // cm-chessboard
 @import 'assets/cm-chessboard/assets/chessboard.scss';

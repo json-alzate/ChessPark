@@ -1,0 +1,25 @@
+<div
+  #grip
+  class="grip"
+  [class.dragging]="dragging"
+  role="slider"
+  tabindex="0"
+  data-testid="board-resize-handle"
+  [attr.aria-label]="'APP.components.resizeBoard' | transloco"
+  [attr.aria-valuemin]="minSize"
+  [attr.aria-valuemax]="maxSize"
+  [attr.aria-valuenow]="valueNow"
+  [title]="'APP.components.resizeBoardHint' | transloco"
+  (pointerdown)="onPointerDown($event)"
+  (pointermove)="onPointerMove($event)"
+  (pointerup)="onPointerUp($event)"
+  (pointercancel)="onPointerUp($event)"
+  (keydown)="onKeyDown($event)"
+  (dblclick)="onDoubleClick()"
+  (focus)="refresh()"
+  (pointerenter)="refresh()"
+>
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M20 9 9 20M20 14 14 20M20 4 4 20" />
+  </svg>
+</div>

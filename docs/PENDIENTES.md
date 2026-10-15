@@ -161,3 +161,15 @@ Recorrido en navegador móvil con el catálogo real: hecho. Lo que no se puede c
 - **Mirar `woodpecker_plan_created` / `woodpecker_set_short`** tras unas semanas: dicen qué tamaños y rangos pide la gente y si el 70 % de mínimo es demasiado estricto.
 - **Mirar `woodpecker_plan_abandoned`** (con `cycles_done`): si casi todos abandonan en la vuelta 1, el set por defecto (100 ejercicios, ≈ 40 min por vuelta) es demasiado grande.
 - **Sincronizar el set con la cuenta** 🔴 — hoy solo vive en el dispositivo; encaja con la decisión pendiente del historial de rutinas (`TODO(premium)`).
+
+---
+
+## 8. Tablero redimensionable — verificación 🔴 (prioridad baja)
+
+Implementado y documentado en [implementado/TABLERO_REDIMENSIONABLE_FLOW.md](./implementado/TABLERO_REDIMENSIONABLE_FLOW.md).
+Probado con ratón en un navegador de escritorio. Pendiente:
+
+- **Probarlo en un iPad con trackpad o ratón** 🔴 — el asa depende de `hover` y puntero fino; en iPadOS con ratón
+  debería aparecer, pero no se ha comprobado en un dispositivo.
+- **El reproductor de partidas no lo usa** 🔴 — tiene su propio layout (`games/viewer`) y su tablero no se agranda.
+  Si se quiere, hay que pasarlo a `cc-board-column` y decidir su reserva de alto.

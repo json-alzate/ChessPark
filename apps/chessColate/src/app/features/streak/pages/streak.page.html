@@ -53,7 +53,7 @@
     <div class="lg:flex lg:items-start lg:justify-center lg:gap-8 lg:px-6 lg:pt-4">
 
       <!-- COLUMNA IZQUIERDA: tablero -->
-      <div class="relative lg:w-[clamp(480px,calc(100vh_-_190px),640px)] lg:flex-shrink-0">
+      <div class="cc-board-column relative lg:flex-shrink-0">
         @if (puzzleToPlay) {
         <lib-board-puzzle
           [setPuzzle]="$any(puzzleToPlay)"
@@ -72,6 +72,8 @@
           <span class="loading loading-spinner loading-lg text-primary"></span>
         </div>
         }
+
+        <app-board-resize-handle></app-board-resize-handle>
       </div>
 
       <!-- COLUMNA DERECHA: estado de la racha -->

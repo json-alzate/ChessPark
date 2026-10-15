@@ -5,6 +5,16 @@
     display: block;
 }
 
+// En escritorio el ancho lo fija la columna del tablero (que el usuario puede
+// agrandar y que ya se acota al alto de la ventana): un tope en vh aquí dejaría
+// el tablero más estrecho que su columna y el asa de la esquina fuera de sitio.
+@media (min-width: 1024px) {
+    .board {
+        max-height: none;
+        max-width: none;
+    }
+}
+
 // Flecha de pista (hint) — discreta: trazo fino y translúcido para guiar sin
 // gritar. Color índigo, consistente con la flecha de "mejor jugada" de la app.
 :host ::ng-deep .cm-chessboard .arrow-hint .arrow-line {

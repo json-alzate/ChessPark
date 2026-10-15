@@ -43,6 +43,7 @@ import { KingImagePipe } from '@shared/pipes/king-image.pipe';
 import { StreakPage } from '@features/streak/pages/streak.page';
 
 import {
+  AsaRedimensionarFalsa,
   TableroPuzzleFalso,
   controladorFalso,
   diferida,
@@ -209,6 +210,7 @@ describe('StreakPage', () => {
             IonContent,
             IonIcon,
             TableroPuzzleFalso,
+            AsaRedimensionarFalsa,
           ],
         },
       })

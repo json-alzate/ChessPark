@@ -903,6 +903,8 @@
     "components": {
       "loading": "Loading…",
       "openMenu": "Open menu",
+      "resizeBoard": "Resize the board",
+      "resizeBoardHint": "Drag to resize. Double-click to reset.",
       "reminders": "Reminders",
       "donate": "Donate",
       "googleLogo": "Google Logo",

@@ -23,6 +23,9 @@ y el versionado sigue [SemVer](https://semver.org/lang/es/) para `versionName`.
   en cada una. Cada vuelta te dice cuánto mejoraste en acierto y en velocidad, y el panel enseña
   los ejercicios que se te resisten. El progreso se guarda tras cada ejercicio: puedes salir y
   seguir cuando quieras. Solo hay un set a la vez y vive en el dispositivo.
+- **Tablero redimensionable en escritorio**: arrastra el asa de la esquina inferior derecha del tablero
+  para hacerlo más grande o más pequeño (también con las flechas del teclado; doble clic lo restablece).
+  Vale para todos los tableros de práctica y se recuerda en el dispositivo. En móvil no cambia nada.
 
 ---
 

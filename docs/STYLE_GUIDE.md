@@ -554,6 +554,16 @@ Para botones fijos en mobile:
 
 ---
 
+## ♟️ Pantallas con tablero
+
+En escritorio la columna del tablero lleva la clase `cc-board-column` (y `cc-board-column--compact`
+si hay título y ajustes encima), es `relative` y contiene `<app-board-resize-handle>`: así el usuario
+puede cambiar su tamaño y la preferencia es la misma en todas. No fijes el ancho del tablero a mano con
+`lg:w-[…]`. Detalle y pasos para una pantalla nueva en
+[`implementado/TABLERO_REDIMENSIONABLE_FLOW.md`](implementado/TABLERO_REDIMENSIONABLE_FLOW.md).
+
+---
+
 ## 🧭 Navegación / Menú lateral
 
 El menú lateral izquierdo (`side-menu`) se define en
