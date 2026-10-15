@@ -186,9 +186,10 @@ export class DonationModalComponent implements OnInit {
           case PURCHASES_ERROR_CODE.PRODUCT_NOT_AVAILABLE_FOR_PURCHASE:
             this.showToast(this.t('notAvailableNow'), 'warning');
             break;
-          default:
+          default: {
             const errorMessage = error.message || this.t('unknownError');
             this.showToast(this.t('errorWith', { message: errorMessage }), 'danger');
+          }
         }
       } else {
         this.showToast(this.t('processFailed'), 'danger');
