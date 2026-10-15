@@ -5,3 +5,4 @@ muestra/
 optional/*.mp3
 optional/*.ogg
 # licencias/ SÍ se versiona: es la prueba de la licencia de cada pista.
+rights-check/

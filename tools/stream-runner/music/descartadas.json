@@ -207,5 +207,12 @@
   "source": "Free Music Archive",
   "url": "https://freemusicarchive.org/",
   "motivo": "No explorado a fondo: las URLs de pista antiguas (referenciadas desde Commons) devuelven 404 y no busqué una vía alternativa; con ccMixter había suficiente."
+ },
+ {
+  "track": "Robbero – Whisper",
+  "source": "ccMixter",
+  "url": "https://ccmixter.org/files/Robbero/44803",
+  "motivo": "Content ID: coincide con «Quanto Tempos Mais» (Nine), reclamante ONErpm en nombre de 3x3 Records; efecto: limitación de ingresos. 4 tramos entre 39:24 y 41:39 del video 5 de la prueba de derechos (2026-10-13). Es un remix que incluye material de https://ccmixter.org/files/NiGiD/44797.",
+  "archivo": "raw/ccmixter_2026-10-12/44803_Robbero_Whisper.mp3"
  }
 ]

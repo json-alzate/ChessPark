@@ -6,8 +6,9 @@
  *   node tools/stream-runner/run-stream.mjs --url=http://localhost:4310/ --target=hls
  *   RTMP_URL=rtmp://a.rtmp.youtube.com/live2/<CLAVE> node tools/stream-runner/run-stream.mjs --url=… --target=rtmp
  *
- * La clave de YouTube va SIEMPRE por la variable de entorno RTMP_URL (o el llavero), nunca como argumento
- * ni dentro del repo: los argumentos se ven en `ps` y en los registros.
+ * La clave de YouTube va SIEMPRE por la variable de entorno RTMP_URL, nunca como argumento
+ * ni dentro del repo: los argumentos se ven en `ps` y en los registros. Este script no lee el
+ * llavero; quien lo lanza lo hace, p. ej. con `security find-generic-password -w`.
  */
 import { spawn } from 'node:child_process';
 import { randomInt } from 'node:crypto';

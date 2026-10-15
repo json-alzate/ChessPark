@@ -12,6 +12,7 @@ en este macOS). `ffmpeg` debe estar instalado (`brew install ffmpeg`, con `h264_
 | `verify-qr.mjs` | Verifica a fondo el codificador de QR (referencia + decodificador independiente). Úsalo si tocas `qr-code.ts`. |
 | `prepare-music.mjs` | Normaliza la música (EBU R128 a -18 LUFS, dos pasadas, limitador de pico a -1,5 dBTP) a `music/normalized/` y escribe `music/playlist.json`. Idempotente; `--force` rehace todo. |
 | `music-credits.mjs` | Genera `docs/CREDITOS_MUSICA.md` y el bloque de atribución para la descripción del directo. |
+| `rights-check.mjs` | **Prueba de derechos:** arma 6 videos privados (pantalla fija + las 88 pistas, audio sin recodificar) para subirlos a YouTube y ver qué pistas tienen reclamo de Content ID. `--find=<video>:<minuto>` traduce un minuto reclamado a la pista; `--list` solo muestra el plan. Genera ~430 MB en `music/rights-check/` (no se versiona). |
 | `music-sample.mjs` | Arma una muestra de 25 s por autor para **escuchar** la música antes de salir en vivo. |
 | `check-smoothness.mjs` | Mide si la **tubería de captura** entrega el movimiento parejo: graba cuadrados a velocidad constante con la misma tubería del runner y cuenta los frames que no avanzan o avanzan el doble. Úsalo si cambias algo de la captura o de ffmpeg. |
 | `run-stream.mjs` | **El runner.** Chrome captura la app, ffmpeg le mezcla la música y emite por HLS (vista previa) o RTMP (YouTube). Se vigila solo: reinicia si cae ffmpeg o Chrome, o si la página deja de enviar frames. |
@@ -56,7 +57,7 @@ unos 8 s respecto al "directo" (normal en HLS). **Apágala cuando no la uses.**
 
 ```bash
 RTMP_URL='rtmp://a.rtmp.youtube.com/live2/<CLAVE>' node tools/stream-runner/run-stream.mjs \
-  --url=http://127.0.0.1:4310/ --target=rtmp
+  --url=http://localhost:4310/ --target=rtmp
 ```
 
 La clave va **solo** por la variable de entorno (nunca como argumento: se vería en `ps` y en los registros, ni

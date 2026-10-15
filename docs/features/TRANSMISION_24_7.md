@@ -138,11 +138,63 @@ Decisiones de diseño:
 | Chrome acumula memoria | Recarga programada cada pocas horas (p. ej. 4:00) |
 | Se cae el Mac / se va la luz | LaunchAgent que relanza el runner al arrancar la sesión |
 | Se suspende el equipo | `pmset`/`caffeinate` + arranque automático tras corte de luz |
-| Nadie se entera de que cayó | Aviso (push) tras N reintentos fallidos |
+| Nadie se entera de que cayó | Aviso **por correo** (ver [Aviso de caída por correo](#aviso-de-caída-por-correo)) |
 
 > **Excepción a la regla de `devctl`:** las preferencias globales prohíben LaunchAgents para apps de *desarrollo*. Esto es un servicio de producción que debe sobrevivir a reinicios, así que **sí requeriría un LaunchAgent**. Hay que aprobarlo explícitamente antes de crearlo.
 
 ---
+
+## Prueba en el canal personal
+
+Orden de trabajo para el primer directo real (canal personal, directo **no listado**):
+
+1. **Canal listo:** verificación por teléfono y transmisión en vivo activada (YouTube puede tardar hasta 24 h en habilitarla). Se hace primero porque es lo que más tarda.
+2. **Derechos de la música:** hacer antes la [prueba de derechos](#plan-de-derechos-de-la-música) con videos privados; no hace falta esperar al directo.
+3. **Crear la transmisión** en YouTube Studio → Transmitir en vivo → Transmisión: visibilidad **No listado**, clave **reutilizable** (para que un reinicio del runner no cree un directo nuevo) y la descripción con `tools/stream-runner/music/DESCRIPCION_MUSICA.txt`.
+4. **Clave de transmisión:** nunca en el repo ni en el chat. Para esta primera prueba, por variable de entorno en la terminal (`read -s RTMP_KEY`); el llavero del Mac entra con el LaunchAgent.
+5. **Emitir:** compilar y servir la app de producción y lanzar el runner:
+   ```bash
+   npx nx build live-stream
+   npx nx serve-static live-stream --port=4310
+   RTMP_URL="rtmp://a.rtmp.youtube.com/live2/$RTMP_KEY" node tools/stream-runner/run-stream.mjs --url=http://localhost:4310/ --target=rtmp
+   ```
+   (Falta un solo comando que haga las dos cosas: es parte del trabajo del LaunchAgent.)
+6. **Qué mirar:** el estado de la transmisión en YouTube Studio (bitrate, fotogramas, advertencias), el audio, los avisos de derechos de autor y la CPU/memoria del Mac. Duración: 2–3 h; después, 24 h seguidas antes de hacerlo público.
+
+## Plan de derechos de la música
+
+**"Sin ningún derecho" no existe en la práctica para música ya publicada.** Incluso CC0 o dominio público puede recibir un reclamo de Content ID (alguien la registró, o el sistema se confunde). Lo único con riesgo casi nulo es música **de la que eres el autor**. Por eso el plan va por capas, de lo más barato a lo más caro:
+
+1. **Prueba de derechos antes de emitir (barata).** `node tools/stream-runner/rights-check.mjs` arma 6 videos privados de menos de 1 h (imagen fija + las 88 pistas, con el audio tal cual sale en el directo); se suben como **privados** y se leen las verificaciones de derechos de autor de YouTube Studio (`--find=<video>:<minuto>` traduce un minuto reclamado a una pista): dice qué pista, en qué minuto y de quién es el reclamo. Se descartan las pistas con reclamo (el manifiesto ya tiene `descartadas.json`).
+2. **Directo no listado de horas.** Content ID también actúa en vivo y puede silenciar o cortar el directo. Es la prueba definitiva.
+3. **Si aun así hay reclamos o cortes**, reemplazar la música por una de estas, de menor a mayor esfuerzo:
+   - **Biblioteca de pago con licencia para directos** (p. ej. Epidemic Sound): cuesta cada mes y hay que confirmar que su licencia cubra un directo 24/7. *No verificado.*
+   - **Música generada con IA con licencia comercial** (plan de pago): revisar los términos de uso y que las pistas no se registren en Content ID. *No verificado.*
+   - **Música generada por código** en el propio Mac mini (lofi procedural: acordes, batería, ruido de vinilo): sin licencias, sin repetición exacta y con tu autoría. Es lo más caro de construir y no se sabe de antemano si suena bien.
+4. **Disputas:** la evidencia de cada licencia ya está guardada en `tools/stream-runner/music/licencias/`.
+
+Un reclamo de Content ID **no es un strike**: los strikes llegan por solicitudes de retiro manuales, y tres strikes cierran el canal. Un reclamo no penaliza el canal, pero sí puede bloquear o silenciar el directo. Por eso la prueba del punto 1 se hace antes de emitir.
+
+## LaunchAgent (arranque automático)
+
+Un **LaunchAgent** es la forma que tiene macOS de decir "cuando esta persona inicie sesión, arranca este programa y, si se cae, vuélvelo a arrancar". Es un archivo `.plist` en `~/Library/LaunchAgents`. Sin él, tras un reinicio o un corte de luz el directo se queda apagado hasta que alguien lo note.
+
+**Requiere aprobación explícita** (excepción a la regla global de no usar LaunchAgents para apps de desarrollo: esto es un servicio de producción). Qué se haría:
+
+- Un script envoltorio (`tools/stream-runner/start-live.sh`) que sirve la app compilada y lanza el runner; sería **el único comando** de la sección anterior.
+- La clave de transmisión se lee del **llavero** (`security find-generic-password -w`), nunca del `.plist` ni del repo.
+- `KeepAlive` para que macOS lo relance si el runner muere, y registros en `~/Library/Logs/`.
+- **Requisito del Mac:** inicio de sesión automático tras un reinicio; si no, el LaunchAgent no se activa hasta que alguien escriba la contraseña. El Mac ya no se suspende y arranca solo tras un corte de luz (`pmset`).
+- Comandos para pausarlo o quitarlo (`launchctl bootout`/`bootstrap`), para no depender de recordar el comando.
+
+## Aviso de caída por correo
+
+El runner ya reinicia solo lo que se cae; esto es para enterarte **cuando no pueda**. Diseño propuesto:
+
+- **Vigilante externo con latido:** el Mac manda un "estoy vivo" cada pocos minutos a un servicio externo (p. ej. Healthchecks.io, gratis) que te escribe si el latido deja de llegar. Es lo único que cubre también la caída del Mac entero o de su internet. No necesita contraseñas de correo en el Mac.
+- **Qué cuenta como "vivo":** no basta con que el proceso exista; el latido solo se envía si ffmpeg sigue entregando video (contador de frames que avanza). Más adelante se puede comprobar contra la API de YouTube que el directo está recibiendo señal.
+- **Anti-spam:** un correo por incidente y otro al recuperarse, con un mínimo de minutos entre avisos.
+- **Alternativa sin servicio externo:** enviar el correo desde el propio Mac con SMTP de Gmail y una *contraseña de aplicación* guardada en el llavero. Más simple, pero **no avisa si el Mac entero se cae**.
 
 ## Contenido: licencias y política de YouTube
 
@@ -214,9 +266,13 @@ Reloj de escena, cielo, sol/luna, estrellas, nubes, luces. Perfilar rendimiento 
 
 ### Fase 3 · Música y runner completo
 Playlist barajada, mezcla de audio, supervisor, watchdog, recarga programada. Directo no listado de 24 h.
+El runner y el supervisor ya existen; lo que falta es probarlos contra YouTube: ver
+[Prueba en el canal personal](#prueba-en-el-canal-personal) y [Plan de derechos de la música](#plan-de-derechos-de-la-música).
 
 ### Fase 4 · Endurecimiento 24/7 y salida a público
-LaunchAgent (con aprobación), `pmset`, avisos por push, créditos y descripción del canal, revisión de políticas de YouTube. Pasar el directo a público.
+[LaunchAgent](#launchagent-arranque-automático), [aviso de caída por correo](#aviso-de-caída-por-correo), `pmset`, créditos y
+descripción del canal (créditos ya hechos), revisión de políticas de YouTube. Pasar el directo a público.
+Las dos primeras piezas **no se dejan para el final**: se construyen en cuanto la prueba de la Fase 3 confirme que el envío funciona.
 
 ### Fase 5 · Extras (opcionales)
 - Votar el siguiente tema desde el **chat de YouTube**.
@@ -239,7 +295,9 @@ LaunchAgent (con aprobación), `pmset`, avisos por push, créditos y descripció
 - [ ] Revisar la **política vigente de YouTube** sobre directos 24/7 y contenido repetitivo, y los límites del archivo de directos.
 - [x] Revisar licencias de las **piezas** permitidas para uso comercial: `staunty` retirado de la app; el directo solo usa sets GPL/MIT/Apache/CC0.
 - [ ] Dónde y cómo guardar la **clave de stream** (Keychain vs `.env`).
-- [ ] Aprobar el **LaunchAgent** para el runner (excepción a la regla de `devctl`) y la configuración de energía del Mac mini.
-- [ ] Mecanismo de **aviso** cuando el directo cae (push, correo…).
+- [ ] Aprobar el **LaunchAgent** para el runner (excepción a la regla de `devctl`); la configuración de energía del Mac mini ya está (no se suspende, arranca tras un corte de luz). Falta activar el **inicio de sesión automático**. Ver [LaunchAgent](#launchagent-arranque-automático).
+- [ ] **Aviso de caída por correo**: decidir entre servicio externo con latido (recomendado) o SMTP desde el Mac. Ver [Aviso de caída por correo](#aviso-de-caída-por-correo).
+- [ ] **Prueba de derechos de la música** con videos privados antes del primer directo. Ver [Plan de derechos de la música](#plan-de-derechos-de-la-música).
+- [ ] Verificar el **canal personal** (teléfono + transmisión en vivo) y crear la transmisión no listada con clave reutilizable.
 - [ ] Nombre, identidad visual del canal y **CTA hacia la app**.
 - [ ] ¿Se mide el efecto en la app (instalaciones atribuidas al canal, enlace con UTM)?

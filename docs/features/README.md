@@ -32,6 +32,7 @@ la feature se implemente o cambie de posición. Por eso los IDs se leen salteado
 | ⬜ | F16 | [Puzzle Geo Hunt](./PUZZLE_GEO_HUNT.md) | Medio (nicho) | Muy Alto | GPS + AR + permisos |
 | ⬜ | F17 | [Jugar en Lichess (Board API)](./JUGAR_EN_LICHESS.md) | Alto (adquisición) | Alto | OAuth lichess (Board API) + `@chesspark/board` |
 | ⬜ | F18 | [Transmisión 24/7 a YouTube (Canal de Puzzles Lofi)](./TRANSMISION_24_7.md) | Medio-Alto (adquisición/marca) | Medio-Alto | `board-game-player`, `puzzles-provider`; `ffmpeg` + Mac mini 24/7 |
+| ⬜ | F19 | [SEO con Prerender de las Páginas Públicas](./SEO_PRERENDER.md) | Medio-Alto (adquisición) | Bajo (Fase 0) / Medio | — (la Fase 0 no toca el build) |
 
 > ✅ = ya implementado (detalle en [Ya implementado](#ya-implementado)) · ⬜ = pendiente.
 > **Regla del ID:** una feature nueva toma el siguiente número libre (F17, F18, …) y se
@@ -73,6 +74,9 @@ Va **después de F08**: reutiliza el lector de PGN que dejó F06 y, en vez de in
 
 ### F18 · [Transmisión 24/7 a YouTube (Canal de Puzzles Lofi)](./TRANSMISION_24_7.md)
 **Escaparate permanente de la marca, sin tocar la app de usuario.** Una app Nx aparte (`apps/live-stream`) resuelve puzzles sola, rota tema y ELO por programa horario y pinta una escena lofi con ciclo del día; un runner de Node (Puppeteer + `ffmpeg`) la emite a YouTube desde el Mac mini, sin OBS. Reutiliza `board-game-player` y `puzzles-provider`, así que no depende de ninguna feature pendiente. Va al final por ser **infra propia (Mac mini 24/7)** y por tener una incógnita técnica fuerte (¿el screencast aguanta 30 fps?) que se resuelve con una **Fase 0** de prueba de concepto; es independiente del resto y puede adelantarse si la prioridad es difusión.
+
+### F19 · [SEO con Prerender de las Páginas Públicas](./SEO_PRERENDER.md)
+**Que Google y las vistas previas vean algo más que un `<app-root>` vacío.** En vez de SSR (que exigiría servidor y plan Blaze), prerenderiza en el build solo las rutas públicas (`home`, `games`, `donation`, `privacy`) y deja Hosting estático. La **Fase 0** (metadatos coherentes, `robots.txt`, `sitemap.xml`) es casi gratis y no toca el build, así que puede adelantarse a todo lo demás; el resto depende de decidir el idioma indexable (uno o dos).
 
 ---
 

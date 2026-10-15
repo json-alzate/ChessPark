@@ -135,3 +135,18 @@ Lo que queda:
 - **Segunda entrega**: listas de reproducción y la lista automática de "me
   gusta" (ver el documento de la feature).
 
+---
+
+## 6. Directo 24/7 a YouTube (F18) 🔴 (prioridad alta)
+
+Diseño: [features/TRANSMISION_24_7.md](./features/TRANSMISION_24_7.md). Hecho: la app `live-stream`, el runner (reinicio
+solo si cae ffmpeg/Chrome o se congela la página), la música y la pantalla pública de créditos. Lo que falta, **en este orden**:
+
+- **Canal personal listo** 🔴 — verificar por teléfono y activar la transmisión en vivo (hasta 24 h de espera, así que se hace primero).
+- **Publicar ChessColate** 🔴 (PR #36) — la descripción del directo enlaza a `https://chesscolate.web.app/settings/credits`; sin el despliegue daría 404 y las licencias CC BY exigen esa lista pública.
+- **Prueba de derechos de la música** 🟡 — los 6 videos se generan con `tools/stream-runner/rights-check.mjs` y ya están subidos. Resultado hasta ahora: video 1 limpio; video 5 con un reclamo (**Robbero – Whisper**, ya retirada: quedan 87 pistas). **Falta confirmar los videos 2, 3, 4 y 6** (están como borrador). La pantalla de créditos de la app aún lista Whisper hasta el próximo despliegue. Ver [Plan de derechos](./features/TRANSMISION_24_7.md#plan-de-derechos-de-la-música).
+- **Primer directo no listado (2–3 h)** 🔴 — el envío por RTMP **nunca se ha probado contra YouTube**. Ver [Prueba en el canal personal](./features/TRANSMISION_24_7.md#prueba-en-el-canal-personal).
+- **LaunchAgent** 🔴 — que el directo vuelva solo tras un reinicio o un corte de luz. **Requiere tu aprobación explícita** y el inicio de sesión automático del Mac. Ver [LaunchAgent](./features/TRANSMISION_24_7.md#launchagent-arranque-automático).
+- **Aviso de caída por correo** 🔴 — latido a un servicio externo (recomendado) o SMTP desde el Mac. Ver [Aviso de caída](./features/TRANSMISION_24_7.md#aviso-de-caída-por-correo).
+- **Directo no listado de 24 h seguidas** 🔴 — antes de hacerlo público.
+- **Política de YouTube** 🔴 — revisar las reglas vigentes de directos 24/7 repetitivos y los límites del archivo de directos.
