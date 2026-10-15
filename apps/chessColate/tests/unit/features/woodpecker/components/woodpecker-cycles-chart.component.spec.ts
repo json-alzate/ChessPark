@@ -56,6 +56,14 @@ describe('WoodpeckerCyclesChartComponent', () => {
     expect(filas()[1].textContent).toContain('1:00');
   });
 
+  it('los valores no se parten en dos líneas ni con «100 %» o tiempos largos', () => {
+    pintar([resumen(1, 10, 3_725_000)]);
+
+    const valores = Array.from(filas()[0].querySelectorAll('span.tabular-nums')) as HTMLElement[];
+    expect(valores.map((v) => v.textContent?.trim())).toEqual(['100 %', '1:02:05']);
+    valores.forEach((v) => expect(v.classList).toContain('whitespace-nowrap'));
+  });
+
   it('la primera vuelta no tiene cambios que mostrar', () => {
     pintar();
 

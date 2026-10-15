@@ -10,7 +10,7 @@
     <div class="flex items-center gap-2">
       <span class="w-14 shrink-0 text-xs text-base-content/60">{{ 'WOODPECKER.progress.accuracy' | transloco }}</span>
       <progress class="progress progress-primary h-2 flex-1" [value]="row.summary.accuracy" max="100"></progress>
-      <span class="w-11 shrink-0 text-right text-sm font-bold tabular-nums">{{ roundedPercent(row.summary.accuracy) }} %</span>
+      <span class="min-w-14 shrink-0 whitespace-nowrap text-right text-sm font-bold tabular-nums">{{ roundedPercent(row.summary.accuracy) }} %</span>
     </div>
     @if (accuracyTrend(row); as accuracy) {
     @if (accuracy !== 'same') {
@@ -29,7 +29,7 @@
     <div class="mt-2 flex items-center gap-2">
       <span class="w-14 shrink-0 text-xs text-base-content/60">{{ 'WOODPECKER.progress.time' | transloco }}</span>
       <progress class="progress progress-secondary h-2 flex-1" [value]="row.timeBar" max="100"></progress>
-      <span class="w-11 shrink-0 text-right text-sm font-bold tabular-nums">{{ formatDuration(row.summary.totalTimeMs) }}</span>
+      <span class="min-w-14 shrink-0 whitespace-nowrap text-right text-sm font-bold tabular-nums">{{ formatDuration(row.summary.totalTimeMs) }}</span>
     </div>
     @if (timeTrend(row); as time) {
     @if (time !== 'same') {

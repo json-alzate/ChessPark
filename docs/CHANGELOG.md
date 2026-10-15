@@ -41,6 +41,7 @@ y el versionado sigue [SemVer](https://semver.org/lang/es/) para `versionName`.
 - **Temas sin traducción:** un tema de Lichess que no está en la lista de nombres ya no sale como etiqueta vacía.
 - **Racha:** si falla la descarga del siguiente ejercicio, «Reintentar» lo vuelve a pedir y conserva la racha; antes la
   única salida era «Otra racha», que la daba por terminada.
+- **Pájaro carpintero:** en la evolución, «100 %» y los tiempos de más de una hora se partían en dos líneas.
 - **Textos sin traducir:** los avisos de la donación (cargas, errores y agradecimiento), el aviso «Iniciando entrenamiento» y el
   diálogo de borrar una sesión del historial salían siempre en español; ahora siguen el idioma de la app.
 - **Registro:** si te equivocabas en la confirmación de la contraseña y corregías la contraseña principal, el botón
