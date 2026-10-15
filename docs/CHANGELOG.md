@@ -36,7 +36,8 @@ y el versionado sigue [SemVer](https://semver.org/lang/es/) para `versionName`.
 ### Corregido
 - **Descargas de ejercicios:** una descarga que no responde se abandona a los 8 s y se reintenta una vez; si
   todo un grupo de archivos falla por error del servidor, la búsqueda se corta en vez de encadenar esperas
-  (antes la pantalla podía quedarse en «Creando sesión…» o «Buscando un ejercicio…» sin fin).
+  (antes la pantalla podía quedarse en «Creando sesión…» o «Buscando un ejercicio…» sin fin). Con el catálogo
+  sin responder, el Chess Runner da el aviso a los ~17 s y la Racha a los ~32 s (antes 64 s y más de 2 min).
 - **Temas sin traducción:** un tema de Lichess que no está en la lista de nombres ya no sale como etiqueta vacía.
 - **Registro:** si te equivocabas en la confirmación de la contraseña y corregías la contraseña principal, el botón
   seguía bloqueado con «Las contraseñas no coinciden» hasta reescribir la confirmación; ahora coinciden en cuanto

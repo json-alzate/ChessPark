@@ -90,6 +90,31 @@ describe('RunnerPuzzleService', () => {
     expect(provider.getPuzzles).toHaveBeenCalledTimes(4);
   });
 
+  it('si el catálogo tarda demasiado no sigue probando temas y se rinde con null', async () => {
+    let ahora = 1_000_000;
+    jest.spyOn(Date, 'now').mockImplementation(() => ahora);
+    // Cada tema agota sus tiempos de espera (16 s) antes de devolver vacío
+    provider.getPuzzles.mockImplementation(async () => {
+      ahora += 16_000;
+      return [];
+    });
+
+    expect(await service.next(1300, new Set())).toBeNull();
+    expect(provider.getPuzzles).toHaveBeenCalledTimes(1);
+  });
+
+  it('si cada tema responde rápido sigue probando hasta los cuatro', async () => {
+    let ahora = 1_000_000;
+    jest.spyOn(Date, 'now').mockImplementation(() => ahora);
+    provider.getPuzzles.mockImplementation(async () => {
+      ahora += 500;
+      return [];
+    });
+
+    expect(await service.next(1300, new Set())).toBeNull();
+    expect(provider.getPuzzles).toHaveBeenCalledTimes(4);
+  });
+
   it('sin conexión (todo falla) devuelve null sin lanzar', async () => {
     provider.getPuzzles.mockRejectedValue(new Error('Error de red'));
 

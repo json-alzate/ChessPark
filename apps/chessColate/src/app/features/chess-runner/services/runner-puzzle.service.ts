@@ -19,6 +19,12 @@ export class RunnerPuzzleService {
   /** Temas distintos que se prueban antes de rendirse (cada uno puede traer un archivo de cientos de KB). */
   private readonly ATTEMPTS = 4;
   private readonly FETCH_COUNT = 20;
+  /**
+   * Tiempo tras el que no se prueba otro tema: con el catálogo sin responder cada tema agota sus tiempos de
+   * espera (unos 16 s) y cuatro seguidos dejarían la pantalla en «Buscando…» más de un minuto. Con el error a la
+   * vista el usuario puede reintentar, que elige otros temas.
+   */
+  private readonly TIME_BUDGET_MS = 12_000;
 
   private get themes(): string[] {
     return getManifestThemes().filter((theme) => !STREAK_EXCLUDED_THEMES.includes(theme));
@@ -27,8 +33,12 @@ export class RunnerPuzzleService {
   /** Un ejercicio nuevo, o `null` si el catálogo no responde (sin conexión y sin caché). */
   async next(elo: number, played: Set<string>, random: () => number = Math.random): Promise<Puzzle | null> {
     const themes = [...this.themes].sort(() => random() - 0.5);
+    const startedAt = Date.now();
 
     for (const theme of themes.slice(0, this.ATTEMPTS)) {
+      if (Date.now() - startedAt >= this.TIME_BUDGET_MS) {
+        break;
+      }
       try {
         const puzzles = await this.puzzlesProvider.getPuzzles({
           elo,
