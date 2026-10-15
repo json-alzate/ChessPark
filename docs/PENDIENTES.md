@@ -186,3 +186,15 @@ móvil con gestos táctiles reales y con el teclado. Lo que no se puede cerrar d
 - **Llevarlo delante de las rutinas** 🔴 — hoy es un modo suelto del menú. Meterlo antes de cada ejercicio de las rutinas
   (con un interruptor en Ajustes) es la segunda fase; toca `TrainingPage`.
 - **Sonidos propios** 🔴 (salto, tropiezo, llegada) y respetar «reducir movimiento» del sistema.
+
+## 10. Hallazgos de la pasada de pruebas 🔴 (prioridad baja)
+
+Salieron al recorrer la app entera en móvil y escritorio, y no se arreglaron por salirse del alcance:
+
+- **No se puede borrar una sesión personalizada** 🔴 — `CustomPlansService` solo tiene `getById`, `save` y `update`; la lista
+  (`/puzzles/custom-plans`) no ofrece borrar. Hace falta borrado en Firestore, quitarla del store, retirar su copia pública
+  (`PublicPlanRepository`) y revisar las reglas de seguridad (no están en este repo).
+- **El contador del bloque cuenta ejercicios jugados, no resueltos** — tras fallar el primero del Reto 333 el encabezado dice
+  «1 / 333» y el resultado «0 / 333». Es el comportamiento de siempre en todas las rutinas; decidir si se quiere cambiar.
+- **Errores 401 de RevenueCat en la web** — esperados sin credenciales de la tienda; ensucian la consola en desarrollo.
+

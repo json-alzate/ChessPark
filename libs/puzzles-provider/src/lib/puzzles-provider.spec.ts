@@ -353,6 +353,27 @@ describe('PuzzlesProvider', () => {
       rapido.close();
     });
 
+    it('si falla un batch entero por error del CDN no sigue con los ELOs vecinos', async () => {
+      (global.fetch as jest.Mock).mockResolvedValue({ ok: false, status: 503 });
+      const caido = new PuzzlesProvider({ enableCache: false, batchSize: 3 });
+
+      expect(await caido.getPuzzles({ elo: 1500, theme: 'fork', count: 10 })).toEqual([]);
+
+      // Solo se pidió el primer batch
+      expect((global.fetch as jest.Mock).mock.calls).toHaveLength(3);
+      caido.close();
+    });
+
+    it('un batch de archivos que no existen (404) sí sigue buscando en otros ELOs', async () => {
+      (global.fetch as jest.Mock).mockResolvedValue({ ok: false, status: 404 });
+      const p = new PuzzlesProvider({ enableCache: false, batchSize: 3 });
+
+      await p.getPuzzles({ elo: 1500, theme: 'fork', count: 10 });
+
+      expect((global.fetch as jest.Mock).mock.calls.length).toBeGreaterThan(3);
+      p.close();
+    });
+
     it('un 404 sigue siendo un archivo vacío, sin reintento', async () => {
       (global.fetch as jest.Mock).mockResolvedValue({ ok: false, status: 404 });
       const p = new PuzzlesProvider({ enableCache: false });

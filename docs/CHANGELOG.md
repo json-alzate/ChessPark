@@ -31,6 +31,12 @@ y el versionado sigue [SemVer](https://semver.org/lang/es/) para `versionName`.
   caballo, mantener en el aire; la dama, doble salto; el rey, un salto justo). Se juega con el dedo, con el
   teclado y con pistas en pantalla; tropezar no es castigo. Al superar las piezas aparece el tablero con su reloj.
 
+### Corregido
+- **Descargas de ejercicios:** una descarga que no responde se abandona a los 8 s y se reintenta una vez; si
+  todo un grupo de archivos falla por error del servidor, la búsqueda se corta en vez de encadenar esperas
+  (antes la pantalla podía quedarse en «Creando sesión…» o «Buscando un ejercicio…» sin fin).
+- **Temas sin traducción:** un tema de Lichess que no está en la lista de nombres ya no sale como etiqueta vacía.
+
 ---
 
 ## [2.2.0] — 2026-10-13 · `versionCode 24`

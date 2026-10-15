@@ -119,10 +119,12 @@ export class PuzzlesProvider {
       const batch = eloSequence.slice(i, i + this.config.batchSize);
 
       // Descargar el batch en paralelo con control de concurrencia
+      let failedInBatch = 0;
       const batchPromises = batch.map(currentElo =>
         this.fetchWithConcurrencyLimit(() =>
           this.fetchPuzzlesByElo(currentElo, theme, openingFamily)
             .catch((error) => {
+              failedInBatch++;
               console.warn(`Error al obtener puzzles para ELO ${currentElo}:`, error);
               return [] as Puzzle[];
             })
@@ -135,6 +137,11 @@ export class PuzzlesProvider {
       if (batchPuzzles.length > 0) {
         allPuzzles = allPuzzles.concat(batchPuzzles);
       }
+
+      // Si todo un batch falló por error (no por archivos que no existen) y aún no hay nada, el CDN
+      // no está respondiendo: seguir con los ELOs vecinos solo suma esperas de varios segundos cada una.
+      // Quien llama decide si prueba otro tema.
+      if (allPuzzles.length === 0 && failedInBatch === batch.length) break;
 
       // Si ya tenemos suficientes puzzles, detener la búsqueda
       if (allPuzzles.length >= count) break;
