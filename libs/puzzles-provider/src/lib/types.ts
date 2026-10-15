@@ -77,6 +77,11 @@ export interface PuzzlesProviderConfig {
   maxConcurrentDownloads?: number;
   /** Tamaño del batch para procesar ELOs en paralelo (por defecto: 3) */
   batchSize?: number;
+  /**
+   * Tiempo máximo de espera por archivo en milisegundos (por defecto: 8 s). Sin él, una descarga que
+   * se cuelga (una red inestable) deja la pantalla esperando para siempre.
+   */
+  requestTimeoutMs?: number;
 }
 
 /**

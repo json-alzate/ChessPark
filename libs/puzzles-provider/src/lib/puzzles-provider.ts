@@ -13,6 +13,14 @@ import {
   shuffleArray,
 } from './utils';
 
+/** Un archivo que no respondió a tiempo. */
+class TimeoutError extends Error {
+  constructor(url: string, ms: number) {
+    super(`Tiempo de espera agotado (${ms} ms) al descargar ${url}`);
+    this.name = 'TimeoutError';
+  }
+}
+
 /**
  * Proveedor principal para obtener puzzles de ajedrez
  * Maneja la lógica de caché, obtención desde CDN y búsqueda inteligente por ELO
@@ -30,6 +38,7 @@ export class PuzzlesProvider {
       cacheExpirationMs: config?.cacheExpirationMs ?? DEFAULT_CONFIG.CACHE_EXPIRATION_MS,
       maxConcurrentDownloads: config?.maxConcurrentDownloads ?? DEFAULT_CONFIG.MAX_CONCURRENT_DOWNLOADS,
       batchSize: config?.batchSize ?? DEFAULT_CONFIG.BATCH_SIZE,
+      requestTimeoutMs: config?.requestTimeoutMs ?? DEFAULT_CONFIG.REQUEST_TIMEOUT_MS,
     };
 
     this.cacheService = new PuzzlesCacheService(
@@ -202,11 +211,42 @@ export class PuzzlesProvider {
   }
 
   /**
-   * Descarga puzzles desde el CDN
+   * Descarga puzzles desde el CDN.
+   *
+   * Cada intento tiene un tiempo máximo (`requestTimeoutMs`) y un archivo que no responde se reintenta
+   * una vez antes de rendirse: una descarga colgada no puede dejar la pantalla esperando para siempre ni
+   * ocupar una de las plazas de descarga simultánea.
    */
   private async fetchFromCDN(url: string): Promise<Puzzle[]> {
+    const ATTEMPTS = 2;
+    let lastError: unknown;
+
+    for (let attempt = 1; attempt <= ATTEMPTS; attempt++) {
+      try {
+        return await this.fetchOnce(url);
+      } catch (error) {
+        lastError = error;
+        // Un error de servidor (distinto de 404/403, que ya devuelven vacío) no mejora al reintentar
+        // inmediatamente, pero un corte de red o un tiempo agotado sí puede
+        if (!(error instanceof TimeoutError) && !(error instanceof TypeError)) {
+          break;
+        }
+      }
+    }
+
+    if (lastError instanceof TypeError && lastError.message.includes('fetch')) {
+      throw new Error('Error de red al obtener puzzles. Verifica tu conexión.');
+    }
+    throw lastError;
+  }
+
+  /** Un intento de descarga, con su tiempo máximo. */
+  private async fetchOnce(url: string): Promise<Puzzle[]> {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), this.config.requestTimeoutMs);
+
     try {
-      const response = await fetch(url);
+      const response = await fetch(url, { signal: controller.signal });
 
       if (!response.ok) {
         if (response.status === 404 || response.status === 403) {
@@ -221,10 +261,12 @@ export class PuzzlesProvider {
       // Convertir los puzzles del CDN al formato completo esperado
       return puzzles.map((puzzle: any) => this.enrichPuzzle(puzzle));
     } catch (error) {
-      if (error instanceof TypeError && error.message.includes('fetch')) {
-        throw new Error('Error de red al obtener puzzles. Verifica tu conexión.');
+      if (controller.signal.aborted) {
+        throw new TimeoutError(url, this.config.requestTimeoutMs);
       }
       throw error;
+    } finally {
+      clearTimeout(timer);
     }
   }
 

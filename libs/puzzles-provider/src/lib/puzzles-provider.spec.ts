@@ -270,6 +270,100 @@ describe('PuzzlesProvider', () => {
     });
   });
 
+  describe('descargas que se cuelgan', () => {
+    /** Un fetch que nunca responde, salvo que se le aborte, como hace el navegador con `signal`. */
+    const fetchColgado = () =>
+      (global.fetch as jest.Mock).mockImplementation(
+        (_url: string, init?: { signal?: AbortSignal }) =>
+          new Promise((_resolve, reject) => {
+            init?.signal?.addEventListener('abort', () =>
+              reject(Object.assign(new Error('The operation was aborted'), { name: 'AbortError' }))
+            );
+          })
+      );
+
+    beforeEach(() => {
+      jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+    });
+
+    afterEach(() => jest.restoreAllMocks());
+
+    it('un archivo que no responde se abandona tras el tiempo máximo en vez de esperar para siempre', async () => {
+      fetchColgado();
+      const lento = new PuzzlesProvider({ enableCache: false, requestTimeoutMs: 20 });
+
+      const puzzles = await lento.getPuzzles({ elo: 1500, theme: 'fork', count: 10 });
+
+      expect(puzzles).toEqual([]);
+      lento.close();
+    });
+
+    it('lo reintenta una vez antes de rendirse', async () => {
+      fetchColgado();
+      const lento = new PuzzlesProvider({ enableCache: false, requestTimeoutMs: 20 });
+
+      await lento.getPuzzles({ elo: 1500, theme: 'fork', count: 10 });
+
+      // Cada archivo se pidió dos veces (el intento y su reintento)
+      const urls = (global.fetch as jest.Mock).mock.calls.map(([url]) => url);
+      expect(urls.length).toBeGreaterThanOrEqual(2);
+      expect(urls.length % 2).toBe(0);
+      expect(new Set(urls).size).toBe(urls.length / 2);
+      lento.close();
+    });
+
+    it('si el reintento responde, se obtienen los puzzles', async () => {
+      let llamadas = 0;
+      (global.fetch as jest.Mock).mockImplementation(
+        (_url: string, init?: { signal?: AbortSignal }) => {
+          if (llamadas++ === 0) {
+            return new Promise((_r, reject) =>
+              init?.signal?.addEventListener('abort', () =>
+                reject(Object.assign(new Error('aborted'), { name: 'AbortError' }))
+              )
+            );
+          }
+          return Promise.resolve({
+            ok: true,
+            json: async () => [{ uid: 'ok', fen: 'f', moves: 'e2e4', rating: 1500, themes: ['fork'] }],
+          });
+        }
+      );
+      const lento = new PuzzlesProvider({ enableCache: false, requestTimeoutMs: 20 });
+
+      const puzzles = await lento.getPuzzles({ elo: 1500, theme: 'fork', count: 10 });
+
+      expect(puzzles.map((p) => p.uid)).toContain('ok');
+      lento.close();
+    });
+
+    it('el tiempo máximo se puede configurar y por defecto son 8 s', () => {
+      expect(provider.getConfig().requestTimeoutMs).toBe(8000);
+      expect(new PuzzlesProvider({ requestTimeoutMs: 1234 }).getConfig().requestTimeoutMs).toBe(1234);
+    });
+
+    it('un error de servidor (500) no se reintenta: no mejora esperando', async () => {
+      (global.fetch as jest.Mock).mockResolvedValue({ ok: false, status: 500 });
+      const rapido = new PuzzlesProvider({ enableCache: false });
+
+      await rapido.getPuzzles({ elo: 1500, theme: 'fork', count: 10 });
+
+      const urls = (global.fetch as jest.Mock).mock.calls.map(([url]) => url);
+      expect(new Set(urls).size).toBe(urls.length);
+      rapido.close();
+    });
+
+    it('un 404 sigue siendo un archivo vacío, sin reintento', async () => {
+      (global.fetch as jest.Mock).mockResolvedValue({ ok: false, status: 404 });
+      const p = new PuzzlesProvider({ enableCache: false });
+
+      expect(await p.getPuzzles({ elo: 1500, theme: 'fork', count: 10 })).toEqual([]);
+      const urls = (global.fetch as jest.Mock).mock.calls.map(([url]) => url);
+      expect(new Set(urls).size).toBe(urls.length);
+      p.close();
+    });
+  });
+
   describe('filtrado por manifiesto', () => {
     beforeEach(() => {
       (global.fetch as jest.Mock).mockResolvedValue({

@@ -116,11 +116,21 @@ describe('AppService', () => {
       expect(service.getNameThemePuzzleByValue('fork', 'fr')).toBe('Fork');
     });
 
-    it('el nombre de un tema inexistente es cadena vacía', async () => {
-      jest.spyOn(console, 'log').mockImplementation(() => undefined);
+    it('un tema que la app no ofrece (etiqueta de Lichess) se enseña con su nombre, nunca vacío', async () => {
       await loadThemes();
 
-      expect(service.getNameThemePuzzleByValue('nada')).toBe('');
+      expect(service.getNameThemePuzzleByValue('enPassant', 'es')).toBe('Captura al paso');
+      expect(service.getNameThemePuzzleByValue('enPassant', 'en')).toBe('En passant');
+      expect(service.getNameThemePuzzleByValue('algoNuevo', 'es')).toBe('Algo nuevo');
+    });
+
+    it('consultar el nombre de un tema desconocido no llena la consola de avisos', async () => {
+      const aviso = jest.spyOn(console, 'log').mockImplementation(() => undefined);
+      await loadThemes();
+
+      service.getNameThemePuzzleByValue('enPassant');
+
+      expect(aviso).not.toHaveBeenCalled();
     });
 
     it('la descripción del tema sigue el idioma activo y es vacía si no existe', async () => {
