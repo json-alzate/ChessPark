@@ -9,6 +9,7 @@ export type RoutineKind =
   | 'infinity'
   | 'reto333'
   | 'streak'
+  | 'woodpecker'
   | 'custom'
   | 'public';
 
@@ -46,6 +47,8 @@ export function routineMetaFromPlanType(planType: string): RoutineMeta {
       return { kind: 'reto333', minutes: 0, category: '', name: 'Reto 333' };
     case 'streak':
       return { kind: 'streak', minutes: 0, category: '', name: 'Racha' };
+    case 'woodpecker':
+      return { kind: 'woodpecker', minutes: 0, category: '', name: 'Pájaro carpintero' };
     case 'custom':
       return { kind: 'custom', minutes: 0, category: '', name: 'Personalizada' };
     case 'public':
@@ -83,6 +86,8 @@ const SCREEN_NAMES: Record<string, string> = {
   '/games/viewer': 'Reproductor de partidas',
   '/analytics': 'Análisis de partidas',
   '/streak': 'Racha',
+  '/woodpecker': 'Pájaro carpintero',
+  '/woodpecker/play': 'Pájaro carpintero: vuelta',
   '/coordinates': 'Coordenadas',
   '/knight-tour': 'Recorrido del Caballo',
   '/chess960': 'Ajedrez 960',
