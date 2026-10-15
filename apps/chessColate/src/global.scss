@@ -76,6 +76,19 @@
   }
 }
 
+/* Teléfono apaisado: el alto manda. Sin este tope el tablero llenaría el ancho (un cuadrado mayor que la
+ * propia pantalla) y habría que desplazarse para verlo entero. Va centrado; la columna de texto sigue debajo. */
+@media (max-width: 1023px) and (orientation: landscape) and (max-height: 600px) {
+  .cc-board-column {
+    width: max(240px, calc(100vh - 120px));
+    margin-inline: auto;
+
+    &.cc-board-column--compact {
+      width: max(240px, calc(100vh - 170px));
+    }
+  }
+}
+
 /* Mientras se arrastra el asa no se selecciona texto y el cursor no parpadea al pasar por encima de otros elementos */
 body.cc-board-resizing {
   user-select: none;

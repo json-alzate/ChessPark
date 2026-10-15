@@ -48,6 +48,8 @@ y el versionado sigue [SemVer](https://semver.org/lang/es/) para `versionName`.
   del bloque parado, y un bloque que sigue vacío se salta. Los ejercicios repetidos en una misma lista se descartan.
 - **Almacenamiento:** los botones de papelera de cada tema y de cada archivo se anunciaban a los lectores de pantalla como
   «Borrar todo»; ahora dicen qué borran.
+- **Teléfono apaisado:** el tablero de las pantallas de ejercicios ya no pasa del alto de la pantalla (antes era un cuadrado
+  del ancho completo, mayor que la ventana, y había que desplazarse para verlo entero).
 - **Ortografía:** «05:00 o 3 ejercicios» ya no lleva tilde en la «o».
 - **Textos sin traducir:** los avisos de la donación (cargas, errores y agradecimiento), el aviso «Iniciando entrenamiento» y el
   diálogo de borrar una sesión del historial salían siempre en español; ahora siguen el idioma de la app.
