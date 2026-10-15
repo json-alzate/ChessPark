@@ -251,7 +251,8 @@ El más largo y el que más cuesta seguir. En orden:
      `selectPuzzleToPlay()` espera la descarga con el tablero tapado (`isLoadingPuzzles`) y el reloj del
      bloque parado, y si sigue vacío salta al siguiente bloque. Si en toda la sesión no llegó ni un
      ejercicio, `abortWithoutPuzzles()` avisa y vuelve en vez de abrir un resumen vacío.
-   - `PuzzlesProvider` limita cada descarga a 8 s (con un reintento), corta la búsqueda de ELOs vecinos
+   - `PuzzlesProvider` limita cada descarga a 8 s (con un reintento que va al espejo
+     `raw.githubusercontent.com` si la ruta es de jsDelivr; un 404 no lo consulta), corta la búsqueda de ELOs vecinos
      cuando falla un grupo entero de archivos y no devuelve el mismo ejercicio dos veces. `StreakService` y
      `RunnerPuzzleService` añaden un presupuesto de tiempo para no encadenar esperas con el CDN caído.
 6. Cada puzzle termina en `onPuzzleCompleted(puzzle, resultado)`, que en orden:

@@ -1,4 +1,4 @@
-import { buildPuzzleUrl, estimateSizeBytes, parsePuzzleUrl } from './utils';
+import { buildMirrorUrl, buildPuzzleUrl, estimateSizeBytes, parsePuzzleUrl } from './utils';
 import { ELO_CONSTANTS } from './constants';
 import { Puzzle } from './types';
 
@@ -63,5 +63,23 @@ describe('estimateSizeBytes', () => {
 
   it('no falla con una lista vacía', () => {
     expect(estimateSizeBytes([])).toBe(2); // '[]'
+  });
+});
+
+describe('buildMirrorUrl', () => {
+  it('convierte una URL de jsDelivr para GitHub en la del mismo archivo en raw.githubusercontent.com', () => {
+    expect(
+      buildMirrorUrl(
+        'https://cdn.jsdelivr.net/gh/json-alzate/chesscolate-puzzles-files-themes-a-h@main/puzzlesFilesThemes/fork/fork_1500_1519.json'
+      )
+    ).toBe(
+      'https://raw.githubusercontent.com/json-alzate/chesscolate-puzzles-files-themes-a-h/main/puzzlesFilesThemes/fork/fork_1500_1519.json'
+    );
+  });
+
+  it('con cualquier otra dirección no hay espejo', () => {
+    expect(buildMirrorUrl('https://example.com/puzzles.json')).toBeNull();
+    expect(buildMirrorUrl('https://cdn.jsdelivr.net/npm/paquete@1/archivo.json')).toBeNull();
+    expect(buildMirrorUrl('')).toBeNull();
   });
 });

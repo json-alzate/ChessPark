@@ -34,6 +34,9 @@ y el versionado sigue [SemVer](https://semver.org/lang/es/) para `versionName`.
   los extremos.
 
 ### Corregido
+- **Descargas de ejercicios sin jsDelivr:** el reintento de una descarga que falla por red, tiempo o error del
+  servidor va a un espejo (`raw.githubusercontent.com`) con el mismo archivo; con jsDelivr caído o colgado los
+  ejercicios cargan igual (un 404 no consulta el espejo).
 - **Descargas de ejercicios:** una descarga que no responde se abandona a los 8 s y se reintenta una vez; si
   todo un grupo de archivos falla por error del servidor, la búsqueda se corta en vez de encadenar esperas
   (antes la pantalla podía quedarse en «Creando sesión…» o «Buscando un ejercicio…» sin fin). Con el catálogo

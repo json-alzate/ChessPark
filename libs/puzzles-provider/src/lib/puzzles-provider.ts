@@ -3,6 +3,7 @@ import { DEFAULT_CONFIG } from './constants';
 import { getManifestThemes, getValidEloStarts } from './manifest';
 import { Puzzle, PuzzleQueryOptions, PuzzlesProviderConfig } from './types';
 import {
+  buildMirrorUrl,
   buildPuzzleUrl,
   filterByColor,
   filterEloSequenceByManifest,
@@ -39,6 +40,7 @@ export class PuzzlesProvider {
       maxConcurrentDownloads: config?.maxConcurrentDownloads ?? DEFAULT_CONFIG.MAX_CONCURRENT_DOWNLOADS,
       batchSize: config?.batchSize ?? DEFAULT_CONFIG.BATCH_SIZE,
       requestTimeoutMs: config?.requestTimeoutMs ?? DEFAULT_CONFIG.REQUEST_TIMEOUT_MS,
+      mirrorEnabled: config?.mirrorEnabled ?? DEFAULT_CONFIG.MIRROR_ENABLED,
     };
 
     this.cacheService = new PuzzlesCacheService(
@@ -240,29 +242,33 @@ export class PuzzlesProvider {
    *
    * Cada intento tiene un tiempo máximo (`requestTimeoutMs`) y un archivo que no responde se reintenta
    * una vez antes de rendirse: una descarga colgada no puede dejar la pantalla esperando para siempre ni
-   * ocupar una de las plazas de descarga simultánea.
+   * ocupar una de las plazas de descarga simultánea. El segundo intento va al espejo
+   * (`raw.githubusercontent.com`) si lo hay: cuando jsDelivr falla suele ser él, no el archivo; sin
+   * espejo se repite el mismo servidor (solo ante tiempo agotado o corte de red, no ante un error 5xx).
    */
   private async fetchFromCDN(url: string): Promise<Puzzle[]> {
-    const ATTEMPTS = 2;
-    let lastError: unknown;
+    const mirror = this.config.mirrorEnabled ? buildMirrorUrl(url) : null;
+    const attempts = [url, mirror ?? url];
+    let firstError: unknown;
 
-    for (let attempt = 1; attempt <= ATTEMPTS; attempt++) {
+    for (let attempt = 0; attempt < attempts.length; attempt++) {
       try {
-        return await this.fetchOnce(url);
+        return await this.fetchOnce(attempts[attempt]);
       } catch (error) {
-        lastError = error;
-        // Un error de servidor (distinto de 404/403, que ya devuelven vacío) no mejora al reintentar
-        // inmediatamente, pero un corte de red o un tiempo agotado sí puede
-        if (!(error instanceof TimeoutError) && !(error instanceof TypeError)) {
+        firstError ??= error;
+        const transient = error instanceof TimeoutError || error instanceof TypeError;
+        // Un error de servidor (distinto de 404/403, que ya devuelven vacío) solo merece otro intento si
+        // hay otro servidor al que pedirlo
+        if (!transient && !(mirror && attempt === 0)) {
           break;
         }
       }
     }
 
-    if (lastError instanceof TypeError && lastError.message.includes('fetch')) {
+    if (firstError instanceof TypeError && firstError.message.includes('fetch')) {
       throw new Error('Error de red al obtener puzzles. Verifica tu conexión.');
     }
-    throw lastError;
+    throw firstError;
   }
 
   /** Un intento de descarga, con su tiempo máximo. */

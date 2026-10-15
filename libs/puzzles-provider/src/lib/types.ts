@@ -82,6 +82,11 @@ export interface PuzzlesProviderConfig {
    * se cuelga (una red inestable) deja la pantalla esperando para siempre.
    */
   requestTimeoutMs?: number;
+  /**
+   * Si jsDelivr falla (tiempo agotado, red o error del servidor), pedir el mismo archivo a
+   * `raw.githubusercontent.com` en el segundo intento (por defecto: true).
+   */
+  mirrorEnabled?: boolean;
 }
 
 /**

@@ -314,18 +314,63 @@ describe('PuzzlesProvider', () => {
       lento.close();
     });
 
-    it('lo reintenta una vez antes de rendirse', async () => {
+    it('lo reintenta una vez antes de rendirse, la segunda en el espejo de GitHub', async () => {
       fetchColgado();
       const lento = new PuzzlesProvider({ enableCache: false, requestTimeoutMs: 20 });
 
       await lento.getPuzzles({ elo: 1500, theme: 'fork', count: 10 });
 
-      // Cada archivo se pidió dos veces (el intento y su reintento)
-      const urls = (global.fetch as jest.Mock).mock.calls.map(([url]) => url);
+      // Cada archivo se pidió dos veces: a jsDelivr y, después, al mismo archivo en raw.githubusercontent.com
+      const urls = (global.fetch as jest.Mock).mock.calls.map(([url]) => url as string);
       expect(urls.length).toBeGreaterThanOrEqual(2);
       expect(urls.length % 2).toBe(0);
+      const primarias = urls.filter((u) => u.startsWith('https://cdn.jsdelivr.net/'));
+      const espejos = urls.filter((u) => u.startsWith('https://raw.githubusercontent.com/'));
+      expect(primarias).toHaveLength(urls.length / 2);
+      expect(espejos).toHaveLength(urls.length / 2);
+      expect(espejos[0]).toMatch(/^https:\/\/raw\.githubusercontent\.com\/json-alzate\/chesscolate-puzzles-files-themes-[a-z]-[a-z]\/main\/puzzlesFilesThemes\/fork\/fork_\d+_\d+\.json$/);
+      lento.close();
+    });
+
+    it('sin espejo repite el mismo servidor, como antes', async () => {
+      fetchColgado();
+      const lento = new PuzzlesProvider({ enableCache: false, requestTimeoutMs: 20, mirrorEnabled: false });
+
+      await lento.getPuzzles({ elo: 1500, theme: 'fork', count: 10 });
+
+      const urls = (global.fetch as jest.Mock).mock.calls.map(([url]) => url as string);
+      expect(urls.every((u) => u.startsWith('https://cdn.jsdelivr.net/'))).toBe(true);
       expect(new Set(urls).size).toBe(urls.length / 2);
       lento.close();
+    });
+
+    it('si jsDelivr responde con un error de servidor, el espejo salva la descarga', async () => {
+      (global.fetch as jest.Mock).mockImplementation((url: string) =>
+        Promise.resolve(
+          url.startsWith('https://cdn.jsdelivr.net/')
+            ? { ok: false, status: 503 }
+            : {
+                ok: true,
+                json: async () => [{ uid: 'espejo', fen: 'f', moves: 'e2e4', rating: 1500, themes: ['fork'] }],
+              }
+        )
+      );
+      const p = new PuzzlesProvider({ enableCache: false });
+
+      const puzzles = await p.getPuzzles({ elo: 1500, theme: 'fork', count: 10 });
+
+      expect(puzzles.map((x) => x.uid)).toContain('espejo');
+      p.close();
+    });
+
+    it('un 404 de jsDelivr es definitivo: no se consulta el espejo', async () => {
+      (global.fetch as jest.Mock).mockResolvedValue({ ok: false, status: 404 });
+      const p = new PuzzlesProvider({ enableCache: false });
+
+      expect(await p.getPuzzles({ elo: 1500, theme: 'fork', count: 10 })).toEqual([]);
+      const urls = (global.fetch as jest.Mock).mock.calls.map(([url]) => url as string);
+      expect(urls.some((u) => u.includes('raw.githubusercontent.com'))).toBe(false);
+      p.close();
     });
 
     it('si el reintento responde, se obtienen los puzzles', async () => {
@@ -358,9 +403,9 @@ describe('PuzzlesProvider', () => {
       expect(new PuzzlesProvider({ requestTimeoutMs: 1234 }).getConfig().requestTimeoutMs).toBe(1234);
     });
 
-    it('un error de servidor (500) no se reintenta: no mejora esperando', async () => {
+    it('un error de servidor (500) no se reintenta contra el mismo servidor: no mejora esperando', async () => {
       (global.fetch as jest.Mock).mockResolvedValue({ ok: false, status: 500 });
-      const rapido = new PuzzlesProvider({ enableCache: false });
+      const rapido = new PuzzlesProvider({ enableCache: false, mirrorEnabled: false });
 
       await rapido.getPuzzles({ elo: 1500, theme: 'fork', count: 10 });
 
@@ -375,8 +420,8 @@ describe('PuzzlesProvider', () => {
 
       expect(await caido.getPuzzles({ elo: 1500, theme: 'fork', count: 10 })).toEqual([]);
 
-      // Solo se pidió el primer batch
-      expect((global.fetch as jest.Mock).mock.calls).toHaveLength(3);
+      // Solo se pidió el primer batch: tres archivos, cada uno a jsDelivr y a su espejo
+      expect((global.fetch as jest.Mock).mock.calls).toHaveLength(6);
       caido.close();
     });
 

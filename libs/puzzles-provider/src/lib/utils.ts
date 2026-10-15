@@ -65,6 +65,16 @@ export function buildPuzzleUrl(
 }
 
 /**
+ * Dirección del mismo archivo en `raw.githubusercontent.com`, para cuando jsDelivr no responde
+ * (cuelgues o 503 que se han visto con archivos que existen). Solo entiende las URLs de jsDelivr
+ * para GitHub (`https://cdn.jsdelivr.net/gh/usuario/repo@rama/ruta`); con cualquier otra devuelve `null`.
+ */
+export function buildMirrorUrl(url: string): string | null {
+  const match = /^https:\/\/cdn\.jsdelivr\.net\/gh\/([^/]+)\/([^@/]+)@([^/]+)\/(.+)$/.exec(url);
+  return match ? `https://raw.githubusercontent.com/${match[1]}/${match[2]}/${match[3]}/${match[4]}` : null;
+}
+
+/**
  * Datos extraídos de una URL de archivo de puzzles
  */
 export interface ParsedPuzzleUrl {
