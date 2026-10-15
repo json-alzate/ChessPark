@@ -199,4 +199,10 @@ Salieron al recorrer la app entera en móvil y escritorio, y no se arreglaron po
 - **Errores 401 de RevenueCat en la web** — esperados sin credenciales de la tienda; ensucian la consola en desarrollo.
 - **`libs/stockfish-wasm` registra cada comando y cada mensaje del motor con `console.log`** (~48 llamadas): un análisis de
   una partida deja cientos de líneas en la consola. Conviene dejarlos tras un interruptor de depuración o quitarlos.
+- **Con sesión pero sin poder cargar el perfil** (sin red al abrir la app) la barra superior muestra «Ingresar / Registrarse»
+  hasta que vuelve la conexión y se reintenta la carga. Mostrar el nombre y la foto de la cuenta de Firebase (que sí están en el
+  dispositivo) evitaría el equívoco; ojo con no crear un perfil provisional que pueda pisar el ELO real al guardarse.
+- **El rótulo «ELO» de las tarjetas del inicio** (10 px, `--cc-elo`) y el «1500?» sin ELO (con `opacity-50`) quedan en 3,1:1 y
+  2,9:1 de contraste, por debajo de AA. Es el color de marca: decidir si se aclara para texto pequeño.
+- **Privacidad:** la pantalla de política de privacidad solo existe en inglés.
 

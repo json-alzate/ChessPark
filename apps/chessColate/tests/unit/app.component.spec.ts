@@ -235,6 +235,83 @@ describe('AppComponent', () => {
     });
   });
 
+  describe('sesión con la red caída o lenta', () => {
+    it('si cargar el perfil falla, la app se marca como inicializada igualmente', async () => {
+      profileService.checkProfile.mockRejectedValue(new Error('client is offline'));
+      await create();
+
+      authState$.next({ uid: 'u1' });
+      await flush();
+
+      expect(authService.markAsInitialized).toHaveBeenCalledTimes(1);
+    });
+
+    it('un fallo no mata el flujo de sesión: el siguiente cambio de usuario se procesa', async () => {
+      profileService.checkProfile.mockRejectedValueOnce(new Error('client is offline'));
+      await create();
+
+      authState$.next({ uid: 'u1' });
+      await flush();
+      authState$.next(null);
+      await flush();
+
+      expect(profileService.clearProfile).toHaveBeenCalledTimes(1);
+      expect(authService.markAsInitialized).toHaveBeenCalledTimes(2);
+    });
+
+    it('si la red no responde, tras unos segundos pinta el inicio y lo demás sigue por detrás', async () => {
+      jest.useFakeTimers();
+      try {
+        let resuelve!: () => void;
+        profileService.checkProfile.mockReturnValue(new Promise<void>((r) => (resuelve = r)));
+        await create();
+
+        authState$.next({ uid: 'u1' });
+        await flush();
+        expect(authService.markAsInitialized).not.toHaveBeenCalled();
+
+        jest.advanceTimersByTime(6_000);
+        await flush();
+        expect(authService.markAsInitialized).toHaveBeenCalledTimes(1);
+
+        // Cuando por fin llega, el resto de la carga continúa
+        resuelve();
+        await flush();
+        expect(userRecords.syncFromProfile).toHaveBeenCalledTimes(1);
+      } finally {
+        jest.useRealTimers();
+      }
+    });
+
+    it('al volver la conexión reintenta cargar al usuario, una sola vez aunque haya varios avisos', async () => {
+      profileService.checkProfile.mockRejectedValueOnce(new Error('client is offline'));
+      await create();
+      authState$.next({ uid: 'u1' });
+      await flush();
+      expect(profileService.checkProfile).toHaveBeenCalledTimes(1);
+
+      window.dispatchEvent(new Event('online'));
+      window.dispatchEvent(new Event('online'));
+      await flush();
+
+      expect(profileService.checkProfile).toHaveBeenCalledTimes(2);
+      expect(userRecords.syncFromProfile).toHaveBeenCalledTimes(1);
+    });
+
+    it('al destruir la pantalla deja de esperar la conexión', async () => {
+      profileService.checkProfile.mockRejectedValue(new Error('client is offline'));
+      await create();
+      authState$.next({ uid: 'u1' });
+      await flush();
+
+      fixture.destroy();
+      window.dispatchEvent(new Event('online'));
+      await flush();
+
+      expect(profileService.checkProfile).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe('seguimiento de pantallas', () => {
     it('cada navegación terminada se registra como screen_view con el nombre de la pantalla', async () => {
       await create();

@@ -59,6 +59,10 @@ y el versionado sigue [SemVer](https://semver.org/lang/es/) para `versionName`.
   importe o «Restaurar compras», explica que las donaciones son de la app móvil, como ya hacía la ventana de donación.
 - **Texto grande del sistema:** con el tamaño de letra al máximo, «Ingresar / Registrarse» pisaba la campana de recordatorios;
   ahora el rótulo pasa a dos líneas.
+- **Arranque con sesión y mala conexión:** si al abrir la app con la sesión iniciada fallaba la lectura del perfil (sin red,
+  Firestore caído), la pantalla se quedaba en «Cargando…» para siempre y los cambios de sesión posteriores dejaban de
+  procesarse. Ahora el inicio se pinta en cuanto falla o pasados 6 s, lo que falte sigue cargando por detrás y se
+  reintenta al volver la conexión.
 - **Ortografía:** «05:00 o 3 ejercicios» ya no lleva tilde en la «o».
 - **Textos sin traducir:** los avisos de la donación (cargas, errores y agradecimiento), el aviso «Iniciando entrenamiento» y el
   diálogo de borrar una sesión del historial salían siempre en español; ahora siguen el idioma de la app.
