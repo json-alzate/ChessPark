@@ -14,7 +14,7 @@ import {
   LoadingController,
   ToastController,
 } from '@ionic/angular/standalone';
-import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { TranslocoService } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
 import { closeOutline, heartOutline, heart } from 'ionicons/icons';
 import { RevenueCatService } from '@chesspark/revenuecat';
@@ -38,7 +38,6 @@ export interface DonationOption {
   standalone: true,
   imports: [
     CommonModule,
-    TranslocoPipe,
     IonModal,
     IonHeader,
     IonToolbar,

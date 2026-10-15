@@ -6,7 +6,6 @@ import {
   IonToolbar,
   IonTitle,
   IonContent,
-  IonFooter,
   IonButton,
   IonIcon,
 } from '@ionic/angular/standalone';
@@ -37,7 +36,6 @@ export interface GameSettings {
     IonToolbar,
     IonTitle,
     IonContent,
-    IonFooter,
     IonButton,
     IonIcon,
   ],

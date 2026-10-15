@@ -2,9 +2,7 @@ import { Component, Input, Output, EventEmitter, ViewChild } from '@angular/core
 import { CommonModule } from '@angular/common';
 import {
   IonModal,
-  IonTitle,
   IonToolbar,
-  IonHeader,
   IonFooter,
   IonContent,
   IonIcon,
@@ -25,9 +23,7 @@ addIcons({ trophy, informationCircle, checkmark, podium, medal });
     KingImagePipe,
     CommonModule,
     IonModal,
-    IonTitle,
     IonToolbar,
-    IonHeader,
     IonFooter,
     IonContent,
     IonIcon,
