@@ -184,6 +184,11 @@ comparten van en `tests/support/` (alias `@tests/*`). Convenciones en
      analítica con el UID.
    - **Sin usuario:** `ProfileService.clearProfile()`.
    - En ambos casos termina con `AuthService.markAsInitialized()`.
+   - **La carga del usuario no puede colgar el arranque:** `AppComponent.waitForUserSession()` espera como
+     mucho `SESSION_LOAD_WAIT_MS` (6 s) y, si falla (sin red, Firestore caído), lo apunta y lo reintenta
+     al volver `online`. Un rechazo dentro del `switchMap` mataría el flujo de sesión entero y la app se
+     quedaría en «Cargando…» para siempre; por eso `loadUserSession()` captura sus errores. Mientras no
+     hay perfil la interfaz se comporta como la de un invitado (no se escribe nada en el perfil).
 
 El **perfil** (`ProfileService`, estado en `libs/state`) es el dato central: elo
 global, elos por tema/plan, idioma, cuentas. Casi todos los flujos lo leen.
@@ -241,6 +246,14 @@ El más largo y el que más cuesta seguir. En orden:
    puro) → `BlockService.getPuzzlesForBlock()` pide puzzles a `PuzzlesProvider`
    (libs/puzzles-provider; descarga + caché en IndexedDB) → se pinta el tablero
    (`libs/board`, `board-puzzle`).
+   - Un bloque puede quedarse **sin ejercicios** (tema sin archivos a ese nivel, red lenta).
+     `PlanService.makeCustomPlanForPlay` prueba hasta 2 temas más si el sorteado deja el bloque vacío;
+     `selectPuzzleToPlay()` espera la descarga con el tablero tapado (`isLoadingPuzzles`) y el reloj del
+     bloque parado, y si sigue vacío salta al siguiente bloque. Si en toda la sesión no llegó ni un
+     ejercicio, `abortWithoutPuzzles()` avisa y vuelve en vez de abrir un resumen vacío.
+   - `PuzzlesProvider` limita cada descarga a 8 s (con un reintento), corta la búsqueda de ELOs vecinos
+     cuando falla un grupo entero de archivos y no devuelve el mismo ejercicio dos veces. `StreakService` y
+     `RunnerPuzzleService` añaden un presupuesto de tiempo para no encadenar esperas con el CDN caído.
 6. Cada puzzle termina en `onPuzzleCompleted(puzzle, resultado)`, que en orden:
    - ignora resultados tardíos si ya se está cambiando de bloque;
    - construye el `UserPuzzle` (`buildUserPuzzle`, util);
