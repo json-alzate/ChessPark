@@ -15,12 +15,29 @@ y el versionado sigue [SemVer](https://semver.org/lang/es/) para `versionName`.
 
 ---
 
-## [Sin publicar]
+## [2.2.0] — 2026-10-13 · `versionCode 24`
 
 ### Añadido
 - **Créditos y licencias** (Ajustes → Acerca de): autores y licencias de los sets de piezas, de los
   puzzles de Lichess y de la música del directo de YouTube. Es una pantalla pública
   (`/settings/credits`): su URL va en la descripción del canal.
+
+### Corregido
+- **Entrenamiento:** el bloque vence aunque se abra la solución con el reloj en 00:00; en las
+  rutinas propias y públicas se arregló el ELO de arranque, el nombre en blanco y la hoja de bloque.
+- **Tablero:** el diálogo de coronación y el arrastre ya no sobreviven al puzzle siguiente; el
+  botón «Pedir una pista» muestra su ícono; ya no se vuelve atrás deslizando desde el borde en las
+  pantallas con tablero.
+- **Partidas:** el catálogo olvida un paquete borrado y el modo TV ya no se repite sin fin.
+- **Chess960** con decimales, **hora vacía** en los recordatorios y **reintento de la Racha** tras un error.
+- **Inicio de sesión:** el aviso de error ya no tapa el botón y el de contraseñas distintas se ve.
+- Una ruta desconocida lleva a inicio; el modal de estadísticas usa breakpoints válidos; el
+  confeti se dibuja por encima de los modales; textos que faltaban por traducir en inicio de
+  bloque, historial, caballo y menú.
+
+### Cambiado
+- Reorganización interna del código por funcionalidad y suite de pruebas ampliada (unitarias y
+  E2E con Playwright). No cambia nada visible.
 
 ### Eliminado
 - **Set de piezas Staunty**: su licencia (CC BY-NC-SA) no permite uso comercial y la app acepta
