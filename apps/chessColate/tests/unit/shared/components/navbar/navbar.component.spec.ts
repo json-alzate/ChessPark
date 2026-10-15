@@ -86,6 +86,18 @@ describe('NavbarComponent', () => {
     expect(component.isAuthenticated).toBe(false);
   });
 
+  it('el botón de ingresar puede encoger y partir el rótulo: con el texto del sistema grande no pisa la campana', () => {
+    createComponent(true);
+
+    const boton = Array.from(fixture.nativeElement.querySelectorAll('button') as NodeListOf<HTMLElement>).find((b) =>
+      (b.textContent ?? '').includes('AUTH.login.menuBar')
+    ) as HTMLElement;
+    ['whitespace-normal', 'shrink', 'min-w-0', 'h-auto'].forEach((c) => expect(boton.classList).toContain(c));
+    // El contenedor izquierdo cede espacio en móvil (en escritorio conserva su reparto del 50 %)
+    const inicio = fixture.nativeElement.querySelector('.navbar-start') as HTMLElement;
+    ['min-w-0', 'max-lg:flex-1'].forEach((c) => expect(inicio.classList).toContain(c));
+  });
+
   it('con sesión muestra la inicial del nombre y el nombre, no el botón de ingresar', () => {
     profile$.next(makeProfile());
     createComponent(true);
