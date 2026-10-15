@@ -60,6 +60,7 @@ src/app/
     training/      rutinas: entrenar, resumen, historial, rutinas propias y públicas,
                    bloques, sesión, cronómetro, pool infinito, planes y sus repositorios
     streak/        modo Racha
+    woodpecker/    Método del Pájaro Carpintero: set fijo que se repite en vueltas
     records/       récords de Racha y Reto 333 y su sincronización con el perfil
     reminders/     recordatorios de entrenamiento
     games/         reproductor de partidas
@@ -134,8 +135,9 @@ utils/*.util.ts                      Funciones PURAS: calculan, no inyectan nada
   funcionalidad que necesita algo de otra lo importa de su `services/` o `utils/`, y lo que
   usan varias sin ser de ninguna va a `shared/` (p. ej. `shared/utils/date.util.ts`).
   Dependencias que hay hoy (sacadas de los imports):
-  `training` → `records`, `reminders`, `app-review` · `home` → `training`, `records` ·
-  `streak` → `records`, `reminders` · `game-analytics` → `games`, `training` ·
+  `training` → `records`, `reminders`, `app-review` · `home` → `training`, `records`, `woodpecker` ·
+  `streak` → `records`, `reminders` · `woodpecker` → `streak` (la lista de temas que no son tácticos), `reminders` ·
+  `game-analytics` → `games`, `training` ·
   `settings` → `training`, `games`, `game-analytics`, `app-review` (borra sus datos locales).
   **Conocido:** `reminders` y `training` se importan mutuamente (recordatorios lee el historial
   de `PlanStorageService`; entrenamiento le avisa al empezar y terminar una sesión). Es
@@ -203,6 +205,8 @@ ruta está en `features/<funcionalidad>/pages/`.
 | `games`, `games/viewer`, `games/:id` | `games` · Reproductor de partidas | `GamesService`, `GameReviewService` |
 | `analytics` | `game-analytics` · Análisis de partidas | `GameAnalyticsService` |
 | `reminders` | `reminders` · Recordatorios | `TrainingReminderService` |
+| `woodpecker` | `woodpecker` · El set del Pájaro Carpintero: configurar, panel y evolución | `WoodpeckerService`, `WoodpeckerSetService` |
+| `woodpecker/play` | `woodpecker` · Una vuelta del set | `WoodpeckerService`, `TrainingReminderService` |
 | `coordinates`, `knight-tour`, `chess960` | una funcionalidad cada una · Minijuegos | Servicios propios / `libs/board` |
 | `settings`, `settings/storage`, `settings/credits` | `settings` · Ajustes, descargas y créditos (la de créditos es pública y solo lee `config/credits.config.ts` y el `music-credits.config.ts` generado) | `AppService`, `AppearanceService`, `LanguageService`, caché de `puzzles-provider` |
 | `donation`, `privacy` | `donation`, `privacy` | `RevenueCatService` (donación) |
@@ -269,6 +273,20 @@ Muerte súbita: el primer fallo termina. `StreakService` pide un puzzle a la vez
 a `StreakStorageService` (dispositivo, en `features/records`) y `UserRecordsService` lo sincroniza con el
 perfil. No toca el elo del usuario. Detalle: [`implementado/RACHA_STREAK_FLOW.md`](./implementado/RACHA_STREAK_FLOW.md).
 
+### 5.2b Método del Pájaro Carpintero
+
+Un set **fijo** de ejercicios que se repite en varias vueltas, cada una con menos tiempo. Todo en
+`features/woodpecker/`. El usuario elige tamaño, rango de ELO, temas, vueltas, orden y ritmo;
+`WoodpeckerSetService` arma el set con pocos archivos del catálogo repartidos por el rango
+(`utils/woodpecker-set.util.ts` decide cuáles y qué ejercicios se quedan) y lo **congela**: el set
+completo y el progreso (vueltas, orden de cada una, resultados) van a `localStorage` por separado
+(`WoodpeckerStorageService`), y el progreso se escribe tras cada ejercicio para poder reanudar.
+`WoodpeckerService` orquesta y registra la analítica; las transiciones del progreso (`startCycle`,
+`recordResult`, `finishCycle`) y la medición entre vueltas son funciones puras en `utils/`.
+**No crea un `Plan`**, no toca el ELO del perfil y no necesita sesión. La pantalla `woodpecker` es el
+panel; `woodpecker/play` juega una vuelta sobre el tablero de puzzles de siempre. Detalle:
+[`implementado/PAJARO_CARPINTERO_FLOW.md`](./implementado/PAJARO_CARPINTERO_FLOW.md).
+
 ### 5.3 Recordatorios de entrenamiento
 
 Todo vive en `features/reminders/`:
@@ -321,6 +339,7 @@ una facade). Las pantallas leen el store; los guards (`custom-plans.guard` y
 | Rutinas propias / públicas | Firestore + store | `CustomPlans*` / `PublicPlans*` |
 | **Historial de rutinas jugadas** | **`localStorage`** (`chessColate_plans_history`) | `PlanStorageService` |
 | Récords de Racha y Reto 333 | Dispositivo, sincronizado con el perfil | `*StorageService` + `UserRecordsService` |
+| **Set del Pájaro Carpintero** (ejercicios congelados) y **su progreso** | **`localStorage`** (`chessColate_woodpecker_set` y `chessColate_woodpecker_progress`), solo local | `WoodpeckerStorageService` |
 | Recordatorios | Dispositivo | `TrainingReminderStorageService` |
 | Puzzles descargados / pool infinito | IndexedDB | `libs/puzzles-provider` (`CacheService`) |
 | Partidas de chess.com/lichess | IndexedDB | `libs/game-reporter` (`createGamesArchive`) |
@@ -375,6 +394,7 @@ una facade). Las pantallas leen el store; los guards (`custom-plans.guard` y
 | Cambiar la hora/texto de los recordatorios | `features/reminders/utils/` (cálculo), `features/reminders/services/training-reminder.service.ts` (agenda) |
 | Añadir una estadística a Análisis | `libs/game-reporter` (reporte) + `features/game-analytics/utils/game-analytics.util.ts` (presentación) |
 | Añadir un dato a Firestore | un `*.repository.ts` en `data/` de la funcionalidad + su service (la página nunca lo inyecta) |
+| Cambiar cómo se arma el set del Pájaro Carpintero o cómo baja el tiempo por vuelta | `features/woodpecker/utils/woodpecker-set.util.ts` · `woodpecker-cycle.util.ts` · `config/woodpecker.config.ts` |
 | Añadir un evento de analítica | `core/analytics/analytics-events.util.ts` y `AnalyticsService` |
 
 ---

@@ -1122,7 +1122,7 @@
       "secondsPerExercise": "{{seconds}} s por ejercicio",
       "noClock": "Sin reloj",
       "played": "{{played}} de {{total}} ejercicios",
-      "solvedCount": "{{count}} aciertos",
+      "solvedCount": "Aciertos: {{count}}",
       "start": "Empezar vuelta {{cycle}}",
       "resume": "Continuar vuelta {{cycle}}",
       "completedTitle": "Set terminado",

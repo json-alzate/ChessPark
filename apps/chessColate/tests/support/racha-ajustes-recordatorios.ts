@@ -46,6 +46,7 @@ export class TableroPuzzleFalso {
   @Input() setForceStopTimer = false;
   @Output() puzzleCompleted = new EventEmitter<unknown>();
   @Output() puzzleFailed = new EventEmitter<unknown>();
+  @Output() puzzleEndByTime = new EventEmitter<unknown>();
 }
 
 /**

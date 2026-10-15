@@ -15,6 +15,17 @@ y el versionado sigue [SemVer](https://semver.org/lang/es/) para `versionName`.
 
 ---
 
+## [Sin publicar]
+
+### Añadido
+- **Método del Pájaro Carpintero** (menú Práctica y tarjeta en el inicio): armas un set fijo de
+  ejercicios con tu rango de ELO, tus temas y el número de vueltas, y lo repites con menos tiempo
+  en cada una. Cada vuelta te dice cuánto mejoraste en acierto y en velocidad, y el panel enseña
+  los ejercicios que se te resisten. El progreso se guarda tras cada ejercicio: puedes salir y
+  seguir cuando quieras. Solo hay un set a la vez y vive en el dispositivo.
+
+---
+
 ## [2.2.0] — 2026-10-13 · `versionCode 24`
 
 ### Añadido

@@ -12,6 +12,7 @@ const RUTAS = [
   { ruta: '/games', nombre: 'partidas' },
   { ruta: '/analytics', nombre: 'analisis-de-partidas' },
   { ruta: '/streak', nombre: 'racha' },
+  { ruta: '/woodpecker', nombre: 'pajaro-carpintero' },
   { ruta: '/coordinates', nombre: 'coordenadas' },
   { ruta: '/knight-tour', nombre: 'recorrido-del-caballo' },
   { ruta: '/chess960', nombre: 'chess960' },

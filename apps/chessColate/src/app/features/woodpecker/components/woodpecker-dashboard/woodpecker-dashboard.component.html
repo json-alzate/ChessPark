@@ -37,11 +37,13 @@
 
     <p class="mt-2 text-xs text-base-content/50">
       {{ 'WOODPECKER.setup.order.' + set.config.order | transloco }}
+      @if (!completed) {
       ·
       @if (nextCycleSeconds !== null) {
       {{ 'WOODPECKER.dashboard.secondsPerExercise' | transloco: { seconds: nextCycleSeconds } }}
       } @else {
       {{ 'WOODPECKER.dashboard.noClock' | transloco }}
+      }
       }
     </p>
 

@@ -89,3 +89,15 @@ export function vuelta(
 ): WoodpeckerCycle {
   return { cycle, order, startedAt: 1_000 * cycle, results, ...extra };
 }
+
+/** Estado con el progreso dado, para las pantallas. */
+export function estadoConProgreso(
+  puzzles: Puzzle[],
+  cycles: WoodpeckerCycle[],
+  extra: { config?: Partial<WoodpeckerConfig>; completedAt?: number } = {}
+) {
+  const set = conjunto(puzzles, {
+    config: configuracion({ cycles: 3, targetCount: puzzles.length, ...extra.config }),
+  });
+  return { set, progress: { setId: set.id, cycles, completedAt: extra.completedAt } };
+}

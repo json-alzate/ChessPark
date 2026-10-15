@@ -83,14 +83,13 @@ Decisiones a cerrar antes de mover nada:
 
 ## 3. Roadmap de features siguientes 🔴
 
-Ya implementadas: Notificaciones de Entrenamiento (F02) y Game Analytics (F12). Lo que sigue, en orden
+Ya implementadas: Notificaciones de Entrenamiento (F02), Game Analytics (F12) y Método del Pájaro Carpintero (F08). Lo que sigue, en orden
 (diseños en [features/](./features/)):
 
-1. **Método del Pájaro Carpintero** — [features/METODO_PAJARO_CARPINTERO.md](./features/METODO_PAJARO_CARPINTERO.md). Siguiente en la fila; no depende de otra feature (genera y congela su set desde el catálogo).
-2. **Rutina con BD de Puzzles Personalizada (PGN)** — [features/RUTINA_PGN_PERSONALIZADA.md](./features/RUTINA_PGN_PERSONALIZADA.md). Reutiliza el set congelado del Pájaro Carpintero.
-3. **Analizador de Partidas** — [features/ANALIZADOR_PARTIDAS.md](./features/ANALIZADOR_PARTIDAS.md).
-4. **Puzzle Feed** — [features/PUZZLE_FEED.md](./features/PUZZLE_FEED.md).
-5. **Chess Runner** — [features/CHESS_RUNNER.md](./features/CHESS_RUNNER.md). Requiere assets pixel-art + cerrar decisiones abiertas del doc.
+1. **Rutina con BD de Puzzles Personalizada (PGN)** — [features/RUTINA_PGN_PERSONALIZADA.md](./features/RUTINA_PGN_PERSONALIZADA.md). Siguiente en la fila: reutiliza el set congelado del Pájaro Carpintero (`WoodpeckerSet`, que ya guarda su `source`).
+2. **Analizador de Partidas** — [features/ANALIZADOR_PARTIDAS.md](./features/ANALIZADOR_PARTIDAS.md).
+3. **Puzzle Feed** — [features/PUZZLE_FEED.md](./features/PUZZLE_FEED.md).
+4. **Chess Runner** — [features/CHESS_RUNNER.md](./features/CHESS_RUNNER.md). Requiere assets pixel-art + cerrar decisiones abiertas del doc.
 6. Después: Sparring Personalizado, Cuadros de Conquista (necesita un *design spike* antes de codificar), Puzzle Racer, Puzzle Geo Hunt y Jugar en Lichess.
 
 > El orden vivo está en [features/README.md](./features/README.md), que es el que se
@@ -150,3 +149,15 @@ solo si cae ffmpeg/Chrome o se congela la página), la música y la pantalla pú
 - **Aviso de caída por correo** 🔴 — latido a un servicio externo (recomendado) o SMTP desde el Mac. Ver [Aviso de caída](./features/TRANSMISION_24_7.md#aviso-de-caída-por-correo).
 - **Directo no listado de 24 h seguidas** 🔴 — antes de hacerlo público.
 - **Política de YouTube** 🔴 — revisar las reglas vigentes de directos 24/7 repetitivos y los límites del archivo de directos.
+
+---
+
+## 7. Método del Pájaro Carpintero (F08) — verificación 🔴 (prioridad media)
+
+Implementado y documentado en [implementado/PAJARO_CARPINTERO_FLOW.md](./implementado/PAJARO_CARPINTERO_FLOW.md).
+Recorrido en navegador móvil con el catálogo real: hecho. Lo que no se puede cerrar desde el entorno de desarrollo:
+
+- **Probarlo en un móvil de verdad** 🔴 — sobre todo el panel de fallo anclado al borde inferior (zona de gestos de iOS), el teclado de los controles de la configuración y que el set grande (500) se guarde sin problemas en WebView.
+- **Mirar `woodpecker_plan_created` / `woodpecker_set_short`** tras unas semanas: dicen qué tamaños y rangos pide la gente y si el 70 % de mínimo es demasiado estricto.
+- **Mirar `woodpecker_plan_abandoned`** (con `cycles_done`): si casi todos abandonan en la vuelta 1, el set por defecto (100 ejercicios, ≈ 40 min por vuelta) es demasiado grande.
+- **Sincronizar el set con la cuenta** 🔴 — hoy solo vive en el dispositivo; encaja con la decisión pendiente del historial de rutinas (`TODO(premium)`).

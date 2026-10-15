@@ -146,7 +146,11 @@ describe('traducciones del Pájaro Carpintero', () => {
     const planas: string[] = [];
     const recorrer = (arbol: Textos, prefijo: string) => {
       for (const [clave, valor] of Object.entries(arbol)) {
-        typeof valor === 'string' ? planas.push(`${prefijo}${clave}`) : recorrer(valor, `${prefijo}${clave}.`);
+        if (typeof valor === 'string') {
+          planas.push(`${prefijo}${clave}`);
+        } else {
+          recorrer(valor, `${prefijo}${clave}.`);
+        }
       }
     };
     recorrer(idiomas.es['WOODPECKER'] as Textos, 'WOODPECKER.');
@@ -180,7 +184,11 @@ describe('traducciones del Pájaro Carpintero', () => {
     const planos: string[] = [];
     const recorrer = (arbol: Textos) => {
       for (const valor of Object.values(arbol)) {
-        typeof valor === 'string' ? planos.push(valor) : recorrer(valor);
+        if (typeof valor === 'string') {
+          planos.push(valor);
+        } else {
+          recorrer(valor);
+        }
       }
     };
     recorrer(idiomas.es['WOODPECKER'] as Textos);

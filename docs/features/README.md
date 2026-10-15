@@ -21,7 +21,7 @@ la feature se implemente o cambie de posición. Por eso los IDs se leen salteado
 | ✅ | F05 | [Calificar la App (In-App Review)](../implementado/CALIFICAR_APP_FLOW.md) | Alto (negocio) | Bajo | `@capacitor-community/in-app-review` |
 | ✅ | F06 | [Reproductor / TV de Partidas](../implementado/REPRODUCTOR_PARTIDAS_FLOW.md) | Alto | Medio-Alto | — (estrenó el lector de PGN y el catálogo de partidas) |
 | ✅ | F12 | [Análisis de Partidas (Game Analytics)](../implementado/GAME_ANALYTICS_FLOW.md) | Alto | Alto | APIs externas (chess.com/lichess) |
-| ⬜ | F08 | [Método del Pájaro Carpintero](./METODO_PAJARO_CARPINTERO.md) | Alto | Medio | — (estrena el set congelado; usa solo el catálogo de puzzles que ya existe) |
+| ✅ | F08 | [Método del Pájaro Carpintero](../implementado/PAJARO_CARPINTERO_FLOW.md) | Alto | Medio | — (estrenó el set congelado; usa solo el catálogo de puzzles que ya existe) |
 | ⬜ | F07 | [Rutina con BD de Puzzles Personalizada (PGN)](./RUTINA_PGN_PERSONALIZADA.md) | Alto | Medio | F06 (lector de PGN, ya hecho); reutiliza el set congelado de F08 |
 | ⬜ | F09 | [Analizador de Partidas (capas de dibujo)](./ANALIZADOR_PARTIDAS.md) | Alto (estudio) | Alto | F06 (lector de PGN + reproducción, ya hechos) |
 | ⬜ | F10 | [Puzzle Feed](./PUZZLE_FEED.md) | Alto (engagement) | Medio-Alto | — |
@@ -42,8 +42,8 @@ la feature se implemente o cambie de posición. Por eso los IDs se leen salteado
 
 ## Por qué este orden
 
-### F08 · [Método del Pájaro Carpintero](./METODO_PAJARO_CARPINTERO.md)
-**No depende de nada pendiente.** Genera su set una sola vez con los puzzles que ya se descargan del catálogo ([`PuzzlesProvider`](../../libs/puzzles-provider/src/lib/puzzles-provider.ts) / `getPuzzlesForBlock`), lo **congela y lo persiste** (`WoodpeckerSet`), y encima añade **vueltas + timing decreciente + comparación entre pasadas**. Estrena el patrón de **"set de puzzles congelado y persistido"** que antes se le atribuía a F07.
+### F08 · [Método del Pájaro Carpintero](../implementado/PAJARO_CARPINTERO_FLOW.md) ✅
+**Implementado.** No dependía de nada pendiente. Genera su set una sola vez con los puzzles que ya se descargan del catálogo ([`PuzzlesProvider`](../../libs/puzzles-provider/src/lib/puzzles-provider.ts) / `getPuzzlesForBlock`), lo **congela y lo persiste** (`WoodpeckerSet`), y encima añade **vueltas + timing decreciente + comparación entre pasadas**. Estrena el patrón de **"set de puzzles congelado y persistido"** que antes se le atribuía a F07.
 
 ### F07 · [Rutina con BD de Puzzles Personalizada (PGN)](./RUTINA_PGN_PERSONALIZADA.md)
 Va **después de F08**: reutiliza el lector de PGN que dejó F06 y, en vez de inventar su propio `CustomPuzzleSet`, se apoya en el set congelado de F08 cambiando solo la **fuente** (un archivo PGN en lugar del catálogo). Es también la "2ª iteración" prevista de F08 (set del Pájaro Carpintero armado desde un PGN propio). Alto valor para entrenadores y estudio dirigido.
@@ -84,8 +84,8 @@ Va **después de F08**: reutiliza el lector de PGN que dejó F06 y, en vez de in
 
 Conviene tratarlos como piezas transversales, no re-implementarlas por feature:
 
-- **Lector de PGN** (`chess.js`) → **ya existe**: lo estrenó F06 en [`libs/games-provider`](../../libs/games-provider/src/lib/pgn.ts), con lectura en dos pasos (cabeceras primero, posiciones al abrir una partida). Lo reutilizan F07 y F09 (F08 no lo necesita: su set sale del catálogo).
-- **Set de puzzles congelado y persistido por id** → lo estrena F08 (`WoodpeckerSet`) y lo reutiliza F07 con otra fuente (PGN propio). Evita el _strip_ actual de `puzzles` al guardar planes.
+- **Lector de PGN** (`chess.js`) → **ya existe**: lo estrenó F06 en [`libs/games-provider`](../../libs/games-provider/src/lib/pgn.ts), con lectura en dos pasos (cabeceras primero, posiciones al abrir una partida). Lo reutilizan F07 y F09 (F08 no lo necesitó: su set sale del catálogo).
+- **Set de puzzles congelado y persistido** → **ya existe**: lo estrenó F08 (`WoodpeckerSet`, en [`features/woodpecker/`](../../apps/chessColate/src/app/features/woodpecker/)) y lo reutilizará F07 con otra fuente (PGN propio): guarda su `source` para añadir `'pgn'` sin migrar. Evita el _strip_ actual de `puzzles` al guardar planes.
 - **Motor de reproducción de jugadas** (tablero + secuencia de posiciones + controles) → **ya existe**: [`board-game-player`](../../libs/board/src/lib/board-game-player/board-game-player.component.ts), tablero de solo mirar con su propio reloj. F09 lo extiende con el árbol de variantes.
 - **Board de puzzles** [`board-puzzle`](../../libs/board/src/lib/board-puzzle/board-puzzle.component.ts) → ya existe; lo consumen la Racha, F08, F07, F10, F11, F15 y F16.
 - **Catálogo descargable con índice remoto** (un archivo por jugador, índice en el CDN, caché propia en IndexedDB) → **ya existe**: lo estrenó F06 en [`libs/games-provider`](../../libs/games-provider/). A diferencia del de puzzles, su índice se descarga, así que publicar contenido nuevo no exige sacar versión.
@@ -115,4 +115,5 @@ Conviene tratarlos como piezas transversales, no re-implementarlas por feature:
 - [Gestión de Descargas de Puzzles](../implementado/GESTION_DESCARGAS_PUZZLES_FLOW.md) — pantalla de Almacenamiento que lista los archivos descargados por tema y rango de ELO, con su tamaño, y permite borrarlos. Idea original en [`GESTION_DESCARGAS_PUZZLES.md`](./GESTION_DESCARGAS_PUZZLES.md).
 - [Calificar la App (In-App Review)](../implementado/CALIFICAR_APP_FLOW.md) — invitación silenciosa a calificar en la Play Store, solo tras una rutina que salió bien y como mucho cada 90 días, más un acceso manual en Ajustes. Idea original en [`CALIFICAR_APP.md`](./CALIFICAR_APP.md).
 - [Reproductor / TV de Partidas](../implementado/REPRODUCTOR_PARTIDAS_FLOW.md) — catálogo de campeones del mundo descargable desde el CDN, reproducción jugada a jugada con velocidad configurable y modo TV que encadena la colección. Idea original en [`REPRODUCTOR_PARTIDAS.md`](./REPRODUCTOR_PARTIDAS.md).
+- [Método del Pájaro Carpintero](../implementado/PAJARO_CARPINTERO_FLOW.md) — set fijo de ejercicios armado con tu rango de ELO y tus temas, que repites en varias vueltas con menos tiempo cada una, midiendo cuánto mejoras. Todo en el dispositivo. Idea original en [`METODO_PAJARO_CARPINTERO.md`](./METODO_PAJARO_CARPINTERO.md).
 - [Análisis de Partidas](../implementado/GAME_ANALYTICS_FLOW.md) — conectas tu cuenta de chess.com o de lichess y la app descarga tus partidas públicas para enseñarte evolución del rating, porcentaje de puntuación, rendimiento por color y por apertura y mapa de actividad. Todo en el dispositivo, sin backend. Idea original en [`GAME_ANALYTICS.md`](./GAME_ANALYTICS.md).

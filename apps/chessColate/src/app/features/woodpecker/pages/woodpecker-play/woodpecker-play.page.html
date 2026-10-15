@@ -53,7 +53,9 @@
 
         @if (status === 'feedback' && feedback) {
         <!-- Se falló o se acabó el tiempo: sin castigo, se anota y se sigue -->
-        <div class="rounded-xl border border-base-300 bg-base-100 p-4" data-testid="feedback">
+        <!-- En móvil queda anclado abajo: tras cada fallo los botones tienen que estar a la mano, sin hacer scroll -->
+        <div class="feedback-panel fixed inset-x-0 bottom-0 z-20 rounded-t-2xl border border-base-300 bg-base-100 p-4 shadow-2xl lg:static lg:rounded-xl lg:shadow-none"
+          data-testid="feedback">
           <p class="text-base font-semibold" data-testid="feedback-message">
             {{ (feedback.kind === 'timeout' ? 'WOODPECKER.play.feedback.timeout' : 'WOODPECKER.play.feedback.wrong') | transloco }}
           </p>

@@ -17,6 +17,7 @@ import { homeOutline } from 'ionicons/icons';
 import { BoardPuzzleSolutionComponent } from '@chesspark/board';
 
 import { AppService } from '@core/app/app.service';
+import { STREAK_EXCLUDED_THEMES } from '@features/streak/utils/streak.util';
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 
 import {
@@ -140,13 +141,23 @@ export class WoodpeckerPage implements ViewWillEnter, ViewWillLeave {
         {
           ...problem,
           rating: puzzle.rating,
-          themes: puzzle.themes
+          themes: this.tacticalThemes(puzzle.themes)
             .slice(0, 2)
             .map((theme) => this.appService.getNameThemePuzzleByValue(theme) || theme)
             .join(' · '),
         },
       ];
     });
+  }
+
+  /**
+   * Los temas que nombran el motivo táctico, sin los que describen duración o
+   * desenlace («Ventaja», «Ejercicio corto»): al reconocer un ejercicio en la
+   * lista dicen más. Si no queda ninguno, se usan todos.
+   */
+  private tacticalThemes(themes: string[]): string[] {
+    const tactical = themes.filter((theme) => !STREAK_EXCLUDED_THEMES.includes(theme));
+    return tactical.length > 0 ? tactical : themes;
   }
 
   // ---------------------------------------------------------------- crear

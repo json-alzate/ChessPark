@@ -17,7 +17,6 @@ import {
   aleatorioConSemilla,
   configuracion,
   resultado,
-  vuelta,
 } from '@tests/support/pajaro-carpintero';
 
 const UIDS = ['a', 'b', 'c', 'd', 'e'];
