@@ -35,7 +35,7 @@
       }
     </div>
 
-    <p class="mt-2 text-xs text-base-content/50">
+    <p class="mt-2 text-xs text-base-content/60">
       {{ 'WOODPECKER.setup.order.' + set.config.order | transloco }}
       @if (!completed) {
       ·
@@ -95,13 +95,13 @@
   @if (problemItems.length > 0) {
   <section class="rounded-2xl border border-base-content/10 bg-base-100 p-4" data-testid="problems">
     <h3 class="font-semibold">{{ 'WOODPECKER.problems.title' | transloco }}</h3>
-    <p class="mb-3 text-xs text-base-content/50">{{ 'WOODPECKER.problems.description' | transloco }}</p>
+    <p class="mb-3 text-xs text-base-content/60">{{ 'WOODPECKER.problems.description' | transloco }}</p>
     <ul class="space-y-2">
       @for (item of problemItems; track item.uidPuzzle) {
       <li class="flex items-center gap-3 rounded-lg bg-base-200/40 px-3 py-2">
         <div class="min-w-0 flex-1">
           <div class="truncate text-sm font-medium">{{ item.themes }}</div>
-          <div class="text-xs text-base-content/50">
+          <div class="text-xs text-base-content/60">
             <span class="font-semibold text-[var(--cc-elo)]">{{ item.rating }}</span>
             ·
             {{ 'WOODPECKER.problems.failedIn' | transloco: { count: item.failures } }}

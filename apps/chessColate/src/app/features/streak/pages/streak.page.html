@@ -10,7 +10,7 @@
           </div>
           <div class="flex flex-col leading-none">
             <span class="text-2xl font-extrabold">{{ score }}</span>
-            <span class="mt-0.5 text-[11px] font-bold uppercase tracking-wide text-base-content/50">
+            <span class="mt-0.5 text-[11px] font-bold uppercase tracking-wide text-base-content/60">
               {{ 'STREAK.title' | transloco }}
             </span>
           </div>
@@ -21,7 +21,7 @@
         @if (record.bestScore > 0) {
         <div class="flex flex-col items-end leading-none">
           <span class="text-sm font-bold text-[var(--cc-elo)]">{{ record.bestScore }}</span>
-          <span class="mt-0.5 text-[10px] font-bold uppercase tracking-wide text-base-content/50">
+          <span class="mt-0.5 text-[10px] font-bold uppercase tracking-wide text-base-content/60">
             {{ 'STREAK.record' | transloco }}
           </span>
         </div>
@@ -105,7 +105,7 @@
         <!-- Elo del ejercicio: discreto, que informe sin robar atención -->
         @if (puzzleToPlay) {
         <div class="flex items-baseline justify-between gap-2 px-1">
-          <span class="text-xs text-base-content/50">{{ 'STREAK.puzzleElo' | transloco }}</span>
+          <span class="text-xs text-base-content/60">{{ 'STREAK.puzzleElo' | transloco }}</span>
           <span class="font-mono text-sm font-semibold text-base-content/70">{{ puzzleElo }}</span>
         </div>
         }
@@ -146,7 +146,7 @@
 
         <!-- Reglas del modo, siempre a la vista: el salto y la muerte súbita no
              deben ser una sorpresa -->
-        <p class="text-center text-xs leading-snug text-base-content/50">
+        <p class="text-center text-xs leading-snug text-base-content/60">
           {{ 'STREAK.rules' | transloco }}
         </p>
       </div>
@@ -174,13 +174,13 @@
 
         <div class="mt-4 grid grid-cols-2 gap-2">
           <div class="rounded-box bg-base-200 px-3 py-2">
-            <div class="text-[11px] font-bold uppercase tracking-wide text-base-content/50">
+            <div class="text-[11px] font-bold uppercase tracking-wide text-base-content/60">
               {{ 'STREAK.record' | transloco }}
             </div>
             <div class="text-xl font-bold">{{ record.bestScore }}</div>
           </div>
           <div class="rounded-box bg-base-200 px-3 py-2">
-            <div class="text-[11px] font-bold uppercase tracking-wide text-base-content/50">
+            <div class="text-[11px] font-bold uppercase tracking-wide text-base-content/60">
               {{ 'STREAK.result.maxElo' | transloco }}
             </div>
             <div class="text-xl font-bold" style="color: #bf811c">{{ finishedRun?.maxEloReached }}</div>

@@ -184,6 +184,9 @@ La aplicación utiliza los colores del tema Halloween de DaisyUI:
 - `bg-base-200`: Fondo secundario
 - `text-base-content`: Texto principal
 - `text-base-content/70`: Texto secundario (70% opacidad)
+- `text-base-content/60`: Texto de apoyo (pistas, notas, rótulos pequeños). Es lo más tenue que se admite en **texto**: en el
+  tema por defecto da un contraste de 4,8:1 y `/50` se quedaba en 3,7:1, por debajo del mínimo AA (4,5:1).
+- `text-base-content/40` y `/30`: solo para iconos decorativos y estados deshabilitados, nunca para texto que haya que leer.
 
 ---
 

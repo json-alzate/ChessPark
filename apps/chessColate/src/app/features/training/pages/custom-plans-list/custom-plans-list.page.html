@@ -93,7 +93,7 @@
                         {{ plan.title?.trim() || ('CUSTOM_PLANS.untitled' | transloco) }}
                       </h3>
                       <div class="flex items-center gap-2 flex-wrap mt-1">
-                        <span class="text-xs text-base-content/50">
+                        <span class="text-xs text-base-content/60">
                           {{ plan.blocks.length }} {{ (plan.blocks.length === 1 ? 'COMMON.chess.block' : 'COMMON.chess.blocks') | transloco }}
                         </span>
                         @if (plan.isPublic) {

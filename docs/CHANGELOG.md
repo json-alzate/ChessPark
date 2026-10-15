@@ -53,6 +53,8 @@ y el versionado sigue [SemVer](https://semver.org/lang/es/) para `versionName`.
 - **Accesibilidad:** los botones de solo icono (cerrar, ajustes, estadísticas, girar el tablero, navegar la solución, guardar una
   sesión pública, color aleatorio) ya tienen nombre para los lectores de pantalla; el campo de Chess960 está asociado a su
   etiqueta; y el idioma del documento (`lang`) sigue al de la app en vez de quedarse en inglés.
+- **Legibilidad:** el texto de apoyo (pistas, notas, rótulos pequeños) pasa de 50 % a 60 % de opacidad: en el tema por defecto
+  el contraste subía solo a 3,7:1 y ahora es de 4,8:1 (el mínimo recomendado es 4,5:1).
 - **Ortografía:** «05:00 o 3 ejercicios» ya no lleva tilde en la «o».
 - **Textos sin traducir:** los avisos de la donación (cargas, errores y agradecimiento), el aviso «Iniciando entrenamiento» y el
   diálogo de borrar una sesión del historial salían siempre en español; ahora siguen el idioma de la app.

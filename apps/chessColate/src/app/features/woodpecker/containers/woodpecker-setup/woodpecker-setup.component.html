@@ -15,7 +15,7 @@
   <section class="rounded-xl border border-base-content/10 bg-base-100 p-4" data-testid="size">
     <div class="mb-2 flex items-baseline justify-between gap-2">
       <h3 class="font-semibold">{{ 'WOODPECKER.setup.size.label' | transloco }}</h3>
-      <span class="text-sm text-base-content/50">{{ 'WOODPECKER.setup.size.unit' | transloco }}</span>
+      <span class="text-sm text-base-content/60">{{ 'WOODPECKER.setup.size.unit' | transloco }}</span>
     </div>
     <div class="join w-full">
       @for (option of sizes; track option) {
@@ -25,7 +25,7 @@
       </button>
       }
     </div>
-    <p class="mt-2 text-xs text-base-content/50">
+    <p class="mt-2 text-xs text-base-content/60">
       {{ 'WOODPECKER.setup.size.hint' | transloco: { minutes: cycleMinutes } }}
     </p>
   </section>
@@ -40,7 +40,7 @@
       <div>
         <div class="mb-1 flex items-center justify-between text-sm">
           <span class="font-medium">{{ 'WOODPECKER.setup.elo.min' | transloco }}</span>
-          <span class="text-base-content/50">{{ eloMin }}</span>
+          <span class="text-base-content/60">{{ eloMin }}</span>
         </div>
         <input type="range" class="range range-sm w-full" [min]="eloLimits.min" [max]="eloLimits.max"
           [step]="eloLimits.step" [value]="eloMin" (input)="onEloMin($event)"
@@ -49,14 +49,14 @@
       <div>
         <div class="mb-1 flex items-center justify-between text-sm">
           <span class="font-medium">{{ 'WOODPECKER.setup.elo.max' | transloco }}</span>
-          <span class="text-base-content/50">{{ eloMax }}</span>
+          <span class="text-base-content/60">{{ eloMax }}</span>
         </div>
         <input type="range" class="range range-sm w-full" [min]="eloLimits.min" [max]="eloLimits.max"
           [step]="eloLimits.step" [value]="eloMax" (input)="onEloMax($event)"
           [attr.aria-label]="'WOODPECKER.setup.elo.max' | transloco" />
       </div>
     </div>
-    <p class="mt-2 text-xs text-base-content/50">{{ 'WOODPECKER.setup.elo.hint' | transloco }}</p>
+    <p class="mt-2 text-xs text-base-content/60">{{ 'WOODPECKER.setup.elo.hint' | transloco }}</p>
   </section>
 
   <!-- Temas -->
@@ -64,7 +64,7 @@
     <summary class="collapse-title">
       <div class="flex items-center justify-between gap-2 pr-6">
         <span class="font-semibold">{{ 'WOODPECKER.setup.themes.label' | transloco }}</span>
-        <span class="text-sm text-base-content/50">
+        <span class="text-sm text-base-content/60">
           @if (themeMode === 'all') {
           {{ 'WOODPECKER.setup.themes.all' | transloco }}
           } @else {
@@ -78,7 +78,7 @@
         <ion-icon name="shuffle-outline" class="shrink-0 text-lg"></ion-icon>
         <div class="min-w-0 flex-1">
           <div class="text-sm font-medium">{{ 'WOODPECKER.setup.themes.all' | transloco }}</div>
-          <div class="text-xs text-base-content/50">
+          <div class="text-xs text-base-content/60">
             {{ 'WOODPECKER.setup.themes.allHint' | transloco: { count: maxRandomThemes } }}
           </div>
         </div>
@@ -90,7 +90,7 @@
         <ion-icon name="add-outline" class="shrink-0 text-lg"></ion-icon>
         <div class="min-w-0 flex-1">
           <div class="text-sm font-medium">{{ 'WOODPECKER.setup.themes.pick' | transloco }}</div>
-          <div class="text-xs text-base-content/50">{{ 'WOODPECKER.setup.themes.pickHint' | transloco }}</div>
+          <div class="text-xs text-base-content/60">{{ 'WOODPECKER.setup.themes.pickHint' | transloco }}</div>
         </div>
         <input type="radio" name="theme-mode" class="radio radio-sm shrink-0" [checked]="themeMode === 'pick'"
           (change)="setThemeMode('pick')" />
@@ -121,7 +121,7 @@
     <div class="flex items-center justify-between gap-3">
       <div class="min-w-0">
         <h3 class="font-semibold">{{ 'WOODPECKER.setup.cycles.label' | transloco }}</h3>
-        <p class="text-xs text-base-content/50">{{ 'WOODPECKER.setup.cycles.hint' | transloco }}</p>
+        <p class="text-xs text-base-content/60">{{ 'WOODPECKER.setup.cycles.hint' | transloco }}</p>
       </div>
       <div class="flex shrink-0 items-center gap-3">
         <button type="button" class="btn btn-circle btn-sm btn-soft" [disabled]="cycles <= cyclesLimits.min"
@@ -149,7 +149,7 @@
       </button>
       }
     </div>
-    <p class="mt-2 text-xs text-base-content/50">{{ 'WOODPECKER.setup.order.' + order + 'Hint' | transloco }}</p>
+    <p class="mt-2 text-xs text-base-content/60">{{ 'WOODPECKER.setup.order.' + order + 'Hint' | transloco }}</p>
   </section>
 
   <!-- Ritmo -->
@@ -164,7 +164,7 @@
         <input type="radio" name="pace" class="radio radio-sm mt-0.5 shrink-0" [checked]="pace === option" tabindex="-1" aria-hidden="true" />
         <span class="min-w-0 flex-1">
           <span class="block text-sm font-medium">{{ 'WOODPECKER.setup.pace.' + option | transloco }}</span>
-          <span class="block text-xs text-base-content/50">
+          <span class="block text-xs text-base-content/60">
             @if (paceBaseSeconds(option) > 0) {
             {{ 'WOODPECKER.setup.pace.decreasingHint' | transloco: { seconds: paceBaseSeconds(option), percent: paceDecrease(option) } }}
             } @else {

@@ -87,7 +87,7 @@
           <!-- Título + subtítulo del menú -->
           <div class="px-3 pt-4 pb-2 lg:px-1">
             <h1 class="text-2xl font-extrabold tracking-tight">{{ 'PUZZLES.menu.title' | transloco }}</h1>
-            <p class="mt-1 text-sm text-base-content/50">{{ 'TRAINING.subtitle' | transloco }}</p>
+            <p class="mt-1 text-sm text-base-content/60">{{ 'TRAINING.subtitle' | transloco }}</p>
           </div>
 
           <app-training-menu class="lg:flex-1"></app-training-menu>
@@ -104,7 +104,7 @@
               </div>
               <div class="mt-2.5 min-w-0">
                 <div class="text-sm font-bold leading-tight">{{ 'CUSTOM_PLANS.shortTitle' | transloco }}</div>
-                <div class="mt-0.5 truncate text-[11px] leading-tight text-base-content/50">{{ 'CUSTOM_PLANS.cardSubtitle' | transloco }}</div>
+                <div class="mt-0.5 truncate text-[11px] leading-tight text-base-content/60">{{ 'CUSTOM_PLANS.cardSubtitle' | transloco }}</div>
               </div>
             </a>
             <a class="card flex-1 min-w-0 cursor-pointer rounded-xl border border-base-300 bg-base-100 p-3.5 transition-colors hover:bg-base-200/30"
@@ -117,7 +117,7 @@
               </div>
               <div class="mt-2.5 min-w-0">
                 <div class="text-sm font-bold leading-tight">{{ 'PUBLIC_PLANS.shortTitle' | transloco }}</div>
-                <div class="mt-0.5 truncate text-[11px] leading-tight text-base-content/50">{{ 'PUBLIC_PLANS.cardSubtitle' | transloco }}</div>
+                <div class="mt-0.5 truncate text-[11px] leading-tight text-base-content/60">{{ 'PUBLIC_PLANS.cardSubtitle' | transloco }}</div>
               </div>
             </a>
           </div>
@@ -139,7 +139,7 @@
               </div>
               <div class="mt-2.5 min-w-0">
                 <div class="text-sm font-bold leading-tight">{{ 'CUSTOM_PLANS.shortTitle' | transloco }}</div>
-                <div class="mt-0.5 truncate text-xs leading-tight text-base-content/50">{{ 'CUSTOM_PLANS.cardSubtitle' | transloco }}</div>
+                <div class="mt-0.5 truncate text-xs leading-tight text-base-content/60">{{ 'CUSTOM_PLANS.cardSubtitle' | transloco }}</div>
               </div>
             </a>
             <a class="card flex-1 min-w-0 cursor-pointer rounded-xl border border-base-300 bg-base-100 p-3.5 transition-colors hover:bg-base-200/30"
@@ -152,7 +152,7 @@
               </div>
               <div class="mt-2.5 min-w-0">
                 <div class="text-sm font-bold leading-tight">{{ 'PUBLIC_PLANS.shortTitle' | transloco }}</div>
-                <div class="mt-0.5 truncate text-xs leading-tight text-base-content/50">{{ 'PUBLIC_PLANS.cardSubtitle' | transloco }}</div>
+                <div class="mt-0.5 truncate text-xs leading-tight text-base-content/60">{{ 'PUBLIC_PLANS.cardSubtitle' | transloco }}</div>
               </div>
             </a>
           </div>
@@ -221,7 +221,7 @@
               @if (woodpeckerSummary && !woodpeckerSummary.completed && woodpeckerSummary.answered > 0) {
               <!-- Avance de la vuelta en curso -->
               <div class="mt-3.5">
-                <div class="mb-1 flex items-baseline justify-between text-[11px] text-base-content/50">
+                <div class="mb-1 flex items-baseline justify-between text-[11px] text-base-content/60">
                   <span>{{ 'WOODPECKER.dashboard.played' | transloco: { played: woodpeckerSummary.answered, total: woodpeckerSummary.total } }}</span>
                 </div>
                 <progress class="progress progress-primary h-1.5 w-full" [value]="woodpeckerSummary.answered"
@@ -273,10 +273,10 @@
               <div class="mt-3.5 flex items-baseline justify-between gap-2">
                 <div class="leading-none">
                   <span class="text-xl font-extrabold text-base-content">{{ streakRecord.lastScore }}</span>
-                  <span class="text-[13px] font-semibold text-base-content/50"> {{ 'STREAK.homeCard.lastRun' | transloco }}</span>
+                  <span class="text-[13px] font-semibold text-base-content/60"> {{ 'STREAK.homeCard.lastRun' | transloco }}</span>
                 </div>
                 @if (streakRecord.bestScore > 0) {
-                <span class="text-[11px] text-base-content/50">{{ 'STREAK.record' | transloco }}:
+                <span class="text-[11px] text-base-content/60">{{ 'STREAK.record' | transloco }}:
                   <b class="font-bold text-[var(--cc-elo)]">{{ streakRecord.bestScore }}</b></span>
                 }
               </div>
@@ -335,10 +335,10 @@
                 <div class="flex items-baseline justify-between gap-2">
                   <div class="leading-none">
                     <span class="text-xl font-extrabold text-base-content">{{ reto333Stats.lastScore }}</span>
-                    <span class="text-[13px] font-semibold text-base-content/50"> / 333</span>
+                    <span class="text-[13px] font-semibold text-base-content/60"> / 333</span>
                   </div>
                   @if (reto333Stats.bestScore) {
-                  <span class="text-[11px] text-base-content/50">{{ 'RETO_333.record' | transloco }}:
+                  <span class="text-[11px] text-base-content/60">{{ 'RETO_333.record' | transloco }}:
                     <b class="font-bold text-[var(--cc-elo)]">{{ reto333Stats.bestScore }}</b></span>
                   }
                 </div>
@@ -349,7 +349,7 @@
               </div>
 
               <!-- Tiempo de la racha -->
-              <div class="mt-3 flex items-center gap-1.5 text-xs text-base-content/50">
+              <div class="mt-3 flex items-center gap-1.5 text-xs text-base-content/60">
                 <ion-icon name="time-outline" class="text-sm"></ion-icon>
                 <span>{{ 'RETO_333.time' | transloco }} · <b class="font-semibold text-base-content/80">{{ reto333Stats.timeString }}</b></span>
               </div>

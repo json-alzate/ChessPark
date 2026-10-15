@@ -16,7 +16,7 @@
         <summary class="collapse-title">
           <div class="flex items-center justify-between pr-6">
             <span class="font-semibold">{{ 'NEW_BLOCK.form.duration' | transloco }}</span>
-            <span class="text-sm text-base-content/50">
+            <span class="text-sm text-base-content/60">
               @if (timeField?.value || puzzlesCountField?.value) {
                 @if (timeField?.value) {<span>{{ timeField?.value | secondsToMinutesSeconds }}</span>}
                 @if (timeField?.value && puzzlesCountField?.value) {<span> {{ 'NEW_BLOCK.form.or' | transloco }} </span>}
@@ -31,7 +31,7 @@
           <div>
             <div class="flex justify-between items-center mb-1">
               <span class="text-sm font-medium">{{ 'NEW_BLOCK.fields.time' | transloco }}</span>
-              <span class="text-sm text-base-content/50">
+              <span class="text-sm text-base-content/60">
                 @if (timeField?.value === 0) {
                   {{ 'NEW_BLOCK.fields.unlimited' | transloco }}
                 } @else {
@@ -44,7 +44,7 @@
           <div>
             <div class="flex justify-between items-center mb-1">
               <span class="text-sm font-medium">{{ 'NEW_BLOCK.fields.puzzlesCount' | transloco }}</span>
-              <span class="text-sm text-base-content/50">
+              <span class="text-sm text-base-content/60">
                 @if (puzzlesCountField?.value === 0) {
                   {{ 'NEW_BLOCK.fields.unlimited' | transloco }}
                 } @else {
@@ -64,7 +64,7 @@
           <div>
             <div class="flex justify-between items-center mb-1">
               <span class="text-sm font-medium">{{ 'NEW_BLOCK.fields.timeByPuzzle' | transloco }}</span>
-              <span class="text-sm text-base-content/50">{{ puzzleTimeField?.value | secondsToMinutesSeconds }}</span>
+              <span class="text-sm text-base-content/60">{{ puzzleTimeField?.value | secondsToMinutesSeconds }}</span>
             </div>
             <input type="range" formControlName="puzzleTime" min="10" max="600" step="10" class="range range-sm w-full" />
           </div>
@@ -96,7 +96,7 @@
             <div>
               <div class="flex justify-between items-center mb-1">
                 <span class="text-sm font-medium">{{ 'NEW_BLOCK.options.timeVisible' | transloco }}</span>
-                <span class="text-sm text-base-content/50">{{ goshPuzzleTimeField?.value | secondsToMinutesSeconds }}</span>
+                <span class="text-sm text-base-content/60">{{ goshPuzzleTimeField?.value | secondsToMinutesSeconds }}</span>
               </div>
               <input type="range" formControlName="goshPuzzleTime" min="5" max="540" class="range range-sm w-full" />
             </div>
@@ -116,7 +116,7 @@
             <span class="font-semibold">
               {{ 'NEW_BLOCK.theme.theme' | transloco }}:
             </span>
-            <span class="text-sm text-base-content/50">
+            <span class="text-sm text-base-content/60">
               @if (themeField?.value === 'all') { {{ 'NEW_BLOCK.theme.random' | transloco }} }
               @else if (themeField?.value === 'weakness') { {{ 'NEW_BLOCK.theme.weakness' | transloco }} }
               @else if (themeField?.value) { {{ getThemeName(themeField?.value ?? '') }} }
@@ -128,7 +128,7 @@
             <ion-icon name="shuffle" class="text-lg shrink-0"></ion-icon>
             <div class="flex-1 min-w-0">
               <div class="text-sm font-medium">{{ 'NEW_BLOCK.theme.random' | transloco }}</div>
-              <div class="text-xs text-base-content/50">{{ 'NEW_BLOCK.theme.randomDescription' | transloco }}</div>
+              <div class="text-xs text-base-content/60">{{ 'NEW_BLOCK.theme.randomDescription' | transloco }}</div>
             </div>
             <input type="radio" formControlName="theme" value="all" class="radio radio-sm shrink-0" />
           </label>
@@ -137,7 +137,7 @@
             <ion-icon name="trending-down" class="text-lg shrink-0"></ion-icon>
             <div class="flex-1 min-w-0">
               <div class="text-sm font-medium">{{ 'NEW_BLOCK.theme.weakness' | transloco }}</div>
-              <div class="text-xs text-base-content/50">{{ 'NEW_BLOCK.theme.weaknessDescription' | transloco }}</div>
+              <div class="text-xs text-base-content/60">{{ 'NEW_BLOCK.theme.weaknessDescription' | transloco }}</div>
             </div>
             <input type="radio" formControlName="theme" value="weakness" class="radio radio-sm shrink-0" />
           </label>
@@ -162,7 +162,7 @@
         <summary class="collapse-title">
           <div class="flex items-center justify-between pr-6">
             <span class="font-semibold">{{ 'NEW_BLOCK.theme.difficulty' | transloco }}</span>
-            <span class="text-sm text-base-content/50">
+            <span class="text-sm text-base-content/60">
               @if (useCustomElo) {
                 ELO {{ eloMinField?.value }} – {{ eloMaxField?.value }}
               } @else {
@@ -180,7 +180,7 @@
             <div>
               <div class="flex justify-between items-center mb-1">
                 <span class="text-sm font-medium">{{ 'NEW_BLOCK.difficulty.eloMin' | transloco }}</span>
-                <span class="text-sm text-base-content/50">{{ eloMinField?.value }}</span>
+                <span class="text-sm text-base-content/60">{{ eloMinField?.value }}</span>
               </div>
               <input type="range" formControlName="eloMin" min="400" max="2800" step="100" class="range range-sm w-full" />
               <div class="flex justify-between text-xs text-base-content/30 px-1 mt-1">
@@ -192,7 +192,7 @@
             <div>
               <div class="flex justify-between items-center mb-1">
                 <span class="text-sm font-medium">{{ 'NEW_BLOCK.difficulty.eloMax' | transloco }}</span>
-                <span class="text-sm text-base-content/50">{{ eloMaxField?.value }}</span>
+                <span class="text-sm text-base-content/60">{{ eloMaxField?.value }}</span>
               </div>
               <input type="range" formControlName="eloMax" min="400" max="2800" step="100" class="range range-sm w-full" />
               <div class="flex justify-between text-xs text-base-content/30 px-1 mt-1">
