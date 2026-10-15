@@ -31,6 +31,9 @@ export const WOODPECKER_ELO = {
   defaultWindow: 200,
 } as const;
 
+/** Lo que suele tardar un ejercicio, para estimar cuánto lleva una vuelta. */
+export const WOODPECKER_SECONDS_PER_PUZZLE_ESTIMATE = 25;
+
 /** Con «todos los temas» se sortean tantos para no bajar decenas de archivos. */
 export const WOODPECKER_MAX_RANDOM_THEMES = 10;
 

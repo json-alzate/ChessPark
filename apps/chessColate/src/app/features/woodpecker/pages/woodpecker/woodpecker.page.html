@@ -1,0 +1,78 @@
+<ion-content [fullscreen]="true">
+  <div class="main-container">
+    <app-navbar></app-navbar>
+
+    <div class="container mx-auto px-2 pb-8 lg:px-6">
+      <div class="lg:mx-auto lg:max-w-3xl">
+
+        <div class="mb-3">
+          <div class="breadcrumbs mb-1">
+            <ul>
+              <li>
+                <a (click)="goToHome()" class="cursor-pointer text-sm">
+                  <ion-icon name="home-outline" class="h-4 w-4"></ion-icon>
+                  <span>{{ 'MENU.navigation.home' | transloco }}</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <h2 class="text-2xl font-bold">{{ 'WOODPECKER.title' | transloco }}</h2>
+          <p class="mt-1 text-sm text-base-content/60">{{ 'WOODPECKER.subtitle' | transloco }}</p>
+        </div>
+
+        @switch (view) {
+        @case ('loading') {
+        <div class="space-y-3">
+          <div class="skeleton h-24 w-full rounded-xl"></div>
+          <div class="skeleton h-24 w-full rounded-xl"></div>
+          <div class="skeleton h-24 w-full rounded-xl"></div>
+        </div>
+        }
+
+        @case ('setup') {
+        @if (error) {
+        <div role="alert" class="alert alert-warning mb-3 text-sm" data-testid="error">
+          <span>{{ error.key | transloco: error.params }}</span>
+        </div>
+        }
+        <app-woodpecker-setup [availableThemes]="availableThemes" [replacesExisting]="replacingSet"
+          [introOpen]="!replacingSet" (create)="onCreate($event)"></app-woodpecker-setup>
+        @if (replacingSet) {
+        <button type="button" class="btn btn-ghost btn-sm mt-2 w-full" (click)="cancelNewSet()" data-testid="cancel-new">
+          {{ 'WOODPECKER.setup.cancel' | transloco }}
+        </button>
+        }
+        }
+
+        @case ('generating') {
+        <div class="flex flex-col items-center gap-4 rounded-2xl border border-base-content/10 bg-base-100 px-4 py-12 text-center"
+          data-testid="generating">
+          <span class="loading loading-spinner loading-lg text-primary"></span>
+          <div>
+            <h3 class="text-lg font-bold">{{ 'WOODPECKER.generating.title' | transloco }}</h3>
+            <p class="mt-1 text-sm text-base-content/60">{{ 'WOODPECKER.generating.message' | transloco }}</p>
+          </div>
+          @if (generation.total > 0) {
+          <div class="w-full max-w-xs">
+            <progress class="progress progress-primary w-full" [value]="generationPercent" max="100"></progress>
+            <p class="mt-1 text-xs text-base-content/50">
+              {{ 'WOODPECKER.generating.progress' | transloco: generation }}
+            </p>
+          </div>
+          }
+        </div>
+        }
+
+        @case ('dashboard') {
+        @if (state) {
+        <app-woodpecker-dashboard [state]="state" [themeNames]="themeNames" [problemItems]="problemItems"
+          [shortNotice]="shortNotice" (play)="play()" (discard)="confirmDiscard()" (newSet)="startNewSet()"
+          (viewProblem)="viewProblem($event)"></app-woodpecker-dashboard>
+        }
+        }
+        }
+
+      </div>
+    </div>
+  </div>
+</ion-content>

@@ -1028,6 +1028,168 @@
       "message": "Revisa tu conexión e inténtalo de nuevo."
     }
   },
+  "WOODPECKER": {
+    "title": "Pájaro carpintero",
+    "subtitle": "Repite el mismo set hasta reconocer los patrones sin pensarlo.",
+    "homeCard": {
+      "description": "Arma un set fijo de ejercicios y repítelo en varias vueltas, cada una más rápida.",
+      "cycleOf": "Vuelta {{cycle}} de {{cycles}}",
+      "completed": "Set terminado",
+      "start": "Armar mi set",
+      "continue": "Continuar",
+      "view": "Ver resultados"
+    },
+    "intro": {
+      "title": "¿Cómo funciona?",
+      "step1": "Armas un set de ejercicios con el rango de ELO y los temas que quieras.",
+      "step2": "Lo resuelves entero y después lo repites: siempre los mismos ejercicios.",
+      "step3": "En cada vuelta tienes menos tiempo. Lo que miras es cómo mejoras de una vuelta a otra.",
+      "note": "Que los ejercicios se repitan no es un fallo: es el método."
+    },
+    "setup": {
+      "size": {
+        "label": "Tamaño del set",
+        "unit": "ejercicios",
+        "hint": "Cada vuelta lleva unos {{minutes}} min."
+      },
+      "elo": {
+        "label": "Rango de ELO",
+        "min": "Desde",
+        "max": "Hasta",
+        "hint": "Mejor un poco por debajo de tu nivel: se trata de ganar velocidad."
+      },
+      "themes": {
+        "label": "Temas",
+        "all": "Mezcla variada",
+        "allHint": "Sorteamos {{count}} temas del catálogo.",
+        "pick": "Elegir temas",
+        "pickHint": "Solo los que marques.",
+        "selected": "{{count}} elegidos",
+        "none": "Elige al menos un tema.",
+        "groups": {
+          "Fases": "Fases",
+          "Temas": "Temas",
+          "Avanzado": "Avanzado",
+          "Mates": "Mates",
+          "Objetivos": "Objetivos",
+          "Duración": "Duración"
+        }
+      },
+      "cycles": {
+        "label": "Vueltas",
+        "hint": "El método clásico usa 7.",
+        "less": "Una vuelta menos",
+        "more": "Una vuelta más"
+      },
+      "order": {
+        "label": "Orden en cada vuelta",
+        "shuffle": "Mezclado",
+        "shuffleHint": "Cambia en cada vuelta para que no memorices la secuencia.",
+        "same": "El mismo",
+        "sameHint": "Siempre el mismo orden, posición a posición.",
+        "reverse": "Alterno",
+        "reverseHint": "Las vueltas pares van del último al primero."
+      },
+      "pace": {
+        "label": "Tiempo por ejercicio",
+        "relaxed": "Sin reloj",
+        "standard": "Estándar",
+        "intense": "Intenso",
+        "noClockHint": "Sin límite: tú marcas el ritmo.",
+        "decreasingHint": "{{seconds}} s en la vuelta 1 y un {{percent}} % menos en cada una."
+      },
+      "replaceNotice": "Si armas un set nuevo, el actual y su progreso se borran.",
+      "create": "Armar mi set",
+      "cancel": "Volver al set"
+    },
+    "generating": {
+      "title": "Armando tu set…",
+      "message": "Elegimos los ejercicios y los guardamos en tu dispositivo.",
+      "progress": "{{done}} de {{total}} archivos"
+    },
+    "errors": {
+      "noThemes": "Elige al menos un tema para armar el set.",
+      "tooFew": "Con estos filtros solo encontramos {{found}} ejercicios y necesitamos al menos {{required}}. Amplía el rango de ELO o elige más temas.",
+      "unavailable": "No pudimos traer los ejercicios. Revisa tu conexión e inténtalo de nuevo.",
+      "storageFull": "No hay espacio en tu dispositivo para guardar el set. Libera espacio e inténtalo de nuevo."
+    },
+    "shortNotice": "Salieron {{actual}} de los {{requested}} ejercicios que pedías: es lo que hay en el catálogo con estos filtros.",
+    "dashboard": {
+      "yourSet": "Tu set",
+      "exercises": "{{count}} ejercicios",
+      "cycleOf": "Vuelta {{cycle}} de {{cycles}}",
+      "completedBadge": "Terminado",
+      "secondsPerExercise": "{{seconds}} s por ejercicio",
+      "noClock": "Sin reloj",
+      "played": "{{played}} de {{total}} ejercicios",
+      "solvedCount": "{{count}} aciertos",
+      "start": "Empezar vuelta {{cycle}}",
+      "resume": "Continuar vuelta {{cycle}}",
+      "completedTitle": "Set terminado",
+      "completedMessage": "Completaste las {{cycles}} vueltas. Aquí abajo ves cuánto mejoraste.",
+      "newSet": "Armar otro set",
+      "discard": "Abandonar set",
+      "deleteSet": "Borrar set",
+      "discardConfirm": {
+        "title": "¿Abandonar el set?",
+        "message": "Se borran el set y todo tu progreso en él. No afecta a tu ELO.",
+        "messageCompleted": "Se borran el set y sus resultados. No afecta a tu ELO.",
+        "cancel": "Seguir con el set",
+        "confirm": "Abandonar"
+      }
+    },
+    "progress": {
+      "title": "Tu evolución",
+      "empty": "Aún no has terminado ninguna vuelta. Cuando lo hagas verás aquí cómo mejoras.",
+      "cycle": "Vuelta {{cycle}}",
+      "accuracy": "Acierto",
+      "time": "Tiempo",
+      "perExercise": "{{time}} por ejercicio",
+      "moreAccurate": "+{{points}} pts de acierto",
+      "lessAccurate": "−{{points}} pts de acierto",
+      "faster": "{{percent}} % más rápido",
+      "slower": "{{percent}} % más lento",
+      "failedByTime": "{{count}} sin tiempo"
+    },
+    "problems": {
+      "title": "Los que más se resisten",
+      "description": "Ejercicios que has fallado en dos vueltas o más. Vale la pena mirarlos con calma.",
+      "failedIn": "Fallado en {{count}} vueltas",
+      "view": "Ver solución"
+    },
+    "play": {
+      "cycle": "Vuelta {{cycle}} de {{cycles}}",
+      "counter": "{{current}} de {{total}}",
+      "solved": "Aciertos",
+      "exit": "Salir",
+      "rules": "Son siempre los mismos ejercicios. Tu progreso se guarda: puedes salir cuando quieras y seguir después.",
+      "ready": {
+        "title": "Vuelta {{cycle}} de {{cycles}}",
+        "exercises": "{{count}} ejercicios",
+        "resume": "Retomas por el ejercicio {{current}}.",
+        "firstCycleHint": "Esta vuelta marca tu punto de partida: no corras y concéntrate en acertar.",
+        "laterHint": "Mismos ejercicios, menos tiempo: ahora toca ir más rápido.",
+        "start": "Empezar",
+        "continue": "Continuar",
+        "back": "Volver al set"
+      },
+      "feedback": {
+        "wrong": "Ese no es el mejor movimiento.",
+        "timeout": "Se acabó el tiempo.",
+        "solution": "Ver solución",
+        "next": "Siguiente"
+      },
+      "done": {
+        "title": "Vuelta {{cycle}} terminada",
+        "finalTitle": "Set terminado",
+        "baseNote": "Esta es tu base: desde aquí se mide cuánto mejoras en cada vuelta.",
+        "finalNote": "Completaste todas las vueltas. Mira tu evolución en el set.",
+        "nextCycle": "Empezar vuelta {{cycle}}",
+        "backToSet": "Volver al set",
+        "seeResults": "Ver resultados"
+      }
+    }
+  },
   "KNIGHT_TOUR": {
     "title": "Recorrido del caballo",
     "gameOver": "Game Over",

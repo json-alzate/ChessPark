@@ -1,0 +1,45 @@
+<div class="grid grid-cols-2 gap-2">
+  <div class="rounded-box bg-base-200 px-3 py-2" data-testid="result-accuracy">
+    <div class="text-[11px] font-bold uppercase tracking-wide text-base-content/50">
+      {{ 'WOODPECKER.progress.accuracy' | transloco }}
+    </div>
+    <div class="text-2xl font-extrabold text-primary">{{ roundedPercent(current.accuracy) }} %</div>
+    <div class="text-xs text-base-content/50">{{ current.solved }} / {{ current.answered }}</div>
+    @if (accuracyTrend && accuracyTrend !== 'same') {
+    <div class="mt-1 text-xs font-semibold" [class.text-success]="accuracyTrend === 'better'"
+      [class.text-error]="accuracyTrend === 'worse'" data-testid="result-accuracy-delta">
+      @if (accuracyTrend === 'better') {
+      {{ 'WOODPECKER.progress.moreAccurate' | transloco: { points: roundedPercent(comparison!.accuracyDelta) } }}
+      } @else {
+      {{ 'WOODPECKER.progress.lessAccurate' | transloco: { points: roundedPercent(comparison!.accuracyDelta) } }}
+      }
+    </div>
+    }
+  </div>
+
+  <div class="rounded-box bg-base-200 px-3 py-2" data-testid="result-time">
+    <div class="text-[11px] font-bold uppercase tracking-wide text-base-content/50">
+      {{ 'WOODPECKER.progress.time' | transloco }}
+    </div>
+    <div class="text-2xl font-extrabold">{{ formatDuration(current.totalTimeMs) }}</div>
+    <div class="text-xs text-base-content/50">
+      {{ 'WOODPECKER.progress.perExercise' | transloco: { time: formatDuration(current.avgTimeMs) } }}
+    </div>
+    @if (timeTrend && timeTrend !== 'same') {
+    <div class="mt-1 text-xs font-semibold" [class.text-success]="timeTrend === 'better'"
+      [class.text-error]="timeTrend === 'worse'" data-testid="result-time-delta">
+      @if (timeTrend === 'better') {
+      {{ 'WOODPECKER.progress.faster' | transloco: { percent: roundedPercent(comparison!.timeDeltaPercent!) } }}
+      } @else {
+      {{ 'WOODPECKER.progress.slower' | transloco: { percent: roundedPercent(comparison!.timeDeltaPercent!) } }}
+      }
+    </div>
+    }
+  </div>
+</div>
+
+@if (current.failedByTime > 0) {
+<p class="mt-2 text-center text-xs text-base-content/50" data-testid="result-timeouts">
+  {{ 'WOODPECKER.progress.failedByTime' | transloco: { count: current.failedByTime } }}
+</p>
+}

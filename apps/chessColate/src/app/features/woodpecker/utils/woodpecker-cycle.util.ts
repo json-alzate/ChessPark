@@ -47,20 +47,31 @@ export function cycleOrder(
   return shuffled(canonical, random);
 }
 
+/** Lo que define el reloj de un set: lo comparten la configuración y los ritmos de la pantalla. */
+export type WoodpeckerClockSpec = Pick<
+  WoodpeckerConfig,
+  'timing' | 'baseTimePerPuzzleSec' | 'decreasePercent'
+>;
+
 /**
  * Segundos por ejercicio en una vuelta, o `null` si no hay límite.
  * Con tiempo decreciente baja un porcentaje en cada vuelta, sin pasar del
  * mínimo para que siga siendo humanamente resoluble.
  */
-export function timePerPuzzleSec(config: WoodpeckerConfig, cycle: number): number | null {
-  if (config.timing === 'none' || config.baseTimePerPuzzleSec <= 0) {
+export function timeForCycle(clock: WoodpeckerClockSpec, cycle: number): number | null {
+  if (clock.timing === 'none' || clock.baseTimePerPuzzleSec <= 0) {
     return null;
   }
-  const factor = Math.pow(1 - config.decreasePercent / 100, Math.max(0, cycle - 1));
+  const factor = Math.pow(1 - clock.decreasePercent / 100, Math.max(0, cycle - 1));
   return Math.max(
     WOODPECKER_MIN_TIME_SEC,
-    Math.round(config.baseTimePerPuzzleSec * factor)
+    Math.round(clock.baseTimePerPuzzleSec * factor)
   );
+}
+
+/** Segundos por ejercicio de una vuelta de un set. */
+export function timePerPuzzleSec(config: WoodpeckerConfig, cycle: number): number | null {
+  return timeForCycle(config, cycle);
 }
 
 /** Los tiempos del tablero para una vuelta, o `undefined` si no hay límite. */

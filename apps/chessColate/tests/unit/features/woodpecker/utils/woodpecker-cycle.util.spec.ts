@@ -10,6 +10,7 @@ import {
   puzzleTimesFor,
   recordResult,
   startCycle,
+  timeForCycle,
   timePerPuzzleSec,
 } from '@features/woodpecker/utils/woodpecker-cycle.util';
 import {
@@ -217,5 +218,22 @@ describe('progreso de las vueltas', () => {
   it('con el set terminado, empezar no abre más vueltas', () => {
     const terminado = jugarVueltaCompleta(jugarVueltaCompleta(inicio, 1_000), 2_000);
     expect(startCycle(terminado, config, UIDS, 9_000)).toBe(terminado);
+  });
+});
+
+describe('timeForCycle', () => {
+  it('lo comparten los ritmos de la pantalla: estándar baja 20 % por vuelta desde 60 s', () => {
+    const estandar = {
+      timing: 'decreasing' as const,
+      baseTimePerPuzzleSec: 60,
+      decreasePercent: 20,
+    };
+    expect([1, 2, 3, 4, 5].map((v) => timeForCycle(estandar, v))).toEqual([60, 48, 38, 31, 25]);
+  });
+
+  it('el ritmo relajado no tiene reloj', () => {
+    expect(
+      timeForCycle({ timing: 'none', baseTimePerPuzzleSec: 0, decreasePercent: 0 }, 3)
+    ).toBeNull();
   });
 });

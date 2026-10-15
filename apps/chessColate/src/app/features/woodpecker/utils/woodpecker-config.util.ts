@@ -9,6 +9,7 @@ import {
   WOODPECKER_MAX_RANDOM_THEMES,
   WOODPECKER_MIN_FILL_RATIO,
   WOODPECKER_PACES,
+  WOODPECKER_SECONDS_PER_PUZZLE_ESTIMATE,
 } from '../config/woodpecker.config';
 import {
   WoodpeckerConfig,
@@ -35,6 +36,16 @@ function clamp(value: number, min: number, max: number): number {
 /** Mínimo de ejercicios con el que se acepta un set de ese tamaño. */
 export function minCountFor(targetCount: number): number {
   return Math.ceil(targetCount * WOODPECKER_MIN_FILL_RATIO);
+}
+
+/**
+ * Cuánto lleva una vuelta de un set de ese tamaño, en minutos y de 5 en 5.
+ * Es una estimación para avisar de que un set grande es un compromiso: se
+ * cuentan unos 25 segundos por ejercicio.
+ */
+export function estimateCycleMinutes(size: number): number {
+  const minutes = (size * WOODPECKER_SECONDS_PER_PUZZLE_ESTIMATE) / 60;
+  return Math.max(5, Math.round(minutes / 5) * 5);
 }
 
 export function clampCycles(cycles: number): number {
@@ -64,6 +75,27 @@ export function normalizeEloRange(
     }
   }
   return { eloMin: low, eloMax: high };
+}
+
+/**
+ * Mueve un extremo del rango sin que choque con el otro: el que no se toca se
+ * desplaza lo justo para mantener la anchura mínima. Es lo que pasa al arrastrar
+ * los dos deslizadores de la pantalla.
+ */
+export function adjustEloRange(
+  range: { eloMin: number; eloMax: number },
+  moved: 'min' | 'max',
+  value: number
+): { eloMin: number; eloMax: number } {
+  const { min, max, step, minSpan } = WOODPECKER_ELO;
+  const snapped = Math.round(value / step) * step;
+
+  if (moved === 'min') {
+    const eloMin = clamp(snapped, min, max - minSpan);
+    return { eloMin, eloMax: Math.max(range.eloMax, eloMin + minSpan) };
+  }
+  const eloMax = clamp(snapped, min + minSpan, max);
+  return { eloMin: Math.min(range.eloMin, eloMax - minSpan), eloMax };
 }
 
 /** Rango por defecto: una ventana alrededor del ELO del usuario. */

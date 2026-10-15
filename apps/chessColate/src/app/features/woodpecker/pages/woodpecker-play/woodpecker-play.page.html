@@ -1,0 +1,177 @@
+<ion-content [fullscreen]="true">
+  <div class="main-container">
+
+    <!-- Barra superior: vuelta, avance y salida -->
+    <div class="navbar bg-base-100 shadow-sm">
+      <div class="flex-1">
+        <div class="flex items-center gap-3">
+          <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/15">
+            <ion-icon name="repeat-outline" class="text-xl text-primary"></ion-icon>
+          </div>
+          <div class="flex flex-col leading-none">
+            <span class="text-lg font-extrabold" data-testid="cycle-label">
+              {{ 'WOODPECKER.play.cycle' | transloco: { cycle: cycleNumber, cycles: totalCycles } }}
+            </span>
+            <span class="mt-0.5 text-[11px] font-bold uppercase tracking-wide text-base-content/50" data-testid="counter">
+              {{ 'WOODPECKER.play.counter' | transloco: { current: answered, total: setSize } }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-none items-center gap-2">
+        <div class="flex flex-col items-end leading-none">
+          <span class="text-sm font-bold text-success" data-testid="solved">{{ solved }}</span>
+          <span class="mt-0.5 text-[10px] font-bold uppercase tracking-wide text-base-content/50">
+            {{ 'WOODPECKER.play.solved' | transloco }}
+          </span>
+        </div>
+        <button class="btn btn-square btn-ghost" (click)="exit()" [attr.aria-label]="'WOODPECKER.play.exit' | transloco"
+          data-testid="exit">
+          <ion-icon name="close-outline" class="h-5 w-5"></ion-icon>
+        </button>
+      </div>
+    </div>
+    <progress class="progress progress-primary block h-1 w-full rounded-none" [value]="progressPercent" max="100"></progress>
+
+    <!-- Cuerpo: 1 columna en móvil, 2 en escritorio -->
+    <div class="lg:flex lg:items-start lg:justify-center lg:gap-8 lg:px-6 lg:pt-4">
+
+      <!-- Tablero -->
+      <div class="relative lg:w-[clamp(480px,calc(100vh_-_190px),640px)] lg:flex-shrink-0">
+        @if (puzzleToPlay) {
+        <lib-board-puzzle [setPuzzle]="$any(puzzleToPlay)" [setForceStopTimer]="forceStopBoardTimer"
+          (puzzleCompleted)="onPuzzleSolved($any($event))" (puzzleFailed)="onPuzzleFailed($any($event))"
+          (puzzleEndByTime)="onPuzzleEndByTime($any($event))"></lib-board-puzzle>
+        } @else {
+        <div class="skeleton mx-auto aspect-square w-full rounded-none"></div>
+        }
+      </div>
+
+      <!-- Panel lateral -->
+      <div class="flex flex-col gap-3 p-4 lg:w-[360px] lg:flex-shrink-0 lg:p-0 lg:pt-2">
+
+        @if (status === 'feedback' && feedback) {
+        <!-- Se falló o se acabó el tiempo: sin castigo, se anota y se sigue -->
+        <div class="rounded-xl border border-base-300 bg-base-100 p-4" data-testid="feedback">
+          <p class="text-base font-semibold" data-testid="feedback-message">
+            {{ (feedback.kind === 'timeout' ? 'WOODPECKER.play.feedback.timeout' : 'WOODPECKER.play.feedback.wrong') | transloco }}
+          </p>
+          <div class="mt-3 flex flex-col gap-2">
+            <button type="button" class="btn btn-outline btn-block font-bold" (click)="showSolution()" data-testid="show-solution">
+              <ion-icon name="eye"></ion-icon>
+              <span>{{ 'WOODPECKER.play.feedback.solution' | transloco }}</span>
+            </button>
+            <button type="button" class="btn btn-primary btn-block font-bold" (click)="continueAfterFeedback()" data-testid="next">
+              <ion-icon name="play-forward-outline"></ion-icon>
+              <span>{{ 'WOODPECKER.play.feedback.next' | transloco }}</span>
+            </button>
+          </div>
+        </div>
+        } @else if (puzzleToPlay) {
+        <!-- Turno -->
+        <div class="flex items-center gap-3">
+          <img [src]="playerColor | kingImage" [alt]="playerColor" class="h-8 w-8" />
+          <div class="flex flex-col">
+            <span class="text-base font-semibold">{{ 'PUZZLES.help.yourTurn' | transloco }}</span>
+            <span class="text-sm text-base-content/80">
+              @if (playerColor === 'white') {
+              {{ 'PUZZLES.help.findBestMoveWhite' | transloco }}
+              } @else {
+              {{ 'PUZZLES.help.findBestMoveBlack' | transloco }}
+              }
+            </span>
+          </div>
+        </div>
+        }
+
+        <p class="text-center text-xs leading-snug text-base-content/50">
+          {{ 'WOODPECKER.play.rules' | transloco }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Aviso antes de empezar o retomar la vuelta -->
+    @if (status === 'ready') {
+    <div class="modal modal-open modal-bottom sm:modal-middle" data-testid="ready">
+      <div class="modal-box text-center">
+        <h3 class="mb-1 text-2xl font-bold">
+          {{ 'WOODPECKER.play.ready.title' | transloco: { cycle: cycleNumber, cycles: totalCycles } }}
+        </h3>
+        <p class="text-sm text-base-content/60">
+          {{ 'WOODPECKER.play.ready.exercises' | transloco: { count: setSize } }}
+          ·
+          @if (secondsPerPuzzle !== null) {
+          {{ 'WOODPECKER.dashboard.secondsPerExercise' | transloco: { seconds: secondsPerPuzzle } }}
+          } @else {
+          {{ 'WOODPECKER.dashboard.noClock' | transloco }}
+          }
+        </p>
+
+        @if (isResuming) {
+        <p class="mt-3 text-sm" data-testid="resume-note">
+          {{ 'WOODPECKER.play.ready.resume' | transloco: { current: answered + 1 } }}
+        </p>
+        }
+        <p class="mt-3 text-sm text-base-content/70">
+          {{ (isFirstCycle ? 'WOODPECKER.play.ready.firstCycleHint' : 'WOODPECKER.play.ready.laterHint') | transloco }}
+        </p>
+
+        <div class="modal-action mt-4 flex flex-col justify-center gap-2 sm:flex-row">
+          <button class="btn btn-outline" (click)="exit()">
+            <ion-icon name="home-outline"></ion-icon>
+            <span>{{ 'WOODPECKER.play.ready.back' | transloco }}</span>
+          </button>
+          <button class="btn btn-primary font-bold shadow-md" (click)="startPlaying()" data-testid="start">
+            <ion-icon name="play-outline"></ion-icon>
+            <span>{{ (isResuming ? 'WOODPECKER.play.ready.continue' : 'WOODPECKER.play.ready.start') | transloco }}</span>
+          </button>
+        </div>
+      </div>
+      <div class="modal-backdrop bg-base-300/60"></div>
+    </div>
+    }
+
+    <!-- Vuelta terminada -->
+    @if (status === 'cycleDone' && cycleResult) {
+    <div class="modal modal-open modal-bottom sm:modal-middle" data-testid="cycle-done">
+      <div class="modal-box text-center">
+        @if (cycleResult.finishedSet) {
+        <h3 class="mb-3 flex items-center justify-center gap-2 text-2xl font-bold text-success">
+          <ion-icon name="trophy"></ion-icon> {{ 'WOODPECKER.play.done.finalTitle' | transloco }}
+        </h3>
+        } @else {
+        <h3 class="mb-3 text-2xl font-bold">
+          {{ 'WOODPECKER.play.done.title' | transloco: { cycle: cycleResult.current.cycle } }}
+        </h3>
+        }
+
+        <app-woodpecker-cycle-result [current]="cycleResult.current" [comparison]="cycleResult.comparison"></app-woodpecker-cycle-result>
+
+        <p class="mt-3 text-sm text-base-content/60" data-testid="done-note">
+          @if (cycleResult.comparison === null) {
+          {{ 'WOODPECKER.play.done.baseNote' | transloco }}
+          } @else if (cycleResult.finishedSet) {
+          {{ 'WOODPECKER.play.done.finalNote' | transloco }}
+          }
+        </p>
+
+        <div class="modal-action mt-4 flex flex-col justify-center gap-2 sm:flex-row">
+          <button class="btn btn-outline" (click)="exit()" data-testid="back-to-set">
+            <ion-icon name="home-outline"></ion-icon>
+            <span>{{ (hasNextCycle ? 'WOODPECKER.play.done.backToSet' : 'WOODPECKER.play.done.seeResults') | transloco }}</span>
+          </button>
+          @if (hasNextCycle) {
+          <button class="btn btn-primary font-bold shadow-md" (click)="nextCycle()" data-testid="next-cycle">
+            <ion-icon name="play-outline"></ion-icon>
+            <span>{{ 'WOODPECKER.play.done.nextCycle' | transloco: { cycle: cycleResult.current.cycle + 1 } }}</span>
+          </button>
+          }
+        </div>
+      </div>
+      <div class="modal-backdrop bg-base-300/60"></div>
+    </div>
+    }
+
+  </div>
+</ion-content>

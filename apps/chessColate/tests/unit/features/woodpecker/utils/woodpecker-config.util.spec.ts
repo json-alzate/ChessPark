@@ -1,7 +1,9 @@
 import {
+  adjustEloRange,
   buildWoodpeckerConfig,
   clampCycles,
   defaultEloRange,
+  estimateCycleMinutes,
   isWoodpeckerConfig,
   minCountFor,
   normalizeEloRange,
@@ -181,5 +183,53 @@ describe('isWoodpeckerConfig', () => {
 
   it('rechaza una configuración sin vueltas', () => {
     expect(isWoodpeckerConfig({ ...configuracion(), cycles: 0 })).toBe(false);
+  });
+});
+
+describe('estimateCycleMinutes', () => {
+  it('estima unos 25 segundos por ejercicio, de 5 en 5 minutos', () => {
+    expect(estimateCycleMinutes(100)).toBe(40);
+    expect(estimateCycleMinutes(200)).toBe(85);
+    expect(estimateCycleMinutes(500)).toBe(210);
+  });
+
+  it('un set pequeño nunca baja de 5 minutos', () => {
+    expect(estimateCycleMinutes(10)).toBe(5);
+  });
+
+  it('crece con el tamaño del set', () => {
+    expect(estimateCycleMinutes(300)).toBeGreaterThan(estimateCycleMinutes(100));
+  });
+});
+
+describe('adjustEloRange', () => {
+  const rango = { eloMin: 1300, eloMax: 1700 };
+
+  it('mover el mínimo dentro de lo permitido no toca el máximo', () => {
+    expect(adjustEloRange(rango, 'min', 1100)).toEqual({ eloMin: 1100, eloMax: 1700 });
+  });
+
+  it('subir el mínimo hasta el máximo empuja el máximo para dejar 200 puntos', () => {
+    expect(adjustEloRange(rango, 'min', 1600)).toEqual({ eloMin: 1600, eloMax: 1800 });
+    expect(adjustEloRange(rango, 'min', 2000)).toEqual({ eloMin: 2000, eloMax: 2200 });
+  });
+
+  it('bajar el máximo hasta el mínimo empuja el mínimo hacia abajo', () => {
+    expect(adjustEloRange(rango, 'max', 1400)).toEqual({ eloMin: 1200, eloMax: 1400 });
+  });
+
+  it('mover el máximo dentro de lo permitido no toca el mínimo', () => {
+    expect(adjustEloRange(rango, 'max', 2000)).toEqual({ eloMin: 1300, eloMax: 2000 });
+  });
+
+  it('no se sale del catálogo por los extremos', () => {
+    expect(adjustEloRange(rango, 'min', 100)).toEqual({ eloMin: 400, eloMax: 1700 });
+    expect(adjustEloRange(rango, 'min', 3000)).toEqual({ eloMin: 2600, eloMax: 2800 });
+    expect(adjustEloRange(rango, 'max', 3000)).toEqual({ eloMin: 1300, eloMax: 2800 });
+    expect(adjustEloRange(rango, 'max', 100)).toEqual({ eloMin: 400, eloMax: 600 });
+  });
+
+  it('ajusta a pasos de 100', () => {
+    expect(adjustEloRange(rango, 'min', 1140)).toEqual({ eloMin: 1100, eloMax: 1700 });
   });
 });

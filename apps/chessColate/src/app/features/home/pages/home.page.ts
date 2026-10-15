@@ -11,7 +11,7 @@ import {
   ViewWillLeave,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { arrowForward, statsChartOutline, eye, close, flash, flame, heart, trophy, logoGooglePlaystore, logoApple, optionsOutline, globeOutline, chevronForwardOutline } from 'ionicons/icons';
+import { arrowForward, statsChartOutline, eye, close, flash, flame, heart, trophy, repeatOutline, logoGooglePlaystore, logoApple, optionsOutline, globeOutline, chevronForwardOutline } from 'ionicons/icons';
 import { Subscription } from 'rxjs';
 import { Store, select } from '@ngrx/store';
 import { AuthState, getIsInitialized } from '@chesspark/state';
@@ -26,6 +26,8 @@ import { PlanService } from '@features/training/services/plan.service';
 import { PuzzlesProvider } from '@chesspark/puzzles-provider';
 import { InfinityPuzzlePoolService } from '@features/training/services/infinity-puzzle-pool.service';
 import { StreakStorageService } from '@features/records/services/streak-storage.service';
+import { WoodpeckerStorageService } from '@features/woodpecker/services/woodpecker-storage.service';
+import { homeSummary, WoodpeckerHomeSummary } from '@features/woodpecker/utils/woodpecker-home.util';
 import { Reto333StorageService } from '@features/records/services/reto333-storage.service';
 
 import { ProfileService } from '@core/account/profile.service';
@@ -101,13 +103,14 @@ export class HomePage implements OnInit, ViewWillEnter, ViewWillLeave {
   private infinityPoolService = inject(InfinityPuzzlePoolService);
   private translocoService = inject(TranslocoService);
   private streakStorage = inject(StreakStorageService);
+  private woodpeckerStorage = inject(WoodpeckerStorageService);
   private reto333Storage = inject(Reto333StorageService);
 
   isInitialized = false;
   private initSubscription?: Subscription;
 
   constructor(private blockService: BlockService) {
-    addIcons({ arrowForward, statsChartOutline, eye, close, flash, flame, heart, trophy, logoGooglePlaystore, logoApple, optionsOutline, globeOutline, chevronForwardOutline });
+    addIcons({ arrowForward, statsChartOutline, eye, close, flash, flame, heart, trophy, repeatOutline, logoGooglePlaystore, logoApple, optionsOutline, globeOutline, chevronForwardOutline });
   }
 
   async showSolution() {
@@ -153,6 +156,9 @@ export class HomePage implements OnInit, ViewWillEnter, ViewWillLeave {
   /** Récord del modo Racha, para la tarjeta de acceso. */
   streakRecord: StreakRecord | null = null;
 
+  /** Por dónde va el Pájaro Carpintero (`null` sin set), para la tarjeta de acceso. */
+  woodpeckerSummary: WoodpeckerHomeSummary | null = null;
+
   ionViewWillEnter() {
     this.isLoadingPuzzle = true;
     this.puzzleLoadStarted = false;
@@ -178,6 +184,7 @@ export class HomePage implements OnInit, ViewWillEnter, ViewWillLeave {
   /** Récords que se muestran en las tarjetas de Racha y Reto 333. */
   private loadRecords() {
     this.streakRecord = this.streakStorage.getRecord();
+    this.woodpeckerSummary = homeSummary(this.woodpeckerStorage.getState());
     this.reto333Stats = this.reto333Storage.getRecord();
     // Con marca en el dispositivo se pinta ya. Sin ella puede que aún esté por
     // llegar del perfil, así que el esqueleto aguanta hasta que abra la sesión.
@@ -262,6 +269,10 @@ export class HomePage implements OnInit, ViewWillEnter, ViewWillLeave {
   /** Modo Racha: pantalla propia, no pasa por el flujo de rutinas. */
   goToStreak() {
     this.router.navigate(['/streak']);
+  }
+
+  goToWoodpecker() {
+    this.router.navigate(['/woodpecker']);
   }
 
   async startReto333Plan() {

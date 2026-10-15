@@ -7,6 +7,7 @@
 const BOARD_SCREENS = [
   '/puzzles/training',
   '/streak',
+  '/woodpecker/play',
   '/coordinates',
   '/knight-tour',
   '/chess960',

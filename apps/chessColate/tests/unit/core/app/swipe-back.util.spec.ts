@@ -4,6 +4,7 @@ describe('isSwipeBackAllowed', () => {
   it.each([
     '/puzzles/training',
     '/streak',
+    '/woodpecker/play',
     '/coordinates',
     '/knight-tour',
     '/chess960',
@@ -21,6 +22,7 @@ describe('isSwipeBackAllowed', () => {
     '/puzzles/plan-played',
     '/puzzles/custom-plans',
     '/analytics',
+    '/woodpecker',
     '/streaks-info',
   ])('en %s sí se permite', (url) => {
     expect(isSwipeBackAllowed(url)).toBe(true);

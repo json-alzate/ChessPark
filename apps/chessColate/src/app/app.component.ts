@@ -12,6 +12,7 @@ import {
   gridOutline,
   extensionPuzzleOutline,
   flameOutline,
+  repeatOutline,
   shuffleOutline,
   timeOutline,
   heartOutline,
@@ -189,6 +190,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       section: 'MENU.sections.practice',
     },
     {
+      title: 'WOODPECKER.title',
+      icon: 'repeat-outline',
+      route: '/woodpecker',
+      enabled: true,
+    },
+    {
       title: 'MENU.navigation.coordinates',
       icon: 'grid-outline',
       route: '/coordinates',
@@ -250,6 +257,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       'library-outline': libraryOutline,
       'extension-puzzle-outline': extensionPuzzleOutline,
       'flame-outline': flameOutline,
+      'repeat-outline': repeatOutline,
       'shuffle-outline': shuffleOutline,
       'time-outline': timeOutline,
       'heart-outline': heartOutline,

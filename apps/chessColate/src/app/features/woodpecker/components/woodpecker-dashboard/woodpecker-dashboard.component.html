@@ -1,0 +1,129 @@
+<div class="space-y-3">
+
+  @if (shortNotice) {
+  <p class="rounded-lg bg-info/10 px-3 py-2 text-xs text-info" data-testid="short-notice">
+    {{ 'WOODPECKER.shortNotice' | transloco: shortNotice }}
+  </p>
+  }
+
+  <!-- El set y por dónde va -->
+  <section class="rounded-2xl border border-base-content/10 bg-base-100 p-4" data-testid="set-card">
+    <div class="flex items-start justify-between gap-3">
+      <div class="min-w-0">
+        <h3 class="text-lg font-bold leading-tight">{{ 'WOODPECKER.dashboard.yourSet' | transloco }}</h3>
+        <p class="mt-0.5 text-sm text-base-content/60">
+          {{ 'WOODPECKER.dashboard.exercises' | transloco: { count: set.puzzles.length } }}
+          ·
+          <span class="font-semibold text-[var(--cc-elo)]">{{ set.config.eloMin }} – {{ set.config.eloMax }}</span>
+        </p>
+      </div>
+      @if (completed) {
+      <span class="badge badge-success badge-sm shrink-0 font-bold">{{ 'WOODPECKER.dashboard.completedBadge' | transloco }}</span>
+      } @else if (nextCycle !== null) {
+      <span class="badge badge-primary badge-sm shrink-0 font-bold" data-testid="cycle-badge">
+        {{ 'WOODPECKER.dashboard.cycleOf' | transloco: { cycle: nextCycle, cycles: set.config.cycles } }}
+      </span>
+      }
+    </div>
+
+    <div class="mt-2 flex flex-wrap gap-1.5">
+      @for (name of visibleThemes; track name) {
+      <span class="badge badge-sm badge-outline">{{ name }}</span>
+      }
+      @if (hiddenThemes > 0) {
+      <span class="badge badge-sm badge-ghost">+{{ hiddenThemes }}</span>
+      }
+    </div>
+
+    <p class="mt-2 text-xs text-base-content/50">
+      {{ 'WOODPECKER.setup.order.' + set.config.order | transloco }}
+      ·
+      @if (nextCycleSeconds !== null) {
+      {{ 'WOODPECKER.dashboard.secondsPerExercise' | transloco: { seconds: nextCycleSeconds } }}
+      } @else {
+      {{ 'WOODPECKER.dashboard.noClock' | transloco }}
+      }
+    </p>
+
+    @if (completed) {
+    <!-- Set terminado -->
+    <div class="mt-4 flex flex-col items-center gap-1 rounded-xl border border-success/20 bg-success/10 px-3 py-4 text-center text-success"
+      data-testid="completed-card">
+      <ion-icon name="trophy" class="text-2xl"></ion-icon>
+      <span class="font-bold">{{ 'WOODPECKER.dashboard.completedTitle' | transloco }}</span>
+      <span class="text-xs text-base-content/60">
+        {{ 'WOODPECKER.dashboard.completedMessage' | transloco: { cycles: set.config.cycles } }}
+      </span>
+    </div>
+    <button type="button" class="btn btn-primary mt-3 w-full font-bold" (click)="newSet.emit()" data-testid="new-set">
+      <ion-icon name="refresh-outline"></ion-icon>
+      <span>{{ 'WOODPECKER.dashboard.newSet' | transloco }}</span>
+    </button>
+    } @else if (nextCycle !== null) {
+    <!-- Seguir jugando -->
+    @if (activeSummary && isResuming) {
+    <div class="mt-4" data-testid="active-progress">
+      <div class="mb-1 flex items-baseline justify-between text-xs text-base-content/60">
+        <span>{{ 'WOODPECKER.dashboard.played' | transloco: { played: activeSummary.answered, total: activeSummary.total } }}</span>
+        <span class="font-semibold tabular-nums">{{ 'WOODPECKER.dashboard.solvedCount' | transloco: { count: activeSummary.solved } }}</span>
+      </div>
+      <progress class="progress progress-primary h-2 w-full" [value]="activeProgress" max="100"></progress>
+    </div>
+    }
+    <button type="button" class="btn btn-primary btn-lg mt-4 w-full font-bold" (click)="play.emit()" data-testid="play">
+      <ion-icon name="play-outline"></ion-icon>
+      <span>
+        {{ (isResuming ? 'WOODPECKER.dashboard.resume' : 'WOODPECKER.dashboard.start') | transloco: { cycle: nextCycle } }}
+      </span>
+    </button>
+    }
+  </section>
+
+  <!-- Evolución -->
+  <section class="rounded-2xl border border-base-content/10 bg-base-100 p-4" data-testid="evolution">
+    <h3 class="mb-3 font-semibold">{{ 'WOODPECKER.progress.title' | transloco }}</h3>
+    @if (summaries.length > 0) {
+    <app-woodpecker-cycles-chart [summaries]="summaries"></app-woodpecker-cycles-chart>
+    } @else {
+    <p class="text-sm text-base-content/60" data-testid="evolution-empty">{{ 'WOODPECKER.progress.empty' | transloco }}</p>
+    }
+  </section>
+
+  <!-- Ejercicios que se resisten -->
+  @if (problemItems.length > 0) {
+  <section class="rounded-2xl border border-base-content/10 bg-base-100 p-4" data-testid="problems">
+    <h3 class="font-semibold">{{ 'WOODPECKER.problems.title' | transloco }}</h3>
+    <p class="mb-3 text-xs text-base-content/50">{{ 'WOODPECKER.problems.description' | transloco }}</p>
+    <ul class="space-y-2">
+      @for (item of problemItems; track item.uidPuzzle) {
+      <li class="flex items-center gap-3 rounded-lg bg-base-200/40 px-3 py-2">
+        <div class="min-w-0 flex-1">
+          <div class="truncate text-sm font-medium">{{ item.themes }}</div>
+          <div class="text-xs text-base-content/50">
+            <span class="font-semibold text-[var(--cc-elo)]">{{ item.rating }}</span>
+            ·
+            {{ 'WOODPECKER.problems.failedIn' | transloco: { count: item.failures } }}
+          </div>
+        </div>
+        <button type="button" class="btn btn-soft btn-sm" (click)="viewProblem.emit(item.uidPuzzle)">
+          <ion-icon name="eye"></ion-icon>
+          <span>{{ 'WOODPECKER.problems.view' | transloco }}</span>
+        </button>
+      </li>
+      }
+    </ul>
+  </section>
+  }
+
+  @if (!completed) {
+  <button type="button" class="btn btn-ghost btn-sm btn-error w-full" (click)="discard.emit()" data-testid="discard">
+    <ion-icon name="trash-outline"></ion-icon>
+    <span>{{ 'WOODPECKER.dashboard.discard' | transloco }}</span>
+  </button>
+  } @else {
+  <button type="button" class="btn btn-ghost btn-sm w-full text-base-content/60" (click)="discard.emit()" data-testid="discard">
+    <ion-icon name="trash-outline"></ion-icon>
+    <span>{{ 'WOODPECKER.dashboard.deleteSet' | transloco }}</span>
+  </button>
+  }
+</div>

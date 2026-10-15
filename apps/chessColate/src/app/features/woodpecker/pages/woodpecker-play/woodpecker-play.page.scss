@@ -1,0 +1,6 @@
+// Estilos vía DaisyUI/Tailwind en la plantilla.
+// La barra superior es propia de la pantalla (no usa app-navbar), así que
+// tiene que respetar ella misma el notch en iOS.
+.navbar {
+  padding-top: env(safe-area-inset-top, 0px);
+}

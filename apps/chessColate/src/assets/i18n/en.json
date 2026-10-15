@@ -1028,6 +1028,168 @@
       "message": "Check your connection and try again."
     }
   },
+  "WOODPECKER": {
+    "title": "Woodpecker method",
+    "subtitle": "Repeat the same set until you recognise the patterns without thinking.",
+    "homeCard": {
+      "description": "Build a fixed set of exercises and repeat it over several rounds, each one faster.",
+      "cycleOf": "Round {{cycle}} of {{cycles}}",
+      "completed": "Set completed",
+      "start": "Build my set",
+      "continue": "Continue",
+      "view": "See results"
+    },
+    "intro": {
+      "title": "How does it work?",
+      "step1": "You build a set of exercises with the ELO range and themes you want.",
+      "step2": "You solve it all and then repeat it: always the same exercises.",
+      "step3": "Each round gives you less time. What you track is how much you improve from one round to the next.",
+      "note": "Seeing the same exercises again is not a bug: it is the method."
+    },
+    "setup": {
+      "size": {
+        "label": "Set size",
+        "unit": "exercises",
+        "hint": "Each round takes about {{minutes}} min."
+      },
+      "elo": {
+        "label": "ELO range",
+        "min": "From",
+        "max": "To",
+        "hint": "A little below your level works best: the goal is to gain speed."
+      },
+      "themes": {
+        "label": "Themes",
+        "all": "Varied mix",
+        "allHint": "We pick {{count}} themes from the catalogue.",
+        "pick": "Choose themes",
+        "pickHint": "Only the ones you tick.",
+        "selected": "{{count}} chosen",
+        "none": "Choose at least one theme.",
+        "groups": {
+          "Fases": "Phases",
+          "Temas": "Themes",
+          "Avanzado": "Advanced",
+          "Mates": "Checkmates",
+          "Objetivos": "Goals",
+          "Duración": "Length"
+        }
+      },
+      "cycles": {
+        "label": "Rounds",
+        "hint": "The classic method uses 7.",
+        "less": "One round less",
+        "more": "One round more"
+      },
+      "order": {
+        "label": "Order in each round",
+        "shuffle": "Shuffled",
+        "shuffleHint": "It changes every round so you don't memorise the sequence.",
+        "same": "The same",
+        "sameHint": "Always the same order, position by position.",
+        "reverse": "Alternating",
+        "reverseHint": "Even rounds go from last to first."
+      },
+      "pace": {
+        "label": "Time per exercise",
+        "relaxed": "No clock",
+        "standard": "Standard",
+        "intense": "Intense",
+        "noClockHint": "No limit: you set the pace.",
+        "decreasingHint": "{{seconds}} s in round 1 and {{percent}} % less in each one."
+      },
+      "replaceNotice": "If you build a new set, the current one and its progress are deleted.",
+      "create": "Build my set",
+      "cancel": "Back to the set"
+    },
+    "generating": {
+      "title": "Building your set…",
+      "message": "We pick the exercises and save them on your device.",
+      "progress": "{{done}} of {{total}} files"
+    },
+    "errors": {
+      "noThemes": "Choose at least one theme to build the set.",
+      "tooFew": "With these filters we only found {{found}} exercises and we need at least {{required}}. Widen the ELO range or choose more themes.",
+      "unavailable": "We couldn't fetch the exercises. Check your connection and try again.",
+      "storageFull": "There isn't enough space on your device to save the set. Free some space and try again."
+    },
+    "shortNotice": "We got {{actual}} of the {{requested}} exercises you asked for: that is all the catalogue has with these filters.",
+    "dashboard": {
+      "yourSet": "Your set",
+      "exercises": "{{count}} exercises",
+      "cycleOf": "Round {{cycle}} of {{cycles}}",
+      "completedBadge": "Completed",
+      "secondsPerExercise": "{{seconds}} s per exercise",
+      "noClock": "No clock",
+      "played": "{{played}} of {{total}} exercises",
+      "solvedCount": "{{count}} solved",
+      "start": "Start round {{cycle}}",
+      "resume": "Continue round {{cycle}}",
+      "completedTitle": "Set completed",
+      "completedMessage": "You finished all {{cycles}} rounds. Below you can see how much you improved.",
+      "newSet": "Build another set",
+      "discard": "Abandon set",
+      "deleteSet": "Delete set",
+      "discardConfirm": {
+        "title": "Abandon the set?",
+        "message": "The set and all your progress in it are deleted. Your ELO is not affected.",
+        "messageCompleted": "The set and its results are deleted. Your ELO is not affected.",
+        "cancel": "Keep the set",
+        "confirm": "Abandon"
+      }
+    },
+    "progress": {
+      "title": "Your progress",
+      "empty": "You haven't finished a round yet. Once you do, you'll see here how you improve.",
+      "cycle": "Round {{cycle}}",
+      "accuracy": "Accuracy",
+      "time": "Time",
+      "perExercise": "{{time}} per exercise",
+      "moreAccurate": "+{{points}} pts accuracy",
+      "lessAccurate": "−{{points}} pts accuracy",
+      "faster": "{{percent}} % faster",
+      "slower": "{{percent}} % slower",
+      "failedByTime": "{{count}} timed out"
+    },
+    "problems": {
+      "title": "The stubborn ones",
+      "description": "Exercises you have failed in two rounds or more. They are worth a calm look.",
+      "failedIn": "Failed in {{count}} rounds",
+      "view": "See solution"
+    },
+    "play": {
+      "cycle": "Round {{cycle}} of {{cycles}}",
+      "counter": "{{current}} of {{total}}",
+      "solved": "Solved",
+      "exit": "Exit",
+      "rules": "It's always the same exercises. Your progress is saved: you can leave whenever you want and carry on later.",
+      "ready": {
+        "title": "Round {{cycle}} of {{cycles}}",
+        "exercises": "{{count}} exercises",
+        "resume": "You pick up at exercise {{current}}.",
+        "firstCycleHint": "This round sets your starting point: don't rush and focus on getting them right.",
+        "laterHint": "Same exercises, less time: now it's about going faster.",
+        "start": "Start",
+        "continue": "Continue",
+        "back": "Back to the set"
+      },
+      "feedback": {
+        "wrong": "That's not the best move.",
+        "timeout": "Time's up.",
+        "solution": "See solution",
+        "next": "Next"
+      },
+      "done": {
+        "title": "Round {{cycle}} finished",
+        "finalTitle": "Set completed",
+        "baseNote": "This is your baseline: from here on we measure how much you improve each round.",
+        "finalNote": "You finished every round. Check your progress in the set.",
+        "nextCycle": "Start round {{cycle}}",
+        "backToSet": "Back to the set",
+        "seeResults": "See results"
+      }
+    }
+  },
   "KNIGHT_TOUR": {
     "title": "Knight tour",
     "gameOver": "Game over",
