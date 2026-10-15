@@ -92,7 +92,8 @@ export class DonationPage implements OnInit, OnDestroy {
     this.isNativePlatform = Capacitor.isNativePlatform();
     this.profileSub = this.profileService.profile$.subscribe((profile) => {
       this.isAuthenticated = !!profile;
-      if (this.isAuthenticated) {
+      // Las compras son de la tienda del móvil: en la web no hay ofertas que pedir
+      if (this.isAuthenticated && this.isNativePlatform) {
         this.loadDonationOptions();
       }
     });
@@ -151,6 +152,11 @@ export class DonationPage implements OnInit, OnDestroy {
    * Procesa una donación seleccionada
    */
   async processDonation(option: DonationOption) {
+    if (!this.isNativePlatform) {
+      this.showToast(this.t('mobileOnly'), 'warning');
+      return;
+    }
+
     // Buscar el package correspondiente
     const packageToPurchase = this.availablePackages.find(
       (pkg) => pkg.identifier === option.packageIdentifier
@@ -214,6 +220,11 @@ export class DonationPage implements OnInit, OnDestroy {
    * Restaura compras previas
    */
   async restorePurchases() {
+    if (!this.isNativePlatform) {
+      this.showToast(this.t('mobileOnly'), 'warning');
+      return;
+    }
+
     const loading = await this.loadingController.create({
       message: this.t('restoring'),
       spinner: 'crescent',

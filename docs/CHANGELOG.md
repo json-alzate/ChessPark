@@ -55,6 +55,8 @@ y el versionado sigue [SemVer](https://semver.org/lang/es/) para `versionName`.
   etiqueta; y el idioma del documento (`lang`) sigue al de la app en vez de quedarse en inglés.
 - **Legibilidad:** el texto de apoyo (pistas, notas, rótulos pequeños) pasa de 50 % a 60 % de opacidad: en el tema por defecto
   el contraste subía solo a 3,7:1 y ahora es de 4,8:1 (el mínimo recomendado es 4,5:1).
+- **Donación en la web:** la pantalla ya no pide las ofertas a la tienda (fallaba con un aviso de error) y, al tocar un
+  importe o «Restaurar compras», explica que las donaciones son de la app móvil, como ya hacía la ventana de donación.
 - **Ortografía:** «05:00 o 3 ejercicios» ya no lleva tilde en la «o».
 - **Textos sin traducir:** los avisos de la donación (cargas, errores y agradecimiento), el aviso «Iniciando entrenamiento» y el
   diálogo de borrar una sesión del historial salían siempre en español; ahora siguen el idioma de la app.
