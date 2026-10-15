@@ -38,10 +38,16 @@
       <h2 class="text-xl font-bold">{{ 'STREAK.error.title' | transloco }}</h2>
       <p class="text-sm text-base-content/60">{{ 'STREAK.error.message' | transloco }}</p>
       <div class="flex w-full flex-col gap-2">
-        <button class="btn btn-primary font-bold" (click)="retry()">
+        <button class="btn btn-primary font-bold" (click)="retryLoad()" data-testid="retry-load">
           <ion-icon name="refresh-outline"></ion-icon>
-          <span>{{ 'STREAK.actions.retry' | transloco }}</span>
+          <span>{{ 'STREAK.error.retry' | transloco }}</span>
         </button>
+        @if (score > 0) {
+        <!-- La racha de verdad: se guarda lo acertado y se empieza otra -->
+        <button class="btn btn-outline" (click)="retry()">
+          {{ 'STREAK.actions.retry' | transloco }}
+        </button>
+        }
         <button class="btn btn-ghost" (click)="goToHome()">
           {{ 'STREAK.actions.backToHome' | transloco }}
         </button>

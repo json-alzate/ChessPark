@@ -275,21 +275,45 @@ describe('StreakPage', () => {
       ]);
     });
 
-    it('si no hay puzzle disponible muestra el error y "reintentar" arranca de nuevo', async () => {
+    it('si no hay puzzle disponible muestra el error y "reintentar" vuelve a pedirlo', async () => {
       streakService.getPuzzleForElo.mockResolvedValue(null);
       await entrar();
 
       expect(page.status).toBe('error');
       expect(texto()).toContain('STREAK.error.title');
       expect(fixture.debugElement.query(By.directive(TableroPuzzleFalso))).toBeNull();
+      // Sin nada acertado aún no hay racha que distinguir de «otra racha»
+      expect(boton('STREAK.actions.retry')).toBeUndefined();
 
       catalogoPorElo();
-      boton('STREAK.actions.retry')?.click();
+      boton('STREAK.error.retry')?.click();
       await vaciarPromesas();
       fixture.detectChanges();
 
       expect(page.status).toBe('playing');
-      expect(eventos('streak_started')).toHaveLength(2);
+      expect(eventos('streak_started')).toHaveLength(1);
+    });
+
+    it('un corte de red a mitad de la racha no la pierde: "reintentar" sigue donde iba', async () => {
+      await entrar();
+      await acertar();
+      await acertar();
+      streakService.getPuzzleForElo.mockResolvedValue(null);
+      page.useSkip();
+      await vaciarPromesas();
+      fixture.detectChanges();
+      expect(page.status).toBe('error');
+      // Con racha en marcha se ofrecen las dos salidas
+      expect(boton('STREAK.error.retry')).toBeDefined();
+      expect(boton('STREAK.actions.retry')).toBeDefined();
+
+      catalogoPorElo();
+      await page.retryLoad();
+      fixture.detectChanges();
+
+      expect(page.status).toBe('playing');
+      expect(page.score).toBe(2);
+      expect(eventos('streak_started')).toHaveLength(1);
     });
 
     it('reintentar desde el error guarda como récord lo acertado antes de que fallara la descarga', async () => {

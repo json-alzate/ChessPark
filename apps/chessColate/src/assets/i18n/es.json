@@ -1044,6 +1044,7 @@
       "confirm": "Salir"
     },
     "error": {
+      "retry": "Reintentar",
       "title": "No pudimos traer el ejercicio",
       "message": "Revisa tu conexión e inténtalo de nuevo."
     }

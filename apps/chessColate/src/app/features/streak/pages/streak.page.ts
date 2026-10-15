@@ -495,6 +495,12 @@ export class StreakPage implements ViewWillEnter, ViewWillLeave, OnDestroy {
     await modal.present();
   }
 
+  /** Reintentar la descarga que falló, con la racha tal como iba: un corte de red no debe costarla. */
+  async retryLoad() {
+    this.status = 'loading';
+    await this.loadPuzzle();
+  }
+
   /** Reintentar: arranca una racha nueva desde el elo base. */
   retry() {
     // Desde la pantalla de error la racha sigue viva (falló la descarga del siguiente puzzle):
