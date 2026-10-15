@@ -13,6 +13,7 @@ import {
   extensionPuzzleOutline,
   flameOutline,
   repeatOutline,
+  footstepsOutline,
   shuffleOutline,
   timeOutline,
   heartOutline,
@@ -196,6 +197,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       enabled: true,
     },
     {
+      title: 'CHESS_RUNNER.title',
+      icon: 'footsteps-outline',
+      route: '/chess-runner',
+      enabled: true,
+    },
+    {
       title: 'MENU.navigation.coordinates',
       icon: 'grid-outline',
       route: '/coordinates',
@@ -258,6 +265,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       'extension-puzzle-outline': extensionPuzzleOutline,
       'flame-outline': flameOutline,
       'repeat-outline': repeatOutline,
+      'footsteps-outline': footstepsOutline,
       'shuffle-outline': shuffleOutline,
       'time-outline': timeOutline,
       'heart-outline': heartOutline,

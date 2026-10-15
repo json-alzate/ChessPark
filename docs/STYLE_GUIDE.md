@@ -581,7 +581,7 @@ Cada grupo lleva una etiqueta pequeña (`section`, clave `MENU.sections.*`):
 2. **Entrenar** (núcleo de la app) — flujo descubrir → crear → revisar:
    Sesiones públicas · Mis sesiones · Historial.
 3. **Estudio** — Análisis de mis partidas · Partidas históricas.
-4. **Práctica** — Racha · Pájaro carpintero · Coordenadas · Recorrido del caballo · Chess960.
+4. **Práctica** — Racha · Pájaro carpintero · Chess Runner · Coordenadas · Recorrido del caballo · Chess960.
 5. **App y cuenta** — Ajustes · Donar (solo nativo).
 
 Los nombres de las opciones siguen la [Guía de tono](GUIA_DE_TONO.md).

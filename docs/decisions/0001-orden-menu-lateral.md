@@ -73,4 +73,5 @@ etiquetas y renombra.
 ## Revisión 2026-10-14
 
 **Pájaro carpintero** se añade al grupo **Práctica**, justo después de Racha: son los dos
-modos de ejercicios con marca propia y comparten tarjeta en el inicio.
+modos de ejercicios con marca propia y comparten tarjeta en el inicio. **Chess Runner** va a continuación:
+también es un modo de ejercicios suelto, con su propio contador de sesión.

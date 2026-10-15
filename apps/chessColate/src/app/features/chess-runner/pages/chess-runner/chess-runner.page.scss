@@ -1,0 +1,31 @@
+// Estilos vía DaisyUI/Tailwind en la plantilla.
+// La barra superior es propia de la pantalla (no usa app-navbar), así que
+// tiene que respetar ella misma el notch en iOS.
+.navbar {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+// Las miniaturas son pixel art: se amplían sin suavizar.
+.pip {
+  image-rendering: pixelated;
+}
+
+// Anclado al borde inferior en móvil: respeta la barra de gestos de iOS.
+.result-panel {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+}
+
+@media (min-width: 1024px) {
+  .result-panel {
+    padding-bottom: 1rem;
+  }
+}
+
+// La zona de juego llena la pantalla bajo la barra: los toques valen en cualquier punto, y sin
+// `touch-action: none` el navegador los leería como un desplazamiento de la página.
+.running-zone {
+  min-height: calc(100dvh - 64px - env(safe-area-inset-top, 0px));
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}

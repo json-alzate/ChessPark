@@ -122,6 +122,13 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'chess-runner',
+    loadComponent: () =>
+      import('./features/chess-runner/pages/chess-runner/chess-runner.page').then(
+        (m) => m.ChessRunnerPage
+      ),
+  },
+  {
     path: 'coordinates',
     loadComponent: () =>
       import('./features/coordinates/pages/coordinates.page').then(

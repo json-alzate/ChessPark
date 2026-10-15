@@ -83,14 +83,13 @@ Decisiones a cerrar antes de mover nada:
 
 ## 3. Roadmap de features siguientes 🔴
 
-Ya implementadas: Notificaciones de Entrenamiento (F02), Game Analytics (F12) y Método del Pájaro Carpintero (F08). Lo que sigue, en orden
+Ya implementadas: Notificaciones de Entrenamiento (F02), Game Analytics (F12) y Método del Pájaro Carpintero (F08) y Chess Runner (F11). Lo que sigue, en orden
 (diseños en [features/](./features/)):
 
 1. **Rutina con BD de Puzzles Personalizada (PGN)** — [features/RUTINA_PGN_PERSONALIZADA.md](./features/RUTINA_PGN_PERSONALIZADA.md). Siguiente en la fila: reutiliza el set congelado del Pájaro Carpintero (`WoodpeckerSet`, que ya guarda su `source`).
 2. **Analizador de Partidas** — [features/ANALIZADOR_PARTIDAS.md](./features/ANALIZADOR_PARTIDAS.md).
 3. **Puzzle Feed** — [features/PUZZLE_FEED.md](./features/PUZZLE_FEED.md).
-4. **Chess Runner** — [features/CHESS_RUNNER.md](./features/CHESS_RUNNER.md). Requiere assets pixel-art + cerrar decisiones abiertas del doc.
-6. Después: Sparring Personalizado, Cuadros de Conquista (necesita un *design spike* antes de codificar), Puzzle Racer, Puzzle Geo Hunt y Jugar en Lichess.
+4. Después: Sparring Personalizado, Cuadros de Conquista (necesita un *design spike* antes de codificar), Puzzle Racer, Puzzle Geo Hunt y Jugar en Lichess.
 
 > El orden vivo está en [features/README.md](./features/README.md), que es el que se
 > mantiene al día conforme salen features.
@@ -173,3 +172,17 @@ Probado con ratón en un navegador de escritorio. Pendiente:
   debería aparecer, pero no se ha comprobado en un dispositivo.
 - **El reproductor de partidas no lo usa** 🔴 — tiene su propio layout (`games/viewer`) y su tablero no se agranda.
   Si se quiere, hay que pasarlo a `cc-board-column` y decidir su reserva de alto.
+
+---
+
+## 9. Chess Runner (F11) — verificación 🔴 (prioridad media)
+
+Implementado y documentado en [implementado/CHESS_RUNNER_FLOW.md](./implementado/CHESS_RUNNER_FLOW.md). Probado en un navegador
+móvil con gestos táctiles reales y con el teclado. Lo que no se puede cerrar desde el entorno de desarrollo:
+
+- **Probarlo en un móvil de verdad** 🔴 — la sensación del salto y de los gestos (¿se siente justo?) solo se juzga con el
+  pulgar. Si resulta difícil o fácil, se ajusta `config/runner.config.ts` (las pruebas de equilibrio dicen qué margen queda).
+- **Mirar `chess_runner_finished`** tras unas semanas: `skipped` alto = la carrera molesta; `clean` bajo = es demasiado dura.
+- **Llevarlo delante de las rutinas** 🔴 — hoy es un modo suelto del menú. Meterlo antes de cada ejercicio de las rutinas
+  (con un interruptor en Ajustes) es la segunda fase; toca `TrainingPage`.
+- **Sonidos propios** 🔴 (salto, tropiezo, llegada) y respetar «reducir movimiento» del sistema.

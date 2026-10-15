@@ -1192,6 +1192,65 @@
       }
     }
   },
+  "CHESS_RUNNER": {
+    "title": "Chess Runner",
+    "canvasLabel": "Chocolate corre y salta las piezas del ejercicio",
+    "loading": "Buscando un ejercicio…",
+    "session": "Resueltos: {{count}}",
+    "exit": "Salir",
+    "skip": "Saltar carrera",
+    "runClean": "Carrera sin tropiezos.",
+    "runStumbles": "Carrera con {{count}} tropiezos.",
+    "legend": {
+      "touch": "Toca para saltar. Desliza hacia abajo para agacharte y arriba a la derecha para el salto largo.",
+      "keyboard": "Espacio o ↑ saltan (mantén para flotar) · ↓ agacha · → salto largo"
+    },
+    "tutorial": {
+      "title": "Una carrera antes de cada ejercicio",
+      "intro": "Chocolate corre y las piezas del ejercicio son los obstáculos. Cada pieza se esquiva de una forma distinta.",
+      "note": "Si tropiezas no pasa nada: la pieza vuelve a salir una vez más y sigues.",
+      "start": "A correr"
+    },
+    "pieces": {
+      "pawn": {
+        "name": "Peón",
+        "how": "Un toque: salto normal."
+      },
+      "rook": {
+        "name": "Torre",
+        "how": "Vuela baja. Desliza hacia abajo para agacharte."
+      },
+      "bishop": {
+        "name": "Alfil",
+        "how": "Son tres seguidos. Desliza arriba y a la derecha para un salto largo."
+      },
+      "knight": {
+        "name": "Caballo",
+        "how": "Toca y mantén pulsado para quedarte en el aire."
+      },
+      "queen": {
+        "name": "Dama",
+        "how": "Toca dos veces seguidas: doble salto."
+      },
+      "king": {
+        "name": "Rey",
+        "how": "Un salto en el momento justo, cuando se ilumina el aro."
+      }
+    },
+    "result": {
+      "solved": "Bien resuelto.",
+      "wrong": "Ese no es el mejor movimiento.",
+      "timeout": "Se acabó el tiempo.",
+      "solution": "Ver solución",
+      "next": "Otro ejercicio"
+    },
+    "error": {
+      "title": "No pudimos traer el ejercicio",
+      "message": "Revisa tu conexión e inténtalo de nuevo.",
+      "retry": "Reintentar",
+      "back": "Volver al inicio"
+    }
+  },
   "KNIGHT_TOUR": {
     "title": "Recorrido del caballo",
     "gameOver": "Game Over",

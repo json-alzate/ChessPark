@@ -72,7 +72,7 @@ legible). El resto son **acciones semánticas**. Nombres y params en `snake_case
 | Evento | Cuándo | Params | Origen |
 |--------|--------|--------|--------|
 | `screen_view` | cada cambio de ruta | `screen_name` (legible) | `app.component.ts` |
-| `routine_started` | inicia una rutina | `routine_kind` (`default`/`infinity`/`reto333`/`custom`/`public`; `puzzle_*` también `streak` y `woodpecker`), `routine_minutes`, `routine_category` (`bullet`/`blitz`/`rapid`/`classical`), `routine_name`, `routine_uid`*, `author_uid`*, `blocks_count` | `plan.service.ts`, `public-plans.component.ts` |
+| `routine_started` | inicia una rutina | `routine_kind` (`default`/`infinity`/`reto333`/`custom`/`public`; `puzzle_*` también `streak`, `woodpecker` y `runner`), `routine_minutes`, `routine_category` (`bullet`/`blitz`/`rapid`/`classical`), `routine_name`, `routine_uid`*, `author_uid`*, `blocks_count` | `plan.service.ts`, `public-plans.component.ts` |
 | `puzzle_started` | empieza un puzzle | `routine_kind`, `routine_minutes`, `theme`, `puzzle_elo` | `training.component.ts` |
 | `puzzle_completed` | resuelve/falla/timeout | `result` (`good`/`bad`/`timeout`), `puzzle_elo`, `user_elo`, `resolved_time`, `first_theme`, `routine_kind`, `routine_minutes` | `training.component.ts` |
 | `reto333_finished` | termina el Reto 333 | `solved_count`, `time_seconds`, `elo`, `completed`, `best_score` | `training.component.ts` |
@@ -113,6 +113,8 @@ legible). El resto son **acciones semánticas**. Nombres y params en `snake_case
 | `woodpecker_cycle_started` | se abre una vuelta (no al retomarla) | `cycle`, `set_size` | `woodpecker.service.ts` |
 | `woodpecker_cycle_completed` | termina una vuelta | `cycle`, `solved`, `failed`, `total_time_ms` | `woodpecker.service.ts` |
 | `woodpecker_plan_completed` | terminan todas las vueltas | `cycles`, `accuracy_first`, `accuracy_last`, `time_first_ms`, `time_last_ms` | `woodpecker.service.ts` |
+| `chess_runner_started` | empieza una carrera del Chess Runner | `obstacles` | `chess-runner.page.ts` |
+| `chess_runner_finished` | termina (o se salta) la carrera | `obstacles`, `stumbles`, `clean`, `duration_ms`, `skipped` | `chess-runner.page.ts` |
 | `woodpecker_plan_abandoned` | se borra el set | `cycles_done`, `cycles`, `completed` | `woodpecker.service.ts` |
 
 \* `routine_uid`/`author_uid` solo en rutinas custom/públicas.

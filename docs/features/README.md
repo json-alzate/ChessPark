@@ -22,10 +22,10 @@ la feature se implemente o cambie de posición. Por eso los IDs se leen salteado
 | ✅ | F06 | [Reproductor / TV de Partidas](../implementado/REPRODUCTOR_PARTIDAS_FLOW.md) | Alto | Medio-Alto | — (estrenó el lector de PGN y el catálogo de partidas) |
 | ✅ | F12 | [Análisis de Partidas (Game Analytics)](../implementado/GAME_ANALYTICS_FLOW.md) | Alto | Alto | APIs externas (chess.com/lichess) |
 | ✅ | F08 | [Método del Pájaro Carpintero](../implementado/PAJARO_CARPINTERO_FLOW.md) | Alto | Medio | — (estrenó el set congelado; usa solo el catálogo de puzzles que ya existe) |
+| ✅ | F11 | [Chess Runner](../implementado/CHESS_RUNNER_FLOW.md) | Medio | Medio | — (Chocolate y el pipeline de pixel art del directo) |
 | ⬜ | F07 | [Rutina con BD de Puzzles Personalizada (PGN)](./RUTINA_PGN_PERSONALIZADA.md) | Alto | Medio | F06 (lector de PGN, ya hecho); reutiliza el set congelado de F08 |
 | ⬜ | F09 | [Analizador de Partidas (capas de dibujo)](./ANALIZADOR_PARTIDAS.md) | Alto (estudio) | Alto | F06 (lector de PGN + reproducción, ya hechos) |
 | ⬜ | F10 | [Puzzle Feed](./PUZZLE_FEED.md) | Alto (engagement) | Medio-Alto | — |
-| ⬜ | F11 | [Chess Runner](./CHESS_RUNNER.md) | Medio | Medio | — |
 | ⬜ | F13 | [Sparring Personalizado (IA con tu estilo)](./SPARRING_PERSONALIZADO.md) | Alto | Alto (Nivel 1) / Muy Alto (Nivel 2) | F12 (ingesta de partidas, ya hecha) + `stockfish-wasm` |
 | ⬜ | F14 | [Cuadros de Conquista](./CUADROS_DE_CONQUISTA.md) | Alto | Muy Alto | Backend + matchmaking |
 | ⬜ | F15 | [Puzzle Racer (Multijugador)](./PUZZLE_RACER.md) | Alto (competitivo/viral) | Alto | RTDB + matchmaking (sin backend propio) |
@@ -54,8 +54,8 @@ Va **después de F08**: reutiliza el lector de PGN que dejó F06 y, en vez de in
 ### F10 · [Puzzle Feed](./PUZZLE_FEED.md)
 **Motor de engagement** estilo TikTok/Reels sobre puzzles. Reutiliza [`board-puzzle`](../../libs/board/src/lib/board-puzzle/board-puzzle.component.ts) y el catálogo; el algoritmo de recomendación puede empezar **local** (ELO + temas + historial) sin backend. Alto potencial de uso, independiente de F06–F09.
 
-### F11 · [Chess Runner](./CHESS_RUNNER.md)
-**Capa de gamificación** (mini-juego previo al puzzle). Autocontenido, sin dependencias de datos externas; encaja cuando ya hay volumen de puzzles jugándose. Esfuerzo medio (animación/gameplay).
+### F11 · [Chess Runner](../implementado/CHESS_RUNNER_FLOW.md) ✅
+**Implementado.** Capa de gamificación (mini-juego previo al puzzle). Autocontenido, sin dependencias de datos externas; encaja cuando ya hay volumen de puzzles jugándose. Esfuerzo medio (animación/gameplay).
 
 ### F13 · [Sparring Personalizado (IA con tu estilo)](./SPARRING_PERSONALIZADO.md)
 **Consume directamente la ingesta de F12, que ya está hecha**: los conectores de chess.com/lichess, el archivo local de partidas y el modelo `ChessGame`. A partir de ahí construye un **perfil de estilo** y un rival jugable que aproxima tu fuerza y tus manías. El **Nivel 1** (perfil estadístico + Stockfish sesgado con [`stockfish-wasm`](../../libs/stockfish-wasm/src/lib/)) es **on-device, sin backend** — de ahí que llegue justo tras F12. El **Nivel 2** (clon neuronal tipo Maia fine-tuneado) es I+D con GPU/backend y **no bloquea** el lanzamiento.
@@ -116,4 +116,5 @@ Conviene tratarlos como piezas transversales, no re-implementarlas por feature:
 - [Calificar la App (In-App Review)](../implementado/CALIFICAR_APP_FLOW.md) — invitación silenciosa a calificar en la Play Store, solo tras una rutina que salió bien y como mucho cada 90 días, más un acceso manual en Ajustes. Idea original en [`CALIFICAR_APP.md`](./CALIFICAR_APP.md).
 - [Reproductor / TV de Partidas](../implementado/REPRODUCTOR_PARTIDAS_FLOW.md) — catálogo de campeones del mundo descargable desde el CDN, reproducción jugada a jugada con velocidad configurable y modo TV que encadena la colección. Idea original en [`REPRODUCTOR_PARTIDAS.md`](./REPRODUCTOR_PARTIDAS.md).
 - [Método del Pájaro Carpintero](../implementado/PAJARO_CARPINTERO_FLOW.md) — set fijo de ejercicios armado con tu rango de ELO y tus temas, que repites en varias vueltas con menos tiempo cada una, midiendo cuánto mejoras. Todo en el dispositivo. Idea original en [`METODO_PAJARO_CARPINTERO.md`](./METODO_PAJARO_CARPINTERO.md).
+- [Chess Runner](../implementado/CHESS_RUNNER_FLOW.md) — Chocolate corre y salta las piezas del ejercicio como obstáculos (cada pieza se esquiva distinto) antes de que aparezca el tablero con su reloj. Motor propio probado sin dibujar, pixel art generado por código. Idea original en [`CHESS_RUNNER.md`](./CHESS_RUNNER.md).
 - [Análisis de Partidas](../implementado/GAME_ANALYTICS_FLOW.md) — conectas tu cuenta de chess.com o de lichess y la app descarga tus partidas públicas para enseñarte evolución del rating, porcentaje de puntuación, rendimiento por color y por apertura y mapa de actividad. Todo en el dispositivo, sin backend. Idea original en [`GAME_ANALYTICS.md`](./GAME_ANALYTICS.md).

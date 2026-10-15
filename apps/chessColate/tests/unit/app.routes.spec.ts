@@ -30,6 +30,7 @@ const PANTALLAS: ReadonlyArray<readonly [path: string, clase: string]> = [
   ['streak', 'StreakPage'],
   ['woodpecker', 'WoodpeckerPage'],
   ['woodpecker/play', 'WoodpeckerPlayPage'],
+  ['chess-runner', 'ChessRunnerPage'],
   ['coordinates', 'CoordinatesPage'],
   ['knight-tour', 'KnightTourPage'],
   ['chess960', 'Chess960Page'],

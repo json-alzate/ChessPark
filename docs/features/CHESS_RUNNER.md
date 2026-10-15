@@ -1,5 +1,11 @@
 # Chess Runner — Feature Document
 
+> **✅ Implementado.** Cómo funciona hoy y las decisiones que se tomaron:
+> [`../implementado/CHESS_RUNNER_FLOW.md`](../implementado/CHESS_RUNNER_FLOW.md). Este documento queda como la idea
+> original. Lo que cambió: el motor es propio en canvas 2D en vez de Phaser, el personaje es Chocolate (la mascota),
+> las piezas son pixel art nuevo, el rey pide un salto en un instante marcado con un aro, y es un modo propio del
+> menú (Práctica) en vez de ir delante de cada ejercicio de las rutinas.
+
 ## Concepto
 
 Mini-juego estilo _Chrome Dinosaur_ que se ejecuta **antes de resolver un puzzle**. Un personaje pixel-art corre horizontalmente y debe saltar (o esquivar) las piezas de ajedrez del puzzle que aparecen como obstáculos. Cada tipo de pieza requiere una mecánica de salto diferente. Al superar todos los obstáculos, el tablero aparece y el timer del puzzle comienza.

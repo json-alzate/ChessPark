@@ -22,6 +22,8 @@ export type AnalyticsEventName =
   | 'woodpecker_cycle_completed'
   | 'woodpecker_plan_completed'
   | 'woodpecker_plan_abandoned'
+  | 'chess_runner_started'
+  | 'chess_runner_finished'
   | 'coordinates_started'
   | 'coordinates_completed'
   | 'knight_tour_started'

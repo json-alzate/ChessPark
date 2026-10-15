@@ -5,6 +5,7 @@ describe('isSwipeBackAllowed', () => {
     '/puzzles/training',
     '/streak',
     '/woodpecker/play',
+    '/chess-runner',
     '/coordinates',
     '/knight-tour',
     '/chess960',

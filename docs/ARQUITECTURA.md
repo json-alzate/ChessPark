@@ -61,6 +61,7 @@ src/app/
                    bloques, sesión, cronómetro, pool infinito, planes y sus repositorios
     streak/        modo Racha
     woodpecker/    Método del Pájaro Carpintero: set fijo que se repite en vueltas
+    chess-runner/  Chess Runner: carrera de Chocolate sobre las piezas del ejercicio, antes de resolverlo
     records/       récords de Racha y Reto 333 y su sincronización con el perfil
     reminders/     recordatorios de entrenamiento
     games/         reproductor de partidas
@@ -137,6 +138,7 @@ utils/*.util.ts                      Funciones PURAS: calculan, no inyectan nada
   Dependencias que hay hoy (sacadas de los imports):
   `training` → `records`, `reminders`, `app-review` · `home` → `training`, `records`, `woodpecker` ·
   `streak` → `records`, `reminders` · `woodpecker` → `streak` (la lista de temas que no son tácticos), `reminders` ·
+  `chess-runner` → `streak` (ídem), `reminders` ·
   `game-analytics` → `games`, `training` ·
   `settings` → `training`, `games`, `game-analytics`, `app-review` (borra sus datos locales).
   **Conocido:** `reminders` y `training` se importan mutuamente (recordatorios lee el historial
@@ -207,6 +209,7 @@ ruta está en `features/<funcionalidad>/pages/`.
 | `reminders` | `reminders` · Recordatorios | `TrainingReminderService` |
 | `woodpecker` | `woodpecker` · El set del Pájaro Carpintero: configurar, panel y evolución | `WoodpeckerService`, `WoodpeckerSetService` |
 | `woodpecker/play` | `woodpecker` · Una vuelta del set | `WoodpeckerService`, `TrainingReminderService` |
+| `chess-runner` | `chess-runner` · Carrera previa al ejercicio y el ejercicio | `RunnerPuzzleService`, `RunnerSpritesService`, `TrainingReminderService` |
 | `coordinates`, `knight-tour`, `chess960` | una funcionalidad cada una · Minijuegos | Servicios propios / `libs/board` |
 | `settings`, `settings/storage`, `settings/credits` | `settings` · Ajustes, descargas y créditos (la de créditos es pública y solo lee `config/credits.config.ts` y el `music-credits.config.ts` generado) | `AppService`, `AppearanceService`, `LanguageService`, caché de `puzzles-provider` |
 | `donation`, `privacy` | `donation`, `privacy` | `RevenueCatService` (donación) |
@@ -287,6 +290,16 @@ completo y el progreso (vueltas, orden de cada una, resultados) van a `localStor
 panel; `woodpecker/play` juega una vuelta sobre el tablero de puzzles de siempre. Detalle:
 [`implementado/PAJARO_CARPINTERO_FLOW.md`](./implementado/PAJARO_CARPINTERO_FLOW.md).
 
+### 5.2c Chess Runner
+
+Un minijuego previo al ejercicio, en `features/chess-runner/`. `RunnerPuzzleService` trae un ejercicio del catálogo y
+`buildRunnerSequence` convierte las piezas de su FEN en obstáculos. La carrera es una **simulación pura**
+(`utils/runner-engine.util.ts`, sin canvas ni reloj) que mueve `RunnerCanvasComponent`; este dibuja con
+`RunnerRenderer` y traduce gestos y teclas. Al terminar, la pantalla muestra el ejercicio en `board-puzzle` con 60 s de
+reloj. **No crea un `Plan`**, no toca el ELO y solo recuerda en el dispositivo que se vio el tutorial. Los sprites los
+genera `tools/stream-assets/export_runner.py` (el mismo pipeline que el directo 24/7). Detalle:
+[`implementado/CHESS_RUNNER_FLOW.md`](./implementado/CHESS_RUNNER_FLOW.md).
+
 ### 5.3 Recordatorios de entrenamiento
 
 Todo vive en `features/reminders/`:
@@ -344,6 +357,7 @@ una facade). Las pantallas leen el store; los guards (`custom-plans.guard` y
 | Puzzles descargados / pool infinito | IndexedDB | `libs/puzzles-provider` (`CacheService`) |
 | Partidas de chess.com/lichess | IndexedDB | `libs/game-reporter` (`createGamesArchive`) |
 | Ajustes de análisis | `localStorage` | `GameAnalyticsService` |
+| Tutorial del Chess Runner visto | `localStorage` (`chessColate_runner_tutorial_seen`) | `RunnerStorageService` |
 | Tamaño del tablero en escritorio | `localStorage` (`chessColate_board_size`) + variable CSS `--cc-board-size` | `BoardSizeService` |
 
 ### Cosas que no son obvias leyendo el código
@@ -396,6 +410,7 @@ una facade). Las pantallas leen el store; los guards (`custom-plans.guard` y
 | Añadir una estadística a Análisis | `libs/game-reporter` (reporte) + `features/game-analytics/utils/game-analytics.util.ts` (presentación) |
 | Añadir un dato a Firestore | un `*.repository.ts` en `data/` de la funcionalidad + su service (la página nunca lo inyecta) |
 | Cambiar cómo se arma el set del Pájaro Carpintero o cómo baja el tiempo por vuelta | `features/woodpecker/utils/woodpecker-set.util.ts` · `woodpecker-cycle.util.ts` · `config/woodpecker.config.ts` |
+| Afinar lo difícil que es una pieza del Chess Runner | `features/chess-runner/config/runner.config.ts` (y las pruebas de ventanas de `runner-engine.util.spec.ts`) |
 | Cambiar el tamaño del tablero en escritorio o añadir el asa a una pantalla | [`implementado/TABLERO_REDIMENSIONABLE_FLOW.md`](./implementado/TABLERO_REDIMENSIONABLE_FLOW.md) |
 | Añadir un evento de analítica | `core/analytics/analytics-events.util.ts` y `AnalyticsService` |
 
