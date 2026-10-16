@@ -71,10 +71,10 @@ Un perro de **otra raza** (otras proporciones) pide dibujar sus propios poses en
 ## Los assets del Chess Runner
 
 El mismo pipeline dibuja el pixel art del **Chess Runner** de chessColate (`apps/chessColate`): Chocolate corriendo,
-saltando, agachado y tropezando (reutiliza su cuerpo y paleta de `dog.py`), las seis piezas de ajedrez en los dos bandos como
-obstáculos, los globos de pista, los efectos (polvo y chispa) y los tiles del escenario (suelo, colinas, cielo, nubes y un
-horizonte de piezas gigantes). Salen a `apps/chessColate/src/assets/images/runner/` con un
-`runner.json` que describe cada tira.
+saltando y tropezando (reutiliza su cuerpo y paleta de `dog.py`), los efectos (polvo y chispa) y los tiles del escenario
+(suelo, colinas, cielo, nubes y un horizonte de piezas gigantes). Salen a `apps/chessColate/src/assets/images/runner/` con un
+`runner.json` que describe cada tira. **Las piezas que hacen de obstáculos no salen de aquí**: son las del set que el
+usuario eligió para el tablero.
 
 ```bash
 ./.venv/bin/python export_runner.py          # regenera los PNG y runner.json en la app
@@ -85,11 +85,7 @@ horizonte de piezas gigantes). Salen a `apps/chessColate/src/assets/images/runne
 
 | Archivo | Qué contiene |
 |---|---|
-| `runner.py` | Poses de Chocolate para el runner, las seis piezas (`WHITE`/`BLACK`), los iconos de pista y los tiles del escenario |
+| `runner.py` | Poses de Chocolate para el runner, los efectos y los tiles del escenario (las siluetas de pieza de pixel art, `WHITE`/`BLACK`, solo dibujan el horizonte) |
 | `export_runner.py` | Pega los cuadros en tiras y escribe `runner.json` (con `--check`) |
 | `preview_runner.py` | Hoja de contacto de los assets del runner |
 | `test_runner_assets.py` | Determinismo, coincidencia con la app, manifiesto y que exista todo lo que el juego pide por nombre |
-
-Las medidas de las piezas (peón 16×22, torre 20×27, alfil trío 48×24, caballo 28×38, dama 20×58 y rey 18×44 (el contorno suma 2 px y se recorta lo vacío de abajo)) están
-ligadas a las del juego (`features/chess-runner/config/runner.config.ts`): lo que puede chocar nunca es más grande que
-el dibujo. Si cambias un sprite, revisa también esa tabla.

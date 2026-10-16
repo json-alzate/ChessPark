@@ -178,9 +178,9 @@ Probado con ratón en un navegador de escritorio. Pendiente:
 ## 9. Chess Runner (F11) — verificación 🔴 (prioridad media)
 
 Implementado y documentado en [implementado/CHESS_RUNNER_FLOW.md](./implementado/CHESS_RUNNER_FLOW.md). Probado en un navegador
-móvil con gestos táctiles reales y con el teclado. Lo que no se puede cerrar desde el entorno de desarrollo:
+móvil con toques reales y con el teclado. Lo que no se puede cerrar desde el entorno de desarrollo:
 
-- **Probarlo en un móvil de verdad** 🔴 — la sensación del salto y de los gestos (¿se siente justo?) solo se juzga con el
+- **Probarlo en un móvil de verdad** 🔴 — la sensación del salto (¿se siente justo?) solo se juzga con el
   pulgar. Si resulta difícil o fácil, se ajusta `config/runner.config.ts` (las pruebas de equilibrio dicen qué margen queda).
 - **Mirar `chess_runner_finished`** tras unas semanas: `skipped` alto = la carrera molesta; `clean` bajo = es demasiado dura.
 - **Llevarlo delante de las rutinas** 🔴 — hoy es un modo suelto del menú. Meterlo antes de cada ejercicio de las rutinas

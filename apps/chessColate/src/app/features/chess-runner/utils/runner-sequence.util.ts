@@ -3,7 +3,7 @@
  * agobie al empezar. Determinista: el mismo ejercicio da siempre la misma carrera.
  */
 
-import { MAX_OBSTACLES, MAX_PER_KIND } from '../config/runner.config';
+import { MAX_OBSTACLES, MAX_PER_KIND, WALL_COUNT, WALL_KINDS } from '../config/runner.config';
 import { RunnerPiece, RunnerPieceColor, RunnerPieceKind } from '../models/runner.model';
 
 const KIND_OF_LETTER: Record<string, RunnerPieceKind> = {
@@ -89,28 +89,60 @@ export function chooseObstacles(pieces: RunnerPiece[]): RunnerPiece[] {
   return chosen.slice(0, MAX_OBSTACLES);
 }
 
+/** De las más bajas a las más altas: las que dejan más margen salen primero. */
+const SIZE_ORDER: RunnerPieceKind[] = ['pawn', 'rook', 'bishop', 'knight', 'queen', 'king'];
+
+/** Cuántas falanges (tres piezas en fila, que piden el doble salto) lleva una carrera de ese nivel. */
+export function wallsForLevel(level: number): number {
+  if (level < 2) return 0;
+  if (level < 5) return 1;
+  if (level < 8) return 2;
+  return 3;
+}
+
 /**
- * La carrera de un ejercicio: sus piezas en un orden mezclado con la semilla del ejercicio, pero con un
- * peón primero si lo hay, porque el salto básico es la mejor forma de entrar en materia.
+ * La carrera de un ejercicio: sus piezas de menor a mayor (el peón para entrar en materia, el rey para
+ * terminar), de modo que dentro de la carrera la dificultad va subiendo. Entre piezas del mismo tipo el
+ * orden se mezcla con la semilla del ejercicio, y cada una recibe su propio ritmo (`beat`): el mismo
+ * ejercicio da siempre la misma carrera, pero no suena a metrónomo.
+ *
+ * Desde el nivel 2 alguna pieza (nunca la primera, ni las que se deslizan) sale como falange: tres iguales
+ * en fila, que solo se pasan con el doble salto.
  */
-export function buildRunnerSequence(fen: string, seed: string): RunnerPiece[] {
+export function buildRunnerSequence(fen: string, seed: string, level = 1): RunnerPiece[] {
   const obstacles = chooseObstacles(piecesOfFen(fen));
   const random = seededRandom(hashString(seed));
 
-  // Fisher-Yates con la semilla
+  // Fisher-Yates con la semilla; después, un orden estable por tamaño
   for (let i = obstacles.length - 1; i > 0; i--) {
     const j = Math.floor(random() * (i + 1));
     [obstacles[i], obstacles[j]] = [obstacles[j], obstacles[i]];
   }
+  obstacles.sort((a, b) => SIZE_ORDER.indexOf(a.kind) - SIZE_ORDER.indexOf(b.kind));
+  const sequence = obstacles.map((piece) => ({ ...piece, beat: random() }));
 
-  const pawn = obstacles.findIndex((piece) => piece.kind === 'pawn');
-  if (pawn > 0) {
-    [obstacles[0], obstacles[pawn]] = [obstacles[pawn], obstacles[0]];
+  // Las falanges: se eligen con la misma semilla entre las piezas que lo admiten
+  const candidates = sequence
+    .map((piece, index) => ({ piece, index, key: random() }))
+    .filter(({ piece, index }) => index > 0 && WALL_KINDS.includes(piece.kind))
+    .sort((a, b) => a.key - b.key)
+    .slice(0, wallsForLevel(level));
+  for (const { index } of candidates) {
+    sequence[index] = { ...sequence[index], wall: WALL_COUNT };
   }
-  return obstacles;
+  return sequence;
 }
 
-/** El bando del obstáculo, para elegir su sprite. */
-export function spriteName(kind: RunnerPieceKind, color: RunnerPieceColor): string {
-  return `piece-${kind}-${color}`;
+const LETTER_OF_KIND: Record<RunnerPieceKind, string> = {
+  pawn: 'p',
+  rook: 'r',
+  bishop: 'b',
+  knight: 'n',
+  queen: 'q',
+  king: 'k',
+};
+
+/** El nombre de una pieza en el sprite del set (`wp`, `bn`…), el mismo que usa el tablero. */
+export function pieceKey(kind: RunnerPieceKind, color: RunnerPieceColor): string {
+  return `${color}${LETTER_OF_KIND[kind]}`;
 }

@@ -1,9 +1,6 @@
-import {
-  RunnerAction,
-  RunnerPieceKind,
-  RunnerState,
-} from '@features/chess-runner/models/runner.model';
-import { createRun, perform, stepRun } from '@features/chess-runner/utils/runner-engine.util';
+import { RunnerPieceKind, RunnerState } from '@features/chess-runner/models/runner.model';
+import { difficultyForLevel } from '@features/chess-runner/config/runner.config';
+import { createRun, jump, stepRun } from '@features/chess-runner/utils/runner-engine.util';
 
 /**
  * Ayudas para probar el Chess Runner sin dibujar nada: carreras guionizadas con el motor puro.
@@ -12,67 +9,62 @@ import { createRun, perform, stepRun } from '@features/chess-runner/utils/runner
 export const PASO = 1 / 240;
 export const ANCHO = 200;
 
-/** Una orden en un instante de la carrera. */
-export interface Orden {
-  t: number;
-  action: RunnerAction;
-}
-
-/** Tramo en el que el jugador mantiene pulsado. */
-export interface Pulsacion {
-  desde: number;
-  hasta: number;
-}
-
+/** Los instantes (en segundos desde el principio de la carrera) en que el jugador toca. */
 export interface Guion {
-  ordenes: Orden[];
-  mantener?: Pulsacion[];
+  toques: number[];
 }
 
-/** Una carrera con un solo obstáculo que sale en el primer paso. */
-export function carreraDeUno(kind: RunnerPieceKind, color: 'w' | 'b' = 'w'): RunnerState {
-  return { ...createRun([{ kind, color }], ANCHO), untilSpawn: 0 };
+/** Una carrera con un solo obstáculo que sale en el primer paso (y de nivel `nivel`); con `falange`, tres iguales en fila. */
+export function carreraDeUno(
+  kind: RunnerPieceKind,
+  color: 'w' | 'b' = 'w',
+  { nivel = 1, falange = false } = {}
+): RunnerState {
+  return {
+    ...createRun([{ kind, color, wall: falange ? 3 : undefined }], ANCHO, difficultyForLevel(nivel)),
+    untilSpawn: 0,
+  };
 }
 
 /**
- * Corre la carrera hasta que termina (o se agota el tiempo) aplicando el guion. Devuelve el estado final
- * y todo lo que ocurrió.
+ * Corre la carrera hasta que termina (o se agota el tiempo) con los toques del guion. Devuelve el estado
+ * final y todo lo que ocurrió.
  */
-export function correr(inicial: RunnerState, guion: Guion = { ordenes: [] }, limite = 12) {
+export function correr(inicial: RunnerState, guion: Guion = { toques: [] }, limite = 12) {
   let state = inicial;
   let t = 0;
-  const pendientes = [...guion.ordenes].sort((a, b) => a.t - b.t);
-  const registro = { saltos: 0, dobles: 0, tropiezos: 0, superados: 0 };
+  const pendientes = [...guion.toques].sort((a, b) => a - b);
+  const registro = { saltos: 0, tropiezos: 0, superados: 0, galletas: 0 };
 
   while (state.phase !== 'done' && t < limite) {
-    while (pendientes.length && pendientes[0].t <= t + 1e-9) {
-      const resultado = perform(state, pendientes.shift()!.action);
+    while (pendientes.length && pendientes[0] <= t + 1e-9) {
+      pendientes.shift();
+      const resultado = jump(state);
       state = resultado.state;
       registro.saltos += resultado.jumped ? 1 : 0;
-      registro.dobles += resultado.doubleJumped ? 1 : 0;
     }
-    const manteniendo = (guion.mantener ?? []).some((p) => t >= p.desde && t < p.hasta);
-    const paso = stepRun(state, PASO, manteniendo);
+    const paso = stepRun(state, PASO);
     state = paso.state;
     registro.tropiezos += paso.events.stumbled ? 1 : 0;
     registro.superados += paso.events.cleared.length;
+    registro.galletas += paso.events.cookies;
     t += PASO;
   }
   return { state, t, ...registro };
 }
 
 /**
- * Barre el instante de la pulsación y devuelve los tramos en los que el obstáculo se supera sin tropezar.
- * `guion` recibe el instante de la pulsación.
+ * Barre el instante del toque y devuelve los tramos en los que el obstáculo se supera sin tropezar.
  */
 export function ventanasDeAcierto(
   kind: RunnerPieceKind,
-  guion: (t0: number) => Guion,
-  { desde = 0, hasta = 1.8, paso = 0.005 } = {}
+  { desde = 0, hasta = 1.8, paso = 0.005, nivel = 1, falange = false, doble = false } = {}
 ) {
   const aciertos: number[] = [];
   for (let t0 = desde; t0 <= hasta; t0 += paso) {
-    const r = correr(carreraDeUno(kind), guion(t0));
+    // El doble salto son dos toques seguidos: el segundo espera a la cima
+    const toques = doble ? [t0, t0 + 0.03] : [t0];
+    const r = correr(carreraDeUno(kind, 'w', { nivel, falange }), { toques });
     if (r.tropiezos === 0 && r.state.phase === 'done') {
       aciertos.push(Math.round(t0 * 1000) / 1000);
     }

@@ -1,11 +1,21 @@
 import {
-  GESTURE_DECISION_MS,
-  GESTURE_MAX_WAIT_MS,
-  GESTURE_SLOP_PX,
-  GESTURE_SWIPE_PX,
+  COOKIE_ARC_Y,
+  COOKIE_HIGH_Y,
+  COOKIES_PER_HEART,
+  difficultyForLevel,
+  DOG_BOX,
+  MAX_HEARTS,
+  MAX_LEVEL,
   MAX_OBSTACLES,
   MAX_PER_KIND,
+  MAX_STRIKES,
+  PIECE_BEHAVIOR,
+  PX_PER_METER,
+  WALL_KINDS,
+  worldOfLevel,
+  WORLDS,
   OBSTACLE_SHAPES,
+  PIECE_DRAW_SIZE,
   RUNNER_CANVAS_HEIGHT,
   RUNNER_PHYSICS,
 } from '@features/chess-runner/config/runner.config';
@@ -53,46 +63,108 @@ describe('configuración del Chess Runner', () => {
     expect(PIEZAS.sort()).toEqual(['bishop', 'king', 'knight', 'pawn', 'queen', 'rook']);
   });
 
-  it('cada forma tiene medidas positivas y una pista', () => {
-    for (const [kind, forma] of Object.entries(OBSTACLE_SHAPES)) {
+  it('cada forma tiene medidas positivas', () => {
+    for (const forma of Object.values(OBSTACLE_SHAPES)) {
       expect(forma.width).toBeGreaterThan(0);
       expect(forma.height).toBeGreaterThan(0);
-      expect(forma.bottom).toBeGreaterThanOrEqual(0);
-      expect(forma.gapBefore).toBeGreaterThan(100);
-      expect(forma.hint).toBeTruthy();
-      void kind;
     }
   });
 
-  it('solo la torre flota: el resto está pegado al suelo', () => {
-    for (const [kind, forma] of Object.entries(OBSTACLE_SHAPES)) {
-      expect(forma.bottom > 0).toBe(kind === 'rook');
+  it('lo que choca cabe dentro del cuadro con que se dibuja la pieza (es indulgente)', () => {
+    for (const forma of Object.values(OBSTACLE_SHAPES)) {
+      expect(forma.width).toBeLessThanOrEqual(PIECE_DRAW_SIZE);
+      expect(forma.height).toBeLessThanOrEqual(PIECE_DRAW_SIZE);
     }
   });
 
-  it('lo que choca nunca es más ancho que el dibujo de la pieza', () => {
-    const anchoDelDibujo: Record<string, number> = { pawn: 18, rook: 22, bishop: 48, knight: 30, queen: 22, king: 20 };
-    for (const [kind, forma] of Object.entries(OBSTACLE_SHAPES)) {
-      expect(forma.width).toBeLessThanOrEqual(anchoDelDibujo[kind]);
-    }
+  it('el peón es la más baja y el rey la más alta', () => {
+    const alturas = Object.entries(OBSTACLE_SHAPES).map(([kind, forma]) => [kind, forma.height] as const);
+    const minima = Math.min(...alturas.map(([, h]) => h));
+    const maxima = Math.max(...alturas.map(([, h]) => h));
+
+    expect(OBSTACLE_SHAPES.pawn.height).toBe(minima);
+    expect(OBSTACLE_SHAPES.king.height).toBe(maxima);
   });
 
-  it('lo que choca nunca es más alto que el dibujo de la pieza', () => {
-    const altoDelDibujo: Record<string, number> = { pawn: 24, rook: 29, bishop: 25, knight: 39, queen: 58, king: 45 };
-    for (const [kind, forma] of Object.entries(OBSTACLE_SHAPES)) {
-      expect(forma.height).toBeLessThanOrEqual(altoDelDibujo[kind]);
-    }
+  it('el salto sube más que la pieza más alta, con holgura', () => {
+    const subida = (RUNNER_PHYSICS.jumpVelocity ** 2) / (2 * RUNNER_PHYSICS.gravity);
+
+    expect(subida).toBeGreaterThan(OBSTACLE_SHAPES.king.height + 20);
   });
 
-  it('el doble salto de la dama cabe en el lienzo, cabeza incluida', () => {
-    const { jumpVelocity, doubleJumpVelocity, gravity } = RUNNER_PHYSICS;
-    const subida = (v: number) => (v * v) / (2 * gravity);
-    // Segundo impulso justo en la cima, que es lo más alto que se puede llegar
-    const maxima = subida(jumpVelocity) + subida(doubleJumpVelocity);
+  it('el salto cabe en el lienzo, cabeza incluida', () => {
+    const subida = (RUNNER_PHYSICS.jumpVelocity ** 2) / (2 * RUNNER_PHYSICS.gravity);
     const ALTO_DE_CHOCOLATE = 40;
     const PIES_SOBRE_EL_LIENZO = RUNNER_CANVAS_HEIGHT - 26; // los pies apoyan a 26 px del borde de abajo
 
-    expect(maxima + ALTO_DE_CHOCOLATE).toBeLessThan(PIES_SOBRE_EL_LIENZO);
+    expect(subida + ALTO_DE_CHOCOLATE).toBeLessThan(PIES_SOBRE_EL_LIENZO);
+  });
+
+  it('las piezas son más pequeñas que Chocolate (40 de alto): no se le comen el protagonismo', () => {
+    expect(PIECE_DRAW_SIZE).toBeLessThan(40);
+  });
+
+  it('en todos los niveles el menor hueco entre piezas deja tiempo para aterrizar y volver a saltar', () => {
+    const vuelo = (2 * RUNNER_PHYSICS.jumpVelocity) / RUNNER_PHYSICS.gravity;
+
+    for (let nivel = 1; nivel <= MAX_LEVEL; nivel++) {
+      expect(difficultyForLevel(nivel).minGapTime).toBeGreaterThan(vuelo);
+    }
+  });
+
+  it('cada pieza tiene su forma de moverse, y todas llegan: ninguna se desliza más lento que el suelo', () => {
+    expect(Object.keys(PIECE_BEHAVIOR).sort()).toEqual([...PIEZAS].sort());
+    for (const comportamiento of Object.values(PIECE_BEHAVIOR)) {
+      expect(comportamiento.slide).toBeGreaterThanOrEqual(1);
+      expect(comportamiento.lunge).toBeGreaterThanOrEqual(0);
+      expect(comportamiento.lift).toBeGreaterThanOrEqual(0);
+    }
+  });
+
+  it('solo el alfil flota, y aun así Chocolate de pie no pasa por debajo', () => {
+    const flotan = Object.entries(PIECE_BEHAVIOR).filter(([, c]) => c.lift > 0).map(([kind]) => kind);
+
+    expect(flotan).toEqual(['bishop']);
+    expect(PIECE_BEHAVIOR.bishop.lift).toBeLessThan(DOG_BOX.height);
+  });
+
+  it('solo las piezas que no se deslizan forman falange', () => {
+    for (const kind of WALL_KINDS) {
+      expect(PIECE_BEHAVIOR[kind].slide).toBe(1);
+    }
+    expect(WALL_KINDS).not.toContain('rook');
+    expect(WALL_KINDS).not.toContain('queen');
+  });
+
+  it('el doble salto llega más alto que el sencillo, y las galletas de arriba solo con él', () => {
+    const subida = (v: number) => v ** 2 / (2 * RUNNER_PHYSICS.gravity);
+    const sencillo = subida(RUNNER_PHYSICS.jumpVelocity);
+    const doble = sencillo + subida(RUNNER_PHYSICS.doubleJumpVelocity);
+
+    expect(doble).toBeGreaterThan(sencillo + 25);
+    // Chocolate coge una galleta con la cabeza (su caja es DOG_BOX.height de alto)
+    expect(COOKIE_HIGH_Y).toBeGreaterThan(sencillo + DOG_BOX.height);
+    expect(COOKIE_HIGH_Y).toBeLessThan(doble + DOG_BOX.height);
+    // Las del arco se cogen con un salto sencillo pero no corriendo
+    expect(COOKIE_ARC_Y).toBeGreaterThan(DOG_BOX.height);
+    expect(COOKIE_ARC_Y).toBeLessThan(sencillo + DOG_BOX.height);
+  });
+
+  it('las reglas de la partida: tres corazones, tres fallos y un corazón por varias galletas', () => {
+    expect(MAX_HEARTS).toBe(3);
+    expect(MAX_STRIKES).toBe(3);
+    expect(COOKIES_PER_HEART).toBeGreaterThanOrEqual(10);
+    expect(PX_PER_METER).toBeGreaterThan(0);
+  });
+
+  it('los mundos cambian cada tres niveles y dan la vuelta', () => {
+    expect(WORLDS).toHaveLength(4);
+    expect(worldOfLevel(1)).toBe('day');
+    expect(worldOfLevel(4)).toBe('sunset');
+    expect(worldOfLevel(7)).toBe('night');
+    expect(worldOfLevel(10)).toBe('dawn');
+    expect(worldOfLevel(13)).toBe('day');
+    expect(worldOfLevel(0)).toBe('day');
   });
 
   it('el máximo de obstáculos y de copias por pieza tienen sentido', () => {
@@ -100,25 +172,27 @@ describe('configuración del Chess Runner', () => {
     expect(MAX_PER_KIND).toBeGreaterThanOrEqual(1);
     expect(MAX_OBSTACLES).toBeLessThanOrEqual(12);
   });
-
-  it('los umbrales del gesto van de menor a mayor', () => {
-    expect(GESTURE_SLOP_PX).toBeLessThan(GESTURE_SWIPE_PX);
-    expect(GESTURE_DECISION_MS).toBeLessThan(GESTURE_MAX_WAIT_MS);
-  });
 });
 
 describe('assets y traducciones del Chess Runner', () => {
-  it('existe el sprite de cada pieza en los dos bandos y la pista de cada mecánica', () => {
-    for (const kind of PIEZAS) {
-      for (const lado of ['w', 'b']) {
-        expect(existsSync(join(ASSETS, `piece-${kind}-${lado}.png`))).toBe(true);
-      }
-      expect(existsSync(join(ASSETS, `hint-${OBSTACLE_SHAPES[kind as keyof typeof OBSTACLE_SHAPES].hint}.png`))).toBe(true);
+  it('no hay sprites de piezas ni de pistas: las piezas son las del set que el usuario eligió', () => {
+    const sobrantes = readdirSync(ASSETS).filter((nombre) => /^(piece|hint)-/.test(nombre));
+
+    expect(sobrantes).toEqual([]);
+  });
+
+  it('existe cada set de piezas que ofrece Ajustes', () => {
+    // Se lee la tabla de la librería del tablero en vez de importarla: arrastra cm-chessboard, que Jest no carga
+    const tabla = readFileSync(join(RAIZ_SRC, '../../../libs/board/src/lib/chessboard-appearance/chessboard-appearance.ts'), 'utf-8');
+    const archivos = [...tabla.matchAll(/'pieces\/([a-z-]+\.svg)'/g)].map((m) => m[1]);
+    expect(archivos.length).toBeGreaterThanOrEqual(10);
+    for (const archivo of archivos) {
+      expect(existsSync(join(RAIZ_SRC, 'assets/cm-chessboard/assets/pieces', archivo))).toBe(true);
     }
   });
 
   it('existen las poses de Chocolate, el escenario y el manifiesto', () => {
-    for (const nombre of ['dog-run', 'dog-jump', 'dog-slide', 'dog-hurt', 'dog-happy', 'scene-floor', 'scene-hills', 'scene-sky', 'scene-skyline', 'fx-dust', 'fx-spark', 'runner']) {
+    for (const nombre of ['dog-run', 'dog-jump', 'dog-hurt', 'dog-happy', 'scene-floor', 'scene-hills', 'scene-sky', 'scene-skyline', 'fx-dust', 'fx-spark', 'runner']) {
       expect(existsSync(join(ASSETS, nombre === 'runner' ? 'runner.json' : `${nombre}.png`))).toBe(true);
     }
   });
@@ -141,12 +215,14 @@ describe('assets y traducciones del Chess Runner', () => {
     return [...set];
   })();
   const dinamicas = [
-    ...PIEZAS.flatMap((kind) => [`CHESS_RUNNER.pieces.${kind}.name`, `CHESS_RUNNER.pieces.${kind}.how`]),
-    ...['solved', 'wrong', 'timeout'].map((r) => `CHESS_RUNNER.result.${r}`),
-  ];
+  ...['solved', 'wrong', 'timeout'].map((r) => `CHESS_RUNNER.result.${r}`),
+  // El cartel de cada carrera y el motivo del fin de partida se eligen en tiempo de ejecución
+  ...['first', 'faster', 'doubleJump', 'world.day', 'world.sunset', 'world.night', 'world.dawn'].map((h) => `CHESS_RUNNER.levelHint.${h}`),
+  ...['hits', 'strikes'].map((r) => `CHESS_RUNNER.gameOver.${r}`),
+];
 
   it('las plantillas usan claves (no es una prueba vacía)', () => {
-    expect(claves.length).toBeGreaterThan(15);
+    expect(claves.length).toBeGreaterThan(10);
   });
 
   for (const idioma of ['es', 'en'] as const) {

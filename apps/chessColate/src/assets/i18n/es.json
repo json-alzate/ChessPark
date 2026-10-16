@@ -1234,40 +1234,17 @@
     "skip": "Saltar carrera",
     "runClean": "Carrera sin tropiezos.",
     "runStumbles": "Carrera con {{count}} tropiezos.",
-    "legend": {
-      "touch": "Toca para saltar. Desliza hacia abajo para agacharte y arriba a la derecha para el salto largo.",
-      "keyboard": "Espacio o ↑ saltan (mantén para flotar) · ↓ agacha · → salto largo"
-    },
-    "tutorial": {
-      "title": "Una carrera antes de cada ejercicio",
-      "intro": "Chocolate corre y las piezas del ejercicio son los obstáculos. Cada pieza se esquiva de una forma distinta.",
-      "note": "Si tropiezas no pasa nada: la pieza vuelve a salir una vez más y sigues.",
-      "start": "A correr"
-    },
-    "pieces": {
-      "pawn": {
-        "name": "Peón",
-        "how": "Un toque: salto normal."
-      },
-      "rook": {
-        "name": "Torre",
-        "how": "Vuela baja. Desliza hacia abajo para agacharte."
-      },
-      "bishop": {
-        "name": "Alfil",
-        "how": "Son tres seguidos. Desliza arriba y a la derecha para un salto largo."
-      },
-      "knight": {
-        "name": "Caballo",
-        "how": "Toca y mantén pulsado para quedarte en el aire."
-      },
-      "queen": {
-        "name": "Dama",
-        "how": "Toca dos veces seguidas: doble salto."
-      },
-      "king": {
-        "name": "Rey",
-        "how": "Un salto en el momento justo, cuando se ilumina el aro."
+    "level": "Nivel {{level}}",
+    "combo": "Racha {{count}}",
+    "levelHint": {
+      "first": "Salta las piezas del ejercicio",
+      "faster": "Más rápido que la anterior",
+      "doubleJump": "Nuevo: dos toques seguidos, doble salto",
+      "world": {
+        "day": "De día",
+        "sunset": "Atardecer",
+        "night": "De noche",
+        "dawn": "Amanecer"
       }
     },
     "result": {
@@ -1296,13 +1273,35 @@
     "startPosition": "Posición inicial",
     "startPositionDesc": "Elige desde dónde comienza el caballo",
     "showVisitedSquaresDesc": "Resalta las casillas ya visitadas",
+    "heartsLabel": "{{count}} corazones",
+    "meters": "{{count}} m",
+    "cookiesHint": "Cada {{count}} galletas recuperas un corazón",
+    "strikes": "Fallos: {{count}} de {{max}}",
+    "legend": {
+      "touch": "Toca para saltar. Dos toques seguidos, doble salto.",
+      "keyboard": "Espacio o ↑ para saltar; dos veces, doble salto"
+    },
     "random": "Aleatoria",
     "a1": "a1 (esquina inferior izquierda)",
+      "levelUp": "Subes al nivel {{level}}.",
+      "lastStrike": "Fallaste tres ejercicios: se acabó la partida.",
+      "finish": "Ver resultado",
     "h1": "h1 (esquina inferior derecha)",
     "a8": "a8 (esquina superior izquierda)",
     "h8": "h8 (esquina superior derecha)",
     "showVisitedSquares": "Mostrar casillas visitadas",
     "readyToStart": "¡Listo para comenzar!",
+    "gameOver": {
+      "title": "Fin de la partida",
+      "hits": "Te quedaste sin corazones.",
+      "strikes": "Fallaste tres ejercicios.",
+      "newRecord": "Nuevo récord",
+      "record": "Récord: {{count}} m",
+      "level": "Nivel",
+      "solved": "Resueltos",
+      "cookies": "Galletas",
+      "again": "Jugar otra vez"
+    },
     "gameStartsWhenMove": "El juego comenzará cuando muevas el caballo por primera vez",
     "congratulations": "¡Felicidades!",
     "completedTour": "Has completado el recorrido del caballo",

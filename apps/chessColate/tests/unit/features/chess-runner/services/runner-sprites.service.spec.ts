@@ -3,7 +3,7 @@ import { RunnerSpritesService } from '@features/chess-runner/services/runner-spr
 const MANIFIESTO = {
   sprites: {
     'dog-run': { file: 'dog-run.png', frameW: 52, frameH: 40, frames: 4, fps: 12 },
-    'piece-pawn-w': { file: 'piece-pawn-w.png', frameW: 18, frameH: 24, frames: 1, fps: 1 },
+    'fx-dust': { file: 'fx-dust.png', frameW: 12, frameH: 8, frames: 3, fps: 12 },
   },
 };
 
@@ -41,10 +41,10 @@ describe('RunnerSpritesService', () => {
     const sprites = await service.load();
 
     expect(fetchFalso).toHaveBeenCalledWith('assets/images/runner/runner.json');
-    expect([...sprites.keys()]).toEqual(['dog-run', 'piece-pawn-w']);
+    expect([...sprites.keys()]).toEqual(['dog-run', 'fx-dust']);
     expect(imagenesPedidas.sort()).toEqual([
       'assets/images/runner/dog-run.png',
-      'assets/images/runner/piece-pawn-w.png',
+      'assets/images/runner/fx-dust.png',
     ]);
   });
 
@@ -76,9 +76,9 @@ describe('RunnerSpritesService', () => {
   });
 
   it('si una imagen no carga, falla y dice cuál', async () => {
-    fallarImagen = 'piece-pawn-w';
+    fallarImagen = 'fx-dust';
 
-    await expect(service.load()).rejects.toThrow('piece-pawn-w.png');
+    await expect(service.load()).rejects.toThrow('fx-dust.png');
   });
 
   it('un fallo no se queda guardado: la siguiente vez se reintenta', async () => {

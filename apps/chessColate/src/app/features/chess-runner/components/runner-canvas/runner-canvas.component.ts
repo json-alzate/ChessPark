@@ -10,23 +10,18 @@ import {
   ViewChild,
   inject,
 } from '@angular/core';
+import { TranslocoPipe } from '@jsverse/transloco';
 
 import {
-  GESTURE_DECISION_MS,
-  GESTURE_MAX_WAIT_MS,
-  GESTURE_SLOP_PX,
-  OBSTACLE_SHAPES,
+  difficultyForLevel,
   RUNNER_CANVAS_HEIGHT,
+  RunnerDifficulty,
 } from '../../config/runner.config';
-import {
-  RunnerAction,
-  RunnerPiece,
-  RunnerState,
-  RunnerStats,
-} from '../../models/runner.model';
+import { RunnerPiece, RunnerState, RunnerStats } from '../../models/runner.model';
+import { RunnerPiecesService } from '../../services/runner-pieces.service';
 import { RunnerSpritesService } from '../../services/runner-sprites.service';
-import { createRun, perform, runnerStats, stepRun } from '../../utils/runner-engine.util';
-import { classifySwipe, keyCommand, logicalWidth, runnerScale } from '../../utils/runner-input.util';
+import { createRun, jump, metersOf, runnerStats, stepRun } from '../../utils/runner-engine.util';
+import { isJumpKey, logicalWidth, runnerScale } from '../../utils/runner-input.util';
 import { RunnerRenderer } from './runner-renderer';
 
 /** Lo que el lienzo le cuenta a la pantalla para que suene y avise. */
@@ -36,12 +31,18 @@ export type RunnerEventName =
   | 'landed'
   | 'cleared'
   | 'stumble'
+  | 'cookie'
   | 'finishing';
 
 export interface RunnerProgress {
   cleared: number;
   total: number;
   stumbles: number;
+  /** Piezas seguidas sin tropezar. */
+  combo: number;
+  /** Metros corridos y galletas cogidas en esta carrera. */
+  meters: number;
+  cookies: number;
 }
 
 /** Paso fijo de la simulación: los números del juego se afinaron con él, no con el de la pantalla. */
@@ -50,8 +51,8 @@ const STEP = 1 / 120;
 const MAX_FRAME = 0.05;
 
 /**
- * El lienzo del Chess Runner: dibuja la carrera, la mueve con un paso fijo y traduce gestos y teclas en
- * órdenes. Toda la lógica del juego está en `utils/runner-engine.util.ts`; aquí solo está lo que necesita
+ * El lienzo del Chess Runner: dibuja la carrera, la mueve con un paso fijo y convierte un toque (o
+ * Espacio) en un salto. Toda la lógica del juego está en `utils/runner-engine.util.ts`; aquí solo está lo que necesita
  * el navegador (lienzo, `requestAnimationFrame`, eventos).
  *
  * El bucle corre fuera de la zona de Angular para no provocar una detección de cambios por fotograma;
@@ -60,6 +61,7 @@ const MAX_FRAME = 0.05;
 @Component({
   selector: 'app-runner-canvas',
   standalone: true,
+  imports: [TranslocoPipe],
   // Sin esto el host es `inline` y mide 0: el lienzo no sabría de qué ancho disponer
   host: { class: 'block w-full' },
   template: `<canvas
@@ -68,27 +70,28 @@ const MAX_FRAME = 0.05;
     style="touch-action: none; image-rendering: pixelated"
     data-testid="runner-canvas"
     role="img"
-    [attr.aria-label]="'CHESS_RUNNER.canvasLabel'"
+    [attr.aria-label]="'CHESS_RUNNER.canvasLabel' | transloco"
   ></canvas>`,
 })
 export class RunnerCanvasComponent implements AfterViewInit, OnDestroy {
   private zone = inject(NgZone);
   private spritesService = inject(RunnerSpritesService);
+  private piecesService = inject(RunnerPiecesService);
   private host = inject<ElementRef<HTMLElement>>(ElementRef);
 
   @ViewChild('canvas', { static: true }) canvasRef!: ElementRef<HTMLCanvasElement>;
 
   /** Las piezas de la carrera, en orden. */
   @Input({ required: true }) sequence: RunnerPiece[] = [];
-  /** Enseñar la flecha de lo que hay que hacer sobre cada obstáculo. */
-  @Input() hints = true;
+  /** Lo rápida y exigente que es la carrera. */
+  @Input() difficulty: RunnerDifficulty = difficultyForLevel(1);
   /** Ancho máximo del lienzo en px; en escritorio un tablero de 1000 px sería exagerado. */
   @Input() maxWidth = 720;
   /**
-   * Zona que recoge los toques y gestos. Por defecto el propio lienzo; en el móvil conviene toda la zona
+   * Zona que recoge los toques. Por defecto el propio lienzo; en el móvil conviene toda la zona
    * de juego, porque el pulgar está en la parte baja de la pantalla.
    */
-  @Input() gestureZone: HTMLElement | null = null;
+  @Input() tapZone: HTMLElement | null = null;
 
   @Output() runnerEvent = new EventEmitter<RunnerEventName>();
   @Output() progress = new EventEmitter<RunnerProgress>();
@@ -102,31 +105,18 @@ export class RunnerCanvasComponent implements AfterViewInit, OnDestroy {
   private lastTime = 0;
   private accumulator = 0;
   private destroyed = false;
-  private holding = false;
   private resizeObserver?: ResizeObserver;
   private zoneElement: HTMLElement | null = null;
 
-  /** El gesto en curso: aún no se sabe si es un toque o un deslizamiento. */
-  private gesture: {
-    x: number;
-    y: number;
-    /** Dónde está el dedo ahora, para saber si sigue quieto. */
-    lastX: number;
-    lastY: number;
-    startedAt: number;
-    decided: boolean;
-    timer: ReturnType<typeof setTimeout>;
-  } | null = null;
-
   private readonly onKeyDown = (event: KeyboardEvent) => this.handleKeyDown(event);
-  private readonly onKeyUp = (event: KeyboardEvent) => this.handleKeyUp(event);
 
   async ngAfterViewInit(): Promise<void> {
     let sprites;
+    let pieces;
     try {
-      sprites = await this.spritesService.load();
+      [sprites, pieces] = await Promise.all([this.spritesService.load(), this.piecesService.load()]);
     } catch (error) {
-      console.error('Chess Runner: no se cargaron los sprites', error);
+      console.error('Chess Runner: no se cargaron los sprites ni las piezas', error);
       this.zone.run(() => this.failed.emit());
       return;
     }
@@ -142,19 +132,15 @@ export class RunnerCanvasComponent implements AfterViewInit, OnDestroy {
     }
 
     const width = this.layout();
-    this.state = createRun(this.sequence, width);
-    this.renderer = new RunnerRenderer(ctx, sprites, width);
+    this.state = createRun(this.sequence, width, this.difficulty);
+    this.renderer = new RunnerRenderer(ctx, sprites, pieces.images, width);
     this.zone.run(() => this.progress.emit(this.currentProgress()));
 
-    this.zoneElement = this.gestureZone ?? canvas;
+    this.zoneElement = this.tapZone ?? canvas;
     const zoneElement = this.zoneElement;
     this.zone.runOutsideAngular(() => {
       zoneElement.addEventListener('pointerdown', this.pointerDown);
-      zoneElement.addEventListener('pointermove', this.pointerMove);
-      zoneElement.addEventListener('pointerup', this.pointerUp);
-      zoneElement.addEventListener('pointercancel', this.pointerUp);
       window.addEventListener('keydown', this.onKeyDown);
-      window.addEventListener('keyup', this.onKeyUp);
       if (typeof ResizeObserver !== 'undefined') {
         this.resizeObserver = new ResizeObserver(() => this.onResize());
         this.resizeObserver.observe(this.host.nativeElement);
@@ -170,12 +156,7 @@ export class RunnerCanvasComponent implements AfterViewInit, OnDestroy {
     this.resizeObserver?.disconnect();
     const zoneElement = this.zoneElement;
     zoneElement?.removeEventListener('pointerdown', this.pointerDown);
-    zoneElement?.removeEventListener('pointermove', this.pointerMove);
-    zoneElement?.removeEventListener('pointerup', this.pointerUp);
-    zoneElement?.removeEventListener('pointercancel', this.pointerUp);
     window.removeEventListener('keydown', this.onKeyDown);
-    window.removeEventListener('keyup', this.onKeyUp);
-    this.clearGesture();
   }
 
   // ------------------------------------------------------------------ tamaño
@@ -221,9 +202,10 @@ export class RunnerCanvasComponent implements AfterViewInit, OnDestroy {
     const collected: RunnerEventName[] = [];
     let progressed = false;
     let finishedNow = false;
+    const metersBefore = metersOf(this.state);
 
     while (this.accumulator >= STEP && this.state.phase !== 'done') {
-      const { state, events } = stepRun(this.state, STEP, this.holding);
+      const { state, events } = stepRun(this.state, STEP);
       this.state = state;
       this.accumulator -= STEP;
 
@@ -231,13 +213,26 @@ export class RunnerCanvasComponent implements AfterViewInit, OnDestroy {
         collected.push('landed');
         this.renderer?.addFx('dust', state.dog.x, 0, state.time);
       }
+      if (events.doubleJumped) {
+        // Una chispa en el aire marca el segundo impulso
+        collected.push('doubleJump');
+        this.renderer?.addFx('spark', state.dog.x, state.dog.y, state.time);
+      }
+      if (events.cookies > 0) {
+        collected.push('cookie');
+        progressed = true;
+      }
       if (events.cleared.length > 0) {
         collected.push('cleared');
         progressed = true;
         // Una chispa sobre cada pieza que se acaba de dejar atrás
         for (const obstacle of events.cleared) {
-          const shape = OBSTACLE_SHAPES[obstacle.kind];
-          this.renderer?.addFx('spark', obstacle.x + shape.width / 2, shape.bottom + shape.height + 4, state.time);
+          this.renderer?.addFx(
+            'spark',
+            obstacle.x + obstacle.width / 2,
+            obstacle.y + obstacle.height + 4,
+            state.time
+          );
         }
       }
       if (events.stumbled) {
@@ -249,14 +244,19 @@ export class RunnerCanvasComponent implements AfterViewInit, OnDestroy {
       if (events.done) finishedNow = true;
     }
 
-    this.renderer?.draw(this.state, { hints: this.hints });
+    this.renderer?.draw(this.state);
 
+    // Los metros suben a cada poco: se avisa al cambiar de metro, no en cada fotograma
+    if (metersOf(this.state) !== metersBefore) {
+      progressed = true;
+    }
     if (collected.length > 0 || progressed || finishedNow) {
       this.zone.run(() => {
-        collected.forEach((name) => this.runnerEvent.emit(name));
+        // Primero el avance: al reaccionar a un choque la pantalla ya sabe cuántos metros llevaba
         if (progressed) {
           this.progress.emit(this.currentProgress());
         }
+        collected.forEach((name) => this.runnerEvent.emit(name));
         if (finishedNow) {
           this.finished.emit(runnerStats(this.state));
         }
@@ -269,23 +269,33 @@ export class RunnerCanvasComponent implements AfterViewInit, OnDestroy {
   }
 
   private currentProgress(): RunnerProgress {
-    return { cleared: this.state.cleared, total: this.state.total, stumbles: this.state.stumbles };
+    return {
+      cleared: this.state.cleared,
+      total: this.state.total,
+      stumbles: this.state.stumbles,
+      combo: this.state.combo,
+      meters: metersOf(this.state),
+      cookies: this.state.cookies,
+    };
   }
 
   // ---------------------------------------------------------------- entrada
 
-  /** Ejecuta una orden y avisa del salto, si lo hubo. */
-  private act(action: RunnerAction): void {
+  /** Un toque: Chocolate salta (y suena, si despegó). */
+  private jump(): void {
     if (!this.state) {
       return;
     }
-    const result = perform(this.state, action);
+    const result = jump(this.state);
     this.state = result.state;
-    if (result.jumped || result.doubleJumped) {
-      // Polvo al despegar; el doble salto lo suelta en el aire
-      this.renderer?.addFx('dust', this.state.dog.x, result.doubleJumped ? this.state.dog.y : 0, this.state.time);
-      const name: RunnerEventName = result.doubleJumped ? 'doubleJump' : 'jump';
-      this.zone.run(() => this.runnerEvent.emit(name));
+    if (result.jumped) {
+      if (result.double) {
+        this.renderer?.addFx('spark', this.state.dog.x, this.state.dog.y, this.state.time);
+      } else {
+        // Polvo al despegar
+        this.renderer?.addFx('dust', this.state.dog.x, 0, this.state.time);
+      }
+      this.zone.run(() => this.runnerEvent.emit(result.double ? 'doubleJump' : 'jump'));
     }
   }
 
@@ -298,122 +308,21 @@ export class RunnerCanvasComponent implements AfterViewInit, OnDestroy {
       return;
     }
     event.preventDefault();
-    this.capturePointer('set', event.pointerId);
-    this.clearGesture();
-    // Hasta que pasa un instante no se sabe si es un toque o el principio de un deslizamiento
-    const timer = setTimeout(() => this.settleGesture(), GESTURE_DECISION_MS);
-    this.gesture = {
-      x: event.clientX,
-      y: event.clientY,
-      lastX: event.clientX,
-      lastY: event.clientY,
-      startedAt: performance.now(),
-      decided: false,
-      timer,
-    };
+    this.jump();
   };
-
-  /**
-   * Vence el instante de decisión. Con el dedo quieto es un toque (y mantenerlo hace flotar); con el
-   * dedo ya en marcha se espera un poco más a ver si llega a ser un deslizamiento, sin pasarse del tope.
-   */
-  private settleGesture(): void {
-    const gesture = this.gesture;
-    if (!gesture || gesture.decided) {
-      return;
-    }
-    const moved = Math.hypot(gesture.lastX - gesture.x, gesture.lastY - gesture.y);
-    if (moved >= GESTURE_SLOP_PX && performance.now() - gesture.startedAt < GESTURE_MAX_WAIT_MS) {
-      gesture.timer = setTimeout(() => this.settleGesture(), 20);
-      return;
-    }
-    this.decide('tap-hold');
-  }
-
-  private readonly pointerMove = (event: PointerEvent) => {
-    if (!this.gesture || this.gesture.decided) {
-      return;
-    }
-    this.gesture.lastX = event.clientX;
-    this.gesture.lastY = event.clientY;
-    const swipe = classifySwipe(event.clientX - this.gesture.x, event.clientY - this.gesture.y);
-    if (swipe) {
-      this.decide(swipe);
-    }
-  };
-
-  /**
-   * Captura o suelta el puntero. El navegador lanza `NotFoundError` si ese puntero ya no está activo (un toque
-   * cancelado justo al empezar): el gesto sigue adelante sin captura en vez de perderse con la excepción.
-   */
-  private capturePointer(action: 'set' | 'release', pointerId: number): void {
-    const element = this.zoneElement ?? this.canvasRef.nativeElement;
-    try {
-      if (action === 'set') {
-        element.setPointerCapture?.(pointerId);
-      } else {
-        element.releasePointerCapture?.(pointerId);
-      }
-    } catch {
-      /* el puntero ya no está activo */
-    }
-  }
-
-  private readonly pointerUp = (event: PointerEvent) => {
-    this.capturePointer('release', event.pointerId);
-    // Un toque que se suelta antes de decidir: salto corto, sin mantener
-    if (this.gesture && !this.gesture.decided) {
-      this.decide('tap');
-    }
-    this.holding = false;
-    this.clearGesture();
-  };
-
-  private decide(kind: 'tap' | 'tap-hold' | RunnerAction): void {
-    if (!this.gesture || this.gesture.decided) {
-      return;
-    }
-    this.gesture.decided = true;
-    clearTimeout(this.gesture.timer);
-    if (kind === 'tap' || kind === 'tap-hold') {
-      this.act('jump');
-      // Mantener pulsado más allá del instante de decisión es lo que hace flotar a Chocolate
-      this.holding = kind === 'tap-hold';
-    } else {
-      this.act(kind);
-    }
-  }
-
-  private clearGesture(): void {
-    if (this.gesture) {
-      clearTimeout(this.gesture.timer);
-      this.gesture = null;
-    }
-  }
 
   private handleKeyDown(event: KeyboardEvent): void {
     const target = event.target as HTMLElement | null;
     if (target && /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName)) {
       return;
     }
-    const command = keyCommand(event.key);
-    if (!command) {
+    if (!isJumpKey(event.key)) {
       return;
     }
     // Espacio y las flechas desplazarían la página
     event.preventDefault();
-    if (event.repeat) {
-      return;
-    }
-    this.act(command.action);
-    if (command.holds) {
-      this.holding = true;
-    }
-  }
-
-  private handleKeyUp(event: KeyboardEvent): void {
-    if (keyCommand(event.key)?.holds) {
-      this.holding = false;
+    if (!event.repeat) {
+      this.jump();
     }
   }
 }

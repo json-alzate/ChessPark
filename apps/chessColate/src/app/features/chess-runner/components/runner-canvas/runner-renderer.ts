@@ -1,12 +1,16 @@
 import {
-  DOG_BOX,
-  OBSTACLE_SHAPES,
+  COOKIE_SIZE,
+  PIECE_BEHAVIOR,
+  PIECE_DRAW_SIZE,
   RUNNER_CANVAS_HEIGHT,
   RUNNER_PHYSICS,
+  RunnerWorld,
+  worldOfLevel,
 } from '../../config/runner.config';
-import { RunnerObstacle, RunnerState } from '../../models/runner.model';
+import { RunnerCookie, RunnerObstacle, RunnerState } from '../../models/runner.model';
+import { RunnerPieceSet } from '../../services/runner-pieces.service';
 import { RunnerSprite } from '../../services/runner-sprites.service';
-import { spriteName } from '../../utils/runner-sequence.util';
+import { pieceKey } from '../../utils/runner-sequence.util';
 
 /** Medidas del lienzo lógico (el ancho depende de la pantalla; el alto es fijo). */
 export const RUNNER_HEIGHT = RUNNER_CANVAS_HEIGHT;
@@ -16,9 +20,41 @@ export const GROUND_Y = 142;
 export const FEET_Y = GROUND_Y + 8;
 
 const FLOOR_TILE_H = 20;
+/** Lo que baja el cuadro de la pieza bajo el suelo: las piezas dejan un margen vacío abajo. */
+const PIECE_FOOT_PADDING = 2;
 const WOOD = '#3a2418';
+/** Lo que dura la sacudida tras un tropiezo, en segundos. */
+const SHAKE_TIME = 0.25;
+/** Cuántos píxeles de suelo recorre Chocolate entre un fotograma de su carrera y el siguiente. */
+const STRIDE_PX = 11;
 
 type Sprites = ReadonlyMap<string, RunnerSprite>;
+
+/** La galleta de ChessColate en pixel art (9×9): `X` borde, `o` masa, `h` brillo y `c` chispas de chocolate. */
+const COOKIE_ART = [
+  '..XXXXX..',
+  '.XhhoooX.',
+  'XhooocooX',
+  'XoocooooX',
+  'XoooooocX',
+  'XocoooooX',
+  'XoooocooX',
+  '.XoooooX.',
+  '..XXXXX..',
+];
+const COOKIE_COLORS: Record<string, string> = { X: '#6b3d17', o: '#d99a52', h: '#f2c987', c: '#3a1f0c' };
+
+/** Cómo se tiñe el escenario en cada mundo: el color por encima del cielo y las colinas. */
+const WORLD_TINT: Record<RunnerWorld, string | null> = {
+  day: null,
+  sunset: 'rgba(255, 130, 50, 0.26)',
+  night: 'rgba(12, 20, 70, 0.58)',
+  dawn: 'rgba(255, 120, 175, 0.22)',
+};
+/** Estrellas del mundo de noche: (x relativa al ancho, y), fijas. */
+const STARS: [number, number][] = [
+  [0.08, 14], [0.2, 38], [0.33, 10], [0.45, 26], [0.58, 12], [0.7, 40], [0.82, 20], [0.93, 34], [0.15, 56], [0.62, 52],
+];
 
 /** Un efecto breve (polvo, chispa) que se dibuja mientras dura su animación. */
 export type RunnerFxKind = 'dust' | 'spark';
@@ -33,7 +69,8 @@ interface ActiveFx {
 
 /**
  * Dibuja un instante del runner. No sabe de Angular ni del bucle: recibe el estado y pinta. Todo en
- * píxeles lógicos; quien lo crea fija la escala del lienzo y desactiva el suavizado.
+ * píxeles lógicos; quien lo crea fija la escala del lienzo. Chocolate y el escenario son pixel art (sin
+ * suavizado); las piezas son las del set que el usuario eligió para el tablero, que son vectoriales.
  */
 export class RunnerRenderer {
   private fx: ActiveFx[] = [];
@@ -41,6 +78,7 @@ export class RunnerRenderer {
   constructor(
     private readonly ctx: CanvasRenderingContext2D,
     private readonly sprites: Sprites,
+    private readonly pieces: RunnerPieceSet['images'],
     private width: number
   ) {}
 
@@ -53,20 +91,50 @@ export class RunnerRenderer {
     this.fx.push({ kind, x, y, start: time });
   }
 
-  draw(state: RunnerState, options: { hints: boolean }): void {
+  draw(state: RunnerState): void {
     const { ctx } = this;
     ctx.imageSmoothingEnabled = false;
     ctx.clearRect(0, 0, this.width, RUNNER_HEIGHT);
 
+    // Un tropiezo sacude la escena un instante
+    const shaking = state.dog.stumble > RUNNER_PHYSICS.stumbleTime - SHAKE_TIME;
+    if (shaking) {
+      ctx.save();
+      const strength = (state.dog.stumble - (RUNNER_PHYSICS.stumbleTime - SHAKE_TIME)) / SHAKE_TIME;
+      ctx.translate(Math.round(Math.sin(state.time * 90) * 2 * strength), Math.round(Math.cos(state.time * 70) * 1.5 * strength));
+    }
     this.drawBackground(state);
+    this.drawWorld(state);
     this.drawFloor(state);
+    for (const cookie of state.pickups) {
+      this.drawCookie(cookie, state.time);
+    }
     for (const obstacle of state.obstacles) {
       this.drawObstacle(obstacle);
     }
     this.drawFx(state);
     this.drawDog(state);
-    if (options.hints) {
-      this.drawHints(state);
+    this.drawSpeedLines(state);
+    if (shaking) {
+      ctx.restore();
+    }
+  }
+
+  /** Rayitas que cruzan el aire cuando el suelo va rápido: se nota la velocidad sin leer ningún número. */
+  private drawSpeedLines(state: RunnerState): void {
+    const base = state.difficulty.startSpeed;
+    const boost = Math.min(1, Math.max(0, (state.speed - base) / 60 + (state.difficulty.level - 1) / 12));
+    if (boost <= 0.05) {
+      return;
+    }
+    const { ctx } = this;
+    ctx.fillStyle = `rgba(255, 255, 255, ${(0.18 + 0.2 * boost).toFixed(2)})`;
+    const lines = 2 + Math.round(boost * 4);
+    for (let i = 0; i < lines; i++) {
+      const lane = 24 + ((i * 37) % 80);
+      const length = 8 + ((i * 11) % 10) + Math.round(boost * 10);
+      const x = this.width - ((state.distance * (1.6 + (i % 3) * 0.4) + i * 61) % (this.width + length));
+      ctx.fillRect(Math.round(x), lane, length, 1);
     }
   }
 
@@ -148,27 +216,88 @@ export class RunnerRenderer {
     ctx.fillRect(0, GROUND_Y + FLOOR_TILE_H, this.width, RUNNER_HEIGHT - GROUND_Y - FLOOR_TILE_H);
   }
 
+  // ----------------------------------------------------------------- mundos y galletas
+
+  /** El escenario cambia cada pocos niveles (tarde, noche, amanecer): se nota el avance sin leer un número. */
+  private drawWorld(state: RunnerState): void {
+    const world = worldOfLevel(state.difficulty.level);
+    const tint = WORLD_TINT[world];
+    if (!tint) {
+      return;
+    }
+    const { ctx } = this;
+    ctx.fillStyle = tint;
+    ctx.fillRect(0, 0, this.width, GROUND_Y + 6);
+    if (world === 'night') {
+      STARS.forEach(([x, y], index) => {
+        const twinkle = Math.floor(state.time * 2 + index) % 3 === 0;
+        ctx.fillStyle = twinkle ? 'rgba(255, 255, 255, 0.55)' : 'rgba(255, 255, 255, 0.95)';
+        ctx.fillRect(Math.round(x * this.width), y, 1, 1);
+      });
+    }
+  }
+
+  private drawCookie(cookie: RunnerCookie, time: number): void {
+    const { ctx } = this;
+    const bob = Math.round(Math.sin(time * 5 + cookie.id) * 1);
+    const left = Math.round(cookie.x);
+    const top = Math.round(FEET_Y - cookie.y - COOKIE_SIZE) + bob;
+    COOKIE_ART.forEach((row, dy) => {
+      for (let dx = 0; dx < row.length; dx++) {
+        const color = COOKIE_COLORS[row[dx]];
+        if (color) {
+          ctx.fillStyle = color;
+          ctx.fillRect(left + dx, top + dy, 1, 1);
+        }
+      }
+    });
+  }
+
   // ------------------------------------------------------------- obstáculos
 
   private drawObstacle(obstacle: RunnerObstacle): void {
     const { ctx } = this;
-    const sprite = this.sprites.get(spriteName(obstacle.kind, obstacle.color));
-    if (!sprite) {
+    const image = this.pieces.get(pieceKey(obstacle.kind, obstacle.color));
+    if (!image) {
       return;
     }
-    const shape = OBSTACLE_SHAPES[obstacle.kind];
-    const centerX = obstacle.x + shape.width / 2;
+    const behavior = PIECE_BEHAVIOR[obstacle.kind];
+    // La torre se desliza: una estela detrás para verla llegar
+    if (behavior.slide > 1 && obstacle.x < this.width) {
+      this.drawTrail(obstacle);
+    }
+    // La sombra se queda en el suelo aunque la pieza flote o salte
+    const lifted = Math.max(0, obstacle.y);
+    for (let i = 0; i < obstacle.count; i++) {
+      const pieceX = obstacle.x + i * obstacle.spacing;
+      const centerX = pieceX + (obstacle.width - (obstacle.count - 1) * obstacle.spacing) / 2;
+      this.drawShadow(centerX, PIECE_DRAW_SIZE * 0.5, 1 - Math.min(0.5, lifted / 60));
 
-    this.drawShadow(centerX, sprite.frameW * 0.7, 1);
+      // Un obstáculo con el que ya se chocó se queda atrás, apagado
+      ctx.globalAlpha = obstacle.hit ? 0.35 : 1;
+      // El set de piezas es vectorial: se dibuja suavizado para que no salga con dientes de sierra
+      ctx.imageSmoothingEnabled = true;
+      ctx.drawImage(
+        image,
+        Math.round(centerX - PIECE_DRAW_SIZE / 2),
+        Math.round(FEET_Y + PIECE_FOOT_PADDING - lifted - PIECE_DRAW_SIZE),
+        PIECE_DRAW_SIZE,
+        PIECE_DRAW_SIZE
+      );
+      ctx.imageSmoothingEnabled = false;
+      ctx.globalAlpha = 1;
+    }
+  }
 
-    // Un obstáculo con el que ya se chocó se queda atrás, apagado
-    ctx.globalAlpha = obstacle.hit ? 0.35 : 1;
-    ctx.drawImage(
-      sprite.image,
-      Math.round(centerX - sprite.frameW / 2),
-      Math.round(FEET_Y - shape.bottom - sprite.frameH)
-    );
-    ctx.globalAlpha = 1;
+  /** Rayas de velocidad detrás de una pieza que se desliza. */
+  private drawTrail(obstacle: RunnerObstacle): void {
+    const { ctx } = this;
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+    const baseY = FEET_Y - Math.round(obstacle.height / 2);
+    for (let i = 0; i < 3; i++) {
+      const length = 14 - i * 3;
+      ctx.fillRect(Math.round(obstacle.x + obstacle.width + 2 + i * 2), baseY - 5 + i * 5, length, 1);
+    }
   }
 
   /** Sombra elíptica sobre el suelo; más pequeña cuanto más alto está lo que la proyecta. */
@@ -188,6 +317,9 @@ export class RunnerRenderer {
     const named = (name: string) => this.sprites.get(`dog-${name}`);
     const animated = (sprite: RunnerSprite | undefined) =>
       sprite ? Math.floor(state.time * sprite.fps) % sprite.frames : 0;
+    // Corre al compás del suelo: más rápido el suelo, más rápidas las patas
+    const stride = (sprite: RunnerSprite | undefined) =>
+      sprite ? Math.floor(state.distance / STRIDE_PX) % sprite.frames : 0;
 
     if (dog.stumble > RUNNER_PHYSICS.stumbleTime - 0.5) {
       const sprite = named('hurt');
@@ -198,16 +330,12 @@ export class RunnerRenderer {
       return { sprite, frame: animated(sprite) };
     }
     if (airborne) {
-      // Sube, en la cima (o flotando) y baja
+      // Sube, en la cima y baja
       const frame = dog.vy > 120 ? 0 : dog.vy < -120 ? 2 : 1;
       return { sprite: named('jump'), frame };
     }
-    if (dog.slide > 0) {
-      const sprite = named('slide');
-      return { sprite, frame: animated(sprite) };
-    }
     const sprite = named('run');
-    return { sprite, frame: animated(sprite) };
+    return { sprite, frame: state.phase === 'running' ? stride(sprite) : animated(sprite) };
   }
 
   private drawDog(state: RunnerState): void {
@@ -252,47 +380,5 @@ export class RunnerRenderer {
       ctx.fillRect(x - 1, y, 3, 1);
       ctx.fillRect(x, y - 1, 1, 3);
     }
-  }
-
-  // ------------------------------------------------------------------ pistas
-
-  private drawHints(state: RunnerState): void {
-    const { ctx } = this;
-    const box = state.dog.x + DOG_BOX.dx + DOG_BOX.width;
-
-    for (const obstacle of state.obstacles) {
-      if (obstacle.hit || obstacle.cleared) {
-        continue;
-      }
-      const shape = OBSTACLE_SHAPES[obstacle.kind];
-      const ahead = obstacle.x - box;
-      // Solo cuando ya está en pantalla y aún falta para llegar
-      if (ahead < 0 || obstacle.x > this.width - 4) {
-        continue;
-      }
-      const hint = this.sprites.get(`hint-${shape.hint}`);
-      if (hint) {
-        const bob = Math.round(Math.sin(state.time * 6) * 2);
-        ctx.drawImage(
-          hint.image,
-          Math.round(obstacle.x + shape.width / 2 - hint.frameW / 2),
-          // La colita del globo apunta al obstáculo
-          Math.round(FEET_Y - shape.bottom - shape.height - hint.frameH - 1 + bob)
-        );
-      }
-      if (obstacle.kind === 'king' && ahead > 22 && ahead < 36) {
-        this.drawTapNow(state);
-      }
-    }
-  }
-
-  /** El rey pide precisión: un aro en los pies de Chocolate marca el momento justo. */
-  private drawTapNow(state: RunnerState): void {
-    const { ctx } = this;
-    const pulse = 0.55 + 0.45 * Math.abs(Math.sin(state.time * 20));
-    ctx.strokeStyle = `rgba(255, 179, 71, ${pulse})`;
-    ctx.lineWidth = 1;
-    ctx.strokeRect(state.dog.x - 16.5, FEET_Y - 2.5, 33, 5);
-    ctx.strokeRect(state.dog.x - 14.5, FEET_Y - 1.5, 29, 3);
   }
 }

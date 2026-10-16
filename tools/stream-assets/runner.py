@@ -1,13 +1,13 @@
 """
-Assets del Chess Runner (app chessColate): Chocolate corriendo y saltando, las piezas de ajedrez como
-obstáculos, los iconos de pista y los tiles del escenario.
+Assets del Chess Runner (app chessColate): Chocolate corriendo y saltando, los efectos y los tiles del
+escenario. Las piezas que hacen de obstáculos no salen de aquí: son las del set que el usuario eligió para el
+tablero. Las piezas de pixel art de este módulo solo dibujan el horizonte de piezas gigantes.
 
 Reutiliza el cuerpo y la paleta de Chocolate (`dog.py`) y las utilidades de `pixel.py`. Todo se dibuja por
 código y es determinista. Los sprites miran a la derecha y los pies/la base quedan abajo.
 
 Medidas lógicas (1 px del sprite = 1 px lógico; la app escala por un entero):
   - Chocolate: celdas de 52×40.
-  - Piezas: peón 16×22, torre 20×28, alfil (trío) 52×24, caballo 28×38, dama 20×58, rey 18×44.
 """
 import random
 
@@ -36,9 +36,6 @@ def dog_animations(palette=dog_mod.CHOCOLATE):
         'jump': ([d(legs=(-7, -5, 7, 5), bob=-3, lift=3, ear=1, mouth='open', hd=(1, -1), tail=1),
                   d(legs=(1, 1, -1, -1), bob=-3, lift=7, ear=1, mouth='open', hd=(0, -1), tail=0),
                   d(legs=(5, 3, 8, 6), bob=-1, lift=2, ear=1, mouth='open', hd=(0, 1), tail=-1)], 1),
-        # Agachado: panza al suelo, patas estiradas, cabeza al frente
-        'slide': ([d(legs=(-7, -5, 7, 5), bob=8, lift=0, ear=1, mouth='open', hd=(2, 0), tail=-1),
-                   d(legs=(-5, -7, 5, 7), bob=8, lift=0, ear=1, mouth='open', hd=(2, 0), tail=-1)], 10),
         # Tropiezo: ojos cerrados, lengua afuera, sacudida
         'hurt': ([d(legs=(0, 0, 0, 0), bob=2, eye='closed', mouth='open', hd=(-2, 2), ear=1, tail=-1),
                   d(legs=(0, 0, 0, 0), bob=3, eye='closed', mouth='open', hd=(-1, 3), ear=1, tail=-1)], 8),
@@ -50,7 +47,7 @@ def dog_animations(palette=dog_mod.CHOCOLATE):
     }
 
 
-# ---------------------------------------------------------------------------- Piezas
+# ---------------------------------------------------------------------------- Piezas (solo para el horizonte)
 
 
 class PiecePalette:
@@ -279,73 +276,6 @@ def piece_sprites():
         for kind, draw in PIECES.items():
             sprites[f'piece-{kind}-{side}'] = draw(palette)
     return sprites
-
-
-# ---------------------------------------------------------------------------- Pistas
-
-HINT_INK = C('#e0661f')
-HINT_SHADE = C('#a8431a')
-HINT_OUT = C('#3a1f10')
-BUBBLE = C('#fff4d9')
-BUBBLE_SHADE = C('#f1d9a6')
-
-# 11×11. '#' = tinta
-_HINTS = {
-    # un salto
-    'jump': ['.....#.....', '....###....', '...#####...', '..#######..', '.#########.', '....###....',
-             '....###....', '....###....', '....###....', '...........', '...........'],
-    # agacharse
-    'slide': ['...........', '...........', '....###....', '....###....', '....###....', '....###....',
-              '.#########.', '..#######..', '...#####...', '....###....', '.....#.....'],
-    # saltar y mantener: flecha arriba y el símbolo de pausa
-    'hold': ['.....#.....', '....###....', '...#####...', '.....#.....', '.....#.....', '...........',
-             '..###.###..', '..###.###..', '..###.###..', '..###.###..', '...........'],
-    # doble salto
-    'double': ['.....#.....', '....###....', '...#####...', '..#######..', '.....#.....', '....###....',
-               '...#####...', '..#######..', '....###....', '....###....', '...........'],
-    # salto corto y preciso: flecha con un objetivo
-    'precise': ['....###....', '...#...#...', '..#..#..#..', '..#.###.#..', '..#..#..#..', '...#...#...',
-                '....###....', '.....#.....', '....###....', '...#####...', '...........'],
-}
-
-
-def _long_jump_icon():
-    """Flecha diagonal hacia arriba y adelante: salto largo."""
-    sp = layer(11, 11)
-    d = ImageDraw.Draw(sp)
-    d.line([(1, 9), (7, 3)], fill=HINT_INK, width=3)
-    d.polygon([(10, 0), (3, 1), (9, 7)], fill=HINT_INK)
-    return sp
-
-
-def _bubble(icon):
-    """El icono dentro de un globo de cómic con su colita hacia abajo: se lee sobre cualquier fondo."""
-    sp = layer(19, 21)
-    d = ImageDraw.Draw(sp)
-    d.rounded_rectangle([0, 0, 18, 16], radius=4, fill=BUBBLE)
-    R(d, 1, 12, 17, 15, BUBBLE_SHADE)
-    d.rounded_rectangle([0, 0, 18, 16], radius=4, outline=HINT_OUT)
-    # colita
-    d.polygon([(7, 16), (11, 16), (9, 20)], fill=BUBBLE)
-    d.line([(7, 16), (9, 20), (11, 16)], fill=HINT_OUT)
-    R(d, 8, 16, 10, 16, BUBBLE)
-    sp.paste(icon, (4, 3), icon)
-    return sp
-
-
-def hint_icons():
-    """Nombre -> globo de pista de 19×21."""
-    icons = {}
-    for name, rows in _HINTS.items():
-        sp = layer(11, 11)
-        px = sp.load()
-        for y, row in enumerate(rows):
-            for x, ch in enumerate(row):
-                if ch == '#':
-                    px[x, y] = HINT_INK if (y + x) % 5 else HINT_SHADE
-        icons[f'hint-{name}'] = _bubble(sp)
-    icons['hint-long'] = _bubble(_long_jump_icon())
-    return dict(sorted(icons.items()))
 
 
 # ---------------------------------------------------------------------------- Escenario

@@ -1234,40 +1234,17 @@
     "skip": "Skip the run",
     "runClean": "A run without stumbles.",
     "runStumbles": "A run with {{count}} stumbles.",
-    "legend": {
-      "touch": "Tap to jump. Swipe down to duck and up to the right for the long jump.",
-      "keyboard": "Space or ↑ jump (hold to float) · ↓ duck · → long jump"
-    },
-    "tutorial": {
-      "title": "A run before every exercise",
-      "intro": "Chocolate runs and the exercise's pieces are the obstacles. Each piece is dodged in a different way.",
-      "note": "Stumbling is fine: the piece comes back one more time and you carry on.",
-      "start": "Let's run"
-    },
-    "pieces": {
-      "pawn": {
-        "name": "Pawn",
-        "how": "One tap: a normal jump."
-      },
-      "rook": {
-        "name": "Rook",
-        "how": "It flies low. Swipe down to duck."
-      },
-      "bishop": {
-        "name": "Bishop",
-        "how": "There are three in a row. Swipe up to the right for a long jump."
-      },
-      "knight": {
-        "name": "Knight",
-        "how": "Tap and hold to stay in the air."
-      },
-      "queen": {
-        "name": "Queen",
-        "how": "Tap twice in a row: double jump."
-      },
-      "king": {
-        "name": "King",
-        "how": "One jump at just the right moment, when the ring lights up."
+    "level": "Level {{level}}",
+    "combo": "Streak {{count}}",
+    "levelHint": {
+      "first": "Jump the exercise's pieces",
+      "faster": "Faster than the last one",
+      "doubleJump": "New: two taps in a row, double jump",
+      "world": {
+        "day": "Daytime",
+        "sunset": "Sunset",
+        "night": "Night",
+        "dawn": "Dawn"
       }
     },
     "result": {
@@ -1296,13 +1273,35 @@
     "startPosition": "Starting position",
     "startPositionDesc": "Choose where the knight starts",
     "showVisitedSquaresDesc": "Highlight squares already visited",
+    "heartsLabel": "{{count}} hearts",
+    "meters": "{{count}} m",
+    "cookiesHint": "Every {{count}} cookies you win back a heart",
+    "strikes": "Misses: {{count}} of {{max}}",
+    "legend": {
+      "touch": "Tap to jump. Two taps in a row, double jump.",
+      "keyboard": "Space or ↑ to jump; twice for a double jump"
+    },
     "random": "Random",
     "a1": "a1 (bottom left corner)",
+      "levelUp": "On to level {{level}}.",
+      "lastStrike": "You missed three exercises: the game is over.",
+      "finish": "See result",
     "h1": "h1 (bottom right corner)",
     "a8": "a8 (top left corner)",
     "h8": "h8 (top right corner)",
     "showVisitedSquares": "Show visited squares",
     "readyToStart": "Ready to start!",
+    "gameOver": {
+      "title": "Game over",
+      "hits": "You ran out of hearts.",
+      "strikes": "You missed three exercises.",
+      "newRecord": "New record",
+      "record": "Record: {{count}} m",
+      "level": "Level",
+      "solved": "Solved",
+      "cookies": "Cookies",
+      "again": "Play again"
+    },
     "gameStartsWhenMove": "The game will start when you move the knight for the first time",
     "congratulations": "Congratulations!",
     "completedTour": "You have completed the knight tour",

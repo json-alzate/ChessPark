@@ -1,17 +1,23 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import {
-  GESTURE_DECISION_MS,
-  GESTURE_MAX_WAIT_MS,
-  RUNNER_PHYSICS as P,
-} from '@features/chess-runner/config/runner.config';
+import { provideTranslocoTesting } from '@tests/support/transloco-testing';
+
+import { RUNNER_PHYSICS as P } from '@features/chess-runner/config/runner.config';
 import {
   RunnerCanvasComponent,
   RunnerEventName,
   RunnerProgress,
 } from '@features/chess-runner/components/runner-canvas/runner-canvas.component';
 import { RunnerPiece, RunnerState, RunnerStats } from '@features/chess-runner/models/runner.model';
+import { RunnerPiecesService } from '@features/chess-runner/services/runner-pieces.service';
 import { RunnerSprite, RunnerSpritesService } from '@features/chess-runner/services/runner-sprites.service';
+
+// La librería del tablero arrastra cm-chessboard, que Jest no carga: el lienzo solo usa su tabla de piezas
+jest.mock('@chesspark/board', () => ({
+  CHESSBOARD_ASSETS_URL: 'assets/cm-chessboard/assets/',
+  PIECES_FILES: { cburnett: 'pieces/standard.svg' },
+  getChessboardAppearance: () => ({ pieces: 'cburnett', board: 'default' }),
+}));
 
 /**
  * El lienzo del runner: el bucle, los gestos y las teclas. El canvas y los sprites son dobles (jsdom no
@@ -38,7 +44,7 @@ function contextoFalso() {
 const IMAGEN_POLVO = { efecto: 'polvo' } as unknown as CanvasImageSource;
 const IMAGEN_CHISPA = { efecto: 'chispa' } as unknown as CanvasImageSource;
 
-/** Todos los sprites que dibuja el renderizador, con medidas razonables. */
+/** Los sprites de Chocolate, el escenario y los efectos, con medidas razonables. */
 function spritesFalsos(): Map<string, RunnerSprite> {
   const sprite = (frameW: number, frameH: number, frames = 1): RunnerSprite => ({
     image: {} as CanvasImageSource,
@@ -48,16 +54,8 @@ function spritesFalsos(): Map<string, RunnerSprite> {
     fps: 8,
   });
   const mapa = new Map<string, RunnerSprite>();
-  for (const [nombre, frames] of [['run', 4], ['jump', 3], ['slide', 2], ['hurt', 2], ['happy', 2]] as const) {
+  for (const [nombre, frames] of [['run', 4], ['jump', 3], ['hurt', 2], ['happy', 2]] as const) {
     mapa.set(`dog-${nombre}`, sprite(52, 40, frames));
-  }
-  for (const kind of ['pawn', 'rook', 'bishop', 'knight', 'queen', 'king']) {
-    for (const color of ['w', 'b']) {
-      mapa.set(`piece-${kind}-${color}`, sprite(20, 30));
-    }
-  }
-  for (const hint of ['jump', 'slide', 'long', 'hold', 'double', 'precise']) {
-    mapa.set(`hint-${hint}`, sprite(13, 13));
   }
   for (const escena of ['floor', 'hills', 'sky', 'cloud-0', 'cloud-1', 'skyline']) {
     mapa.set(`scene-${escena}`, sprite(32, 20));
@@ -67,6 +65,19 @@ function spritesFalsos(): Map<string, RunnerSprite> {
   return mapa;
 }
 
+/** Las doce piezas del set elegido, como imágenes reconocibles. */
+function piezasFalsas() {
+  const images = new Map<string, CanvasImageSource>();
+  const urls = new Map<string, string>();
+  for (const color of ['w', 'b']) {
+    for (const letra of ['k', 'q', 'r', 'b', 'n', 'p']) {
+      images.set(`${color}${letra}`, { pieza: `${color}${letra}` } as unknown as CanvasImageSource);
+      urls.set(`${color}${letra}`, `data:pieza-${color}${letra}`);
+    }
+  }
+  return { images, urls };
+}
+
 const PEON: RunnerPiece = { kind: 'pawn', color: 'w' };
 
 describe('RunnerCanvasComponent', () => {
@@ -74,6 +85,7 @@ describe('RunnerCanvasComponent', () => {
   let lienzo: RunnerCanvasComponent;
   let ctx: ReturnType<typeof contextoFalso>;
   const sprites = { load: jest.fn() };
+  const piezas = { load: jest.fn() };
 
   const eventos: RunnerEventName[] = [];
   const progresos: RunnerProgress[] = [];
@@ -130,9 +142,14 @@ describe('RunnerCanvasComponent', () => {
     ctx = contextoFalso();
     jest.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(ctx as unknown as CanvasRenderingContext2D);
     sprites.load.mockResolvedValue(spritesFalsos());
+    piezas.load.mockResolvedValue(piezasFalsas());
     await TestBed.configureTestingModule({
       imports: [RunnerCanvasComponent],
-      providers: [{ provide: RunnerSpritesService, useValue: sprites }],
+      providers: [
+        provideTranslocoTesting({ CHESS_RUNNER: { canvasLabel: 'Chocolate corre y salta' } }),
+        { provide: RunnerSpritesService, useValue: sprites },
+        { provide: RunnerPiecesService, useValue: piezas },
+      ],
     }).compileComponents();
   });
 
@@ -147,7 +164,7 @@ describe('RunnerCanvasComponent', () => {
       await iniciar([PEON, { kind: 'rook', color: 'b' }]);
 
       expect(estado().total).toBe(2);
-      expect(progresos[0]).toEqual({ cleared: 0, total: 2, stumbles: 0 });
+      expect(progresos[0]).toEqual({ cleared: 0, total: 2, stumbles: 0, combo: 0, meters: 0, cookies: 0 });
     });
 
     it('dibuja en el lienzo', async () => {
@@ -189,6 +206,31 @@ describe('RunnerCanvasComponent', () => {
       expect(estado()).toBeUndefined();
     });
 
+    it('si el set de piezas no carga también lo avisa: sin piezas no hay carrera', async () => {
+      piezas.load.mockRejectedValue(new Error('sin red'));
+      jest.spyOn(console, 'error').mockImplementation(() => undefined);
+
+      await iniciar();
+      avanzar(200);
+
+      expect(fallos).toBe(1);
+      expect(estado()).toBeUndefined();
+    });
+
+    it('dibuja las piezas del set que el usuario eligió', async () => {
+      await iniciar();
+      avanzar(2000);
+
+      const imagenes = (ctx['drawImage'] as jest.Mock).mock.calls.map(([imagen]) => imagen);
+      expect(imagenes).toContainEqual({ pieza: 'wp' });
+    });
+
+    it('el lienzo tiene un nombre accesible traducido, no la clave', async () => {
+      await iniciar();
+
+      expect(canvas().getAttribute('aria-label')).toBe('Chocolate corre y salta');
+    });
+
     it('si el navegador no da contexto 2D también lo avisa', async () => {
       (HTMLCanvasElement.prototype.getContext as jest.Mock).mockReturnValue(null);
 
@@ -218,18 +260,29 @@ describe('RunnerCanvasComponent', () => {
 
     it('al aterrizar suelta polvo otra vez', () => {
       tecla('keydown', ' ');
-      tecla('keyup', ' ');
+      
       avanzar(900);
       (ctx['drawImage'] as jest.Mock).mockClear();
       // El polvo del aterrizaje ya se apagó: lo que se comprueba es que el salto dejó de ser noticia
       expect(eventos).toContain('landed');
     });
 
-    it('una pieza superada suelta una chispa', () => {
-      // Se pasa el peón saltándolo en su ventana: sale a los 0,92 s y llega a Chocolate ~1,8 s después
-      avanzar(1850);
+    it('el doble salto suelta una chispa en el aire', () => {
       tecla('keydown', ' ');
-      tecla('keyup', ' ');
+      avanzar(100);
+      tecla('keydown', ' ');
+      (ctx['drawImage'] as jest.Mock).mockClear();
+
+      avanzar(300);
+
+      expect(dibujado(IMAGEN_CHISPA)).toBe(true);
+    });
+
+    it('una pieza superada suelta una chispa', () => {
+      // Se pasa el peón saltándolo en su ventana: sale a los 1,54 s y se salta ~0,95 s después
+      avanzar(2490);
+      tecla('keydown', ' ');
+      
       avanzar(1200);
 
       expect(eventos).toContain('cleared');
@@ -265,7 +318,7 @@ describe('RunnerCanvasComponent', () => {
       expect(estado().time).toBeLessThan(1);
     });
 
-    it('sin nadie que juegue tropieza, avisa, y la pieza vuelve a salir', async () => {
+    it('sin nadie que juegue tropieza y avisa', async () => {
       await iniciar();
       avanzar(3500);
 
@@ -328,182 +381,105 @@ describe('RunnerCanvasComponent', () => {
     it('la flecha hacia arriba y W también', () => {
       tecla('keydown', 'ArrowUp');
       expect(eventos).toEqual(['jump']);
+
+      avanzar(900);
+      eventos.length = 0;
+      tecla('keydown', 'w');
+      expect(eventos).toEqual(['jump']);
     });
 
-    it('una segunda pulsación en el aire es el doble salto', () => {
+    it('una segunda pulsación en el aire es el doble salto: se ejecuta en la cima y lo avisa', () => {
       tecla('keydown', ' ');
-      tecla('keyup', ' ');
       avanzar(100);
       tecla('keydown', ' ');
+      // Subiendo, el segundo toque espera a la cima
+      expect(eventos).toEqual(['jump']);
 
-      expect(eventos).toEqual(['jump', 'doubleJump']);
+      avanzar(300);
+
+      expect(eventos.filter((e) => e === 'doubleJump')).toHaveLength(1);
+      expect(estado().dog.jumps).toBe(2);
+    });
+
+    it('un tercer toque no es otro salto: no hay triple salto', () => {
+      tecla('keydown', ' ');
+      avanzar(100);
+      tecla('keydown', ' ');
+      avanzar(400);
+      eventos.length = 0;
+
+      tecla('keydown', ' ');
+
+      expect(eventos).toEqual([]);
     });
 
     it('la repetición automática de la tecla no cuenta como pulsaciones nuevas', () => {
       tecla('keydown', ' ');
+      avanzar(900);
+      eventos.length = 0;
       tecla('keydown', ' ', { repeat: true });
       tecla('keydown', ' ', { repeat: true });
 
-      expect(eventos).toEqual(['jump']);
-    });
-
-    it('la flecha hacia abajo agacha', () => {
-      tecla('keydown', 'ArrowDown');
-      expect(estado().dog.slide).toBe(P.slideTime);
-    });
-
-    it('la flecha a la derecha hace el salto largo', () => {
-      tecla('keydown', 'ArrowRight');
-
-      expect(estado().dog.longJump).toBe(true);
-      expect(eventos).toEqual(['jump']);
-    });
-
-    it('mantener Espacio suspende a Chocolate en la cima; soltarlo, no', () => {
-      tecla('keydown', ' ');
-      avanzar(330);
-      const altura = estado().dog.y;
-      avanzar(150);
-      // Con la tecla pulsada sigue arriba tras el momento en que caería
-      expect(estado().dog.y).toBeGreaterThan(altura - 4);
-
-      tecla('keyup', ' ');
-      avanzar(300);
-      expect(estado().dog.y).toBeLessThan(altura - 20);
-    });
-
-    it('evita que Espacio y las flechas desplacen la página', () => {
-      expect(tecla('keydown', ' ').defaultPrevented).toBe(true);
-      expect(tecla('keydown', 'ArrowDown').defaultPrevented).toBe(true);
-    });
-
-    it('otras teclas no hacen nada y no se bloquean', () => {
-      const e = tecla('keydown', 'a');
-
-      expect(e.defaultPrevented).toBe(false);
       expect(eventos).toEqual([]);
+    });
+
+    it.each([['ArrowDown'], ['ArrowRight'], ['s'], ['d']])('%j no hace nada: solo hay un control', (key) => {
+      const e = tecla('keydown', key);
+
+      expect(eventos).toEqual([]);
+      expect(e.defaultPrevented).toBe(false);
+    });
+
+    it('evita que Espacio y la flecha arriba desplacen la página', () => {
+      expect(tecla('keydown', ' ').defaultPrevented).toBe(true);
+      expect(tecla('keydown', 'ArrowUp').defaultPrevented).toBe(true);
     });
 
     it('si el usuario escribe en un campo de texto no se juega', () => {
-      const entrada = document.createElement('input');
-      document.body.appendChild(entrada);
+      const campo = document.createElement('input');
+      document.body.appendChild(campo);
       const e = new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true });
-      entrada.dispatchEvent(e);
-      entrada.remove();
+      campo.dispatchEvent(e);
 
-      expect(e.defaultPrevented).toBe(false);
       expect(eventos).toEqual([]);
+      expect(e.defaultPrevented).toBe(false);
+      campo.remove();
     });
   });
 
-  describe('gestos', () => {
+  describe('toques', () => {
     beforeEach(() => iniciar());
 
-    it('un toque rápido es un salto', () => {
+    it('un toque salta al instante, sin esperar a soltar el dedo', () => {
       puntero('pointerdown', 100, 100);
-      puntero('pointerup', 100, 100);
 
       expect(eventos).toEqual(['jump']);
     });
 
-    it('si el navegador no deja capturar el puntero (ya no está activo), el toque salta igualmente', () => {
-      const noActivo = () => {
-        throw new DOMException('The object can not be found here.', 'NotFoundError');
-      };
-      Object.assign(canvas(), { setPointerCapture: noActivo, releasePointerCapture: noActivo });
-
+    it('tocar y mantener es el mismo salto: no flota', () => {
       puntero('pointerdown', 100, 100);
+      avanzar(1000);
       puntero('pointerup', 100, 100);
-
-      expect(eventos).toEqual(['jump']);
-    });
-
-    it('un toque rápido no flota: aterriza en lo que dura un salto normal', () => {
-      puntero('pointerdown', 100, 100);
-      puntero('pointerup', 100, 100);
-
-      avanzar(800);
 
       expect(estado().dog.y).toBe(0);
       expect(eventos).toContain('landed');
     });
 
-    it('mantener pulsado más allá del instante de decisión salta y hace flotar', () => {
+    it('deslizar no es un gesto: solo cuenta el toque', () => {
       puntero('pointerdown', 100, 100);
-      avanzar(GESTURE_DECISION_MS + 10);
-      expect(eventos).toEqual(['jump']);
-
-      // Con el dedo puesto, a los 0,8 s un salto normal ya habría aterrizado: este sigue en el aire
-      avanzar(800);
-      expect(estado().dog.y).toBeGreaterThan(0);
-
-      puntero('pointerup', 100, 100);
-    });
-
-    it('soltar tras mantener termina el flotar y Chocolate aterriza', () => {
-      puntero('pointerdown', 100, 100);
-      avanzar(GESTURE_DECISION_MS + 10 + 400);
-      puntero('pointerup', 100, 100);
-
-      avanzar(600);
-
-      expect(estado().dog.y).toBe(0);
-    });
-
-    it('deslizar hacia abajo agacha, sin saltar antes', () => {
-      puntero('pointerdown', 100, 100);
-      puntero('pointermove', 100, 120);
-
-      expect(estado().dog.slide).toBe(P.slideTime);
-      expect(eventos).toEqual([]);
-      puntero('pointerup', 100, 120);
-      expect(eventos).toEqual([]);
-    });
-
-    it('deslizar hacia arriba y a la derecha es el salto largo', () => {
-      puntero('pointerdown', 100, 100);
-      puntero('pointermove', 125, 80);
-
-      expect(estado().dog.longJump).toBe(true);
-    });
-
-    it('un deslizamiento lento, que tarda más que el instante de decisión, sigue siendo un deslizamiento', () => {
-      puntero('pointerdown', 100, 100);
-      puntero('pointermove', 100, 108); // ya se mueve (más del margen) pero aún no llega al umbral
-      avanzar(GESTURE_DECISION_MS + 15);
-      expect(eventos).toEqual([]); // no lo da por un toque
-
-      puntero('pointermove', 100, 122);
-
-      expect(estado().dog.slide).toBe(P.slideTime);
-      expect(eventos).toEqual([]);
-    });
-
-    it('si el dedo se mueve pero nunca llega a deslizar, acaba siendo un toque (con un tope de espera)', () => {
-      puntero('pointerdown', 100, 100);
-      puntero('pointermove', 106, 102);
-
-      avanzar(GESTURE_MAX_WAIT_MS + 40);
+      puntero('pointermove', 100, 180);
+      puntero('pointerup', 100, 180);
 
       expect(eventos).toEqual(['jump']);
     });
 
-    it('un dedo que tiembla un poco cuenta como quieto', () => {
+    it('dos toques seguidos son el doble salto', () => {
       puntero('pointerdown', 100, 100);
-      puntero('pointermove', 102, 101);
-      avanzar(GESTURE_DECISION_MS + 5);
-
-      expect(eventos).toEqual(['jump']);
-    });
-
-    it('un gesto ya decidido no se vuelve a decidir al seguir moviendo', () => {
+      avanzar(100);
       puntero('pointerdown', 100, 100);
-      puntero('pointermove', 100, 125);
-      puntero('pointermove', 100, 160);
-      puntero('pointermove', 140, 100);
+      avanzar(300);
 
-      expect(estado().dog.slide).toBe(P.slideTime);
-      expect(estado().dog.longJump).toBe(false);
+      expect(eventos).toEqual(expect.arrayContaining(['jump', 'doubleJump']));
     });
 
     it('con el botón derecho del ratón no pasa nada', () => {
@@ -511,29 +487,28 @@ describe('RunnerCanvasComponent', () => {
       Object.defineProperty(e, 'pointerId', { value: 1 });
       Object.defineProperty(e, 'pointerType', { value: 'mouse' });
       canvas().dispatchEvent(e);
-      puntero('pointerup', 0, 0);
       avanzar(200);
 
       expect(eventos).toEqual([]);
     });
 
-    it('cancelar el gesto no deja un temporizador vivo que salte después', () => {
-      puntero('pointerdown', 100, 100);
-      puntero('pointercancel', 100, 100);
-      avanzar(300);
+    it('no pide capturar el puntero: no hay gesto que seguir', () => {
+      const captura = jest.fn();
+      Object.assign(canvas(), { setPointerCapture: captura });
 
-      expect(eventos.filter((e) => e === 'jump').length).toBeLessThanOrEqual(1);
+      puntero('pointerdown', 100, 100);
+
+      expect(captura).not.toHaveBeenCalled();
     });
   });
 
-  describe('zona de gestos', () => {
+  describe('zona de toques', () => {
     it('recoge los toques de la zona que le pasan, no solo los del lienzo', async () => {
       const zona = document.createElement('div');
       document.body.appendChild(zona);
-      await iniciar([PEON], { gestureZone: zona });
+      await iniciar([PEON], { tapZone: zona });
 
       puntero('pointerdown', 50, 600, { destino: zona });
-      puntero('pointerup', 50, 600, { destino: zona });
 
       expect(eventos).toEqual(['jump']);
       zona.remove();
@@ -544,11 +519,23 @@ describe('RunnerCanvasComponent', () => {
       const boton = document.createElement('button');
       zona.appendChild(boton);
       document.body.appendChild(zona);
-      await iniciar([PEON], { gestureZone: zona });
+      await iniciar([PEON], { tapZone: zona });
 
       puntero('pointerdown', 50, 600, { destino: boton });
-      puntero('pointerup', 50, 600, { destino: boton });
       avanzar(200);
+
+      expect(eventos).toEqual([]);
+      zona.remove();
+    });
+
+    it('al destruirse deja de escuchar la zona y el teclado', async () => {
+      const zona = document.createElement('div');
+      document.body.appendChild(zona);
+      await iniciar([PEON], { tapZone: zona });
+      fixture.destroy();
+
+      puntero('pointerdown', 50, 600, { destino: zona });
+      tecla('keydown', ' ');
 
       expect(eventos).toEqual([]);
       zona.remove();

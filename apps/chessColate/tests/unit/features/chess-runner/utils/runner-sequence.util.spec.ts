@@ -1,12 +1,13 @@
-import { MAX_OBSTACLES, MAX_PER_KIND } from '@features/chess-runner/config/runner.config';
+import { MAX_OBSTACLES, MAX_PER_KIND, WALL_COUNT, WALL_KINDS } from '@features/chess-runner/config/runner.config';
 import { RunnerPiece } from '@features/chess-runner/models/runner.model';
 import {
   buildRunnerSequence,
   chooseObstacles,
   hashString,
+  pieceKey,
   piecesOfFen,
   seededRandom,
-  spriteName,
+  wallsForLevel,
 } from '@features/chess-runner/utils/runner-sequence.util';
 
 const INICIAL = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
@@ -103,6 +104,26 @@ describe('buildRunnerSequence', () => {
     }
   });
 
+  it('va de las piezas más bajas a las más altas: la dificultad sube dentro de la carrera', () => {
+    const orden = ['pawn', 'rook', 'bishop', 'knight', 'queen', 'king'];
+    for (const semilla of ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']) {
+      const alturas = buildRunnerSequence(INICIAL, semilla).map((p) => orden.indexOf(p.kind));
+      expect(alturas).toEqual([...alturas].sort((a, b) => a - b));
+    }
+  });
+
+  it('cada pieza lleva su propio ritmo (entre 0 y 1), el mismo para el mismo ejercicio, y no todas igual', () => {
+    const secuencia = buildRunnerSequence(INICIAL, 'ej-1');
+    const ritmos = secuencia.map((p) => p.beat);
+
+    ritmos.forEach((ritmo) => {
+      expect(ritmo).toBeGreaterThanOrEqual(0);
+      expect(ritmo).toBeLessThanOrEqual(1);
+    });
+    expect(new Set(ritmos).size).toBeGreaterThan(1);
+    expect(buildRunnerSequence(INICIAL, 'ej-1').map((p) => p.beat)).toEqual(ritmos);
+  });
+
   it('sin peones empieza por lo que haya', () => {
     const secuencia = buildRunnerSequence('4k3/8/8/8/8/8/8/R3K3 w - - 0 1', 'x');
     expect(secuencia.map((p) => p.kind).sort()).toEqual(['king', 'king', 'rook']);
@@ -118,6 +139,60 @@ describe('buildRunnerSequence', () => {
 
   it('un tablero vacío da una carrera vacía (el runner termina sin obstáculos)', () => {
     expect(buildRunnerSequence('8/8/8/8/8/8/8/8 w - - 0 1', 'x')).toEqual([]);
+  });
+});
+
+describe('falanges por nivel', () => {
+  const paredes = (secuencia: RunnerPiece[]) => secuencia.filter((p) => (p.wall ?? 1) > 1);
+  const SEMILLAS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+
+  it('wallsForLevel: ninguna en el nivel 1 y cada vez más', () => {
+    expect([1, 2, 4, 5, 7, 8, 10].map(wallsForLevel)).toEqual([0, 1, 1, 2, 2, 3, 3]);
+  });
+
+  it('en el nivel 1 no hay falanges: se aprende primero el salto', () => {
+    for (const semilla of SEMILLAS) {
+      expect(paredes(buildRunnerSequence(INICIAL, semilla, 1))).toEqual([]);
+      expect(paredes(buildRunnerSequence(INICIAL, semilla))).toEqual([]);
+    }
+  });
+
+  it('desde el nivel 2 hay las que toquen, de tres piezas', () => {
+    for (const semilla of SEMILLAS) {
+      expect(paredes(buildRunnerSequence(INICIAL, semilla, 2))).toHaveLength(1);
+      expect(paredes(buildRunnerSequence(INICIAL, semilla, 6))).toHaveLength(2);
+      expect(paredes(buildRunnerSequence(INICIAL, semilla, 9))).toHaveLength(3);
+    }
+    expect(paredes(buildRunnerSequence(INICIAL, 'a', 9))[0].wall).toBe(WALL_COUNT);
+  });
+
+  it('nunca es la primera pieza, ni una que se deslice', () => {
+    for (const semilla of SEMILLAS) {
+      const secuencia = buildRunnerSequence(INICIAL, semilla, 10);
+      expect(secuencia[0].wall).toBeUndefined();
+      for (const pared of paredes(secuencia)) {
+        expect(WALL_KINDS).toContain(pared.kind);
+      }
+    }
+  });
+
+  it('si no hay piezas que lo admitan, no se inventa ninguna', () => {
+    // Solo una torre y una dama: las dos se deslizan
+    const secuencia = buildRunnerSequence('3q4/8/8/8/8/8/8/3R4 w - - 0 1', 'x', 10);
+    expect(paredes(secuencia)).toEqual([]);
+  });
+
+  it('las falanges no cambian el orden, los ritmos ni las piezas: solo marcan alguna', () => {
+    const llanas = buildRunnerSequence(INICIAL, 'ej-1', 1);
+    const conParedes = buildRunnerSequence(INICIAL, 'ej-1', 9);
+
+    expect(conParedes.map(({ kind, color, beat }) => ({ kind, color, beat }))).toEqual(
+      llanas.map(({ kind, color, beat }) => ({ kind, color, beat }))
+    );
+  });
+
+  it('es determinista: el mismo ejercicio y nivel dan las mismas falanges', () => {
+    expect(buildRunnerSequence(INICIAL, 'ej-1', 6)).toEqual(buildRunnerSequence(INICIAL, 'ej-1', 6));
   });
 });
 
@@ -144,9 +219,13 @@ describe('seededRandom y hashString', () => {
   });
 });
 
-describe('spriteName', () => {
-  it('coincide con los nombres de los assets', () => {
-    expect(spriteName('knight', 'b')).toBe('piece-knight-b');
-    expect(spriteName('pawn', 'w')).toBe('piece-pawn-w');
+describe('pieceKey', () => {
+  it('coincide con los nombres del sprite de piezas del tablero (bando y letra)', () => {
+    expect(pieceKey('knight', 'b')).toBe('bn');
+    expect(pieceKey('pawn', 'w')).toBe('wp');
+    expect(pieceKey('king', 'w')).toBe('wk');
+    expect(pieceKey('queen', 'b')).toBe('bq');
+    expect(pieceKey('rook', 'w')).toBe('wr');
+    expect(pieceKey('bishop', 'b')).toBe('bb');
   });
 });

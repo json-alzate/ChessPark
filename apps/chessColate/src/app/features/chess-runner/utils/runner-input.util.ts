@@ -1,52 +1,14 @@
 /**
- * Traduce lo que hace el jugador (gestos y teclas) en las órdenes del runner. Puro: la parte de eventos
- * del navegador está en el componente del lienzo.
- *
- * En el móvil la mano decide con un gesto:
- *  - tocar: saltar (y si se mantiene pulsado, quedarse en el aire)
- *  - deslizar hacia abajo: agacharse
- *  - deslizar hacia arriba y a la derecha: salto largo
- * Con teclado: Espacio, ↑ o W saltan (mantenerlas flota); ↓ o S agachan; → o D salto largo.
+ * Qué hace el jugador: un solo control, como en el dinosaurio de Chrome. En el móvil, tocar en cualquier
+ * parte de la zona de juego; con teclado, Espacio, ↑ o W. Puro: la parte de eventos del navegador está en
+ * el componente del lienzo.
  */
 
-import { GESTURE_SWIPE_PX } from '../config/runner.config';
-import { RunnerAction } from '../models/runner.model';
+const JUMP_KEYS = new Set([' ', 'Spacebar', 'ArrowUp', 'w', 'W']);
 
-/** Qué es un arrastre desde el punto donde se pulsó; `null` si aún no llega a ser un deslizamiento. */
-export function classifySwipe(dx: number, dy: number): Extract<RunnerAction, 'slide' | 'longJump'> | null {
-  // Hacia abajo, y más vertical que horizontal
-  if (dy >= GESTURE_SWIPE_PX && Math.abs(dx) < dy) {
-    return 'slide';
-  }
-  // Hacia arriba y hacia delante (a la derecha), con algo de ambas cosas
-  if (dx >= GESTURE_SWIPE_PX * 0.8 && dy <= -GESTURE_SWIPE_PX * 0.5) {
-    return 'longJump';
-  }
-  return null;
-}
-
-export interface KeyCommand {
-  action: RunnerAction;
-  /** Esta tecla, mientras está pulsada, mantiene a Chocolate en el aire. */
-  holds: boolean;
-}
-
-const KEY_COMMANDS: Record<string, KeyCommand> = {
-  ' ': { action: 'jump', holds: true },
-  Spacebar: { action: 'jump', holds: true },
-  ArrowUp: { action: 'jump', holds: true },
-  w: { action: 'jump', holds: true },
-  W: { action: 'jump', holds: true },
-  ArrowDown: { action: 'slide', holds: false },
-  s: { action: 'slide', holds: false },
-  S: { action: 'slide', holds: false },
-  ArrowRight: { action: 'longJump', holds: false },
-  d: { action: 'longJump', holds: false },
-  D: { action: 'longJump', holds: false },
-};
-
-export function keyCommand(key: string): KeyCommand | null {
-  return KEY_COMMANDS[key] ?? null;
+/** ¿Esta tecla hace saltar a Chocolate? */
+export function isJumpKey(key: string): boolean {
+  return JUMP_KEYS.has(key);
 }
 
 /**

@@ -1,65 +1,16 @@
-import { GESTURE_SWIPE_PX } from '@features/chess-runner/config/runner.config';
-import {
-  classifySwipe,
-  keyCommand,
-  logicalWidth,
-  runnerScale,
-} from '@features/chess-runner/utils/runner-input.util';
+import { isJumpKey, logicalWidth, runnerScale } from '@features/chess-runner/utils/runner-input.util';
 
-describe('classifySwipe', () => {
-  const N = GESTURE_SWIPE_PX;
-
-  it('un arrastre corto sigue siendo un toque', () => {
-    expect(classifySwipe(3, 5)).toBeNull();
-    expect(classifySwipe(0, N - 1)).toBeNull();
+describe('isJumpKey', () => {
+  it.each([[' '], ['Spacebar'], ['ArrowUp'], ['w'], ['W']])('%j hace saltar', (tecla) => {
+    expect(isJumpKey(tecla)).toBe(true);
   });
 
-  it('hacia abajo es agacharse', () => {
-    expect(classifySwipe(0, N)).toBe('slide');
-    expect(classifySwipe(4, 40)).toBe('slide');
-    expect(classifySwipe(-6, 40)).toBe('slide');
-  });
-
-  it('más horizontal que vertical no es agacharse', () => {
-    expect(classifySwipe(50, 20)).toBeNull();
-  });
-
-  it('hacia arriba y a la derecha es salto largo', () => {
-    expect(classifySwipe(30, -20)).toBe('longJump');
-    expect(classifySwipe(N, -N)).toBe('longJump');
-  });
-
-  it('hacia arriba a la izquierda no es nada (el juego solo corre hacia la derecha)', () => {
-    expect(classifySwipe(-30, -30)).toBeNull();
-  });
-
-  it('solo hacia la derecha, sin subir, no es salto largo', () => {
-    expect(classifySwipe(40, 0)).toBeNull();
-  });
-
-  it('solo hacia arriba no es salto largo: eso es un toque', () => {
-    expect(classifySwipe(0, -40)).toBeNull();
-  });
-});
-
-describe('keyCommand', () => {
-  it.each([[' '], ['ArrowUp'], ['w'], ['W']])('%j salta y mantiene en el aire', (tecla) => {
-    expect(keyCommand(tecla)).toEqual({ action: 'jump', holds: true });
-  });
-
-  it.each([['ArrowDown'], ['s'], ['S']])('%j agacha', (tecla) => {
-    expect(keyCommand(tecla)).toEqual({ action: 'slide', holds: false });
-  });
-
-  it.each([['ArrowRight'], ['d'], ['D']])('%j hace el salto largo', (tecla) => {
-    expect(keyCommand(tecla)).toEqual({ action: 'longJump', holds: false });
-  });
-
-  it('otras teclas no hacen nada', () => {
-    expect(keyCommand('a')).toBeNull();
-    expect(keyCommand('Enter')).toBeNull();
-    expect(keyCommand('Tab')).toBeNull();
-  });
+  it.each([['ArrowDown'], ['ArrowRight'], ['s'], ['d'], ['Enter'], ['Tab'], ['a']])(
+    '%j no hace nada: solo hay un control',
+    (tecla) => {
+      expect(isJumpKey(tecla)).toBe(false);
+    }
+  );
 });
 
 describe('escala del lienzo', () => {

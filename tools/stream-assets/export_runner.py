@@ -30,10 +30,6 @@ def all_sprites():
     sprites = {}
     for name, (frames, fps) in runner.dog_animations().items():
         sprites[f'dog-{name}'] = (frames, fps)
-    for name, sprite in runner.piece_sprites().items():
-        sprites[name] = ([sprite], 1)
-    for name, sprite in runner.hint_icons().items():
-        sprites[name] = ([sprite], 1)
     for name, sprite in runner.scenery().items():
         sprites[f'scene-{name}'] = ([sprite], 1)
     sprites['fx-dust'] = (runner.fx_dust(), 12)

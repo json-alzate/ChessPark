@@ -6,7 +6,9 @@
       <div class="flex-1">
         <div class="flex items-center gap-3">
           <div class="flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl bg-primary/15">
-            <img src="assets/images/runner/piece-pawn-w.png" alt="" class="pip h-7" />
+            @if (pieceUrl({ kind: 'knight', color: 'w' }); as logo) {
+            <img [src]="logo" alt="" class="h-8 w-8" />
+            }
           </div>
           <div class="flex flex-col leading-none">
             <span class="text-lg font-extrabold">{{ 'CHESS_RUNNER.title' | transloco }}</span>
@@ -47,55 +49,115 @@
     </div>
     }
 
-    @case ('tutorial') {
-    <!-- La primera vez: cómo se salta cada pieza -->
-    <div class="container mx-auto max-w-xl px-4 py-5" data-testid="tutorial">
-      <h2 class="text-2xl font-bold">{{ 'CHESS_RUNNER.tutorial.title' | transloco }}</h2>
-      <p class="mt-1 text-sm text-base-content/70">{{ 'CHESS_RUNNER.tutorial.intro' | transloco }}</p>
+    @case ('gameover') {
+    @if (gameOver; as over) {
+    <div class="mx-auto flex w-full max-w-md flex-col items-center gap-5 px-4 py-10 text-center" data-testid="game-over">
+      <h2 class="text-2xl font-extrabold">{{ 'CHESS_RUNNER.gameOver.title' | transloco }}</h2>
+      <p class="text-sm text-base-content/70" data-testid="game-over-reason">{{ 'CHESS_RUNNER.gameOver.' + over.reason | transloco }}</p>
 
-      <ul class="mt-4 space-y-2">
-        @for (piece of tutorialPieces; track piece.kind) {
-        <li class="flex items-center gap-3 rounded-xl border border-base-content/10 bg-base-100 p-3">
-          <div class="flex h-12 w-12 shrink-0 items-end justify-center rounded-lg bg-base-200 p-1">
-            <img [src]="piece.sprite" alt="" class="pip max-h-full" />
-          </div>
-          <div class="min-w-0 flex-1">
-            <div class="font-semibold">{{ 'CHESS_RUNNER.pieces.' + piece.kind + '.name' | transloco }}</div>
-            <div class="text-sm text-base-content/70">{{ 'CHESS_RUNNER.pieces.' + piece.kind + '.how' | transloco }}</div>
-          </div>
-          <img [src]="'assets/images/runner/hint-' + piece.hint + '.png'" alt="" class="pip h-6 shrink-0" />
-        </li>
-        }
-      </ul>
-
-      <p class="mt-3 text-sm text-base-content/60">{{ 'CHESS_RUNNER.tutorial.note' | transloco }}</p>
-      <p class="mt-1 hidden text-xs text-base-content/60 lg:block">{{ 'CHESS_RUNNER.legend.keyboard' | transloco }}</p>
-
-      <button class="btn btn-primary btn-lg mt-5 w-full font-bold" (click)="confirmTutorial()" data-testid="tutorial-start">
-        <ion-icon name="play-outline"></ion-icon>
-        <span>{{ 'CHESS_RUNNER.tutorial.start' | transloco }}</span>
-      </button>
-    </div>
-    }
-
-    @case ('running') {
-    <!-- Cualquier toque de esta zona cuenta: el pulgar está abajo, no sobre el lienzo -->
-    <div #zone class="running-zone mx-auto flex w-full max-w-[720px] flex-col justify-center pb-40 pt-3" data-testid="running">
-      <!-- Lo que falta por saltar: las piezas del ejercicio, tachadas a medida que se superan -->
-      <div class="flex items-end justify-center gap-1.5 px-3 pb-2" data-testid="pips">
-        @for (piece of sequence; track $index) {
-        <img [src]="spriteOf(piece)" alt="" class="pip h-6 transition-opacity" [class.opacity-30]="$index < progress.cleared"
-          [attr.data-cleared]="$index < progress.cleared" />
+      <div class="flex flex-col items-center gap-1">
+        <span class="text-5xl font-extrabold text-primary" data-testid="game-over-meters">{{ 'CHESS_RUNNER.meters' | transloco: { count: over.meters } }}</span>
+        @if (over.newRecord) {
+        <span class="badge badge-warning gap-1 font-bold" data-testid="new-record">
+          <ion-icon name="trophy-outline"></ion-icon>
+          {{ 'CHESS_RUNNER.gameOver.newRecord' | transloco }}
+        </span>
+        } @else {
+        <span class="flex items-center gap-1 text-sm font-bold text-base-content/70" data-testid="game-over-record">
+          <ion-icon name="trophy-outline"></ion-icon>
+          {{ 'CHESS_RUNNER.gameOver.record' | transloco: { count: over.record } }}
+        </span>
         }
       </div>
 
-      <app-runner-canvas [sequence]="sequence" [gestureZone]="zone" (runnerEvent)="onRunnerEvent($event)"
-        (progress)="onRunnerProgress($event)" (finished)="onRunnerFinished($event)"
-        (failed)="onRunnerFailed()"></app-runner-canvas>
+      <dl class="grid w-full grid-cols-3 gap-2 text-center">
+        <div class="rounded-xl bg-base-200 p-3">
+          <dt class="text-[11px] font-bold uppercase tracking-wide text-base-content/60">{{ 'CHESS_RUNNER.gameOver.level' | transloco }}</dt>
+          <dd class="text-xl font-extrabold" data-testid="game-over-level">{{ over.level }}</dd>
+        </div>
+        <div class="rounded-xl bg-base-200 p-3">
+          <dt class="text-[11px] font-bold uppercase tracking-wide text-base-content/60">{{ 'CHESS_RUNNER.gameOver.solved' | transloco }}</dt>
+          <dd class="text-xl font-extrabold" data-testid="game-over-solved">{{ over.solved }}</dd>
+        </div>
+        <div class="rounded-xl bg-base-200 p-3">
+          <dt class="text-[11px] font-bold uppercase tracking-wide text-base-content/60">{{ 'CHESS_RUNNER.gameOver.cookies' | transloco }}</dt>
+          <dd class="text-xl font-extrabold" data-testid="game-over-cookies">{{ over.cookies }}</dd>
+        </div>
+      </dl>
+
+      <div class="flex w-full flex-col gap-2">
+        <button class="btn btn-primary font-bold" (click)="playAgain()" data-testid="play-again">
+          <ion-icon name="refresh-outline"></ion-icon>
+          <span>{{ 'CHESS_RUNNER.gameOver.again' | transloco }}</span>
+        </button>
+        <button class="btn btn-ghost" (click)="goToHome()" data-testid="game-over-exit">{{ 'CHESS_RUNNER.error.back' | transloco }}</button>
+      </div>
+    </div>
+    }
+    }
+
+    @case ('running') {
+    <!-- Cualquier toque de esta zona hace saltar: el pulgar está abajo, no sobre el lienzo -->
+    <div #zone class="running-zone mx-auto flex w-full max-w-[720px] flex-col justify-center pb-40 pt-3" data-testid="running">
+      <!-- Nivel, corazones y racha: lo que está en juego -->
+      <div class="flex items-center justify-between px-4 pb-1" data-testid="hud">
+        <span class="badge badge-primary font-bold" data-testid="level">{{ 'CHESS_RUNNER.level' | transloco: { level: level } }}</span>
+        <span class="flex items-center gap-0.5" data-testid="hearts" role="img"
+          [attr.aria-label]="'CHESS_RUNNER.heartsLabel' | transloco: { count: hearts }">
+          @for (slot of heartSlots; track slot) {
+          <ion-icon [name]="slot < hearts ? 'heart' : 'heart-outline'" class="h-5 w-5 text-error"
+            [attr.data-full]="slot < hearts"></ion-icon>
+          }
+        </span>
+        <span class="badge gap-1 font-bold transition-colors" [class.badge-warning]="progress.combo >= 3"
+          [class.badge-ghost]="progress.combo < 3" data-testid="combo">
+          <ion-icon name="flame"></ion-icon>
+          {{ 'CHESS_RUNNER.combo' | transloco: { count: progress.combo } }}
+        </span>
+      </div>
+
+      <!-- Distancia, récord y galletas hacia el próximo corazón -->
+      <div class="flex items-center justify-between px-4 pb-2 text-xs font-bold text-base-content/70" data-testid="stats">
+        <span data-testid="meters">{{ 'CHESS_RUNNER.meters' | transloco: { count: meters } }}</span>
+        <span class="flex items-center gap-1" data-testid="record">
+          <ion-icon name="trophy-outline"></ion-icon>
+          {{ 'CHESS_RUNNER.meters' | transloco: { count: bestMeters } }}
+        </span>
+        <span class="flex items-center gap-1" data-testid="cookies"
+          [attr.title]="'CHESS_RUNNER.cookiesHint' | transloco: { count: cookiesPerHeart }">
+          <span class="cookie-icon" aria-hidden="true"></span>
+          {{ cookieStreak }}/{{ cookiesPerHeart }}
+        </span>
+      </div>
+
+      <!-- Lo que falta por saltar: las piezas del ejercicio, tachadas a medida que se superan -->
+      <div class="flex items-end justify-center gap-1.5 px-3 pb-2" data-testid="pips">
+        @for (piece of sequence; track $index) {
+        @if (pieceUrl(piece); as url) {
+        <!-- Sobre un fondo suave del tema: las piezas negras del set no se pierden en un tema oscuro -->
+        <img [src]="url" alt="" class="h-8 w-8 rounded-lg bg-base-content/20 p-0.5 transition-opacity"
+          [class.opacity-30]="$index < progress.cleared" [attr.data-cleared]="$index < progress.cleared" />
+        }
+        }
+      </div>
+
+      <div class="relative">
+        <app-runner-canvas [sequence]="sequence" [difficulty]="difficulty" [tapZone]="zone"
+          (runnerEvent)="onRunnerEvent($event)" (progress)="onRunnerProgress($event)"
+          (finished)="onRunnerFinished($event)" (failed)="onRunnerFailed()"></app-runner-canvas>
+        <!-- Se anuncia el nivel un instante al empezar cada carrera; no recoge toques -->
+        <div class="level-banner pointer-events-none absolute inset-x-0 top-6 flex flex-col items-center gap-1" aria-hidden="true"
+          data-testid="level-banner">
+          <span class="rounded-xl bg-base-100/80 px-4 py-1 text-2xl font-extrabold tracking-wide">{{ 'CHESS_RUNNER.level' | transloco: { level: level } }}</span>
+          <span class="rounded-lg bg-base-100/70 px-3 py-0.5 text-xs font-bold uppercase tracking-wide text-base-content/80">
+            {{ 'CHESS_RUNNER.levelHint.' + bannerHint | transloco }}
+          </span>
+        </div>
+      </div>
 
       <div class="flex items-center justify-between gap-3 px-4 pt-3">
-        <p class="text-xs leading-snug text-base-content/60 lg:hidden">{{ 'CHESS_RUNNER.legend.touch' | transloco }}</p>
-        <p class="hidden text-xs leading-snug text-base-content/60 lg:block">{{ 'CHESS_RUNNER.legend.keyboard' | transloco }}</p>
+        <p class="text-sm font-semibold leading-snug text-base-content/70 lg:hidden">{{ 'CHESS_RUNNER.legend.touch' | transloco }}</p>
+        <p class="hidden text-sm font-semibold leading-snug text-base-content/70 lg:block">{{ 'CHESS_RUNNER.legend.keyboard' | transloco }}</p>
         <button class="btn btn-ghost btn-sm shrink-0" (click)="skipRun()" data-testid="skip">
           <ion-icon name="play-forward-outline"></ion-icon>
           <span>{{ 'CHESS_RUNNER.skip' | transloco }}</span>
@@ -104,14 +166,12 @@
     </div>
     }
 
-    @case ('puzzle') {
-    <ng-container [ngTemplateOutlet]="board"></ng-container>
     }
 
-    @case ('result') {
+    <!-- Un solo tablero para el ejercicio y su resultado: si cada uno tuviera su `@case`, al resolver se destruiría
+         y se volvería a crear, y el tablero repetiría la primera jugada del rival -->
+    @if (status === 'puzzle' || status === 'result') {
     <ng-container [ngTemplateOutlet]="board"></ng-container>
-    }
-
     }
 
     <!-- El tablero: dos columnas en escritorio -->
@@ -127,6 +187,9 @@
         </div>
 
         <div class="flex flex-col gap-3 p-4 lg:w-[360px] lg:flex-shrink-0 lg:p-0 lg:pt-2">
+          <p class="flex items-center gap-1 text-xs font-bold text-base-content/70" data-testid="strikes">
+            {{ 'CHESS_RUNNER.strikes' | transloco: { count: strikes, max: maxStrikes } }}
+          </p>
           @if (status === 'puzzle' && puzzleToPlay) {
           <div class="flex items-center gap-3">
             <img [src]="playerColor | kingImage" [alt]="playerColor" class="h-8 w-8" />
@@ -159,18 +222,34 @@
             <p class="text-base font-semibold" data-testid="result-message">
               {{ 'CHESS_RUNNER.result.' + result.kind | transloco }}
             </p>
+            @if (result.kind === 'solved') {
+            <!-- Resuelto: sin botones, la siguiente carrera arranca sola -->
+            <p class="mt-1 text-sm font-bold text-primary" data-testid="level-up">
+              {{ 'CHESS_RUNNER.result.levelUp' | transloco: { level: level } }}
+            </p>
+            <span class="loading loading-dots loading-sm mt-2 text-primary" data-testid="auto-next"></span>
+            } @else {
+            @if (outOfStrikes) {
+            <p class="mt-1 text-sm font-bold text-error" data-testid="last-strike">{{ 'CHESS_RUNNER.result.lastStrike' | transloco }}</p>
+            }
             <div class="mt-3 flex flex-col gap-2">
-              @if (result.kind !== 'solved') {
               <button type="button" class="btn btn-outline btn-block font-bold" (click)="showSolution()" data-testid="show-solution">
                 <ion-icon name="eye"></ion-icon>
                 <span>{{ 'CHESS_RUNNER.result.solution' | transloco }}</span>
               </button>
-              }
+              @if (outOfStrikes) {
+              <button type="button" class="btn btn-primary btn-block font-bold" (click)="finishGame()" data-testid="finish-game">
+                <ion-icon name="trophy-outline"></ion-icon>
+                <span>{{ 'CHESS_RUNNER.result.finish' | transloco }}</span>
+              </button>
+              } @else {
               <button type="button" class="btn btn-primary btn-block font-bold" (click)="retry()" data-testid="next">
                 <ion-icon name="play-forward-outline"></ion-icon>
                 <span>{{ 'CHESS_RUNNER.result.next' | transloco }}</span>
               </button>
+              }
             </div>
+            }
           </div>
           }
         </div>

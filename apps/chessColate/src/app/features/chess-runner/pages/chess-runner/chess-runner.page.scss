@@ -5,11 +5,6 @@
   padding-top: env(safe-area-inset-top, 0px);
 }
 
-// Las miniaturas son pixel art: se amplían sin suavizar.
-.pip {
-  image-rendering: pixelated;
-}
-
 // Anclado al borde inferior en móvil: respeta la barra de gestos de iOS.
 .result-panel {
   padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
@@ -28,4 +23,47 @@
   touch-action: none;
   user-select: none;
   -webkit-user-select: none;
+}
+
+// El nivel se anuncia al empezar la carrera y se desvanece solo (se crea con cada carrera, así que arranca de nuevo).
+.level-banner {
+  animation: level-banner 2.2s ease-out forwards;
+}
+
+@keyframes level-banner {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.9);
+  }
+  12% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .level-banner {
+    animation-duration: 0.01s;
+    animation-delay: 1.6s;
+  }
+}
+
+// La galleta de ChessColate en miniatura, junto al contador de galletas.
+.cookie-icon {
+  display: inline-block;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 30% 35%, #3a1f0c 0 8%, transparent 9%),
+    radial-gradient(circle at 65% 60%, #3a1f0c 0 8%, transparent 9%),
+    radial-gradient(circle at 55% 25%, #3a1f0c 0 7%, transparent 8%), #d99a52;
+  border: 1px solid #6b3d17;
 }

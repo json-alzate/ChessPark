@@ -27,9 +27,13 @@ y el versionado sigue [SemVer](https://semver.org/lang/es/) para `versionName`.
   para hacerlo más grande o más pequeño (también con las flechas del teclado; doble clic lo restablece).
   Vale para todos los tableros de práctica y se recuerda en el dispositivo. En móvil no cambia nada.
 - **Chess Runner** (menú Práctica): antes de cada ejercicio, Chocolate corre y salta las piezas del
-  ejercicio. Cada pieza se esquiva distinto (el peón, un salto; la torre, agacharse; el alfil, salto largo; el
-  caballo, mantener en el aire; la dama, doble salto; el rey, un salto justo). Se juega con el dedo, con el
-  teclado y con pistas en pantalla; tropezar no es castigo. Al superar las piezas aparece el tablero con su reloj.
+  ejercicio con **un solo control, como el dinosaurio de Chrome: tocar la pantalla (o Espacio) para saltar**.
+  Las piezas son las de tu set del tablero y cada una se mueve a su manera (la torre se desliza, el caballo salta
+  en L, el alfil flota); dos toques seguidos hacen el **doble salto**, que piden las falanges de piezas y las
+  galletas más altas. Es una **partida**: 3 corazones y 3 ejercicios fallidos como máximo, con **récord de distancia**
+  guardado en el dispositivo, nivel que sube con cada ejercicio resuelto y un escenario que cambia cada tres niveles.
+  Al superar las piezas aparece el tablero con su reloj; **al resolver el ejercicio, confeti y la siguiente carrera
+  arranca sola** (si fallas, se queda para que veas la solución).
 - **Reproductor de partidas en escritorio:** las flechas del teclado recorren la partida y Inicio y Fin saltan a
   los extremos.
 
@@ -70,8 +74,6 @@ y el versionado sigue [SemVer](https://semver.org/lang/es/) para `versionName`.
   ahora avisa de que no pudo cargarlas y ofrece «Reintentar».
 - **Sesión sin ejercicios:** si el catálogo no responde y no llega ni un ejercicio, la sesión avisa («No pudimos traer los
   ejercicios») y vuelve al inicio en vez de abrir un resumen vacío.
-- **Chess Runner:** si el navegador no podía capturar el puntero (un toque cancelado justo al empezar), el gesto se perdía con una
-  excepción; ahora el toque sigue y salta.
 - **Ortografía:** «05:00 o 3 ejercicios» ya no lleva tilde en la «o».
 - **Textos sin traducir:** los avisos de la donación (cargas, errores y agradecimiento), el aviso «Iniciando entrenamiento» y el
   diálogo de borrar una sesión del historial salían siempre en español; ahora siguen el idioma de la app.
