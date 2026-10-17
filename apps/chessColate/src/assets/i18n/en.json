@@ -590,6 +590,32 @@
     "rateRowTitle": "Rate us",
     "rateRowDesc": "Leave a review on the store: it helps more people find ChessColate"
   },
+  "GAME_REFLECTION": {
+    "title": "My reflection",
+    "subtitle": "Note what you did well and what you want to improve in this game. Later you'll be able to get personal statistics from your notes.",
+    "best": "Best thing I did",
+    "improve": "To improve",
+    "searchPlaceholder": "Search or create a tag",
+    "create": "Create \"{{tag}}\"",
+    "removeTag": "Remove {{tag}}",
+    "login": "Sign in",
+    "needsLogin": "Sign in to note what you did well and what you want to improve in your games, and to get personal statistics later.",
+    "saveFailed": "Couldn't save. Check your connection and try again.",
+    "systemTags": {
+      "dynamism": "Dynamism",
+      "tactics": "Tactics",
+      "endgames": "Endgames",
+      "openings": "Openings",
+      "checks": "Spotting checks",
+      "calculation": "Calculation",
+      "king_safety": "King safety",
+      "piece_activity": "Piece activity",
+      "time_management": "Time management",
+      "patience": "Patience",
+      "converting_advantage": "Converting an advantage",
+      "defense": "Defense"
+    }
+  },
   "GAMES": {
     "title": "Historical games",
     "subtitle": "World champion collections to watch move by move",
@@ -744,7 +770,7 @@
     },
     "gamesList": {
       "title": "Games",
-      "hint": "Tap a game to replay it move by move.",
+      "hint": "Tap a game to replay it move by move and note what went well and what to improve.",
       "vs": "vs {{name}}",
       "showMore": "Show more",
       "outcome": {

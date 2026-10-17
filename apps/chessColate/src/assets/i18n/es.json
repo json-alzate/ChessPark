@@ -590,6 +590,32 @@
     "rateRowTitle": "Califícanos",
     "rateRowDesc": "Deja tu opinión en la tienda: ayuda a que más gente encuentre ChessColate"
   },
+  "GAME_REFLECTION": {
+    "title": "Mi reflexión",
+    "subtitle": "Anota qué hiciste bien y qué quieres mejorar de esta partida. Más adelante podrás sacar estadísticas personales con tus anotaciones.",
+    "best": "Lo mejor que hice",
+    "improve": "A mejorar",
+    "searchPlaceholder": "Busca o crea un tag",
+    "create": "Crear «{{tag}}»",
+    "removeTag": "Quitar {{tag}}",
+    "login": "Iniciar sesión",
+    "needsLogin": "Inicia sesión para anotar qué hiciste bien y qué quieres mejorar en tus partidas, y poder sacar estadísticas personales más adelante.",
+    "saveFailed": "No se pudo guardar. Revisa tu conexión e inténtalo otra vez.",
+    "systemTags": {
+      "dynamism": "Dinamismo",
+      "tactics": "Táctica",
+      "endgames": "Finales",
+      "openings": "Aperturas",
+      "checks": "Ver jaques",
+      "calculation": "Cálculo",
+      "king_safety": "Seguridad del rey",
+      "piece_activity": "Actividad de piezas",
+      "time_management": "Gestión del tiempo",
+      "patience": "Paciencia",
+      "converting_advantage": "Convertir ventaja",
+      "defense": "Defensa"
+    }
+  },
   "GAMES": {
     "title": "Partidas históricas",
     "subtitle": "Colecciones de campeones del mundo para ver jugada a jugada",
@@ -744,7 +770,7 @@
     },
     "gamesList": {
       "title": "Partidas",
-      "hint": "Toca una partida para verla jugada a jugada.",
+      "hint": "Toca una partida para verla jugada a jugada y anotar qué hiciste bien y qué quieres mejorar.",
       "vs": "vs {{name}}",
       "showMore": "Ver más",
       "outcome": {

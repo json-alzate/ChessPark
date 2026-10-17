@@ -307,6 +307,22 @@ describe('GamesService', () => {
       expect(service.currentPack).toBe(pack);
     });
 
+    it('getOwnGame devuelve la partida normalizada de cada fila, con su plataforma y su id', () => {
+      const games = [ownGame('a', makePgn('yo', 'rival')), ownGame('b', makePgn('rival', 'yo'), { source: 'chess.com' })];
+      service.openOwnGames('Mis partidas', games);
+
+      expect(service.getOwnGame(1)).toBe(games[1]);
+      expect(service.getOwnGame(1)).toMatchObject({ id: 'b', source: 'chess.com' });
+    });
+
+    it('getOwnGame es null si el índice no existe o el paquete no es de partidas propias', () => {
+      service.openOwnGames('Mis partidas', [ownGame('a', makePgn('yo', 'rival'))]);
+      expect(service.getOwnGame(5)).toBeNull();
+
+      service.openUserPgn(makePgn('A', 'B'), 'PGN');
+      expect(service.getOwnGame(0)).toBeNull();
+    });
+
     it('con una lista vacía abre un paquete de 0 partidas (sin devolver null)', () => {
       const pack = service.openOwnGames('Vacío', []);
 

@@ -247,19 +247,22 @@
 
             <!-- Estadísticas / Aperturas / Partidas -->
             <section class="mb-6">
-              <div class="join w-full mb-3">
-                <button class="btn btn-sm join-item flex-1"
-                  [class.btn-primary]="activeTab === 'stats'"
+              <div class="cc-tabs mb-3" role="tablist">
+                <button type="button" role="tab" class="btn btn-sm"
+                  [class.btn-primary]="activeTab === 'stats'" [class.btn-ghost]="activeTab !== 'stats'"
+                  [attr.aria-selected]="activeTab === 'stats'"
                   (click)="setActiveTab('stats')">
                   {{ 'ANALYTICS.statsTab' | transloco }}
                 </button>
-                <button class="btn btn-sm join-item flex-1"
-                  [class.btn-primary]="activeTab === 'openings'"
+                <button type="button" role="tab" class="btn btn-sm"
+                  [class.btn-primary]="activeTab === 'openings'" [class.btn-ghost]="activeTab !== 'openings'"
+                  [attr.aria-selected]="activeTab === 'openings'"
                   (click)="setActiveTab('openings')">
                   {{ 'ANALYTICS.openings.title' | transloco }}
                 </button>
-                <button class="btn btn-sm join-item flex-1"
-                  [class.btn-primary]="activeTab === 'games'"
+                <button type="button" role="tab" class="btn btn-sm"
+                  [class.btn-primary]="activeTab === 'games'" [class.btn-ghost]="activeTab !== 'games'"
+                  [attr.aria-selected]="activeTab === 'games'"
                   (click)="setActiveTab('games')">
                   {{ 'ANALYTICS.gamesList.title' | transloco }} ({{ gamesList.length }})
                 </button>
@@ -366,7 +369,7 @@
               } @else if (activeTab === 'openings') {
                 <app-openings-table [openings]="openings" [catalog]="catalog" (practice)="practice($event)"></app-openings-table>
               } @else {
-                <p class="text-xs opacity-50 mb-2">{{ 'ANALYTICS.gamesList.hint' | transloco }}</p>
+                <p class="text-sm text-base-content/70 mb-3">{{ 'ANALYTICS.gamesList.hint' | transloco }}</p>
 
                 <ul class="flex flex-col divide-y divide-base-content/10
                            bg-base-100 border border-base-content/10 rounded-box">
@@ -415,6 +418,9 @@
                             </span>
                           }
                         }
+
+                        <ion-icon name="chevron-forward-outline" class="text-lg text-base-content/40 shrink-0"
+                          aria-hidden="true"></ion-icon>
                       </button>
                     </li>
                   }

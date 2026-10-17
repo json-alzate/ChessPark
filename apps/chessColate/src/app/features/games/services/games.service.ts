@@ -25,6 +25,8 @@ export interface OpenPack {
   collection: GameCollectionInfo;
   headers: GameHeader[];
   games: string[];
+  /** Solo en las partidas propias de Análisis: la partida normalizada de cada fila. */
+  ownGames?: ChessGame[];
 }
 
 /**
@@ -221,9 +223,18 @@ export class GamesService {
         timeClass: game.timeClass,
       })),
       games: games.map((game) => game.pgn),
+      ownGames: games,
     };
     this.openPack = pack;
     return pack;
+  }
+
+  /**
+   * La partida propia de una fila del paquete abierto, con su plataforma y su
+   * id; null si el paquete no es de partidas propias o el índice no existe.
+   */
+  getOwnGame(index: number): ChessGame | null {
+    return this.openPack?.ownGames?.[index] ?? null;
   }
 
   // — Ajustes de reproducción ————————————————————————————————

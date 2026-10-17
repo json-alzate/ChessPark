@@ -42,19 +42,14 @@
 
         <!-- Pestañas: la partida, el mapa de calor y la valoración (no en modo TV) -->
         @if (!isTv) {
-          <div class="join w-full mb-3">
-            <button class="btn btn-sm join-item flex-1" [class.btn-primary]="mode === 'game'"
-              (click)="setMode('game')">
-              {{ 'GAMES.heatmap.tabGame' | transloco }}
-            </button>
-            <button class="btn btn-sm join-item flex-1" [class.btn-primary]="mode === 'heatmap'"
-              (click)="setMode('heatmap')">
-              {{ 'GAMES.heatmap.tabHeatmap' | transloco }}
-            </button>
-            <button class="btn btn-sm join-item flex-1" [class.btn-primary]="mode === 'review'"
-              (click)="setMode('review')">
-              {{ 'GAMES.review.tab' | transloco }}
-            </button>
+          <div class="cc-tabs mb-3" role="tablist">
+            @for (tab of viewerTabs; track tab.mode) {
+              <button type="button" role="tab" class="btn btn-sm"
+                [class.btn-primary]="mode === tab.mode" [class.btn-ghost]="mode !== tab.mode"
+                [attr.aria-selected]="mode === tab.mode" (click)="setMode(tab.mode)">
+                {{ tab.labelKey | transloco }}
+              </button>
+            }
           </div>
         }
 
@@ -145,12 +140,12 @@
                las jugadas resaltadas de la pieza sin tener que desplazarse -->
           <div class="overflow-x-auto text-sm font-mono
                       bg-base-100 border border-base-content/10 rounded-box px-3 py-2"
-            [class.whitespace-nowrap]="!heatmapMode">
+            data-move-list [class.whitespace-nowrap]="!heatmapMode">
             @for (san of game.sanMoves; track $index) {
               @if ($index % 2 === 0) {
                 <span class="opacity-50 mr-1">{{ ($index / 2) + 1 }}.</span>
               }
-              <button class="px-1 rounded"
+              <button class="px-1 rounded" [attr.data-ply]="$index + 1"
                 [class.bg-primary]="!heatmapMode && currentMove === $index + 1"
                 [class.text-primary-content]="!heatmapMode && currentMove === $index + 1"
                 [class.bg-primary/40]="isSelectedPieceMove($index + 1)"
@@ -176,10 +171,10 @@
             <h3 class="text-xs font-bold uppercase tracking-wide opacity-60 mb-2">
               {{ 'GAMES.moveTimes.title' | transloco }}
             </h3>
-            <div class="overflow-x-auto bg-base-100 border border-base-content/10 rounded-box px-2 py-2">
+            <div class="overflow-x-auto bg-base-100 border border-base-content/10 rounded-box px-2 py-2" data-move-times>
               <div class="flex items-end gap-px h-16 min-w-max">
                 @for (seconds of moveTimeSeconds; track $index) {
-                  <button class="w-1.5 shrink-0 rounded-t-sm transition-colors"
+                  <button class="w-1.5 shrink-0 rounded-t-sm transition-colors" [attr.data-ply]="$index + 1"
                     [class.bg-primary]="!heatmapMode && currentMove === $index + 1"
                     [class.bg-base-content/50]="(heatmapMode || currentMove !== $index + 1) && $index % 2 === 0"
                     [class.bg-base-content/25]="(heatmapMode || currentMove !== $index + 1) && $index % 2 === 1"
@@ -379,6 +374,11 @@
               <p class="text-xs opacity-50 mt-3">{{ 'GAMES.review.legend' | transloco }}</p>
             }
           </section>
+        }
+
+        <!-- Mi reflexión: solo en partidas propias -->
+        @if (ownGame; as own) {
+          <app-game-reflection [game]="own" />
         }
 
         <!-- Modo TV: solo si se entró a ver la colección entera -->

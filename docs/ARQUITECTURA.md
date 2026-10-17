@@ -65,6 +65,7 @@ src/app/
     records/       récords de Racha y Reto 333 y su sincronización con el perfil
     reminders/     recordatorios de entrenamiento
     games/         reproductor de partidas
+    game-reflection/ lo mejor y lo que mejorar de una partida propia, con tags (Firestore)
     game-analytics/ análisis de partidas (chess.com / lichess)
     app-review/    pedir la calificación de la app
     home/ settings/ donation/ privacy/ coordinates/ knight-tour/ chess960/
@@ -139,7 +140,7 @@ utils/*.util.ts                      Funciones PURAS: calculan, no inyectan nada
   `training` → `records`, `reminders`, `app-review` · `home` → `training`, `records`, `woodpecker` ·
   `streak` → `records`, `reminders` · `woodpecker` → `streak` (la lista de temas que no son tácticos), `reminders` ·
   `chess-runner` → `streak` (ídem), `reminders` ·
-  `game-analytics` → `games`, `training` ·
+  `game-analytics` → `games`, `training` · `games` → `game-reflection` ·
   `settings` → `training`, `games`, `game-analytics`, `app-review` (borra sus datos locales).
   **Conocido:** `reminders` y `training` se importan mutuamente (recordatorios lee el historial
   de `PlanStorageService`; entrenamiento le avisa al empezar y terminar una sesión). Es
@@ -209,7 +210,7 @@ ruta está en `features/<funcionalidad>/pages/`.
 | `puzzles/custom-plans*` | `training` · Rutinas propias (requiere sesión) | `CustomPlansService` → `CustomPlanRepository` |
 | `puzzles/public-plans` | `training` · Rutinas públicas | `PublicPlansService` → `PublicPlanRepository` |
 | `streak` | `streak` · Modo Racha | `StreakService`, `StreakStorageService`, `UserRecordsService` |
-| `games`, `games/viewer`, `games/:id` | `games` · Reproductor de partidas | `GamesService`, `GameReviewService` |
+| `games`, `games/viewer`, `games/:id` | `games` · Reproductor de partidas (con «Mi reflexión» en partidas propias) | `GamesService`, `GameReviewService`, `GameReflectionService` |
 | `analytics` | `game-analytics` · Análisis de partidas | `GameAnalyticsService` |
 | `reminders` | `reminders` · Recordatorios | `TrainingReminderService` |
 | `woodpecker` | `woodpecker` · El set del Pájaro Carpintero: configurar, panel y evolución | `WoodpeckerService`, `WoodpeckerSetService` |
@@ -368,6 +369,14 @@ Detalle: [`implementado/GAME_ANALYTICS_FLOW.md`](./implementado/GAME_ANALYTICS_F
 `libs/stockfish-wasm`). `games.util.ts` guarda filtros y ajustes de reproducción.
 Detalle: [`implementado/REPRODUCTOR_PARTIDAS_FLOW.md`](./implementado/REPRODUCTOR_PARTIDAS_FLOW.md).
 
+### 5.5b Reflexión de partidas
+
+Al ver una partida propia en el reproductor, `features/game-reflection/` deja anotar hasta 2 cosas bien hechas y 3 por
+mejorar, como **tags** (sugeridos o creados por el usuario, nombres cortos y sin traducir). Se guarda en Firestore
+(`Users/{uid}/gameReflections/{gameKey}` y `Users/{uid}/gameTags/{tagId}`), con la clave de la partida en su
+plataforma (`lichess:<id>`, `chesscom:<uuid>`), así que sobrevive a borrar la descarga y reinstalar. Detalle:
+[`implementado/REFLEXION_PARTIDAS_FLOW.md`](./implementado/REFLEXION_PARTIDAS_FLOW.md).
+
 ### 5.6 Rutinas propias y públicas
 
 `CustomPlansService` / `PublicPlansService` van por **NgRx** (`libs/state`:
@@ -391,6 +400,7 @@ una facade). Las pantallas leen el store; los guards (`custom-plans.guard` y
 | Recordatorios | Dispositivo | `TrainingReminderStorageService` |
 | Puzzles descargados / pool infinito | IndexedDB | `libs/puzzles-provider` (`CacheService`) |
 | Partidas de chess.com/lichess | IndexedDB | `libs/game-reporter` (`createGamesArchive`) |
+| Reflexión de cada partida (tags de lo mejor y a mejorar) y tags propios | Firestore (`Users/{uid}/gameReflections`, `…/gameTags`) | `GameReflectionService` → `GameReflectionRepository` |
 | Ajustes de análisis | `localStorage` | `GameAnalyticsService` |
 | Tamaño del tablero en escritorio | `localStorage` (`chessColate_board_size`) + variable CSS `--cc-board-size` | `BoardSizeService` |
 
@@ -441,6 +451,7 @@ una facade). Las pantallas leen el store; los guards (`custom-plans.guard` y
 | Cambiar el flujo entre ejercicios/bloques | `TrainingSessionService` (decisión) y `TrainingPage.follow` (efecto) |
 | Cambiar de dónde salen los puzzles | `libs/puzzles-provider` |
 | Cambiar la hora/texto de los recordatorios | `features/reminders/utils/` (cálculo), `features/reminders/services/training-reminder.service.ts` (agenda) |
+| Cambiar los topes de la reflexión o los tags sugeridos | `features/game-reflection/config/game-reflection.config.ts` (y `GAME_REFLECTION.systemTags` en las traducciones) |
 | Añadir una estadística a Análisis | `libs/game-reporter` (reporte) + `features/game-analytics/utils/game-analytics.util.ts` (presentación) |
 | Añadir un dato a Firestore | un `*.repository.ts` en `data/` de la funcionalidad + su service (la página nunca lo inyecta) |
 | Cambiar cómo se arma el set del Pájaro Carpintero o cómo baja el tiempo por vuelta | `features/woodpecker/utils/woodpecker-set.util.ts` · `woodpecker-cycle.util.ts` · `config/woodpecker.config.ts` |

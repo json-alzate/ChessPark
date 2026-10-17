@@ -31,6 +31,7 @@ import {
 } from 'ionicons/icons';
 
 import { ParsedGame } from '@chesspark/games-provider';
+import { ChessGame } from '@chesspark/models';
 import {
   GameReview,
   getPieceHeatmap,
@@ -47,6 +48,7 @@ import {
 } from '@chesspark/board';
 
 import { AnalyticsService } from '@core/analytics/analytics.service';
+import { GameReflectionComponent } from '@features/game-reflection/containers/game-reflection/game-reflection.component';
 import { GamesService } from '@features/games/services/games.service';
 import { GameReviewService } from '@features/games/services/game-review.service';
 import {
@@ -90,6 +92,13 @@ const GAP_BETWEEN_GAMES_MS = 2500;
 /** Las pestañas del reproductor. */
 type ViewerMode = 'game' | 'heatmap' | 'review';
 
+/** Las pestañas, en el orden en que se pintan. */
+const VIEWER_TABS: { mode: ViewerMode; labelKey: string }[] = [
+  { mode: 'game', labelKey: 'GAMES.heatmap.tabGame' },
+  { mode: 'heatmap', labelKey: 'GAMES.heatmap.tabHeatmap' },
+  { mode: 'review', labelKey: 'GAMES.review.tab' },
+];
+
 /**
  * Reproductor de una partida, y el modo TV que encadena toda la colección.
  *
@@ -108,6 +117,7 @@ type ViewerMode = 'game' | 'heatmap' | 'review';
     BoardGamePlayerComponent,
     BoardHeatmapComponent,
     BoardPlayerInfoComponent,
+    GameReflectionComponent,
   ],
 })
 export class GamesViewerPage implements OnInit, OnDestroy {
@@ -132,6 +142,8 @@ export class GamesViewerPage implements OnInit, OnDestroy {
    * partidas propias de Análisis piden el color con el que jugó el usuario.
    */
   private startOrientation: 'w' | 'b' = 'w';
+
+  readonly viewerTabs = VIEWER_TABS;
 
   settings: PlaybackSettings = this.gamesService.getSettings();
   readonly speeds = PLAYBACK_SPEEDS;
@@ -299,6 +311,13 @@ export class GamesViewerPage implements OnInit, OnDestroy {
     );
   }
 
+  /** La partida propia que se está viendo (para anotar su reflexión); null en el catálogo y en modo TV. */
+  get ownGame(): ChessGame | null {
+    return this.isOwnGame && !this.isTv
+      ? this.gamesService.getOwnGame(this.currentIndex)
+      : null;
+  }
+
   get bestPiece(): PieceRating | null {
     return this.review?.best[this.reviewColor] ?? null;
   }
@@ -365,6 +384,8 @@ export class GamesViewerPage implements OnInit, OnDestroy {
     this.game = game;
     this.currentIndex = index;
     this.currentMove = 0;
+    // Las listas siguen donde estaban en la partida anterior: de vuelta al inicio
+    queueMicrotask(() => this.scrollToCurrentMove(false));
     this.notFound = false;
     // Blancas abajo, salvo que quien abrió la partida pidiera otro lado
     this.orientation = this.startOrientation;
@@ -535,6 +556,47 @@ export class GamesViewerPage implements OnInit, OnDestroy {
 
   onIndexChange(index: number): void {
     this.currentMove = index;
+    this.scrollToCurrentMove();
+  }
+
+  /**
+   * Lleva las listas que se desplazan de lado (las jugadas y las barras de
+   * tiempo) hasta la jugada actual, para que no se quede fuera de vista cuando
+   * se avanza con las flechas, el play o tocando una barra.
+   *
+   * Se mueve solo cada lista, no la página: `scrollIntoView` también la
+   * desplazaría en vertical y el tablero saltaría.
+   */
+  private scrollToCurrentMove(smooth = true): void {
+    if (this.heatmapMode) {
+      return;
+    }
+
+    const root = this.host.nativeElement;
+    for (const selector of ['[data-move-list]', '[data-move-times]']) {
+      const container = root.querySelector<HTMLElement>(selector);
+      if (!container) {
+        continue;
+      }
+
+      let left = 0;
+      const target = container.querySelector<HTMLElement>(`[data-ply="${this.currentMove}"]`);
+      if (target) {
+        const targetBox = target.getBoundingClientRect();
+        const containerBox = container.getBoundingClientRect();
+        // Centrada en la lista; el navegador recorta lo que se pase de los extremos
+        left =
+          container.scrollLeft +
+          (targetBox.left - containerBox.left) -
+          (container.clientWidth - targetBox.width) / 2;
+      }
+
+      if (typeof container.scrollTo === 'function') {
+        container.scrollTo({ left, behavior: smooth ? 'smooth' : 'auto' });
+      } else {
+        container.scrollLeft = left;
+      }
+    }
   }
 
   /** Terminó la partida: en modo TV, encadenar con la siguiente. */

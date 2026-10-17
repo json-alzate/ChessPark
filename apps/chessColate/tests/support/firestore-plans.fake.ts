@@ -25,18 +25,17 @@ export interface FakeQuery {
 }
 
 export function createFirestoreMock() {
-  const doc = jest.fn(
-    (_db: unknown, collection: string, id: string): FakeDocRef => ({
-      type: 'doc',
-      path: `${collection}/${id}`,
-      collection,
-      id,
-    })
-  );
-  const collection = jest.fn((_db: unknown, name: string) => ({
+  // Acepta rutas largas (subcolecciones): doc(db, 'Users', uid, 'gameTags', id)
+  const doc = jest.fn((_db: unknown, ...segments: string[]): FakeDocRef => ({
+    type: 'doc',
+    path: segments.join('/'),
+    collection: segments.slice(0, -1).join('/'),
+    id: segments[segments.length - 1],
+  }));
+  const collection = jest.fn((_db: unknown, ...segments: string[]) => ({
     type: 'collection',
-    name,
-    collection: name,
+    name: segments.join('/'),
+    collection: segments.join('/'),
     constraints: [] as unknown[],
   }));
   const where = jest.fn((field: string, op: string, value: unknown) => ({
@@ -76,6 +75,7 @@ export function createFirestoreMock() {
     setDoc: jest.fn(),
     addDoc: jest.fn(),
     updateDoc: jest.fn(),
+    deleteDoc: jest.fn(),
     getFirestore: jest.fn(),
     initializeFirestore: jest.fn(),
   };
