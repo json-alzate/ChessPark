@@ -12,8 +12,11 @@ import {
 import { TranslocoPipe } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
 import {
+  checkmarkCircle,
   closeOutline,
+  bulbOutline,
   eye,
+  flagOutline,
   flame,
   heart,
   heartOutline,
@@ -22,6 +25,12 @@ import {
   playForwardOutline,
   playOutline,
   refreshOutline,
+  skullOutline,
+  star,
+  starOutline,
+  timerOutline,
+  trendingDown,
+  trendingUp,
 } from 'ionicons/icons';
 
 import { Puzzle } from '@chesspark/models';
@@ -35,20 +44,33 @@ import { TrainingReminderService } from '@features/reminders/services/training-r
 import { BoardResizeHandleComponent } from '@shared/components/board-resize-handle/board-resize-handle.component';
 import { KingImagePipe } from '@shared/pipes/king-image.pipe';
 
+import { RunnerLessonComponent } from '../../components/runner-lesson/runner-lesson.component';
+import { RunnerLessonModalComponent } from '../../components/runner-lesson-modal/runner-lesson-modal.component';
+import { RunnerCard, RunnerCardComponent } from '../../components/runner-card/runner-card.component';
+import { RunnerGameOver, RunnerGameOverComponent } from '../../components/runner-game-over/runner-game-over.component';
+import { RunnerStoryComponent } from '../../components/runner-story/runner-story.component';
+import { epilogueScene, guardianOf, introScene, prologue, StoryScene, victoryScene } from '../../story/story-scenes';
+import { lessonFor, RunnerLesson } from '../../lessons/runner-lessons.data';
 import {
   RunnerCanvasComponent,
   RunnerEventName,
   RunnerProgress,
 } from '../../components/runner-canvas/runner-canvas.component';
+import { CampaignEvent, CampaignStep, RunnerCampaign } from '../../campaign/runner-campaign.model';
+import { nextBeat, seenKeys } from '../../campaign/runner-beats.util';
+import { BLOCK_SIZE, CHAPTERS, RunnerWorld } from '../../campaign/runner-curriculum';
+import { DOG_SKINS, skinPreviewUrl } from '../../rendering/dog-skins';
+import { RunnerSpritesService } from '../../services/runner-sprites.service';
 import {
   COOKIES_PER_HEART,
   difficultyForLevel,
-  LEVELS_PER_WORLD,
-  MAX_HEARTS,
   MAX_STRIKES,
   RunnerDifficulty,
-  worldOfLevel,
 } from '../../config/runner.config';
+import { RunnerModifiers } from '../../config/runner-powers';
+import { RunnerGame } from '../../game/runner-game';
+import { Mission, missionDone, missionFailed, missionFor, MissionProgress, missionValue } from '../../game/runner-missions';
+import { RunnerSession } from '../../game/runner-session';
 import { RunnerPiece, RunnerStats } from '../../models/runner.model';
 import { RunnerPiecesService } from '../../services/runner-pieces.service';
 import { RunnerPuzzleService } from '../../services/runner-puzzle.service';
@@ -58,13 +80,17 @@ import { buildRunnerSequence, pieceKey } from '../../utils/runner-sequence.util'
 /**
  * En qué punto está la pantalla:
  * - `loading`: buscando el ejercicio.
+ * - `story`: una escena de la historia, sin palabras (el prólogo, llegar a un mundo, vencer al guardián, el final).
+ * - `lesson`: la lección del patrón (un tablero pequeño con frases cortas), la primera vez que se entrena.
+ * - `card`: una tarjeta entre escenas: el camino hasta el frasco (tras el prólogo) o el poder que se acaba de ganar.
  * - `running`: la carrera.
  * - `puzzle`: el ejercicio en el tablero, con su reloj.
  * - `result`: se resolvió (y en un momento sigue sola la siguiente carrera), se falló o se acabó el tiempo.
  * - `gameover`: se acabó la partida (3 choques o 3 ejercicios fallidos): distancia y récord.
  * - `error`: el catálogo no respondió.
  */
-type RunnerPageStatus = 'loading' | 'running' | 'puzzle' | 'result' | 'gameover' | 'error';
+type RunnerPageStatus = 'loading' | 'story' | 'lesson' | 'card' | 'running' | 'puzzle' | 'result' | 'gameover' | 'error';
+
 
 /** Cómo terminó el ejercicio. */
 interface RunnerResult {
@@ -72,31 +98,38 @@ interface RunnerResult {
   puzzle: Puzzle;
 }
 
-/** Por qué se acabó la partida y cómo quedó. */
-interface RunnerGameOver {
-  reason: 'hits' | 'strikes';
-  meters: number;
-  record: number;
-  newRecord: boolean;
-  level: number;
-  solved: number;
-  cookies: number;
+/** Un capítulo que se acaba de completar: lo que se ve al resolver el último ejercicio de su bloque. */
+interface RunnerChapterDone {
+  theme: string;
+  stars: number;
 }
 
-/** Qué dice el cartel de cada carrera bajo el nivel. */
-export type RunnerBannerHint = 'first' | 'doubleJump' | 'faster' | 'world.sunset' | 'world.night' | 'world.dawn' | 'world.day';
+/** Qué dice el cartel de cada carrera bajo el nombre del patrón: nada, cómo se juega, lo nuevo o que es un repaso. */
+export type RunnerBannerHint = 'none' | 'first' | 'review' | 'boss';
 
 /** Tiempo del ejercicio tras la carrera (la carrera no lo descuenta). */
 const PUZZLE_TIMES = { total: 60, warningOn: 30, dangerOn: 15 } as const;
-/** Pausa entre que Chocolate sale de la pantalla y aparece el tablero. */
+/** Pausa entre que el perrito sale de la pantalla y aparece el tablero. */
 const TRANSITION_MS = 450;
 /** Cuánto se ve el tablero resuelto (con el confeti) antes de que arranque sola la siguiente carrera. */
 const SOLVED_PAUSE_MS = 1600;
+/** Lo mismo cuando el ejercicio cierra un capítulo. */
+const CHAPTER_PAUSE_MS = 2400;
+/** Cuánto se queda a la vista el aviso del doble salto. */
+const WALL_HINT_MS = 2800;
+const EMPTY_PROGRESS: RunnerProgress = { cleared: 0, total: 0, stumbles: 0, combo: 0, meters: 0, cookies: 0, perfects: 0, bestCombo: 0, stars: 0 };
+/** El ELO de la barra tarda ~0,7 s en llegar al valor nuevo. */
+const RATING_STEPS = 14;
+const RATING_STEP_MS = 50;
+/** Lo que sube el nivel de la carrera contra un guardián: más rápida y con más piezas encadenadas. */
+const BOSS_LEVEL_BUMP = 2;
+/** Cuánto se ve el aviso de que se ha batido el récord. */
+const RECORD_BANNER_MS = 2600;
 /** ELO de partida si no hay perfil. */
 const DEFAULT_ELO = 1200;
 
 /**
- * Chess Runner: un calentamiento antes de cada ejercicio. Chocolate corre y salta las piezas del
+ * Chess Runner: un calentamiento antes de cada ejercicio. El perrito corre y salta las piezas del
  * ejercicio como obstáculos (con un toque salta); al superarlas aparece el tablero y el reloj. No toca el ELO ni crea un
  * `Plan`: es un modo suelto, como la Racha.
  */
@@ -112,6 +145,10 @@ const DEFAULT_ELO = 1200;
     BoardResizeHandleComponent,
     KingImagePipe,
     RunnerCanvasComponent,
+    RunnerLessonComponent,
+    RunnerStoryComponent,
+    RunnerCardComponent,
+    RunnerGameOverComponent,
   ],
   templateUrl: './chess-runner.page.html',
   styleUrl: './chess-runner.page.scss',
@@ -128,13 +165,14 @@ export class ChessRunnerPage implements ViewWillEnter, ViewWillLeave, OnDestroy 
   private appService = inject(AppService);
   private records = inject(RunnerRecordService);
   private modalController = inject(ModalController);
+  private spritesService = inject(RunnerSpritesService);
 
   status: RunnerPageStatus = 'loading';
 
   /** El ejercicio de esta vuelta y las piezas de su carrera. */
   puzzle: Puzzle | null = null;
   sequence: RunnerPiece[] = [];
-  progress: RunnerProgress = { cleared: 0, total: 0, stumbles: 0, combo: 0, meters: 0, cookies: 0 };
+  progress: RunnerProgress = { ...EMPTY_PROGRESS };
   /** Lo que se cuenta de la carrera que acaba de terminar. */
   runStats: RunnerStats | null = null;
 
@@ -143,35 +181,112 @@ export class ChessRunnerPage implements ViewWillEnter, ViewWillLeave, OnDestroy 
   forceStopBoardTimer = false;
   result: RunnerResult | null = null;
 
-  /** Ejercicios resueltos en esta partida. */
-  solvedCount = 0;
+  /** Todo lo que se lleva del jugador: la campaña, la partida en curso, los poderes y el récord. */
+  private game = new RunnerGame(this.records);
+  /** El mundo de la carrera en curso (el tono del escenario). */
+  world: RunnerWorld = 'day';
+  /** La escena de la historia que se está viendo, si toca. */
+  scene: StoryScene | null = null;
+  /** Qué hacer cuando acabe la escena. */
+  private afterScene: (() => void) | null = null;
+  /** La tarjeta que se enseña (el camino o un poder nuevo) y qué hacer al cerrarla. */
+  card: RunnerCard | null = null;
+  private afterCard: (() => void) | null = null;
+  /** La lección que se está enseñando, si toca. */
+  lesson: RunnerLesson | null = null;
+  /** Si el ejercicio resuelto cerró un capítulo. */
+  chapterDone: RunnerChapterDone | null = null;
+  /** Cuánto cambió el ELO del perrito con el último ejercicio (para enseñarlo al resolverlo o fallarlo). */
+  ratingChange: { from: number; to: number } | null = null;
 
-  /** Corazones (uno por choque) y ejercicios fallidos de la partida. */
-  hearts = MAX_HEARTS;
-  strikes = 0;
-  readonly heartSlots = Array.from({ length: MAX_HEARTS }, (_, i) => i);
+  /** La campaña, la partida y las reglas con los poderes (de `RunnerGame`). */
+  get campaign(): RunnerCampaign {
+    return this.game.campaign;
+  }
+  get session(): RunnerSession {
+    return this.game.session;
+  }
+  get mods(): RunnerModifiers {
+    return this.game.mods;
+  }
+  /** El récord guardado. */
+  get record(): number {
+    return this.game.record;
+  }
+
+  /** Un hueco por corazón posible (crece con el poder del corazón). */
+  get heartSlots(): number[] {
+    return Array.from({ length: this.session.rules.maxHearts }, (_, i) => i);
+  }
   readonly maxStrikes = MAX_STRIKES;
+  readonly chapterCount = CHAPTERS.length;
   readonly cookiesPerHeart = COOKIES_PER_HEART;
-  /** Metros de las carreras ya terminadas de la partida (la carrera en curso va aparte, en `progress`). */
-  private baseMeters = 0;
-  /** Galletas de toda la partida, y las que llevan hacia el próximo corazón. */
-  cookiesTotal = 0;
-  cookieStreak = 0;
   private runCookies = 0;
   private lastCookieSound = 0;
-  /** El récord guardado y lo que dijo la última partida. */
-  record = 0;
+  /** Lo que dijo la última partida. */
   gameOver: RunnerGameOver | null = null;
-  /** Ya se explicó el doble salto en esta partida. */
-  private taughtDoubleJump = false;
+  /** En qué pieza de la carrera sale el aviso del doble salto (la anterior a la primera falange), si toca. */
+  private wallHintAt: number | null = null;
+  /** El aviso del doble salto está a la vista. */
+  wallHintVisible = false;
+  /** Se acaba de pasar el récord de distancia: el aviso está a la vista (una vez por partida). */
+  recordBannerVisible = false;
+  private recordBeaten = false;
+  private recordTimeout: ReturnType<typeof setTimeout> | null = null;
+  private wallHintTimeout: ReturnType<typeof setTimeout> | null = null;
+  /** La misión de la carrera en curso, cómo va y los segundos que ganó para el ejercicio. */
+  mission: Mission | null = null;
+  missionState: 'active' | 'done' | 'failed' = 'active';
+  private missionBonus = 0;
+
+  /** Segundos de más que tiene el ejercicio del tablero por haber cumplido la misión. */
+  get timeBonus(): number {
+    return this.puzzleToPlay && this.puzzleToPlay.times ? this.puzzleToPlay.times.total - PUZZLE_TIMES.total : 0;
+  }
+
+  /** Lo que lleva la misión (para enseñar «2/3»). */
+  get missionCurrent(): number {
+    return this.mission ? missionValue(this.mission, this.missionProgress()) : 0;
+  }
+
+  /** Lo que cuenta la carrera para la misión (las estadísticas finales, si ya se tienen). */
+  private missionProgress(stats: RunnerStats | null = null): MissionProgress {
+    return {
+      perfects: stats?.perfects ?? this.progress.perfects,
+      cookies: stats?.cookies ?? this.progress.cookies,
+      bestCombo: stats?.bestCombo ?? this.progress.bestCombo,
+      stars: this.progress.stars,
+      stumbles: stats?.stumbles ?? this.progress.stumbles,
+    };
+  }
+
+  /** Mira si la misión se cumplió (o ya no puede cumplirse) con lo que lleva la carrera. */
+  private checkMission(stats: RunnerStats | null = null): void {
+    if (!this.mission || this.missionState !== 'active') {
+      return;
+    }
+    const progress = this.missionProgress(stats);
+    if (missionDone(this.mission, progress, stats !== null)) {
+      this.missionState = 'done';
+      this.missionBonus = this.mission.reward;
+      this.sounds.playCheckSound();
+      navigator.vibrate?.(20);
+    } else if (missionFailed(this.mission, progress)) {
+      this.missionState = 'failed';
+    }
+  }
+
+  /** La lección que se está enseñando antes de la carrera ya acabó de contarse. */
+  lessonDone = false;
   /** Lo que dice el cartel de la carrera en curso. */
-  bannerHint: RunnerBannerHint = 'first';
+  bannerHint: RunnerBannerHint = 'none';
 
   /** Las piezas del set que el usuario eligió, como URLs para las miniaturas (hasta que carga, ninguna). */
   private pieceUrls: ReadonlyMap<string, string> = new Map();
 
   private played = new Set<string>();
-  private prefetched: Promise<Puzzle | null> | null = null;
+  /** El ejercicio siguiente ya pedido, y para qué paso de la campaña se pidió. */
+  private prefetched: { key: string; promise: Promise<Puzzle | null> } | null = null;
   private sessionStarted = false;
   private runStartedAt = 0;
   private transitionTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -179,8 +294,11 @@ export class ChessRunnerPage implements ViewWillEnter, ViewWillLeave, OnDestroy 
 
   constructor() {
     addIcons({
+      checkmarkCircle,
       closeOutline,
+      bulbOutline,
       eye,
+      flagOutline,
       flame,
       heart,
       heartOutline,
@@ -188,12 +306,39 @@ export class ChessRunnerPage implements ViewWillEnter, ViewWillLeave, OnDestroy 
       trophyOutline, playForwardOutline,
       playOutline,
       refreshOutline,
+      skullOutline,
+      star,
+      starOutline,
+      timerOutline,
+      trendingDown,
+      trendingUp,
     });
+  }
+
+  // Lo de la partida, tal cual lo lleva la sesión
+  get hearts(): number {
+    return this.session.hearts;
+  }
+  get strikes(): number {
+    return this.session.strikes;
+  }
+  get cookiesTotal(): number {
+    return this.session.cookies;
+  }
+  get cookieStreak(): number {
+    return this.session.cookieStreak;
+  }
+  get solvedCount(): number {
+    return this.session.solved;
+  }
+  /** Se agotaron los ejercicios fallidos: lo que quede por ver es la solución y el final. */
+  get outOfStrikes(): boolean {
+    return this.session.outOfStrikes;
   }
 
   /** Metros de la partida hasta ahora. */
   get meters(): number {
-    return this.baseMeters + this.progress.meters;
+    return this.session.meters + this.progress.meters;
   }
 
   /** El récord a mostrar: el guardado, o la distancia de esta partida si ya lo supera. */
@@ -201,9 +346,154 @@ export class ChessRunnerPage implements ViewWillEnter, ViewWillLeave, OnDestroy 
     return Math.max(this.record, this.meters);
   }
 
-  /** Nivel de la carrera: cada ejercicio resuelto sube uno, y con él la velocidad y el ritmo. */
+  /** Qué toca jugar: el patrón, el puesto dentro de su bloque y lo difícil que es. */
+  get step(): CampaignStep {
+    return this.game.step;
+  }
+
+  /** Los nombres de los patrones de los capítulos, en el idioma de la app. */
+  get chapterNames(): string[] {
+    return CHAPTERS.map((chapter) => this.appService.getNameThemePuzzleByValue(chapter.theme));
+  }
+
+  /** Las imágenes del perrito con cada pelaje, para el armario (hasta que cargan, ninguna). */
+  skinPreviews: ReadonlyMap<string, string> = new Map();
+
+  /** Los pelajes con su estado (puesto, desbloqueado, comprable o por ganar). */
+  get wardrobe() {
+    return this.game.wardrobe;
+  }
+
+  /** Compra un pelaje con las galletas guardadas y se lo pone. */
+  buySkin(id: string): void {
+    if (this.game.buy(id)) {
+      this.sounds.playGood();
+      void this.analytics.logEvent('chess_runner_skin', { skin: id, action: 'buy' });
+    }
+  }
+
+  /** Se pone un pelaje que ya tiene. */
+  wearSkin(id: string): void {
+    this.game.select(id);
+  }
+
+  private async loadSkinPreviews(): Promise<void> {
+    try {
+      const sprites = await this.spritesService.load();
+      this.skinPreviews = new Map(DOG_SKINS.map((skin) => [skin.id, skinPreviewUrl(sprites, skin.id)]));
+    } catch {
+      // Sin vistas previas las tarjetas enseñan solo el color
+    }
+  }
+
+  /** Días seguidos jugando que siguen vivos. */
+  get dayStreak(): number {
+    return this.game.dayStreak;
+  }
+
+  /** El pelaje del perrito y las galletas guardadas para comprar otros. */
+  get skin(): string {
+    return this.game.skin;
+  }
+  get wallet(): number {
+    return this.game.wallet;
+  }
+
+  /** El ELO que se enseña en la barra: cuenta del anterior al nuevo en un momento, para que el cambio se note. */
+  shownRating = 0;
+  private ratingTimer: ReturnType<typeof setInterval> | null = null;
+
+  private animateRating(): void {
+    this.stopRatingAnimation();
+    const change = this.ratingChange;
+    if (!change) {
+      this.shownRating = this.game.rating;
+      return;
+    }
+    let step = 0;
+    this.shownRating = change.from;
+    this.ratingTimer = setInterval(() => {
+      step++;
+      this.shownRating = Math.round(change.from + ((change.to - change.from) * Math.min(step, RATING_STEPS)) / RATING_STEPS);
+      if (step >= RATING_STEPS) {
+        this.stopRatingAnimation();
+      }
+    }, RATING_STEP_MS);
+  }
+
+  private stopRatingAnimation(): void {
+    if (this.ratingTimer) {
+      clearInterval(this.ratingTimer);
+      this.ratingTimer = null;
+    }
+  }
+
+  /** El ELO del perrito en el runner. */
+  get rating(): number {
+    return this.game.rating;
+  }
+
+  /** El ELO del ejercicio que se está jugando (el del guardián, si lo es). */
+  get puzzleRating(): number {
+    return this.puzzle?.rating ?? 0;
+  }
+
+  /** El paso de la campaña al que pertenece el ejercicio que está en el tablero (la campaña ya pudo avanzar al resolverlo). */
+  private puzzleStep: CampaignStep | null = null;
+
+  /** El patrón del ejercicio que está en el tablero, aunque al resolverlo la campaña ya apunte al siguiente. */
+  get puzzlePatternName(): string {
+    return this.appService.getNameThemePuzzleByValue((this.puzzleStep ?? this.step).theme);
+  }
+
+  /** Los puntos del bloque en el tablero: los ejercicios ya resueltos de ese paso (con este, si se acaba de resolver). */
+  get puzzleDone(): number {
+    const step = this.puzzleStep ?? this.step;
+    return step.index + (this.result?.kind === 'solved' ? 1 : 0);
+  }
+
+  /** El ejercicio del tablero es el del guardián. */
+  get puzzleBoss(): boolean {
+    const step = this.puzzleStep ?? this.step;
+    return step.kind === 'block' && step.index === BLOCK_SIZE - 1;
+  }
+
+  /** Los puntos del bloque del ejercicio que está en el tablero. */
+  get puzzleSlots(): number[] {
+    return Array.from({ length: (this.puzzleStep ?? this.step).total }, (_, i) => i);
+  }
+
+  /** El nombre del patrón que se entrena, en el idioma de la app. */
+  get patternName(): string {
+    return this.appService.getNameThemePuzzleByValue(this.step.theme);
+  }
+
+  /** Lo que lleva hecho de la carrera, de 0 a 100. */
+  get progressPercent(): number {
+    const { cleared, total } = this.progress;
+    return total > 0 ? Math.min(100, Math.round((cleared / total) * 100)) : 0;
+  }
+
+  /** Dónde cae, en la barra, el respiro de cada oleada. */
+  get waveMarks(): number[] {
+    const total = this.sequence.length;
+    return this.sequence.flatMap((piece, index) => ((piece.rest ?? 0) > 0 ? [Math.round(((index + 1) / total) * 100)] : []));
+  }
+
+  /** La pieza del jefe, si esta carrera es la del último ejercicio del capítulo (el que lo cierra); si no, `null`. */
+  get bossKey(): string | null {
+    const { step } = this;
+    return step.kind === 'block' && step.index === BLOCK_SIZE - 1 ? guardianOf(step.chapter) : null;
+  }
+
+  /** Un punto por ejercicio del bloque o del repaso. */
+  get blockSlots(): number[] {
+    return Array.from({ length: this.step.total }, (_, i) => i);
+  }
+
+  /** Nivel de la carrera: el capítulo en que se va. Con él suben la velocidad y el ritmo. */
   get level(): number {
-    return this.solvedCount + 1;
+    return this.game.level;
   }
 
   /** La dificultad de la carrera que se muestra: congelada al empezarla, no cambia a mitad. */
@@ -212,6 +502,11 @@ export class ChessRunnerPage implements ViewWillEnter, ViewWillLeave, OnDestroy 
   /** Color con el que juega el usuario: el FEN arranca con el turno del rival. */
   get playerColor(): 'white' | 'black' {
     return this.puzzleToPlay?.fen.split(' ')[1] === 'w' ? 'black' : 'white';
+  }
+
+  /** Las piezas del set del usuario como imágenes, por clave (`bp`, `bk`…), para el mapa. */
+  get pieceImages(): ReadonlyMap<string, string> {
+    return this.pieceUrls;
   }
 
   /** Miniatura de una pieza de la carrera, en el set elegido. */
@@ -225,23 +520,56 @@ export class ChessRunnerPage implements ViewWillEnter, ViewWillLeave, OnDestroy 
     this.played = new Set();
     this.prefetched = null;
     this.sessionStarted = false;
-    this.resetGame();
-    void this.loadNext();
+    // El progreso de la campaña se lee de nuevo cada vez: lo que se guardó es lo que manda
+    this.game.enter(this.userElo);
+    this.stopRatingAnimation();
+    this.shownRating = this.game.rating;
+    this.resetScreen();
+    // Quien ya jugó vuelve al panel (su camino, sus poderes, el armario) y empieza cuando quiere; la primera vez va directo al juego
+    if (this.campaign.puzzles > 0) {
+      this.showLobby();
+    } else {
+      void this.loadNext();
+    }
   }
 
-  /** Una partida nueva: todo a cero y los tres corazones. El récord, no. */
-  private resetGame(): void {
-    this.solvedCount = 0;
-    this.hearts = MAX_HEARTS;
-    this.strikes = 0;
-    this.baseMeters = 0;
-    this.cookiesTotal = 0;
-    this.cookieStreak = 0;
+  /** Las piezas del set del usuario, como imágenes para el logo y el camino; sin ellas, esas imágenes quedan vacías. */
+  private async loadPieces(): Promise<void> {
+    this.pieceUrls = await this.pieceSets
+      .load()
+      .then((set) => set.urls)
+      .catch(() => new Map<string, string>());
+  }
+
+  /** El panel al entrar: lo mismo que al acabar una partida, pero sin partida a medias y con «Jugar». */
+  private showLobby(): void {
+    this.gameOver = {
+      reason: 'lobby',
+      meters: 0,
+      record: this.record,
+      newRecord: false,
+      chapter: this.campaign.chapter + 1,
+      round: this.campaign.round + 1,
+      rating: this.game.rating,
+      ratingGain: 0,
+      solved: 0,
+      cookies: 0,
+    };
+    void this.loadPieces();
+    void this.loadSkinPreviews();
+    this.status = 'gameover';
+  }
+
+  /** La pantalla de una partida nueva: sin cuentas de la carrera anterior ni avisos. */
+  private resetScreen(): void {
     this.runCookies = 0;
-    this.taughtDoubleJump = false;
+    this.wallHintAt = null;
+    this.wallHintVisible = false;
+    this.recordBeaten = false;
+    this.recordBannerVisible = false;
     this.gameOver = null;
-    this.record = this.records.best();
-    this.progress = { cleared: 0, total: 0, stumbles: 0, combo: 0, meters: 0, cookies: 0 };
+    this.chapterDone = null;
+    this.progress = { ...EMPTY_PROGRESS };
   }
 
   ionViewWillLeave(): void {
@@ -253,13 +581,17 @@ export class ChessRunnerPage implements ViewWillEnter, ViewWillLeave, OnDestroy 
   }
 
   private stopEverything(): void {
+    this.stopRatingAnimation();
     // Lo corrido hasta aquí cuenta para el récord aunque se salga a media partida
     if (this.status !== 'gameover') {
-      this.records.save(this.meters);
+      this.game.saveRecord(this.meters);
     }
     // Una carga que llegue tarde no debe pintar nada en una pantalla que ya se fue
     this.generation++;
     this.clearTransition();
+    this.scene = null;
+    this.afterScene = null;
+    this.clearWallHint();
     this.forceStopBoardTimer = true;
     this.puzzleToPlay = null;
     this.sequence = [];
@@ -270,17 +602,23 @@ export class ChessRunnerPage implements ViewWillEnter, ViewWillLeave, OnDestroy 
   async loadNext(): Promise<void> {
     const generation = ++this.generation;
     this.clearTransition();
+    this.scene = null;
+    this.afterScene = null;
     this.status = 'loading';
     this.result = null;
     this.puzzleToPlay = null;
     this.forceStopBoardTimer = false;
     this.runStats = null;
 
+    const step = this.step;
+    const elo = this.game.targetRating;
     const pending = this.prefetched;
     this.prefetched = null;
-    // Si la precarga no trajo nada (un fallo de red pasajero) se vuelve a intentar antes de dar error
+    // La precarga vale si se pidió para este mismo paso y ELO (si se falló en vez de acertar, el siguiente cambia).
+    // Si no trajo nada (un fallo de red pasajero) se vuelve a intentar antes de dar error
     const puzzle =
-      (pending ? await pending : null) ?? (await this.puzzles.next(this.userElo, this.played));
+      (pending && pending.key === this.stepKey(step.theme, elo) ? await pending.promise : null) ??
+      (await this.fetchFor(step, elo));
 
     // Se salió de la pantalla (o se pidió otro) mientras bajaba
     if (generation !== this.generation) {
@@ -292,10 +630,15 @@ export class ChessRunnerPage implements ViewWillEnter, ViewWillLeave, OnDestroy 
     }
 
     this.puzzle = puzzle;
-    this.difficulty = difficultyForLevel(this.level);
+    this.puzzleStep = step;
+    this.world = this.game.world;
+    // Dentro de un capítulo la dificultad sube con cada ejercicio resuelto del bloque
+    // El guardián (el último ejercicio del capítulo) pone la carrera más dura: un poco más rápida y con más piezas seguidas
+    const bossBump = this.bossKey ? BOSS_LEVEL_BUMP : 0;
+    this.difficulty = difficultyForLevel(this.level + (step.kind === 'block' ? step.index * 0.18 : 0) + bossBump);
     this.played.add(puzzle.uid);
-    this.sequence = buildRunnerSequence(puzzle.fen, puzzle.uid, this.level);
-    this.progress = { cleared: 0, total: this.sequence.length, stumbles: 0, combo: 0, meters: 0, cookies: 0 };
+    this.sequence = buildRunnerSequence(puzzle.fen, puzzle.uid, this.level + bossBump);
+    this.progress = { ...EMPTY_PROGRESS, total: this.sequence.length };
     this.runCookies = 0;
 
     if (this.sequence.length === 0) {
@@ -304,39 +647,192 @@ export class ChessRunnerPage implements ViewWillEnter, ViewWillLeave, OnDestroy 
       return;
     }
     // Sin las piezas no hay carrera que dibujar: el lienzo avisa y se juega el ejercicio a secas
-    this.pieceUrls = await this.pieceSets
-      .load()
-      .then((set) => set.urls)
-      .catch(() => new Map<string, string>());
+    await this.loadPieces();
     if (generation !== this.generation) {
       return;
     }
+    if (this.beforeRun(step)) {
+      return;
+    }
     this.startRun();
+  }
+
+  /**
+   * Antes de correr, lo que toque enseñar: el prólogo, la llegada al mundo o la lección del patrón (cada cosa, una vez).
+   * Devuelve `true` si ha empezado alguna; al acabar vuelve a preguntar hasta que ya no toca nada.
+   */
+  private beforeRun(step: CampaignStep): boolean {
+    const beat = nextBeat(this.campaign, step, lessonFor(step.theme) !== null);
+    if (!beat) {
+      return false;
+    }
+    this.game.see(...beat.seen);
+    if (beat.kind === 'lesson') {
+      this.lesson = lessonFor(beat.theme);
+      this.status = 'lesson';
+    } else {
+      const next = () => {
+        if (!this.beforeRun(step)) {
+          this.startRun();
+        }
+      };
+      // Tras el prólogo, el camino entero: qué hay que recorrer para recuperar el frasco
+      this.playScene(beat.kind === 'prologue' ? prologue : introScene(beat.chapter), beat.kind === 'prologue' ? () => this.showCard({ kind: 'journey' }, next) : next);
+    }
+    return true;
+  }
+
+  /** Enseña una tarjeta y, al cerrarla, hace `then`. */
+  private showCard(card: RunnerCard, then: () => void): void {
+    this.card = card;
+    this.afterCard = then;
+    this.status = 'card';
+  }
+
+  /** «Seguir» en una tarjeta. */
+  closeCard(): void {
+    if (this.status !== 'card' || !this.afterCard) {
+      return;
+    }
+    const then = this.afterCard;
+    this.afterCard = null;
+    this.card = null;
+    then();
+  }
+
+  /** Enseña una escena de la historia y, al acabar (o al saltarla), hace `then`. */
+  private playScene(scene: StoryScene, then: () => void): void {
+    this.scene = scene;
+    this.afterScene = then;
+    this.status = 'story';
+  }
+
+  /** La escena acabó sola. */
+  onStoryFinished(): void {
+    this.endScene();
+  }
+
+  /** Tocar la escena (o su botón) la salta. */
+  skipStory(): void {
+    this.endScene();
+  }
+
+  /** Sin dibujos que enseñar no hay escena: se sigue. */
+  onStoryFailed(): void {
+    this.endScene();
+  }
+
+  private endScene(): void {
+    if (this.status !== 'story' || !this.afterScene) {
+      return;
+    }
+    const then = this.afterScene;
+    this.afterScene = null;
+    this.scene = null;
+    then();
+  }
+
+  /** La lección acabó: se queda a la vista (con su consejo) y el botón «Empezar» llama la atención; no hay prisa por leerla. */
+  onLessonFinished(): void {
+    if (this.status === 'lesson') {
+      this.lessonDone = true;
+    }
+  }
+
+  /** «Empezar»: directo a la carrera. */
+  skipLesson(): void {
+    if (this.status !== 'lesson') {
+      return;
+    }
+    this.clearTransition();
+    this.lesson = null;
+    this.lessonDone = false;
+    if (!this.beforeRun(this.step)) {
+      this.startRun();
+    }
+  }
+
+  /** Sin piezas que dibujar no hay lección: se sigue con la carrera. */
+  onLessonFailed(): void {
+    this.skipLesson();
   }
 
   private get userElo(): number {
     return this.profileService.getProfile?.elo ?? DEFAULT_ELO;
   }
 
+  /** Para qué se pide una precarga: el patrón y el ELO. */
+  private stepKey(theme: string, elo: number): string {
+    return `${theme}|${elo}`;
+  }
+
+  /** Pide por adelantado el ejercicio que se espera (por defecto, el que toca ahora en la campaña). */
+  private prefetchNext(next: { step: CampaignStep; elo: number } = { step: this.step, elo: this.game.targetRating }): void {
+    this.prefetched = { key: this.stepKey(next.step.theme, next.elo), promise: this.fetchFor(next.step, next.elo) };
+  }
+
+  private fetchFor(step: CampaignStep, elo: number): Promise<Puzzle | null> {
+    return this.puzzles.next(elo, this.played, Math.random, step.theme);
+  }
+
   // ------------------------------------------------------------- la carrera
 
-  /** Qué se le dice al jugador al empezar la carrera: lo nuevo que trae (el doble salto, un escenario) o, si no, que va más rápido. */
+  /** Qué se le dice al jugador al empezar la carrera: cómo se juega la primera vez o que es un repaso. */
   private pickBannerHint(): RunnerBannerHint {
-    if (this.level === 1) {
+    const { step, campaign } = this;
+    if (step.kind === 'review') {
+      return 'review';
+    }
+    if (this.bossKey) {
+      return 'boss';
+    }
+    if (campaign.puzzles === 0) {
       return 'first';
     }
-    if (!this.taughtDoubleJump && this.sequence.some((piece) => (piece.wall ?? 1) > 1)) {
-      this.taughtDoubleJump = true;
-      return 'doubleJump';
+    return 'none';
+  }
+
+  /**
+   * El doble salto se explica justo antes de la primera falange (no al empezar la carrera, que queda lejos): se anota en qué
+   * pieza saltará el aviso, y solo la primera vez que se encuentra una.
+   */
+  private planWallHint(): void {
+    this.wallHintAt = null;
+    this.wallHintVisible = false;
+    const firstWall = this.sequence.findIndex((piece) => (piece.wall ?? 1) > 1);
+    if (firstWall > 0 && !this.game.hasSeen(seenKeys.doubleJumpHint)) {
+      this.wallHintAt = firstWall - 1;
     }
-    if ((this.level - 1) % LEVELS_PER_WORLD === 0) {
-      return `world.${worldOfLevel(this.level)}`;
-    }
-    return 'faster';
+  }
+
+  private showRecordBanner(): void {
+    this.recordBeaten = true;
+    this.recordBannerVisible = true;
+    this.sounds.playCheckmateSound();
+    navigator.vibrate?.([30, 40, 30]);
+    this.recordTimeout = setTimeout(() => {
+      this.recordTimeout = null;
+      this.recordBannerVisible = false;
+    }, RECORD_BANNER_MS);
+  }
+
+  /** Sale el aviso del doble salto un momento y se da por visto. */
+  private showWallHint(): void {
+    this.wallHintAt = null;
+    this.wallHintVisible = true;
+    this.game.see(seenKeys.doubleJumpHint);
+    this.wallHintTimeout = setTimeout(() => {
+      this.wallHintTimeout = null;
+      this.wallHintVisible = false;
+    }, WALL_HINT_MS);
   }
 
   private startRun(): void {
+    this.mission = this.puzzle ? missionFor(this.puzzle.uid, this.level) : null;
+    this.missionState = 'active';
+    this.missionBonus = 0;
     this.bannerHint = this.pickBannerHint();
+    this.planWallHint();
     this.status = 'running';
     this.runStartedAt = Date.now();
     if (!this.sessionStarted) {
@@ -367,7 +863,23 @@ export class ChessRunnerPage implements ViewWillEnter, ViewWillLeave, OnDestroy 
         this.sounds.playError();
         // Un tirón en la mano refuerza el tropiezo donde el navegador lo permita (Android; iOS lo ignora)
         navigator.vibrate?.(60);
+        // Parte de las galletas que se llevaban hacia el próximo corazón salen volando
+        this.session.scatterCookies();
         this.loseHeart();
+        break;
+      case 'perfect':
+        this.sounds.playGood();
+        break;
+      case 'star':
+        this.sounds.playCheckSound();
+        navigator.vibrate?.(25);
+        break;
+      case 'smash':
+        this.sounds.playCaptureSound();
+        break;
+      case 'shield':
+        this.sounds.playCheckSound();
+        navigator.vibrate?.(30);
         break;
       case 'finishing':
         this.sounds.playGood();
@@ -384,28 +896,27 @@ export class ChessRunnerPage implements ViewWillEnter, ViewWillLeave, OnDestroy 
     this.progress = progress;
     if (fresh > 0) {
       this.collectCookies(fresh);
+      this.game.earn(fresh);
+    }
+    if (this.wallHintAt !== null && progress.cleared >= this.wallHintAt && this.status === 'running') {
+      this.showWallHint();
+    }
+    this.checkMission();
+    // Pasar el récord de distancia (el de antes de esta partida) se celebra una vez
+    if (!this.recordBeaten && this.record > 0 && this.meters > this.record && this.status === 'running') {
+      this.showRecordBanner();
     }
   }
 
   private collectCookies(count: number): void {
-    this.cookiesTotal += count;
-    this.cookieStreak += count;
-    while (this.cookieStreak >= COOKIES_PER_HEART) {
-      this.cookieStreak -= COOKIES_PER_HEART;
-      if (this.hearts < MAX_HEARTS) {
-        this.hearts++;
-        this.sounds.playGood();
-      }
+    if (this.session.addCookies(count) > 0) {
+      this.sounds.playGood();
     }
   }
 
   /** Un choque cuesta un corazón; sin ninguno, se acabó la partida. */
   private loseHeart(): void {
-    if (this.status !== 'running') {
-      return;
-    }
-    this.hearts = Math.max(0, this.hearts - 1);
-    if (this.hearts === 0) {
+    if (this.status === 'running' && this.session.loseHeart()) {
       this.endGame('hits');
     }
   }
@@ -415,6 +926,7 @@ export class ChessRunnerPage implements ViewWillEnter, ViewWillLeave, OnDestroy 
       return;
     }
     this.runStats = stats;
+    this.checkMission(stats);
     this.bankRun(stats.meters);
     void this.analytics.logEvent('chess_runner_finished', {
       obstacles: stats.total,
@@ -436,11 +948,9 @@ export class ChessRunnerPage implements ViewWillEnter, ViewWillLeave, OnDestroy 
 
   /** Lo corrido en la carrera pasa a la cuenta de la partida y la carrera se pone a cero. */
   private bankRun(meters: number): void {
-    this.baseMeters += meters;
+    this.game.bank(meters);
     this.progress = { ...this.progress, meters: 0, cookies: 0 };
     this.runCookies = 0;
-    this.records.save(this.baseMeters);
-    this.record = this.records.best();
   }
 
   /** «Saltar carrera»: directo al ejercicio. */
@@ -475,7 +985,8 @@ export class ChessRunnerPage implements ViewWillEnter, ViewWillLeave, OnDestroy 
     this.clearTransition();
     this.sequence = [];
     this.forceStopBoardTimer = false;
-    this.puzzleToPlay = { ...this.puzzle, times: { ...PUZZLE_TIMES } };
+    // Cumplir la misión de la carrera da tiempo extra para el ejercicio
+    this.puzzleToPlay = { ...this.puzzle, times: { ...PUZZLE_TIMES, total: PUZZLE_TIMES.total + this.missionBonus } };
     this.status = 'puzzle';
 
     void this.analytics.logEvent('puzzle_started', {
@@ -484,8 +995,8 @@ export class ChessRunnerPage implements ViewWillEnter, ViewWillLeave, OnDestroy 
       theme: this.puzzle.themes?.[0] ?? '',
       puzzle_elo: this.puzzle.rating ?? 0,
     });
-    // Mientras se resuelve este, se baja el siguiente para que «Otro ejercicio» sea inmediato
-    this.prefetched = this.puzzles.next(this.userElo, this.played);
+    // Mientras se resuelve este, se baja el siguiente (contando con que se acierte) para que la espera sea mínima
+    this.prefetchNext(this.game.after(true, this.puzzle.rating));
   }
 
   onPuzzleSolved(puzzle: Puzzle): void {
@@ -493,16 +1004,26 @@ export class ChessRunnerPage implements ViewWillEnter, ViewWillLeave, OnDestroy 
       return;
     }
     this.sounds.playGood();
-    this.solvedCount++;
-    // Un ejercicio bien resuelto cura un choque
-    this.hearts = Math.min(MAX_HEARTS, this.hearts + 1);
+    // Un ejercicio bien resuelto cura un choque y avanza el bloque; si cierra un capítulo, el perrito gana su poder
+    const closing = this.step;
+    const events = this.game.recordSolved(puzzle.rating);
+    const done = events.find((event) => event.kind === 'chapterComplete');
+    this.chapterDone = done?.kind === 'chapterComplete' ? { theme: closing.theme, stars: done.stars } : null;
+    this.ratingChange = this.ratingChangeOf(events);
+    this.animateRating();
     this.finishPuzzle('solved', puzzle);
     this.confetti.launchTheme('gold');
-    // Sin botón de por medio: tras el confeti arranca sola la siguiente carrera (el ejercicio ya está descargado)
+    const chapter = events.find((event) => event.kind === 'chapterComplete');
+    // Sin botón de por medio: tras el confeti arranca sola la siguiente carrera (el ejercicio ya está descargado).
+    // Si se cerró un capítulo, el tablero se deja ver algo más (es el momento de saborearlo) y sigue la escena de victoria
     this.transitionTimeout = setTimeout(() => {
       this.transitionTimeout = null;
-      void this.loadNext();
-    }, SOLVED_PAUSE_MS);
+      if (chapter?.kind === 'chapterComplete') {
+        this.playVictory(chapter, events.some((event) => event.kind === 'roundComplete' && event.round === 0));
+      } else {
+        void this.loadNext();
+      }
+    }, chapter ? CHAPTER_PAUSE_MS : SOLVED_PAUSE_MS);
   }
 
   onPuzzleFailed(puzzle: Puzzle): void {
@@ -521,14 +1042,43 @@ export class ChessRunnerPage implements ViewWillEnter, ViewWillLeave, OnDestroy 
     this.finishPuzzle('timeout', puzzle);
   }
 
-  /** Se agotaron los ejercicios fallidos: lo que quede por ver es la solución y el final. */
-  get outOfStrikes(): boolean {
-    return this.strikes >= MAX_STRIKES;
+  /** Lo que cambió el ELO del perrito con el último ejercicio, para enseñarlo; `null` si no cambió. */
+  private ratingChangeOf(events: CampaignEvent[]): { from: number; to: number } | null {
+    const change = events.find((event) => event.kind === 'rating');
+    return change?.kind === 'rating' ? { from: change.from, to: change.to } : null;
+  }
+
+  /** El guardián cae y el perrito gana su poder; si era el último capítulo, además llega el final de la historia. */
+  private playVictory(done: Extract<CampaignEvent, { kind: 'chapterComplete' }>, campaignComplete: boolean): void {
+    const gearBefore = this.campaign.powers.filter((power) => power !== done.power);
+    // Una fanfarria para el momento: el guardián cae y llega el poder
+    this.sounds.playCheckmateSound();
+    const afterwards = () => {
+      if (campaignComplete && !this.game.hasSeen(seenKeys.epilogue)) {
+        this.game.see(seenKeys.epilogue);
+        this.sounds.playCheckmateSound();
+        this.playScene(epilogueScene(this.campaign.powers), () => void this.loadNext());
+      } else {
+        void this.loadNext();
+      }
+    };
+    this.playScene(victoryScene({ chapter: done.chapter, stars: done.stars, power: done.power, gearBefore }), () => {
+      // El poder nuevo se explica: qué es y qué cambia en la carrera
+      if (done.power && done.firstTime) {
+        this.showCard({ kind: 'power', power: done.power }, afterwards);
+      } else {
+        afterwards();
+      }
+    });
   }
 
   private finishPuzzle(kind: RunnerResult['kind'], puzzle: Puzzle): void {
     if (kind !== 'solved') {
-      this.strikes++;
+      this.ratingChange = this.ratingChangeOf(this.game.recordFailed(puzzle.rating));
+      this.animateRating();
+      this.chapterDone = null;
+      // Tras un fallo el siguiente es del mismo patrón pero más fácil: se pide ya, mientras se mira la solución
+      this.prefetchNext();
     }
     this.result = { kind, puzzle };
     this.status = 'result';
@@ -572,6 +1122,25 @@ export class ChessRunnerPage implements ViewWillEnter, ViewWillLeave, OnDestroy 
     }
   }
 
+  /** ¿Hay lección de este patrón que volver a ver? */
+  get hasPatternLesson(): boolean {
+    return lessonFor(this.step.theme) !== null;
+  }
+
+  /** «Ver el patrón»: la lección animada del patrón que se entrena, en una ventana, tras fallar un ejercicio. */
+  async showPatternLesson(): Promise<void> {
+    const lesson = lessonFor(this.step.theme);
+    if (!lesson) {
+      return;
+    }
+    const modal = await this.modalController.create({
+      component: RunnerLessonModalComponent,
+      cssClass: 'runner-lesson-modal',
+      componentProps: { lesson, title: this.patternName },
+    });
+    await modal.present();
+  }
+
   /** Tras un fallo: otra carrera, o el final si era el último ejercicio que se podía fallar. */
   private continueAfterFail(): void {
     if (this.outOfStrikes) {
@@ -587,17 +1156,22 @@ export class ChessRunnerPage implements ViewWillEnter, ViewWillLeave, OnDestroy 
     this.generation++;
     this.clearTransition();
     this.forceStopBoardTimer = true;
-    const newRecord = this.records.save(meters);
-    this.record = this.records.best();
+    const newRecord = this.game.saveRecord(meters);
     this.gameOver = {
       reason,
       meters,
       record: this.record,
       newRecord,
-      level: this.level,
+      chapter: this.campaign.chapter + 1,
+      round: this.campaign.round + 1,
+      rating: this.game.rating,
+      ratingGain: this.game.ratingGain,
       solved: this.solvedCount,
       cookies: this.cookiesTotal,
     };
+    void this.loadPieces();
+    void this.loadSkinPreviews();
+    this.chapterDone = null;
     this.puzzleToPlay = null;
     this.sequence = [];
     this.puzzle = null;
@@ -626,15 +1200,39 @@ export class ChessRunnerPage implements ViewWillEnter, ViewWillLeave, OnDestroy 
     }
   }
 
-  /** «Jugar otra vez»: partida nueva desde el nivel 1. */
+  /** «Jugar otra vez»: partida nueva; la campaña sigue donde iba. */
   playAgain(): void {
-    this.resetGame();
+    this.game.newMatch();
+    this.resetScreen();
     this.sessionStarted = false;
     void this.loadNext();
   }
 
+  /** La equis de la barra: a mitad de partida lleva al panel (con lo corrido guardado); desde el panel, al inicio. */
+  exit(): void {
+    if (this.status === 'gameover' || this.status === 'error') {
+      this.goToHome();
+    } else {
+      this.endGame('quit');
+    }
+  }
+
   goToHome(): void {
     void this.router.navigate(['/home']);
+  }
+
+  private clearWallHint(): void {
+    if (this.recordTimeout) {
+      clearTimeout(this.recordTimeout);
+      this.recordTimeout = null;
+    }
+    this.recordBannerVisible = false;
+    if (this.wallHintTimeout) {
+      clearTimeout(this.wallHintTimeout);
+      this.wallHintTimeout = null;
+    }
+    this.wallHintVisible = false;
+    this.wallHintAt = null;
   }
 
   private clearTransition(): void {

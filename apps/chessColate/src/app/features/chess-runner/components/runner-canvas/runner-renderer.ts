@@ -1,63 +1,49 @@
-import {
-  COOKIE_SIZE,
-  PIECE_BEHAVIOR,
-  PIECE_DRAW_SIZE,
-  RUNNER_CANVAS_HEIGHT,
-  RUNNER_PHYSICS,
-  RunnerWorld,
-  worldOfLevel,
-} from '../../config/runner.config';
+import { COOKIE_SIZE, PIECE_BEHAVIOR, PIECE_DRAW_SIZE } from '../../config/runner.config';
+import { CONTACT_X } from '../../utils/runner-engine.util';
+import { COOKIE_ART, COOKIE_PALETTE, drawPixelArt, POWER_STAR_ART, POWER_STAR_PALETTE } from '../../rendering/pixel-art';
+import { drawGround, drawScenery, FEET_Y, RUNNER_HEIGHT, Sprites } from '../../rendering/scenery';
+import { RunnerPowerId, RunnerWorld } from '../../campaign/runner-curriculum';
+import { drawDogGear } from '../../rendering/dog-gear';
+import { drawPiece } from '../../rendering/stage';
 import { RunnerCookie, RunnerObstacle, RunnerState } from '../../models/runner.model';
 import { RunnerPieceSet } from '../../services/runner-pieces.service';
 import { RunnerSprite } from '../../services/runner-sprites.service';
 import { pieceKey } from '../../utils/runner-sequence.util';
 
-/** Medidas del lienzo lógico (el ancho depende de la pantalla; el alto es fijo). */
-export const RUNNER_HEIGHT = RUNNER_CANVAS_HEIGHT;
-/** Borde de arriba del tablero que hace de suelo. */
-export const GROUND_Y = 142;
-/** Donde apoyan los pies de Chocolate y la base de las piezas: en mitad de las casillas. */
-export const FEET_Y = GROUND_Y + 8;
+export { FEET_Y, GROUND_Y, RUNNER_HEIGHT } from '../../rendering/scenery';
 
-const FLOOR_TILE_H = 20;
 /** Lo que baja el cuadro de la pieza bajo el suelo: las piezas dejan un margen vacío abajo. */
 const PIECE_FOOT_PADDING = 2;
-const WOOD = '#3a2418';
 /** Lo que dura la sacudida tras un tropiezo, en segundos. */
 const SHAKE_TIME = 0.25;
-/** Cuántos píxeles de suelo recorre Chocolate entre un fotograma de su carrera y el siguiente. */
+/** Cuántos píxeles de suelo recorre el perrito entre un fotograma de su carrera y el siguiente. */
 const STRIDE_PX = 11;
 
-type Sprites = ReadonlyMap<string, RunnerSprite>;
-
-/** La galleta de ChessColate en pixel art (9×9): `X` borde, `o` masa, `h` brillo y `c` chispas de chocolate. */
-const COOKIE_ART = [
-  '..XXXXX..',
-  '.XhhoooX.',
-  'XhooocooX',
-  'XoocooooX',
-  'XoooooocX',
-  'XocoooooX',
-  'XoooocooX',
-  '.XoooooX.',
-  '..XXXXX..',
-];
-const COOKIE_COLORS: Record<string, string> = { X: '#6b3d17', o: '#d99a52', h: '#f2c987', c: '#3a1f0c' };
-
-/** Cómo se tiñe el escenario en cada mundo: el color por encima del cielo y las colinas. */
-const WORLD_TINT: Record<RunnerWorld, string | null> = {
-  day: null,
-  sunset: 'rgba(255, 130, 50, 0.26)',
-  night: 'rgba(12, 20, 70, 0.58)',
-  dawn: 'rgba(255, 120, 175, 0.22)',
-};
-/** Estrellas del mundo de noche: (x relativa al ancho, y), fijas. */
-const STARS: [number, number][] = [
-  [0.08, 14], [0.2, 38], [0.33, 10], [0.45, 26], [0.58, 12], [0.7, 40], [0.82, 20], [0.93, 34], [0.15, 56], [0.62, 52],
-];
 
 /** Un efecto breve (polvo, chispa) que se dibuja mientras dura su animación. */
 export type RunnerFxKind = 'dust' | 'spark';
+
+/** Un texto que sube y se desvanece (¡Perfecto!). */
+interface Popup {
+  text: string;
+  x: number;
+  y: number;
+  color: string;
+  start: number;
+}
+
+/** Una galleta que sale volando (de una pieza arrollada o de un choque) y cae. */
+interface Particle {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  start: number;
+}
+
+const POPUP_SECONDS = 0.9;
+const PARTICLE_SECONDS = 0.9;
+const PARTICLE_GRAVITY = 320;
 
 interface ActiveFx {
   kind: RunnerFxKind;
@@ -69,11 +55,19 @@ interface ActiveFx {
 
 /**
  * Dibuja un instante del runner. No sabe de Angular ni del bucle: recibe el estado y pinta. Todo en
- * píxeles lógicos; quien lo crea fija la escala del lienzo. Chocolate y el escenario son pixel art (sin
+ * píxeles lógicos; quien lo crea fija la escala del lienzo. El perrito y el escenario son pixel art (sin
  * suavizado); las piezas son las del set que el usuario eligió para el tablero, que son vectoriales.
  */
 export class RunnerRenderer {
   private fx: ActiveFx[] = [];
+  private popups: Popup[] = [];
+  private particles: Particle[] = [];
+  /** El mundo en el que se corre: tiñe el escenario. */
+  world: RunnerWorld = 'day';
+  /** La pieza del jefe del capítulo (`bn`, `bk`…), que asoma al fondo al acabar la carrera; sin jefe, `null`. */
+  boss: string | null = null;
+  /** Lo que lleva puesto el perrito: los poderes que ha ganado. */
+  gear: readonly RunnerPowerId[] = [];
 
   constructor(
     private readonly ctx: CanvasRenderingContext2D,
@@ -91,33 +85,156 @@ export class RunnerRenderer {
     this.fx.push({ kind, x, y, start: time });
   }
 
+  /** Un texto breve que sube desde (x, y) (`y` es la altura sobre el suelo). */
+  addPopup(text: string, x: number, y: number, time: number, color = '#ffffff'): void {
+    this.popups.push({ text, x, y, color, start: time });
+  }
+
+  /** Suelta `count` galletas que salen despedidas desde (x, y) y caen. */
+  burst(count: number, x: number, y: number, time: number): void {
+    for (let i = 0; i < count; i++) {
+      const spread = count > 1 ? i / (count - 1) - 0.5 : 0;
+      this.particles.push({ x, y, vx: spread * 120 + (i % 2 ? 8 : -8), vy: 85 + (i % 3) * 28, start: time });
+    }
+  }
+
   draw(state: RunnerState): void {
     const { ctx } = this;
     ctx.imageSmoothingEnabled = false;
     ctx.clearRect(0, 0, this.width, RUNNER_HEIGHT);
 
     // Un tropiezo sacude la escena un instante
-    const shaking = state.dog.stumble > RUNNER_PHYSICS.stumbleTime - SHAKE_TIME;
+    const shaking = state.dog.stumble > state.mods.stumbleTime - SHAKE_TIME;
     if (shaking) {
       ctx.save();
-      const strength = (state.dog.stumble - (RUNNER_PHYSICS.stumbleTime - SHAKE_TIME)) / SHAKE_TIME;
+      const strength = (state.dog.stumble - (state.mods.stumbleTime - SHAKE_TIME)) / SHAKE_TIME;
       ctx.translate(Math.round(Math.sin(state.time * 90) * 2 * strength), Math.round(Math.cos(state.time * 70) * 1.5 * strength));
     }
-    this.drawBackground(state);
-    this.drawWorld(state);
-    this.drawFloor(state);
+    drawScenery(ctx, this.sprites, { width: this.width, distance: state.distance, time: state.time, world: this.world });
+    drawGround(ctx, this.sprites, this.width, state.distance);
+    this.drawBoss(state);
     for (const cookie of state.pickups) {
-      this.drawCookie(cookie, state.time);
+      if (cookie.kind === 'star') {
+        this.drawPowerStar(cookie, state.time);
+      } else {
+        this.drawCookie(cookie, state.time);
+      }
+    }
+    if (state.mods.ghosts) {
+      this.drawGhosts(state);
     }
     for (const obstacle of state.obstacles) {
       this.drawObstacle(obstacle);
     }
     this.drawFx(state);
+    if (state.starTime > 0) {
+      this.drawStarAura(state);
+    }
     this.drawDog(state);
+    this.drawParticles(state);
+    this.drawPopups(state);
+    if (state.mods.tapCue) {
+      this.drawTapCue(state);
+    }
+    if (state.shields > 0) {
+      this.drawShield(state);
+    }
     this.drawSpeedLines(state);
     if (shaking) {
       ctx.restore();
     }
+  }
+
+  /**
+   * El jefe del capítulo: al pasar de los dos tercios de la carrera, el guardián (una pieza oscura enorme) asoma por el
+   * borde derecho y se planta al fondo, con los ojos encendidos, esperando al perrito.
+   */
+  private drawBoss(state: RunnerState): void {
+    const image = this.boss ? this.pieces.get(this.boss) : null;
+    if (!image) {
+      return;
+    }
+    const progress = state.total > 0 ? state.cleared / state.total : 0;
+    const arrive = Math.min(Math.max((progress - 0.66) / 0.3, 0), 1);
+    if (arrive <= 0 && state.phase === 'running') {
+      return;
+    }
+    const eased = arrive * arrive * (3 - 2 * arrive);
+    const size = Math.round(PIECE_DRAW_SIZE * 2.6);
+    const x = this.width + size / 2 - eased * (size * 0.85);
+    drawPiece(this.ctx, image, x, 0, size, { shadow: true, eyes: 0.4 + 0.6 * eased, alpha: 0.9 });
+  }
+
+  /**
+   * El poder del fantasma: donde llegará de verdad una pieza que se desliza o salta (es el sitio donde estaría si fuera quieta),
+   * como una silueta tenue en el suelo. Se salta cuando la pieza llega a su fantasma.
+   */
+  private drawGhosts(state: RunnerState): void {
+    const { ctx } = this;
+    for (const obstacle of state.obstacles) {
+      const behavior = PIECE_BEHAVIOR[obstacle.kind];
+      if (obstacle.hit || obstacle.cleared || (behavior.slide <= 1 && behavior.lunge <= 0)) {
+        continue;
+      }
+      const image = this.pieces.get(pieceKey(obstacle.kind, obstacle.color));
+      if (!image || obstacle.plan > this.width) {
+        continue;
+      }
+      const centerX = obstacle.plan + obstacle.width / 2;
+      ctx.globalAlpha = 0.28;
+      ctx.imageSmoothingEnabled = true;
+      ctx.drawImage(
+        image,
+        Math.round(centerX - PIECE_DRAW_SIZE / 2),
+        Math.round(FEET_Y + PIECE_FOOT_PADDING - behavior.lift - PIECE_DRAW_SIZE),
+        PIECE_DRAW_SIZE,
+        PIECE_DRAW_SIZE
+      );
+      ctx.imageSmoothingEnabled = false;
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  /**
+   * El poder de la huella: un destello bajo las patas cuando es buen momento de tocar para la siguiente pieza (según la
+   * hora a la que llega de verdad, no donde se ve).
+   */
+  private drawTapCue(state: RunnerState): void {
+    const next = state.obstacles.find((o) => !o.hit && !o.cleared && o.plan > CONTACT_X - 4);
+    if (!next || state.dog.y > 0) {
+      return;
+    }
+    const toContact = (next.plan - CONTACT_X) / Math.max(state.speed, 1);
+    if (toContact < 0.1 || toContact > 0.3) {
+      return;
+    }
+    const { ctx } = this;
+    const strength = 1 - Math.abs(toContact - 0.2) / 0.1;
+    ctx.fillStyle = `rgba(255, 255, 255, ${(0.35 + 0.5 * Math.max(0, strength)).toFixed(2)})`;
+    const x = Math.round(state.dog.x);
+    ctx.fillRect(x - 12, FEET_Y + 2, 24, 1);
+    ctx.fillRect(x - 8, FEET_Y + 4, 16, 1);
+    ctx.fillRect(x - 4, FEET_Y + 6, 8, 1);
+  }
+
+  /** El escudo: una burbuja azul y translúcida alrededor del perrito mientras no se ha gastado. */
+  private drawShield(state: RunnerState): void {
+    const { ctx } = this;
+    const cx = state.dog.x;
+    const cy = FEET_Y - state.dog.y - 18;
+    const wobble = Math.sin(state.time * 6) * 0.6;
+    ctx.fillStyle = 'rgba(90, 160, 255, 0.16)';
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, 31 + wobble, 25, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(150, 205, 255, 0.85)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, 31 + wobble, 25, 0, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+    ctx.fillRect(Math.round(cx - 20), Math.round(cy - 14), 3, 2);
+    ctx.fillRect(Math.round(cx - 17), Math.round(cy - 17), 2, 2);
   }
 
   /** Rayitas que cruzan el aire cuando el suelo va rápido: se nota la velocidad sin leer ningún número. */
@@ -163,99 +280,112 @@ export class RunnerRenderer {
     });
   }
 
-  // ------------------------------------------------------------------ fondo
-
-  private drawBackground(state: RunnerState): void {
-    const { ctx } = this;
-    const sky = this.sprites.get('scene-sky');
-    if (sky) {
-      // La tira del cielo es de 4 px de ancho: se estira (todas sus columnas son iguales)
-      ctx.drawImage(sky.image, 0, 0, sky.frameW, sky.frameH, 0, 0, this.width, GROUND_Y + 6);
-    }
-
-    // Las nubes avanzan lento y las colinas algo más: el paralaje da sensación de profundidad
-    const clouds: [string, number, number][] = [['scene-cloud-0', 20, 0.06], ['scene-cloud-1', 52, 0.1]];
-    for (const [name, y, speed] of clouds) {
-      const cloud = this.sprites.get(name);
-      if (cloud) {
-        const span = this.width + cloud.frameW * 2;
-        const x = ((((state.distance * speed + (name === 'scene-cloud-1' ? 120 : 0)) % span) + span) % span);
-        ctx.drawImage(cloud.image, Math.round(this.width - x), y);
-      }
-    }
-
-    // Un horizonte de piezas de ajedrez gigantes, muy lejos (lo que más tarda en pasar)
-    const skyline = this.sprites.get('scene-skyline');
-    if (skyline) {
-      const offset = (state.distance * 0.1) % skyline.frameW;
-      for (let x = -offset; x < this.width; x += skyline.frameW) {
-        ctx.drawImage(skyline.image, Math.round(x), GROUND_Y - skyline.frameH + 14);
-      }
-    }
-
-    const hills = this.sprites.get('scene-hills');
-    if (hills) {
-      const offset = (state.distance * 0.25) % hills.frameW;
-      for (let x = -offset; x < this.width; x += hills.frameW) {
-        ctx.drawImage(hills.image, Math.round(x), GROUND_Y - hills.frameH + 6);
-      }
-    }
-  }
-
-  private drawFloor(state: RunnerState): void {
-    const { ctx } = this;
-    const floor = this.sprites.get('scene-floor');
-    if (!floor) {
-      return;
-    }
-    const offset = state.distance % floor.frameW;
-    for (let x = -offset; x < this.width; x += floor.frameW) {
-      ctx.drawImage(floor.image, Math.round(x), GROUND_Y);
-    }
-    ctx.fillStyle = WOOD;
-    ctx.fillRect(0, GROUND_Y + FLOOR_TILE_H, this.width, RUNNER_HEIGHT - GROUND_Y - FLOOR_TILE_H);
-  }
-
-  // ----------------------------------------------------------------- mundos y galletas
-
-  /** El escenario cambia cada pocos niveles (tarde, noche, amanecer): se nota el avance sin leer un número. */
-  private drawWorld(state: RunnerState): void {
-    const world = worldOfLevel(state.difficulty.level);
-    const tint = WORLD_TINT[world];
-    if (!tint) {
-      return;
-    }
-    const { ctx } = this;
-    ctx.fillStyle = tint;
-    ctx.fillRect(0, 0, this.width, GROUND_Y + 6);
-    if (world === 'night') {
-      STARS.forEach(([x, y], index) => {
-        const twinkle = Math.floor(state.time * 2 + index) % 3 === 0;
-        ctx.fillStyle = twinkle ? 'rgba(255, 255, 255, 0.55)' : 'rgba(255, 255, 255, 0.95)';
-        ctx.fillRect(Math.round(x * this.width), y, 1, 1);
-      });
-    }
-  }
+  // ----------------------------------------------------------------- galletas
 
   private drawCookie(cookie: RunnerCookie, time: number): void {
-    const { ctx } = this;
     const bob = Math.round(Math.sin(time * 5 + cookie.id) * 1);
-    const left = Math.round(cookie.x);
-    const top = Math.round(FEET_Y - cookie.y - COOKIE_SIZE) + bob;
-    COOKIE_ART.forEach((row, dy) => {
-      for (let dx = 0; dx < row.length; dx++) {
-        const color = COOKIE_COLORS[row[dx]];
-        if (color) {
-          ctx.fillStyle = color;
-          ctx.fillRect(left + dx, top + dy, 1, 1);
-        }
+    drawPixelArt(
+      this.ctx,
+      COOKIE_ART,
+      COOKIE_PALETTE,
+      Math.round(cookie.x),
+      Math.round(FEET_Y - cookie.y - COOKIE_SIZE) + bob
+    );
+  }
+
+  /** La estrella: gira un poco (late) y brilla. */
+  private drawPowerStar(cookie: RunnerCookie, time: number): void {
+    const { ctx } = this;
+    const pulse = 0.5 + 0.5 * Math.sin(time * 6);
+    const cx = Math.round(cookie.x + COOKIE_SIZE / 2);
+    const cy = Math.round(FEET_Y - cookie.y - COOKIE_SIZE / 2);
+    ctx.fillStyle = `rgba(255, 220, 90, ${(0.16 + 0.14 * pulse).toFixed(2)})`;
+    ctx.beginPath();
+    ctx.arc(cx, cy, 8 + pulse * 2, 0, Math.PI * 2);
+    ctx.fill();
+    drawPixelArt(ctx, POWER_STAR_ART, POWER_STAR_PALETTE, Math.round(cookie.x), Math.round(FEET_Y - cookie.y - COOKIE_SIZE) + Math.round(Math.sin(time * 5) * 1));
+  }
+
+  /** Mientras dura la estrella: un resplandor dorado que parpadea al acabarse, chispas y una barrita de lo que queda. */
+  private drawStarAura(state: RunnerState): void {
+    const { ctx } = this;
+    const { dog } = state;
+    // Parpadea en el último segundo para avisar de que se acaba
+    if (state.starTime < 1 && Math.floor(state.time * 10) % 2 === 0) {
+      return;
+    }
+    const cx = Math.round(dog.x + 2);
+    const cy = Math.round(FEET_Y - dog.y - 14);
+    const pulse = 0.5 + 0.5 * Math.sin(state.time * 14);
+    ctx.fillStyle = `rgba(255, 210, 74, ${(0.2 + 0.15 * pulse).toFixed(2)})`;
+    ctx.beginPath();
+    ctx.arc(cx, cy, 24 + pulse * 3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(255, 245, 190, 0.35)';
+    ctx.beginPath();
+    ctx.arc(cx, cy, 16, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#fff3b0';
+    for (let i = 0; i < 4; i++) {
+      const angle = state.time * 7 + (i * Math.PI) / 2;
+      ctx.fillRect(Math.round(cx + Math.cos(angle) * 22), Math.round(cy + Math.sin(angle) * 14), 2, 2);
+    }
+    // Lo que queda de estrella
+    const left = Math.min(1, state.starTime / 4);
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+    ctx.fillRect(cx - 12, cy - 34, 24, 3);
+    ctx.fillStyle = '#ffd24a';
+    ctx.fillRect(cx - 12, cy - 34, Math.round(24 * left), 3);
+  }
+
+  private drawParticles(state: RunnerState): void {
+    const { ctx } = this;
+    this.particles = this.particles.filter((p) => {
+      const age = state.time - p.start;
+      if (age > PARTICLE_SECONDS) {
+        return false;
       }
+      const y = Math.max(0, p.y + p.vy * age - 0.5 * PARTICLE_GRAVITY * age * age);
+      // Se lleva el suelo (que pasa a la velocidad de la carrera) y se apaga al final
+      const x = p.x + p.vx * age - state.speed * age * 0.6;
+      ctx.globalAlpha = age > PARTICLE_SECONDS * 0.7 ? Math.max(0, 1 - (age - PARTICLE_SECONDS * 0.7) / (PARTICLE_SECONDS * 0.3)) : 1;
+      drawPixelArt(ctx, COOKIE_ART, COOKIE_PALETTE, Math.round(x - COOKIE_SIZE / 2), Math.round(FEET_Y - y - COOKIE_SIZE));
+      ctx.globalAlpha = 1;
+      return true;
+    });
+  }
+
+  private drawPopups(state: RunnerState): void {
+    const { ctx } = this;
+    this.popups = this.popups.filter((popup) => {
+      const age = (state.time - popup.start) / POPUP_SECONDS;
+      if (age >= 1) {
+        return false;
+      }
+      ctx.save();
+      ctx.globalAlpha = Math.min(1, 2.2 * (1 - age));
+      ctx.font = 'bold 9px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.lineJoin = 'round';
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = 'rgba(40, 20, 0, 0.85)';
+      const x = Math.round(Math.min(Math.max(popup.x, 30), this.width - 30));
+      const y = Math.round(FEET_Y - popup.y - 14 * age);
+      ctx.strokeText(popup.text, x, y);
+      ctx.fillStyle = popup.color;
+      ctx.fillText(popup.text, x, y);
+      ctx.restore();
+      return true;
     });
   }
 
   // ------------------------------------------------------------- obstáculos
 
   private drawObstacle(obstacle: RunnerObstacle): void {
+    // Lo que arrolló el perrito con la estrella ya no está
+    if (obstacle.smashed) {
+      return;
+    }
     const { ctx } = this;
     const image = this.pieces.get(pieceKey(obstacle.kind, obstacle.color));
     if (!image) {
@@ -309,7 +439,7 @@ export class RunnerRenderer {
     ctx.fillRect(Math.round(centerX - w / 2 + 2), FEET_Y + 3, Math.max(2, w - 4), 1);
   }
 
-  // ---------------------------------------------------------------- Chocolate
+  // ------------------------------------------------------------------ el perrito
 
   private dogSprite(state: RunnerState): { sprite: RunnerSprite | undefined; frame: number } {
     const { dog } = state;
@@ -321,7 +451,7 @@ export class RunnerRenderer {
     const stride = (sprite: RunnerSprite | undefined) =>
       sprite ? Math.floor(state.distance / STRIDE_PX) % sprite.frames : 0;
 
-    if (dog.stumble > RUNNER_PHYSICS.stumbleTime - 0.5) {
+    if (dog.stumble > state.mods.stumbleTime - 0.5) {
       const sprite = named('hurt');
       return { sprite, frame: animated(sprite) };
     }
@@ -362,9 +492,16 @@ export class RunnerRenderer {
       sprite.frameW,
       sprite.frameH
     );
+    // Lo que lleva puesto por los patrones dominados (solo si corre: en el tropiezo y la meta el sprite cambia de forma)
+    if (this.gear.length > 0 && (sprite === this.sprites.get('dog-run') || sprite === this.sprites.get('dog-jump'))) {
+      drawDogGear(ctx, this.gear, Math.round(dog.x - sprite.frameW / 2), Math.round(FEET_Y - dog.y - sprite.frameH), {
+        time: state.time,
+        airborne: dog.y > 0,
+      });
+    }
     ctx.globalAlpha = 1;
 
-    if (dog.stumble > RUNNER_PHYSICS.stumbleTime - 0.5) {
+    if (dog.stumble > state.mods.stumbleTime - 0.5) {
       this.drawStars(state, FEET_Y - dog.y - sprite.frameH);
     }
   }

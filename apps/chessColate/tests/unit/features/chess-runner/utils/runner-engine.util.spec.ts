@@ -31,6 +31,8 @@ import {
   stepRun,
   wallSpacing,
 } from '@features/chess-runner/utils/runner-engine.util';
+import { buildRunnerSequence, expectedRunSeconds } from '@features/chess-runner/utils/runner-sequence.util';
+import { modifiersFor } from '@features/chess-runner/config/runner-powers';
 import { ANCHO, carreraDeUno, correr, PASO, ventanasDeAcierto } from '@tests/support/chess-runner';
 
 /**
@@ -71,14 +73,14 @@ function hastaAterrizar(inicial: RunnerState) {
   return { maxima, t, state };
 }
 
-describe('física de Chocolate', () => {
-  it('un salto sube unos 47 px y dura unas seis décimas', () => {
+describe('física del perrito', () => {
+  it('un salto sube unos 62 px y dura casi ocho décimas: flotante a propósito, para dejar tiempo de acertar', () => {
     const { maxima, t } = hastaAterrizar(jump(nueva()).state);
 
-    expect(maxima).toBeGreaterThan(45);
-    expect(maxima).toBeLessThan(49);
-    expect(t).toBeGreaterThan(0.62);
-    expect(t).toBeLessThan(0.67);
+    expect(maxima).toBeGreaterThan(60);
+    expect(maxima).toBeLessThan(64);
+    expect(t).toBeGreaterThan(0.76);
+    expect(t).toBeLessThan(0.81);
   });
 
   it('en el suelo no hay vuelo: quieto, la altura y la velocidad siguen en 0', () => {
@@ -141,8 +143,8 @@ describe('física de Chocolate', () => {
       }
 
       expect(dobles).toBe(1);
-      // Se ejecuta en la cima del primero (~47 px)
-      expect(alturaDelSegundo).toBeGreaterThan(44);
+      // Se ejecuta en la cima del primero (~62 px)
+      expect(alturaDelSegundo).toBeGreaterThan(58);
       expect(state.dog.vy).toBeGreaterThan(P.doubleJumpVelocity - 20);
       expect(state.dog.doubleQueued).toBe(false);
     });
@@ -260,7 +262,7 @@ describe('colisiones', () => {
       const caja = obstacleBox(pieza(kind, CONTACT_X + 50));
       expect(caja.y0).toBe(PIECE_BEHAVIOR[kind].lift);
       expect(caja.y1).toBe(PIECE_BEHAVIOR[kind].lift + OBSTACLE_SHAPES[kind].height);
-      // Ni siquiera el alfil deja pasar por debajo a Chocolate de pie
+      // Ni siquiera el alfil deja pasar por debajo al perrito de pie
       expect(caja.y0).toBeLessThan(DOG_BOX.height);
     }
   });
@@ -276,7 +278,7 @@ describe('colisiones', () => {
 
 describe('equilibrio de cada pieza', () => {
   /** Margen mínimo (en segundos) que debe dejar el tamaño de cada pieza para que el juego sea justo. */
-  const MARGEN_MINIMO = 0.2;
+  const MARGEN_MINIMO = 0.38;
 
   it.each(PIEZAS)('el %s se supera con un salto y deja un margen razonable', (kind) => {
     const { mejor } = ventanasDeAcierto(kind);
@@ -311,7 +313,7 @@ describe('equilibrio de cada pieza', () => {
   });
 
   it('la ventana de cada pieza está dentro de lo que dura el recorrido hasta ella (se puede ver venir)', () => {
-    // El obstáculo sale a ANCHO + 10 y llega a Chocolate tras recorrer esa distancia
+    // El obstáculo sale a ANCHO + 10 y llega al perrito tras recorrer esa distancia
     const llegada = (ANCHO + 10 - CONTACT_X) / P.speed;
     for (const kind of PIEZAS) {
       const { aciertos } = ventanasDeAcierto(kind);
@@ -328,7 +330,7 @@ describe('cómo se mueve cada pieza', () => {
       speed
     );
 
-  it.each(PIEZAS)('el %s llega a Chocolate justo cuando lo haría una pieza quieta', (kind) => {
+  it.each(PIEZAS)('el %s llega al perrito justo cuando lo haría una pieza quieta', (kind) => {
     expect(pieza(kind, CONTACT_X).x).toBeCloseTo(CONTACT_X, 5);
   });
 
@@ -367,7 +369,7 @@ describe('cómo se mueve cada pieza', () => {
     expect(PIECE_BEHAVIOR.queen.lunge).toBeGreaterThan(0);
   });
 
-  it('el alfil flota: Chocolate de pie choca con él y solo se pasa en lo alto del salto', () => {
+  it('el alfil flota: el perrito de pie choca con él y solo se pasa en lo alto del salto', () => {
     const alfil = pieza('bishop', 44);
     expect(alfil.y).toBe(PIECE_BEHAVIOR.bishop.lift);
 
@@ -412,7 +414,7 @@ describe('falanges: tres piezas en fila que piden el doble salto', () => {
     it.each([1, 5, MAX_LEVEL])('en el nivel %s, el doble salto sí, con margen', (nivel) => {
       const { mejor } = ventanasDeAcierto(kind, { nivel, falange: true, doble: true, paso: 0.01 });
 
-      expect(mejor).toBeGreaterThanOrEqual(0.18);
+      expect(mejor).toBeGreaterThanOrEqual(0.26);
     });
   });
 
@@ -427,7 +429,7 @@ describe('falanges: tres piezas en fila que piden el doble salto', () => {
 });
 
 describe('tropiezo', () => {
-  it('tropezar suma, hace invulnerable a Chocolate y avisa de qué obstáculo fue', () => {
+  it('tropezar suma, hace invulnerable al perrito y avisa de qué obstáculo fue', () => {
     let state = carreraDeUno('pawn');
     let tropiezo = null;
     for (let i = 0; i < 1000 && !tropiezo; i++) {
@@ -501,21 +503,20 @@ describe('galletas', () => {
     return stepRun({ ...inicial, untilSpawn: 0 }, PASO).state;
   };
 
-  it('sobre cada pieza hay un arco de tres, a una altura que obliga a saltar bien', () => {
+  it('sobre cada pieza hay galletas, a una altura que obliga a saltar bien', () => {
     const arco = conGalletas(0.9).pickups;
 
-    expect(arco).toHaveLength(3);
+    expect(arco.length).toBeGreaterThanOrEqual(3);
     for (const galleta of arco) {
       expect(galleta.y).toBeGreaterThan(DOG_BOX.height);
     }
   });
 
-  it('con ritmo corto hay además una fila a ras de suelo, a mitad del hueco', () => {
+  it('con ritmo corto hay además una figura a ras de suelo, a mitad del hueco', () => {
     const galletas = conGalletas(0.1).pickups;
-    const suelo = galletas.filter((c) => c.y < 5);
+    const suelo = galletas.filter((c) => c.y <= DOG_BOX.height);
 
-    expect(galletas).toHaveLength(6);
-    expect(suelo).toHaveLength(3);
+    expect(suelo.length).toBeGreaterThanOrEqual(2);
     // Quedan después de la pieza
     for (const g of suelo) {
       expect(g.x).toBeGreaterThan(ANCHO + 10);
@@ -536,7 +537,8 @@ describe('galletas', () => {
   it('correr por una fila de suelo las recoge sin saltar', () => {
     let state = conGalletas(0.1);
     // Solo las del suelo: se quita la pieza para no chocar
-    state = { ...state, obstacles: [], pickups: state.pickups.filter((c) => c.y < 5), queue: [{ kind: 'pawn', color: 'w' }], untilSpawn: 99999 };
+    const delSuelo = state.pickups.filter((c) => c.y <= DOG_BOX.height);
+    state = { ...state, obstacles: [], pickups: delSuelo, queue: [{ kind: 'pawn', color: 'w' }], untilSpawn: 99999 };
     let cogidas = 0;
     for (let i = 0; i < 4000; i++) {
       const paso = stepRun(state, PASO);
@@ -544,8 +546,8 @@ describe('galletas', () => {
       cogidas += paso.events.cookies;
     }
 
-    expect(cogidas).toBe(3);
-    expect(state.cookies).toBe(3);
+    expect(cogidas).toBe(delSuelo.length);
+    expect(state.cookies).toBe(delSuelo.length);
     expect(state.pickups).toHaveLength(0);
   });
 
@@ -661,7 +663,7 @@ describe('la carrera', () => {
     expect(b1 - b0).toBeLessThan(a1 - a0);
   });
 
-  it('al superar el último obstáculo Chocolate corre hacia el tablero y la carrera termina', () => {
+  it('al superar el último obstáculo el perrito corre hacia el tablero y la carrera termina', () => {
     const r = correr(createRun([{ kind: 'pawn', color: 'w' }], ANCHO), {
       toques: [FIRST_GAP / P.speed + 0.8],
     });
@@ -702,7 +704,7 @@ describe('la carrera', () => {
    * distancia fija): así prueba también que el hueco entre piezas deja tiempo de aterrizar y volver a
    * saltar, a cualquier velocidad. Para una falange da dos toques seguidos.
    */
-  function carreraDelBot(piezas: RunnerPiece[], nivel: number, antelacion = 0.2, antelacionFalange = 0.17) {
+  function carreraDelBot(piezas: RunnerPiece[], nivel: number, antelacion = 0.28, antelacionFalange = 0.2) {
     let state = createRun(piezas, ANCHO, difficultyForLevel(nivel));
     const hecho = new Set<number>();
     let t = 0;
@@ -760,6 +762,85 @@ describe('la carrera', () => {
     expect(state.cleared).toBe(piezas.length);
   });
 
+  describe('las carreras que arma el ejercicio, de punta a punta', () => {
+    const INICIAL = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+    const MEDIO = 'r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3';
+    const FINAL = '4k3/8/8/8/8/8/8/R3K3 w - - 0 1';
+
+    it.each([1, 2, 4, 6, 8, MAX_LEVEL])('en el nivel %s un jugador atento las pasa todas sin chocar', (nivel) => {
+      for (const fen of [INICIAL, MEDIO, FINAL]) {
+        const piezas = buildRunnerSequence(fen, `ej-${nivel}`, nivel);
+        const state = carreraDelBot(piezas, nivel);
+
+        expect(state.phase).toBe('done');
+        expect(state.stumbles).toBe(0);
+        expect(state.cleared).toBe(piezas.length);
+      }
+    });
+
+    it.each([1, 5, MAX_LEVEL])('en el nivel %s dura entre veinte y treinta y cinco segundos', (nivel) => {
+      for (const fen of [INICIAL, MEDIO, FINAL]) {
+        const piezas = buildRunnerSequence(fen, 'ej-1', nivel);
+        const state = carreraDelBot(piezas, nivel);
+
+        expect(state.time).toBeGreaterThan(20);
+        expect(state.time).toBeLessThan(35);
+        // Y lo previsto se parece a lo que dura de verdad
+        expect(Math.abs(state.time - expectedRunSeconds(piezas, difficultyForLevel(nivel)))).toBeLessThan(5);
+      }
+    });
+
+    it('un respiro deja una cinta de galletas que se coge corriendo y saltando', () => {
+      const piezas: RunnerPiece[] = [
+        { kind: 'pawn', color: 'w', beat: 0.9, rest: 2.4 },
+        { kind: 'pawn', color: 'w', beat: 0.9 },
+      ];
+      let state = createRun(piezas, ANCHO);
+      let cintas = 0;
+      const hecho = new Set<number>();
+      for (let i = 0; i < 20000 && state.phase !== 'done'; i++) {
+        const delante = state.obstacles.find((o) => !o.hit && !o.cleared && !hecho.has(o.id));
+        if (delante && (delante.plan - CONTACT_X) / state.speed <= 0.28) {
+          hecho.add(delante.id);
+          state = jump(state).state;
+        }
+        const paso = stepRun(state, PASO);
+        state = paso.state;
+        cintas += paso.events.cookies;
+      }
+
+      // Tres del arco de cada pieza (6) más la cinta del respiro (varias): la cinta aporta bastantes más
+      expect(state.stumbles).toBe(0);
+      expect(cintas).toBeGreaterThan(10);
+    });
+
+    it('el respiro alarga el hueco con la pieza siguiente justo lo que dura', () => {
+      const sin = createRun(
+        [{ kind: 'pawn', color: 'w', beat: 0.5 }, { kind: 'pawn', color: 'w' }],
+        ANCHO
+      );
+      const con = createRun(
+        [{ kind: 'pawn', color: 'w', beat: 0.5, rest: 2.4 }, { kind: 'pawn', color: 'w' }],
+        ANCHO
+      );
+      const segundoEn = (inicial: RunnerState) => {
+        let state = { ...inicial, untilSpawn: 0 };
+        const vistos = new Set<number>();
+        let t = 0;
+        // Se cuentan por número: el primero ya salió de pantalla cuando sale el segundo
+        while (vistos.size < 2 && t < 20) {
+          state = { ...stepRun(state, PASO).state, dog: { ...state.dog, stumble: 9 } };
+          state.obstacles.forEach((o) => vistos.add(o.id));
+          t += PASO;
+        }
+        return t;
+      };
+
+      expect(segundoEn(con) - segundoEn(sin)).toBeGreaterThan(2.2);
+      expect(segundoEn(con) - segundoEn(sin)).toBeLessThan(2.6);
+    });
+  });
+
   describe('progreso de la carrera', () => {
     it('el suelo acelera a medida que se superan piezas', () => {
       const state = carreraDelBot(secuencia, 3);
@@ -794,7 +875,7 @@ describe('la carrera', () => {
       // Se salta todo menos la quinta pieza
       for (let i = 0; i < 20000 && state.phase !== 'done'; i++) {
         const delante = state.obstacles.find((o) => !o.hit && !o.cleared && !hecho.has(o.id));
-        if (delante && (delante.plan - CONTACT_X) / state.speed <= 0.2) {
+        if (delante && (delante.plan - CONTACT_X) / state.speed <= 0.28) {
           hecho.add(delante.id);
           if (delante.kind !== 'queen') {
             state = jump(state).state;
@@ -831,7 +912,8 @@ describe('la carrera', () => {
         const b = difficultyForLevel(nivel + 1);
         expect(b.startSpeed).toBeGreaterThan(a.startSpeed);
         expect(b.endSpeed).toBeGreaterThan(a.endSpeed);
-        expect(b.minGapTime).toBeLessThan(a.minGapTime);
+        // El hueco menor se apoya en un suelo (el vuelo de un salto y un respiro): a partir de ahí ya no baja más
+        expect(b.minGapTime).toBeLessThanOrEqual(a.minGapTime);
         expect(b.maxGapTime).toBeLessThan(a.maxGapTime);
       }
     });
@@ -859,6 +941,147 @@ describe('la carrera', () => {
     });
   });
 });
+
+describe('los poderes dentro de la carrera', () => {
+  const conPoderes = (poderes: Parameters<typeof modifiersFor>[0], piezas: RunnerPiece[] = [{ kind: 'pawn', color: 'w' }]) => ({
+    ...createRun(piezas, ANCHO, difficultyForLevel(1), modifiersFor(poderes)),
+    untilSpawn: 0,
+  });
+
+  it('sin poderes no hay escudo ni ayudas', () => {
+    const state = createRun([], ANCHO);
+
+    expect(state.shields).toBe(0);
+    expect(state.mods.tapCue).toBe(false);
+  });
+
+  describe('el escudo', () => {
+    it('empieza cada carrera con su escudo', () => {
+      expect(conPoderes(['shield']).shields).toBe(1);
+    });
+
+    it('aguanta el primer choque: ni tropiezo, ni corazón, ni racha perdida; avisa de que se rompió', () => {
+      let state = conPoderes(['shield']);
+      let aguantado: RunnerObstacle | null = null;
+      let tropiezo = 0;
+      for (let i = 0; i < 1500; i++) {
+        const paso = stepRun(state, PASO);
+        state = paso.state;
+        aguantado = aguantado ?? paso.events.shielded;
+        tropiezo += paso.events.stumbled ? 1 : 0;
+      }
+
+      expect(aguantado).toMatchObject({ kind: 'pawn', hit: true });
+      expect(tropiezo).toBe(0);
+      expect(state.stumbles).toBe(0);
+      expect(state.shields).toBe(0);
+    });
+
+    it('el segundo choque ya no lo aguanta', () => {
+      const dos: RunnerPiece[] = [{ kind: 'pawn', color: 'w', beat: 0 }, { kind: 'pawn', color: 'w' }];
+      const r = correr(conPoderes(['shield'], dos));
+
+      expect(r.tropiezos).toBe(1);
+      expect(r.state.shields).toBe(0);
+    });
+
+    it('tras el golpe deja un respiro corto de invulnerabilidad', () => {
+      let state = conPoderes(['shield']);
+      for (let i = 0; i < 1500 && state.shields > 0; i++) {
+        state = stepRun(state, PASO).state;
+      }
+
+      expect(state.dog.stumble).toBeGreaterThan(0);
+      expect(state.dog.stumble).toBeLessThanOrEqual(0.6);
+    });
+
+    it('una carrera sin choques conserva el escudo', () => {
+      const r = carreraDelBotGeneral([{ kind: 'pawn', color: 'w' }], ['shield']);
+
+      expect(r.shields).toBe(1);
+      expect(r.stumbles).toBe(0);
+    });
+  });
+
+  it('esquivar: tras un choque se es invulnerable el doble de tiempo', () => {
+    const tras = (poderes: Parameters<typeof modifiersFor>[0]) => {
+      let state = conPoderes(poderes);
+      for (let i = 0; i < 1500 && state.stumbles === 0; i++) {
+        state = stepRun(state, PASO).state;
+      }
+      return state.dog.stumble;
+    };
+
+    expect(tras(['dodge'])).toBeGreaterThan(tras([]) * 1.9);
+  });
+
+  it('el doble salto con el muelle llega más alto', () => {
+    const altura = (poderes: Parameters<typeof modifiersFor>[0]) => {
+      const inicial = { ...createRun([{ kind: 'pawn', color: 'w' }], ANCHO, difficultyForLevel(1), modifiersFor(poderes)), untilSpawn: 99999 };
+      return hastaAterrizar(jump(jump(inicial).state).state).maxima;
+    };
+
+    expect(altura(['spring'])).toBeGreaterThan(altura([]) + 4);
+  });
+
+  it('la capa guarda más tiempo un toque dado antes de aterrizar', () => {
+    const inicial = { ...createRun([{ kind: 'pawn', color: 'w' }], ANCHO, difficultyForLevel(1), modifiersFor(['cloak'])), untilSpawn: 99999 };
+    const enElAire = avanzar(jump(inicial).state, 0.5);
+    const doble = jump(avanzar(jump(enElAire).state, 0.1)).state;
+
+    expect(doble.jumpBuffer).toBe(modifiersFor(['cloak']).inputBuffer);
+    expect(modifiersFor(['cloak']).inputBuffer).toBeGreaterThan(RUNNER_PHYSICS_BUFFER);
+  });
+
+  it('el olfato coge las galletas desde más lejos', () => {
+    const cogidas = (poderes: Parameters<typeof modifiersFor>[0]) => {
+      // Una galleta que pasa justo por encima de la cabeza (3 px por encima de lo que alcanza normalmente)
+      let state: RunnerState = { ...conPoderes(poderes), untilSpawn: 99999, queue: [{ kind: 'pawn', color: 'w' }] };
+      state = { ...state, pickups: [{ id: 1, x: CONTACT_X + 10, y: 29 }] };
+      let total = 0;
+      for (let i = 0; i < 400; i++) {
+        const paso = stepRun(state, PASO);
+        state = paso.state;
+        total += paso.events.cookies;
+      }
+      return total;
+    };
+
+    expect(cogidas([])).toBe(0);
+    expect(cogidas(['nose'])).toBe(1);
+  });
+
+  it('con poderes, un jugador atento sigue pasando toda carrera: las ayudas no estorban', () => {
+    const todos = ['nose', 'spring', 'shield', 'trail', 'ghost', 'dodge', 'heart', 'net', 'cloak', 'crown'] as const;
+    const piezas = buildRunnerSequence('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1', 'ej-1', 5);
+    const r = carreraDelBotGeneral(piezas, [...todos], 5);
+
+    expect(r.stumbles).toBe(0);
+    expect(r.cleared).toBe(piezas.length);
+  });
+
+  /** Un bot atento, con los poderes dados. */
+  function carreraDelBotGeneral(piezas: RunnerPiece[], poderes: Parameters<typeof modifiersFor>[0], nivel = 1) {
+    let state = createRun(piezas, ANCHO, difficultyForLevel(nivel), modifiersFor(poderes));
+    const hecho = new Set<number>();
+    let t = 0;
+    while (state.phase !== 'done' && t < 90) {
+      const delante = state.obstacles.find((o) => !o.hit && !o.cleared && !hecho.has(o.id));
+      if (delante && (delante.plan - CONTACT_X) / state.speed <= (delante.count > 1 ? 0.2 : 0.28)) {
+        hecho.add(delante.id);
+        state = jump(state).state;
+        if (delante.count > 1) {
+          state = jump(state).state;
+        }
+      }
+      state = stepRun(state, PASO).state;
+      t += PASO;
+    }
+    return state;
+  }
+});
+
+const RUNNER_PHYSICS_BUFFER = P.inputBuffer;
 
 describe('runnerStats', () => {
   it('cuenta los obstáculos, los tropiezos, la duración, los metros y las galletas', () => {

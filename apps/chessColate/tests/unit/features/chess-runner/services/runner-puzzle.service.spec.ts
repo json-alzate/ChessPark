@@ -135,4 +135,54 @@ describe('RunnerPuzzleService', () => {
 
     expect(puzzle).toMatchObject({ uid: 'x', rating: 1333 });
   });
+
+  describe('con un patrón fijo (la campaña)', () => {
+    it('pide siempre ese tema, con el ELO que le dicen', async () => {
+      provider.getPuzzles.mockResolvedValue([ejercicio('p1')]);
+
+      await service.next(1100, new Set(), Math.random, 'fork');
+
+      expect(provider.getPuzzles).toHaveBeenCalledTimes(1);
+      expect(provider.getPuzzles.mock.calls[0][0]).toMatchObject({ elo: 1100, theme: 'fork', count: 20 });
+    });
+
+    it('acepta un tema que no está en la lista de los tácticos al azar (el currículo manda)', async () => {
+      provider.getPuzzles.mockResolvedValue([ejercicio('p1')]);
+
+      await service.next(1100, new Set(), Math.random, 'short');
+
+      expect(provider.getPuzzles.mock.calls[0][0].theme).toBe('short');
+    });
+
+    it('si no hay ejercicios nuevos de ese tema, prueba el mismo tema algo más fácil y algo más difícil, nunca otro tema', async () => {
+      provider.getPuzzles
+        .mockResolvedValueOnce([ejercicio('visto')])
+        .mockResolvedValueOnce([ejercicio('visto')])
+        .mockResolvedValueOnce([ejercicio('nuevo')]);
+
+      const puzzle = await service.next(1300, new Set(['visto']), Math.random, 'pin');
+
+      expect(puzzle?.uid).toBe('nuevo');
+      const llamadas = provider.getPuzzles.mock.calls.map(([o]) => [o.theme, o.elo]);
+      expect(llamadas).toEqual([['pin', 1300], ['pin', 1150], ['pin', 1450]]);
+    });
+
+    it('si el catálogo falla, reintenta el mismo tema; y si sigue fallando devuelve null', async () => {
+      provider.getPuzzles.mockRejectedValue(new Error('sin red'));
+
+      const puzzle = await service.next(1300, new Set(), Math.random, 'fork');
+
+      expect(puzzle).toBeNull();
+      expect(provider.getPuzzles).toHaveBeenCalledTimes(3);
+      expect(provider.getPuzzles.mock.calls.every(([o]) => o.theme === 'fork')).toBe(true);
+    });
+
+    it('no repite los ya jugados', async () => {
+      provider.getPuzzles.mockResolvedValue([ejercicio('a'), ejercicio('b')]);
+
+      const puzzle = await service.next(1300, new Set(['a']), () => 0, 'fork');
+
+      expect(puzzle?.uid).toBe('b');
+    });
+  });
 });

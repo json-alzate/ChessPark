@@ -5,12 +5,11 @@
  *
  * Coordenadas en píxeles lógicos. En horizontal, de izquierda a derecha; en vertical, `y` es la altura
  * sobre el suelo (crece hacia arriba). Los obstáculos se mueven hacia la izquierda: es el suelo el que
- * pasa, Chocolate corre en el sitio.
+ * pasa, el perrito corre en el sitio.
  */
 
+import { BASE_MODIFIERS, RunnerModifiers } from '../config/runner-powers';
 import {
-  COOKIE_ARC_Y,
-  COOKIE_HIGH_Y,
   COOKIE_SIZE,
   difficultyForLevel,
   DOG_BOX,
@@ -19,10 +18,14 @@ import {
   LUNGE_START,
   LUNGE_TIME,
   OBSTACLE_SHAPES,
+  PERFECT_COOKIES,
+  PERFECT_RATIO,
   PIECE_BEHAVIOR,
   PX_PER_METER,
   RunnerDifficulty,
   RUNNER_PHYSICS as P,
+  SMASH_COOKIES,
+  STAR_SECONDS,
   WALL_COUNT,
   WALL_MIN_SPACING,
 } from '../config/runner.config';
@@ -37,6 +40,7 @@ import {
   RunnerState,
   RunnerStats,
 } from '../models/runner.model';
+import { cookiesFor } from './runner-cookies.util';
 
 /** Cuánto más allá del borde derecho sale un obstáculo nuevo. */
 const SPAWN_MARGIN = 10;
@@ -50,13 +54,19 @@ const DOUBLE_AT_VY = 30;
 const WALL_MARGIN = 6;
 /** Tras una falange el doble salto aterriza más lejos: se deja este tiempo extra (s) antes de la siguiente pieza. */
 const WALL_RECOVERY = 0.35;
-/** Separación entre las galletas de una fila y alrededor de una pieza. */
-const COOKIE_SPACING = 18;
-/** Lo que se agranda la caja de Chocolate para coger galletas: es generoso. */
-const PICKUP_REACH = { x: 4, y: 2 };
+/** Lo que dura la invulnerabilidad cuando el escudo aguanta un choque. */
+const SHIELD_GRACE = 0.6;
 
-/** Dónde toca el frente de Chocolate: una pieza llega a él cuando su borde izquierdo pasa por aquí. */
+/** Dónde toca el frente del perrito: una pieza llega a él cuando su borde izquierdo pasa por aquí. */
 export const CONTACT_X = P.dogX + DOG_BOX.dx + DOG_BOX.width;
+
+/** La altura que tiene que alcanzar el perrito al cruzar una pieza para que el salto sea perfecto. */
+export function perfectHeight(obstacle: Pick<RunnerObstacle, 'count'>, mods: Pick<RunnerModifiers, 'doubleJumpVelocity'>): number {
+  const single = P.jumpVelocity ** 2 / (2 * P.gravity);
+  // Las falanges piden el doble salto: lo más alto es la cima del segundo
+  const peak = obstacle.count > 1 ? single + mods.doubleJumpVelocity ** 2 / (2 * P.gravity) : single;
+  return peak * PERFECT_RATIO;
+}
 
 /** Hueco, en segundos de carrera, que sigue a una pieza: el ritmo de cada una dentro del nivel. */
 export function gapTimeAfter(difficulty: RunnerDifficulty, beat: number | undefined): number {
@@ -91,13 +101,16 @@ export function wallSpacing(kind: RunnerPieceKind, speed: number): number {
 export function createRun(
   sequence: RunnerPiece[],
   width: number,
-  difficulty: RunnerDifficulty = difficultyForLevel(1)
+  difficulty: RunnerDifficulty = difficultyForLevel(1),
+  mods: RunnerModifiers = BASE_MODIFIERS
 ): RunnerState {
   return {
     phase: 'running',
     time: 0,
     distance: 0,
     difficulty,
+    mods,
+    shields: mods.shields,
     speed: difficulty.startSpeed,
     width,
     dog: {
@@ -120,6 +133,11 @@ export function createRun(
     combo: 0,
     bestCombo: 0,
     cookies: 0,
+    starTime: 0,
+    starSpawned: false,
+    starsTaken: 0,
+    perfects: 0,
+    smashed: 0,
   };
 }
 
@@ -131,6 +149,11 @@ export function noEvents(): RunnerEvents {
     cookies: 0,
     cleared: [],
     stumbled: null,
+    shielded: null,
+    perfect: [],
+    starTaken: false,
+    smashed: [],
+    starEnded: false,
     finishing: false,
     done: false,
   };
@@ -138,7 +161,7 @@ export function noEvents(): RunnerEvents {
 
 const onGround = (dog: RunnerDog) => dog.y <= 0 && dog.vy <= 0;
 
-/** Lo que de Chocolate puede chocar ahora mismo. */
+/** Lo que del perrito puede chocar ahora mismo. */
 export function dogBox(dog: RunnerDog): RunnerBox {
   const x0 = dog.x + DOG_BOX.dx;
   return {
@@ -171,7 +194,7 @@ export function boxesOverlap(a: RunnerBox, b: RunnerBox): boolean {
 /**
  * Coloca una pieza según su `plan` (donde estaría si fuera quieta) y su forma de moverse: la torre se
  * acerca más rápido, el caballo y la dama avanzan de un salto en L poco antes de llegar y el alfil flota.
- * Todas coinciden con el plan justo cuando llegan a Chocolate, así que la hora de saltar no cambia.
+ * Todas coinciden con el plan justo cuando llegan al perrito, así que la hora de saltar no cambia.
  */
 export function placeObstacle(obstacle: RunnerObstacle, speed: number): RunnerObstacle {
   const behavior = PIECE_BEHAVIOR[obstacle.kind];
@@ -188,7 +211,7 @@ export function placeObstacle(obstacle: RunnerObstacle, speed: number): RunnerOb
 }
 
 /**
- * Un toque del jugador: Chocolate salta. En el aire, el segundo toque da el doble salto (si todavía sube,
+ * Un toque del jugador: el perrito salta. En el aire, el segundo toque da el doble salto (si todavía sube,
  * espera a la cima, así que dos toques seguidos siempre salen bien). Un tercero, o uno dado cuando ya no
  * queda salto, se guarda si falta un instante para aterrizar y se hace al tocar el suelo.
  */
@@ -211,48 +234,14 @@ export function jump(state: RunnerState): {
   if (dog.jumps === 1 && !dog.doubleQueued) {
     if (dog.vy <= DOUBLE_AT_VY) {
       return {
-        state: { ...state, dog: { ...dog, vy: P.doubleJumpVelocity, jumps: 2 } },
+        state: { ...state, dog: { ...dog, vy: state.mods.doubleJumpVelocity, jumps: 2 } },
         jumped: true,
         double: true,
       };
     }
     return { state: { ...state, dog: { ...dog, doubleQueued: true } }, jumped: false, double: false };
   }
-  return { state: { ...state, jumpBuffer: P.inputBuffer }, jumped: false, double: false };
-}
-
-/** Las galletas que acompañan a un obstáculo recién salido: un arco encima y, a veces, una fila en el suelo. */
-function cookiesFor(
-  obstacle: RunnerObstacle,
-  gapPx: number,
-  firstId: number
-): { cookies: RunnerCookie[]; nextId: number } {
-  const cookies: RunnerCookie[] = [];
-  let nextId = firstId;
-  const add = (x: number, y: number) => cookies.push({ id: nextId++, x, y });
-  const center = obstacle.plan + obstacle.width / 2 - COOKIE_SIZE / 2;
-  const beat = obstacle.beat ?? 0.5;
-
-  if (obstacle.count > 1) {
-    // Sobre una falange: arriba del todo, solo con el doble salto
-    for (let i = -1; i <= 1; i++) {
-      add(center + i * Math.max(COOKIE_SPACING, obstacle.width / 3), COOKIE_HIGH_Y);
-    }
-  } else {
-    // Sobre la pieza: se cogen saltando con buen momento
-    const y = Math.max(COOKIE_ARC_Y, obstacle.y + obstacle.height + 14);
-    for (let i = -1; i <= 1; i++) {
-      add(center + i * COOKIE_SPACING, y);
-    }
-  }
-  if (beat <= 0.5 && gapPx > 0) {
-    // Una fila a ras de suelo, a mitad del hueco: se coge corriendo, sin saltar
-    const middle = obstacle.plan + obstacle.width + gapPx / 2 - COOKIE_SIZE / 2;
-    for (let i = -1; i <= 1; i++) {
-      add(middle + i * COOKIE_SPACING, 1);
-    }
-  }
-  return { cookies, nextId };
+  return { state: { ...state, jumpBuffer: state.mods.inputBuffer }, jumped: false, double: false };
 }
 
 /** Avanza `dt` segundos. */
@@ -276,7 +265,7 @@ export function stepRun(
     dog.y += dog.vy * dt;
     if (dog.doubleQueued && dog.vy <= DOUBLE_AT_VY) {
       // El segundo toque se dio subiendo: en la cima, el segundo impulso
-      dog.vy = P.doubleJumpVelocity;
+      dog.vy = state.mods.doubleJumpVelocity;
       dog.jumps = 2;
       dog.doubleQueued = false;
       events.jumped = true;
@@ -332,15 +321,20 @@ export function stepRun(
       state.speed
     );
     queue = queue.slice(1);
+    const restPx = queue.length > 0 ? (piece.rest ?? 0) * state.speed : 0;
     const gapPx =
       queue.length > 0
         ? gapTimeAfter(state.difficulty, piece.beat) * state.speed +
-          (count > 1 ? width + WALL_RECOVERY * state.speed : 0)
+          (count > 1 ? width + WALL_RECOVERY * state.speed : 0) +
+          restPx
         : 0;
     untilSpawn = gapPx;
-    const extra = cookiesFor(born, gapPx, nextId);
+    // La estrella sale en el primer respiro de la carrera
+    const star = restPx > 0 && !state.starSpawned;
+    const extra = cookiesFor(born, gapPx, nextId, restPx, gapPx / state.speed, star);
     nextId = extra.nextId;
     pickups = [...pickups, ...extra.cookies];
+    state.starSpawned = state.starSpawned || star;
     obstacles.push(born);
   }
 
@@ -349,40 +343,85 @@ export function stepRun(
   let cleared = state.cleared;
   let combo = state.combo;
   let bestCombo = state.bestCombo;
+  let shields = state.shields;
+  let perfects = state.perfects;
+  let smashed = state.smashed;
+  let bonus = 0;
+  const starting = state.starTime > 0;
   const box = dogBox(dog);
   obstacles = obstacles.map((o) => {
     if (o.hit || o.cleared) {
       return o;
     }
+    if (starting && boxesOverlap(box, obstacleBox(o))) {
+      // Con la estrella el perrito arrolla lo que toca: cuenta como pieza superada y suelta galletas
+      cleared++;
+      combo++;
+      smashed++;
+      bonus += SMASH_COOKIES;
+      bestCombo = Math.max(bestCombo, combo);
+      const done = { ...o, cleared: true, smashed: true };
+      events.cleared.push(done);
+      events.smashed.push(done);
+      return done;
+    }
     if (dog.stumble <= 0 && boxesOverlap(box, obstacleBox(o))) {
+      if (shields > 0) {
+        // El escudo aguanta el golpe: ni corazón ni racha perdidos, y un respiro para seguir
+        shields--;
+        dog.stumble = SHIELD_GRACE;
+        events.shielded = { ...o, hit: true };
+        return { ...o, hit: true };
+      }
       stumbles++;
-      dog.stumble = P.stumbleTime;
+      dog.stumble = state.mods.stumbleTime;
       combo = 0;
       events.stumbled = { ...o, hit: true };
       return { ...o, hit: true };
     }
-    if (o.x + o.width < box.x0) {
+    let current = o;
+    // Al cruzar el centro de la pieza con el del perrito se ve si va en lo más alto del salto
+    if (!o.judged && o.x + o.width / 2 <= dog.x) {
+      const perfect = dog.y >= perfectHeight(o, state.mods);
+      current = { ...o, judged: true, perfect };
+      if (perfect) {
+        perfects++;
+        bonus += PERFECT_COOKIES;
+        events.perfect.push(current);
+      }
+    }
+    if (current.x + current.width < box.x0) {
       cleared++;
       combo++;
       bestCombo = Math.max(bestCombo, combo);
-      const done = { ...o, cleared: true };
+      const done = { ...current, cleared: true };
       events.cleared.push(done);
       return done;
     }
-    return o;
+    return current;
   });
   obstacles = obstacles.filter((o) => o.x + o.width > DESPAWN_X);
 
-  // --- Galletas ---------------------------------------------------------------------------------
+  // --- Galletas y la estrella ---------------------------------------------------------------------
   const reach: RunnerBox = {
-    x0: box.x0 - PICKUP_REACH.x,
-    x1: box.x1 + PICKUP_REACH.x,
-    y0: box.y0 - PICKUP_REACH.y,
-    y1: box.y1 + PICKUP_REACH.y,
+    x0: box.x0 - state.mods.pickupReachX,
+    x1: box.x1 + state.mods.pickupReachX,
+    y0: box.y0 - state.mods.pickupReachY,
+    y1: box.y1 + state.mods.pickupReachY,
   };
   const taken = pickups.filter((c) => boxesOverlap(reach, cookieBox(c)));
   pickups = pickups.filter((c) => !taken.includes(c) && c.x + COOKIE_SIZE > DESPAWN_X);
-  events.cookies = taken.length;
+  const gotStar = taken.some((c) => c.kind === 'star');
+  const cookiesTaken = taken.filter((c) => c.kind !== 'star').length + bonus;
+  events.cookies = cookiesTaken;
+  events.starTaken = gotStar;
+  let starTime = Math.max(0, state.starTime - dt);
+  if (starTime === 0 && state.starTime > 0) {
+    events.starEnded = true;
+  }
+  if (gotStar) {
+    starTime = STAR_SECONDS;
+  }
 
   // --- Fin del recorrido ------------------------------------------------------------------------
   let phase = state.phase;
@@ -409,10 +448,15 @@ export function stepRun(
     untilSpawn,
     nextId,
     stumbles,
+    shields,
     cleared,
     combo,
     bestCombo,
-    cookies: state.cookies + taken.length,
+    perfects,
+    smashed,
+    starTime,
+    starsTaken: state.starsTaken + (gotStar ? 1 : 0),
+    cookies: state.cookies + cookiesTaken,
   };
 
   // --- Un toque guardado se salta al aterrizar --------------------------------------------------
@@ -447,5 +491,7 @@ export function runnerStats(state: RunnerState): RunnerStats {
     bestCombo: state.bestCombo,
     meters: metersOf(state),
     cookies: state.cookies,
+    perfects: state.perfects,
+    smashed: state.smashed,
   };
 }

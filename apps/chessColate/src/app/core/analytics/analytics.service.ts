@@ -25,6 +25,7 @@ export type AnalyticsEventName =
   | 'chess_runner_started'
   | 'chess_runner_finished'
   | 'chess_runner_game_over'
+  | 'chess_runner_skin'
   | 'coordinates_started'
   | 'coordinates_completed'
   | 'knight_tour_started'

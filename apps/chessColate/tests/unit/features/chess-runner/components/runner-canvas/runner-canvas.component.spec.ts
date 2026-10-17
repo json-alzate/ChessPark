@@ -29,7 +29,7 @@ type Interno = { state: RunnerState };
 /** Contexto 2D falso: acepta cualquier llamada de dibujo y se puede inspeccionar. */
 function contextoFalso() {
   return new Proxy(
-    { setTransform: jest.fn(), drawImage: jest.fn(), fillRect: jest.fn(), clearRect: jest.fn(), strokeRect: jest.fn() } as Record<string, unknown>,
+    { setTransform: jest.fn(), drawImage: jest.fn(), fillRect: jest.fn(), clearRect: jest.fn(), strokeRect: jest.fn(), fillText: jest.fn(), strokeText: jest.fn() } as Record<string, unknown>,
     {
       get: (target, prop: string) => (prop in target ? target[prop] : jest.fn()),
       set: (target, prop: string, value) => {
@@ -44,7 +44,7 @@ function contextoFalso() {
 const IMAGEN_POLVO = { efecto: 'polvo' } as unknown as CanvasImageSource;
 const IMAGEN_CHISPA = { efecto: 'chispa' } as unknown as CanvasImageSource;
 
-/** Los sprites de Chocolate, el escenario y los efectos, con medidas razonables. */
+/** Los sprites del perrito, el escenario y los efectos, con medidas razonables. */
 function spritesFalsos(): Map<string, RunnerSprite> {
   const sprite = (frameW: number, frameH: number, frames = 1): RunnerSprite => ({
     image: {} as CanvasImageSource,
@@ -146,7 +146,7 @@ describe('RunnerCanvasComponent', () => {
     await TestBed.configureTestingModule({
       imports: [RunnerCanvasComponent],
       providers: [
-        provideTranslocoTesting({ CHESS_RUNNER: { canvasLabel: 'Chocolate corre y salta' } }),
+        provideTranslocoTesting({ CHESS_RUNNER: { canvasLabel: 'El perrito corre y salta' } }),
         { provide: RunnerSpritesService, useValue: sprites },
         { provide: RunnerPiecesService, useValue: piezas },
       ],
@@ -164,7 +164,7 @@ describe('RunnerCanvasComponent', () => {
       await iniciar([PEON, { kind: 'rook', color: 'b' }]);
 
       expect(estado().total).toBe(2);
-      expect(progresos[0]).toEqual({ cleared: 0, total: 2, stumbles: 0, combo: 0, meters: 0, cookies: 0 });
+      expect(progresos[0]).toEqual({ cleared: 0, total: 2, stumbles: 0, combo: 0, meters: 0, cookies: 0, perfects: 0, bestCombo: 0, stars: 0 });
     });
 
     it('dibuja en el lienzo', async () => {
@@ -228,7 +228,7 @@ describe('RunnerCanvasComponent', () => {
     it('el lienzo tiene un nombre accesible traducido, no la clave', async () => {
       await iniciar();
 
-      expect(canvas().getAttribute('aria-label')).toBe('Chocolate corre y salta');
+      expect(canvas().getAttribute('aria-label')).toBe('El perrito corre y salta');
     });
 
     it('si el navegador no da contexto 2D también lo avisa', async () => {
@@ -287,6 +287,86 @@ describe('RunnerCanvasComponent', () => {
 
       expect(eventos).toContain('cleared');
       expect(dibujado(IMAGEN_CHISPA)).toBe(true);
+    });
+  });
+
+  describe('lo que premia la destreza', () => {
+    const textos = () => (ctx['fillText'] as jest.Mock).mock.calls.map((c) => c[0] as string);
+    /** Una pieza justo debajo del perrito (su centro ya cruzó el del perrito) para que se juzgue el salto. */
+    const piezaEnElPerro = (id = 1) => ({
+      id, kind: 'pawn' as const, color: 'w' as const, plan: 30, x: 30, y: 0, width: 8, height: 11, count: 1, spacing: 0, cleared: false, hit: false,
+    });
+    const poner = (cambios: Partial<RunnerState>) => {
+      (lienzo as unknown as Interno).state = { ...estado(), untilSpawn: 99999, ...cambios };
+    };
+
+    beforeEach(() => iniciar());
+
+    it('un salto perfecto se avisa, suelta una chispa y escribe «¡Perfecto!» sobre el perrito', () => {
+      poner({ dog: { ...estado().dog, y: 62, vy: 0, jumps: 1 }, obstacles: [piezaEnElPerro()] });
+
+      avanzar(40);
+
+      expect(eventos).toContain('perfect');
+      expect(progresos[progresos.length - 1].perfects).toBe(1);
+      expect(textos()).toContain('CHESS_RUNNER.popup.perfect');
+    });
+
+    it('un salto que pasa la pieza sin ir en lo más alto no es perfecto', () => {
+      poner({ dog: { ...estado().dog, y: 30, vy: 0, jumps: 1 }, obstacles: [piezaEnElPerro()] });
+
+      avanzar(40);
+
+      expect(eventos).not.toContain('perfect');
+      expect(textos()).not.toContain('CHESS_RUNNER.popup.perfect');
+    });
+
+    it('coger la estrella se avisa y escribe «¡Imparable!»; el avance cuenta una estrella', () => {
+      poner({ pickups: [{ id: 99, kind: 'star', x: estado().dog.x - 4, y: 0 }] });
+
+      avanzar(40);
+
+      expect(eventos).toContain('star');
+      expect(textos()).toContain('CHESS_RUNNER.popup.star');
+      expect(progresos[progresos.length - 1].stars).toBe(1);
+    });
+
+    it('con la estrella, la pieza que toca se arrolla: no choca, se avisa y salen galletas', () => {
+      poner({ starTime: 4, obstacles: [{ ...piezaEnElPerro(), x: 40, plan: 40 }] });
+
+      avanzar(60);
+
+      expect(eventos).toContain('smash');
+      expect(eventos).not.toContain('stumble');
+      expect(estado().smashed).toBe(1);
+    });
+
+    it('al acabarse la estrella lo avisa una sola vez', () => {
+      poner({ starTime: 0.05 });
+
+      avanzar(200);
+
+      expect(eventos.filter((e) => e === 'starEnd')).toHaveLength(1);
+    });
+
+    it('un choque con galletas encima las suelta: se avisa del choque y no rompe con ninguna ni con muchas', async () => {
+      lienzo.carrying = 30;
+      poner({ obstacles: [{ ...piezaEnElPerro(), x: 40, plan: 40 }] });
+
+      avanzar(60);
+
+      expect(eventos).toContain('stumble');
+      expect(estado().stumbles).toBe(1);
+    });
+
+    it('el avance cuenta los perfectos y la mejor racha', () => {
+      poner({ perfects: 3, bestCombo: 5, cookies: 2 });
+      tecla('keydown', ' ');
+      avanzar(40);
+
+      const ultimo = progresos[progresos.length - 1];
+      // Se emite al cambiar algo: saltar no lo cambia, pero el estado inicial ya trae los campos nuevos
+      expect(ultimo).toEqual(expect.objectContaining({ perfects: expect.any(Number), bestCombo: expect.any(Number), stars: expect.any(Number) }));
     });
   });
 

@@ -58,7 +58,7 @@ export function correr(inicial: RunnerState, guion: Guion = { toques: [] }, limi
  */
 export function ventanasDeAcierto(
   kind: RunnerPieceKind,
-  { desde = 0, hasta = 1.8, paso = 0.005, nivel = 1, falange = false, doble = false } = {}
+  { desde = 0, hasta = 1.8, paso = 0.01, nivel = 1, falange = false, doble = false } = {}
 ) {
   const aciertos: number[] = [];
   for (let t0 = desde; t0 <= hasta; t0 += paso) {

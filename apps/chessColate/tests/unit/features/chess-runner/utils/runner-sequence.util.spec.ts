@@ -1,13 +1,24 @@
-import { MAX_OBSTACLES, MAX_PER_KIND, WALL_COUNT, WALL_KINDS } from '@features/chess-runner/config/runner.config';
+import {
+  difficultyForLevel,
+  MAX_OBSTACLES,
+  MAX_PER_KIND,
+  MAX_WAVES,
+  REST_SECONDS,
+  WALL_COUNT,
+  WALL_KINDS,
+} from '@features/chess-runner/config/runner.config';
 import { RunnerPiece } from '@features/chess-runner/models/runner.model';
 import {
   buildRunnerSequence,
   chooseObstacles,
+  expectedRunSeconds,
   hashString,
   pieceKey,
   piecesOfFen,
   seededRandom,
+  targetRunSeconds,
   wallsForLevel,
+  tightShare,
 } from '@features/chess-runner/utils/runner-sequence.util';
 
 const INICIAL = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
@@ -104,12 +115,99 @@ describe('buildRunnerSequence', () => {
     }
   });
 
-  it('va de las piezas más bajas a las más altas: la dificultad sube dentro de la carrera', () => {
-    const orden = ['pawn', 'rook', 'bishop', 'knight', 'queen', 'king'];
-    for (const semilla of ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']) {
-      const alturas = buildRunnerSequence(INICIAL, semilla).map((p) => orden.indexOf(p.kind));
-      expect(alturas).toEqual([...alturas].sort((a, b) => a - b));
-    }
+  describe('las oleadas', () => {
+    const ORDEN = ['pawn', 'rook', 'bishop', 'knight', 'queen', 'king'];
+    const SEMILLAS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+    const tipos = (piezas: RunnerPiece[]) => [...new Set(piezas.map((p) => p.kind))];
+
+    it('la primera es la presentación: cada tipo de pieza una vez, de la más baja a la más alta', () => {
+      for (const semilla of SEMILLAS) {
+        const secuencia = buildRunnerSequence(INICIAL, semilla);
+        const distintos = tipos(chooseObstacles(piecesOfFen(INICIAL)));
+        const primera = secuencia.slice(0, distintos.length);
+
+        expect(primera.map((p) => ORDEN.indexOf(p.kind))).toEqual([0, 1, 2, 3, 4, 5]);
+        expect(primera[distintos.length - 1].rest).toBeGreaterThan(0);
+      }
+    });
+
+    it('hay un respiro tras cada oleada menos la última, y la carrera nunca acaba con una pausa', () => {
+      for (const semilla of SEMILLAS) {
+        for (const nivel of [1, 5, 10]) {
+          const secuencia = buildRunnerSequence(INICIAL, semilla, nivel);
+          const conRespiro = secuencia.filter((p) => (p.rest ?? 0) > 0);
+
+          expect(conRespiro.length).toBeGreaterThanOrEqual(1);
+          expect(conRespiro.length).toBeLessThanOrEqual(MAX_WAVES - 1);
+          expect(secuencia[secuencia.length - 1].rest).toBeUndefined();
+          conRespiro.forEach((p) => expect(p.rest).toBe(REST_SECONDS));
+        }
+      }
+    });
+
+    it('la última oleada va de la pieza más alta a la más baja', () => {
+      // Con carreras largas (niveles altos) cabe la tercera oleada entera
+      const secuencia = buildRunnerSequence(INICIAL, 'a', 20);
+      const ultimoRespiro = secuencia.map((p) => p.rest).lastIndexOf(REST_SECONDS);
+      const cola = secuencia.slice(ultimoRespiro + 1).map((p) => ORDEN.indexOf(p.kind));
+
+      expect(cola.length).toBeGreaterThan(2);
+      expect(cola).toEqual([...cola].sort((a, b) => b - a));
+    });
+
+    it('lo que sale es lo que hay en el tablero: ninguna pieza de más', () => {
+      const permitidas = new Set(chooseObstacles(piecesOfFen(MEDIO)).map((p) => `${p.kind}-${p.color}`));
+      const secuencia = buildRunnerSequence(MEDIO, 'ej-1');
+
+      expect(secuencia.every((p) => permitidas.has(`${p.kind}-${p.color}`))).toBe(true);
+      // Y están todas las que se eligieron
+      const vistas = new Set(secuencia.map((p) => `${p.kind}-${p.color}`));
+      expect(vistas).toEqual(permitidas);
+    });
+  });
+
+  describe('lo que dura', () => {
+    const POSICIONES = [INICIAL, MEDIO, FINAL_DE_PEONES, '4k3/8/8/8/8/8/8/R3K3 w - - 0 1'];
+
+    it.each([1, 3, 5, 8, 10])('en el nivel %s dura lo que toca, más o menos, sea cual sea el ejercicio', (nivel) => {
+      for (const fen of POSICIONES) {
+        const secuencia = buildRunnerSequence(fen, 'ej-1', nivel);
+        const segundos = expectedRunSeconds(secuencia, difficultyForLevel(nivel));
+
+        expect(segundos).toBeGreaterThan(targetRunSeconds(nivel) - 3);
+        expect(segundos).toBeLessThan(targetRunSeconds(nivel) + 3);
+      }
+    });
+
+    it('el objetivo crece un poco con el nivel y ronda la media minuta', () => {
+      expect(targetRunSeconds(1)).toBeGreaterThanOrEqual(20);
+      expect(targetRunSeconds(10)).toBeLessThanOrEqual(32);
+      expect(targetRunSeconds(10)).toBeGreaterThan(targetRunSeconds(1));
+    });
+
+    it('una posición con pocas piezas repite las que hay, sin pasarse del tope', () => {
+      const secuencia = buildRunnerSequence('4k3/8/8/8/8/8/8/R3K3 w - - 0 1', 'x');
+
+      expect(secuencia.length).toBeGreaterThan(8);
+      expect(secuencia.length).toBeLessThanOrEqual(26);
+      expect(new Set(secuencia.map((p) => p.kind))).toEqual(new Set(['rook', 'king']));
+    });
+
+    it('un ejercicio con muchas piezas se recorta: nunca pasa de lo que toca por mucho', () => {
+      const secuencia = buildRunnerSequence(INICIAL, 'ej-1', 1);
+
+      expect(secuencia.length).toBeLessThanOrEqual(26);
+      expect(secuencia.length).toBeGreaterThanOrEqual(12);
+    });
+
+    it('expectedRunSeconds: vacía no dura nada y una falange alarga', () => {
+      const dificultad = difficultyForLevel(1);
+      const corta: RunnerPiece[] = [{ kind: 'pawn', color: 'w', beat: 0.5 }, { kind: 'pawn', color: 'w', beat: 0.5 }];
+      const conFalange = [corta[0], { ...corta[1], wall: 3 }];
+
+      expect(expectedRunSeconds([], dificultad)).toBe(0);
+      expect(expectedRunSeconds(conFalange, dificultad)).toBeGreaterThan(expectedRunSeconds(corta, dificultad) + 0.5);
+    });
   });
 
   it('cada pieza lleva su propio ritmo (entre 0 y 1), el mismo para el mismo ejercicio, y no todas igual', () => {
@@ -124,17 +222,9 @@ describe('buildRunnerSequence', () => {
     expect(buildRunnerSequence(INICIAL, 'ej-1').map((p) => p.beat)).toEqual(ritmos);
   });
 
-  it('sin peones empieza por lo que haya', () => {
+  it('sin peones empieza por lo que haya, de la más baja a la más alta', () => {
     const secuencia = buildRunnerSequence('4k3/8/8/8/8/8/8/R3K3 w - - 0 1', 'x');
-    expect(secuencia.map((p) => p.kind).sort()).toEqual(['king', 'king', 'rook']);
-  });
-
-  it('tiene las mismas piezas que escogió, solo que mezcladas', () => {
-    const escogidas = chooseObstacles(piecesOfFen(MEDIO));
-    const secuencia = buildRunnerSequence(MEDIO, 'ej-1');
-    const clave = (p: RunnerPiece) => `${p.kind}-${p.color}`;
-
-    expect(secuencia.map(clave).sort()).toEqual(escogidas.map(clave).sort());
+    expect(secuencia.slice(0, 2).map((p) => p.kind)).toEqual(['rook', 'king']);
   });
 
   it('un tablero vacío da una carrera vacía (el runner termina sin obstáculos)', () => {
@@ -182,13 +272,11 @@ describe('falanges por nivel', () => {
     expect(paredes(secuencia)).toEqual([]);
   });
 
-  it('las falanges no cambian el orden, los ritmos ni las piezas: solo marcan alguna', () => {
-    const llanas = buildRunnerSequence(INICIAL, 'ej-1', 1);
-    const conParedes = buildRunnerSequence(INICIAL, 'ej-1', 9);
+  it('una falange es de las mismas piezas que ya había: no inventa tipos ni colores', () => {
+    const permitidas = new Set(chooseObstacles(piecesOfFen(INICIAL)).map((p) => `${p.kind}-${p.color}`));
+    const secuencia = buildRunnerSequence(INICIAL, 'ej-1', 9);
 
-    expect(conParedes.map(({ kind, color, beat }) => ({ kind, color, beat }))).toEqual(
-      llanas.map(({ kind, color, beat }) => ({ kind, color, beat }))
-    );
+    expect(secuencia.every((p) => permitidas.has(`${p.kind}-${p.color}`))).toBe(true);
   });
 
   it('es determinista: el mismo ejercicio y nivel dan las mismas falanges', () => {
@@ -227,5 +315,40 @@ describe('pieceKey', () => {
     expect(pieceKey('queen', 'b')).toBe('bq');
     expect(pieceKey('rook', 'w')).toBe('wr');
     expect(pieceKey('bishop', 'b')).toBe('bb');
+  });
+});
+
+describe('el ritmo de la carrera', () => {
+  const beats = (nivel: number) => {
+    const todos: number[] = [];
+    for (let i = 0; i < 40; i++) {
+      buildRunnerSequence(INICIAL, `ritmo-${i}`, nivel).forEach((p) => todos.push(p.beat ?? 0.5));
+    }
+    return todos;
+  };
+  const parte = (lista: number[], f: (b: number) => boolean) => lista.filter(f).length / lista.length;
+
+  it('la parte de piezas encadenadas crece con el nivel, hasta la mitad', () => {
+    expect(tightShare(1)).toBeCloseTo(0.12, 5);
+    expect(tightShare(5)).toBeGreaterThan(tightShare(1));
+    expect(tightShare(10)).toBeGreaterThan(tightShare(5));
+    expect(tightShare(99)).toBe(0.5);
+    expect(tightShare(0)).toBe(tightShare(1));
+  });
+
+  it('no es un metrónomo: hay piezas encadenadas, ritmo normal y respiros largos', () => {
+    const lista = beats(10);
+
+    expect(parte(lista, (b) => b < 0.1)).toBeGreaterThan(0.15);
+    expect(parte(lista, (b) => b >= 0.25 && b <= 0.75)).toBeGreaterThan(0.3);
+    expect(parte(lista, (b) => b >= 0.85)).toBeGreaterThan(0.1);
+  });
+
+  it('con más nivel salen más encadenadas', () => {
+    expect(parte(beats(15), (b) => b < 0.1)).toBeGreaterThan(parte(beats(1), (b) => b < 0.1) + 0.1);
+  });
+
+  it('es determinista: el mismo ejercicio da el mismo ritmo', () => {
+    expect(beats(7)).toEqual(beats(7));
   });
 });

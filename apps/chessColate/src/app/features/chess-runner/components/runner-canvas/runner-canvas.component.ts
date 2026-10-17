@@ -10,13 +10,17 @@ import {
   ViewChild,
   inject,
 } from '@angular/core';
-import { TranslocoPipe } from '@jsverse/transloco';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
+import { BASE_MODIFIERS, RunnerModifiers } from '../../config/runner-powers';
 import {
   difficultyForLevel,
   RUNNER_CANVAS_HEIGHT,
   RunnerDifficulty,
+  SCATTER_COOKIES,
 } from '../../config/runner.config';
+import { RunnerPowerId, RunnerWorld } from '../../campaign/runner-curriculum';
+import { DEFAULT_SKIN, withSkin } from '../../rendering/dog-skins';
 import { RunnerPiece, RunnerState, RunnerStats } from '../../models/runner.model';
 import { RunnerPiecesService } from '../../services/runner-pieces.service';
 import { RunnerSpritesService } from '../../services/runner-sprites.service';
@@ -31,7 +35,12 @@ export type RunnerEventName =
   | 'landed'
   | 'cleared'
   | 'stumble'
+  | 'shield'
   | 'cookie'
+  | 'perfect'
+  | 'star'
+  | 'smash'
+  | 'starEnd'
   | 'finishing';
 
 export interface RunnerProgress {
@@ -43,6 +52,10 @@ export interface RunnerProgress {
   /** Metros corridos y galletas cogidas en esta carrera. */
   meters: number;
   cookies: number;
+  /** Saltos perfectos, la mayor racha y estrellas cogidas (para las misiones). */
+  perfects: number;
+  bestCombo: number;
+  stars: number;
 }
 
 /** Paso fijo de la simulación: los números del juego se afinaron con él, no con el de la pantalla. */
@@ -78,6 +91,7 @@ export class RunnerCanvasComponent implements AfterViewInit, OnDestroy {
   private spritesService = inject(RunnerSpritesService);
   private piecesService = inject(RunnerPiecesService);
   private host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private transloco = inject(TranslocoService);
 
   @ViewChild('canvas', { static: true }) canvasRef!: ElementRef<HTMLCanvasElement>;
 
@@ -85,6 +99,18 @@ export class RunnerCanvasComponent implements AfterViewInit, OnDestroy {
   @Input({ required: true }) sequence: RunnerPiece[] = [];
   /** Lo rápida y exigente que es la carrera. */
   @Input() difficulty: RunnerDifficulty = difficultyForLevel(1);
+  /** El mundo en el que se corre (el tono del escenario). */
+  @Input() world: RunnerWorld = 'day';
+  /** La pieza del jefe del capítulo, si esta carrera es la del jefe (`bn`, `bk`…). */
+  @Input() boss: string | null = null;
+  /** Galletas que lleva hacia el próximo corazón: un choque hace saltar hasta `SCATTER_COOKIES` de ellas. */
+  @Input() carrying = 0;
+  /** Los poderes que lleva el perrito, que se ven en su aspecto. */
+  @Input() gear: readonly RunnerPowerId[] = [];
+  /** El pelaje del perrito. */
+  @Input() skin = DEFAULT_SKIN;
+  /** Las reglas con esos poderes. */
+  @Input() mods: RunnerModifiers = BASE_MODIFIERS;
   /** Ancho máximo del lienzo en px; en escritorio un tablero de 1000 px sería exagerado. */
   @Input() maxWidth = 720;
   /**
@@ -132,8 +158,11 @@ export class RunnerCanvasComponent implements AfterViewInit, OnDestroy {
     }
 
     const width = this.layout();
-    this.state = createRun(this.sequence, width, this.difficulty);
-    this.renderer = new RunnerRenderer(ctx, sprites, pieces.images, width);
+    this.state = createRun(this.sequence, width, this.difficulty, this.mods);
+    this.renderer = new RunnerRenderer(ctx, withSkin(sprites, this.skin), pieces.images, width);
+    this.renderer.world = this.world;
+    this.renderer.gear = this.gear;
+    this.renderer.boss = this.boss;
     this.zone.run(() => this.progress.emit(this.currentProgress()));
 
     this.zoneElement = this.tapZone ?? canvas;
@@ -235,10 +264,44 @@ export class RunnerCanvasComponent implements AfterViewInit, OnDestroy {
           );
         }
       }
+      if (events.perfect.length > 0) {
+        collected.push('perfect');
+        progressed = true;
+        for (const obstacle of events.perfect) {
+          this.renderer?.addPopup(this.transloco.translate('CHESS_RUNNER.popup.perfect'), state.dog.x, state.dog.y + 34, state.time, '#7dffa0');
+          this.renderer?.addFx('spark', obstacle.x + obstacle.width / 2, obstacle.y + obstacle.height + 6, state.time);
+        }
+      }
+      if (events.starTaken) {
+        collected.push('star');
+        progressed = true;
+        this.renderer?.addPopup(this.transloco.translate('CHESS_RUNNER.popup.star'), state.dog.x, state.dog.y + 40, state.time, '#ffd24a');
+        this.renderer?.addFx('spark', state.dog.x, state.dog.y + 14, state.time);
+      }
+      if (events.smashed.length > 0) {
+        collected.push('smash');
+        progressed = true;
+        for (const obstacle of events.smashed) {
+          const x = obstacle.x + obstacle.width / 2;
+          this.renderer?.addFx('spark', x, obstacle.y + obstacle.height / 2, state.time);
+          this.renderer?.burst(3, x, obstacle.y + obstacle.height, state.time);
+        }
+      }
+      if (events.starEnded) {
+        collected.push('starEnd');
+      }
+      if (events.shielded) {
+        // El escudo se rompe con una chispa y un golpe sordo
+        collected.push('shield');
+        progressed = true;
+        this.renderer?.addFx('spark', state.dog.x + 6, state.dog.y + 12, state.time);
+      }
       if (events.stumbled) {
         collected.push('stumble');
         progressed = true;
         this.renderer?.addFx('dust', state.dog.x, 0, state.time);
+        // Las galletas que llevaba salen despedidas
+        this.renderer?.burst(Math.min(this.carrying, SCATTER_COOKIES), state.dog.x, state.dog.y + 18, state.time);
       }
       if (events.finishing) collected.push('finishing');
       if (events.done) finishedNow = true;
@@ -276,12 +339,15 @@ export class RunnerCanvasComponent implements AfterViewInit, OnDestroy {
       combo: this.state.combo,
       meters: metersOf(this.state),
       cookies: this.state.cookies,
+      perfects: this.state.perfects,
+      bestCombo: this.state.bestCombo,
+      stars: this.state.starsTaken,
     };
   }
 
   // ---------------------------------------------------------------- entrada
 
-  /** Un toque: Chocolate salta (y suena, si despegó). */
+  /** Un toque: el perrito salta (y suena, si despegó). */
   private jump(): void {
     if (!this.state) {
       return;

@@ -6,11 +6,12 @@ import { getManifestThemes, PuzzlesProvider } from '@chesspark/puzzles-provider'
 import { STREAK_EXCLUDED_THEMES } from '@features/streak/utils/streak.util';
 
 /**
- * De dónde sale el ejercicio de cada carrera: uno del catálogo, de un tema al azar, cerca del ELO del
- * usuario y distinto de los ya jugados en la sesión.
+ * De dónde sale el ejercicio de cada carrera: uno del catálogo, cerca del ELO pedido y distinto de los ya jugados en
+ * la sesión.
  *
- * El Chess Runner no toca el ELO del usuario (es un calentamiento), así que no hace falta una rampa
- * como la de la Racha: basta con el ELO de partida y que el tema cambie.
+ * Con un `theme` el ejercicio es siempre de ese patrón (lo normal en la campaña: repetir un patrón seguido es lo que
+ * lo graba). Sin él, de un tema al azar. El runner no toca el ELO del usuario (es un calentamiento), así que el ELO
+ * que recibe ya trae aplicada la rampa del bloque.
  */
 @Injectable({ providedIn: 'root' })
 export class RunnerPuzzleService {
@@ -30,19 +31,32 @@ export class RunnerPuzzleService {
     return getManifestThemes().filter((theme) => !STREAK_EXCLUDED_THEMES.includes(theme));
   }
 
-  /** Un ejercicio nuevo, o `null` si el catálogo no responde (sin conexión y sin caché). */
-  async next(elo: number, played: Set<string>, random: () => number = Math.random): Promise<Puzzle | null> {
-    const themes = [...this.themes].sort(() => random() - 0.5);
+  /**
+   * Un ejercicio nuevo, o `null` si el catálogo no responde (sin conexión y sin caché).
+   * Con `theme` solo se prueba ese patrón, con el ELO pedido y, si no hay ejercicios nuevos, algo por encima y por debajo.
+   */
+  async next(
+    elo: number,
+    played: Set<string>,
+    random: () => number = Math.random,
+    theme?: string
+  ): Promise<Puzzle | null> {
+    const attempts = theme
+      ? [elo, elo - 150, elo + 150].map((attemptElo) => ({ theme, elo: attemptElo }))
+      : [...this.themes]
+          .sort(() => random() - 0.5)
+          .slice(0, this.ATTEMPTS)
+          .map((randomTheme) => ({ theme: randomTheme, elo }));
     const startedAt = Date.now();
 
-    for (const theme of themes.slice(0, this.ATTEMPTS)) {
+    for (const attempt of attempts) {
       if (Date.now() - startedAt >= this.TIME_BUDGET_MS) {
         break;
       }
       try {
         const puzzles = await this.puzzlesProvider.getPuzzles({
-          elo,
-          theme,
+          elo: attempt.elo,
+          theme: attempt.theme,
           count: this.FETCH_COUNT,
         });
         const fresh = puzzles.filter((puzzle) => !played.has(puzzle.uid));

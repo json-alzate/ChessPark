@@ -6,7 +6,7 @@
 
 const JUMP_KEYS = new Set([' ', 'Spacebar', 'ArrowUp', 'w', 'W']);
 
-/** ¿Esta tecla hace saltar a Chocolate? */
+/** ¿Esta tecla hace saltar al perrito? */
 export function isJumpKey(key: string): boolean {
   return JUMP_KEYS.has(key);
 }

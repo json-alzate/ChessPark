@@ -26,7 +26,7 @@ describe('escala del lienzo', () => {
   });
 
   it('el ancho lógico queda en un rango en el que el juego es jugable (160 a 280 px)', () => {
-    // Más estrecho no deja ver venir el obstáculo; más ancho lo aleja demasiado de Chocolate
+    // Más estrecho no deja ver venir el obstáculo; más ancho lo aleja demasiado del perrito
     for (let ancho = 330; ancho <= 1280; ancho += 4) {
       expect(logicalWidth(ancho)).toBeGreaterThanOrEqual(160);
       expect(logicalWidth(ancho)).toBeLessThanOrEqual(280);

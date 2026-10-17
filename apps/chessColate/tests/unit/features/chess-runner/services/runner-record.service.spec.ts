@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
+import { newCampaign } from '@features/chess-runner/campaign/runner-campaign.util';
 import { RunnerRecordService } from '@features/chess-runner/services/runner-record.service';
 
 /** Lo único que el Chess Runner guarda en el dispositivo: el récord de distancia de una partida. */
@@ -75,5 +76,51 @@ describe('RunnerRecordService', () => {
 
     expect(servicio.best()).toBe(0);
     expect(servicio.save(100)).toBe(false);
+  });
+
+  describe('la campaña', () => {
+    const CAMPANA = 'chessColate_runner_campaign';
+
+    it('sin nada guardado es una campaña nueva', () => {
+      expect(servicio.loadCampaign()).toEqual(newCampaign());
+    });
+
+    it('lo que se guarda se recupera igual, también desde otra instancia', () => {
+      const campana = { ...newCampaign(), chapter: 3, powers: ['nose', 'spring', 'shield'] as never[], seen: ['prologue'] };
+
+      servicio.saveCampaign(campana);
+
+      expect(servicio.loadCampaign()).toEqual(campana);
+      expect(new RunnerRecordService().loadCampaign()).toEqual(campana);
+    });
+
+    it('un dato roto o de otra versión no impide jugar: campaña nueva', () => {
+      localStorage.setItem(CAMPANA, '{no es json');
+      expect(servicio.loadCampaign()).toEqual(newCampaign());
+
+      localStorage.setItem(CAMPANA, JSON.stringify({ version: 9, chapter: 4 }));
+      expect(servicio.loadCampaign()).toEqual(newCampaign());
+    });
+
+    it('no se mezcla con el récord', () => {
+      servicio.save(300);
+      servicio.saveCampaign({ ...newCampaign(), chapter: 2 });
+
+      expect(servicio.best()).toBe(300);
+      expect(servicio.loadCampaign().chapter).toBe(2);
+    });
+
+    it('sin acceso al almacenamiento no se rompe', () => {
+      jest.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+        throw new Error('bloqueado');
+      });
+      jest.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+        throw new Error('bloqueado');
+      });
+      jest.spyOn(console, 'error').mockImplementation(() => undefined);
+
+      expect(servicio.loadCampaign()).toEqual(newCampaign());
+      expect(() => servicio.saveCampaign(newCampaign())).not.toThrow();
+    });
   });
 });

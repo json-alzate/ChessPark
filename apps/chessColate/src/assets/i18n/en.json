@@ -1227,39 +1227,310 @@
   },
   "CHESS_RUNNER": {
     "title": "Chess Runner",
-    "canvasLabel": "Chocolate runs and jumps over the exercise's pieces",
+    "canvasLabel": "The puppy runs and jumps over the exercise's pieces",
     "loading": "Finding an exercise…",
     "session": "Solved: {{count}}",
     "exit": "Exit",
     "skip": "Skip the run",
     "runClean": "A run without stumbles.",
     "runStumbles": "A run with {{count}} stumbles.",
-    "level": "Level {{level}}",
     "combo": "Streak {{count}}",
+    "lessonLabel": "A small board shows the pattern",
+    "lessonContinue": "Start",
+    "lessonShow": "See the pattern",
+    "lessonClose": "Close the lesson",
+    "storySkip": "Skip the scene",
+    "map": {
+      "label": "Your path: {{done}} of {{total}} guardians defeated"
+    },
+    "story": {
+      "prologue": "The puppy sleeps and the Shadow King steals the cookie jar",
+      "intro": "The puppy reaches a new world and a guardian blocks the way",
+      "victory": "The puppy defeats the guardian and wins a power",
+      "epilogue": "The puppy gets the jar back and dawn breaks"
+    },
     "levelHint": {
       "first": "Jump the exercise's pieces",
-      "faster": "Faster than the last one",
       "doubleJump": "New: two taps in a row, double jump",
-      "world": {
-        "day": "Daytime",
-        "sunset": "Sunset",
-        "night": "Night",
-        "dawn": "Dawn"
-      }
+      "review": "Review",
+      "boss": "Guardian · rating {{rating}}"
+    },
+    "heartsLabel": "{{count}} hearts",
+    "meters": "{{count}} m",
+    "cookiesHint": "Every {{count}} cookies you win back a heart",
+    "strikes": "Misses: {{count}} of {{max}}",
+    "legend": {
+      "touch": "Tap to jump. Two taps in a row, double jump.",
+      "keyboard": "Space or ↑ to jump; twice for a double jump"
     },
     "result": {
       "solved": "Well solved.",
+      "chapterDone": "Pattern mastered",
+      "stars": "{{count}} of 3 stars",
+      "lastStrike": "You missed three exercises: the game is over.",
+      "finish": "See result",
       "wrong": "That's not the best move.",
       "timeout": "Time's up.",
       "solution": "See solution",
       "next": "Another exercise"
+    },
+    "gameOver": {
+      "title": "Game over",
+      "hits": "You ran out of hearts.",
+      "strikes": "You missed three exercises.",
+      "quit": "You left the game: your distance is saved.",
+      "lobby": "Pick up where you left off.",
+      "play": "Play",
+      "newRecord": "New record",
+      "record": "Record: {{count}} m",
+      "level": "Chapter",
+      "solved": "Solved",
+      "cookies": "Cookies",
+      "again": "Play again"
     },
     "error": {
       "title": "We couldn't fetch the exercise",
       "message": "Check your connection and try again.",
       "retry": "Try again",
       "back": "Back to home"
-    }
+    },
+    "round": "Round {{count}}",
+    "rating": "Rating",
+    "lessons": {
+      "hangingPiece": {
+        "idea": "An undefended piece can be captured for free",
+        "see": "Look at the black knight: no piece protects it.",
+        "play": "The bishop captures it with no risk.",
+        "why": "A free piece! If nobody defends it, nobody can recapture.",
+        "tip": "Before every move ask yourself: which enemy pieces are undefended?"
+      },
+      "mateIn1": {
+        "idea": "Checkmate: the king has no escape",
+        "see": "The black king is in the corner. Count its free squares.",
+        "play": "The queen gives check from g7, protected by our king.",
+        "why": "It cannot capture the queen or flee: checkmate!",
+        "tip": "Look for checks the king can neither capture nor dodge."
+      },
+      "fork": {
+        "idea": "One piece attacks two at once, and only one can be saved",
+        "see": "The black king and rook can be attacked from the same square: d6.",
+        "play": "The knight jumps to d6, attacking both.",
+        "why": "The king must escape the check and the rook falls: a fork!",
+        "tip": "Knights are the kings of forks: look for squares that attack two pieces."
+      },
+      "pin": {
+        "idea": "A piece can't move because it would expose a more valuable one",
+        "see": "The black knight is on the same file as its king.",
+        "play": "The rook attacks the knight.",
+        "why": "If the knight moves, the rook captures the king: it is pinned and cannot escape.",
+        "tip": "Attack the pinned piece with more pieces: it can't run away."
+      },
+      "skewer": {
+        "idea": "You attack a valuable piece; when it steps aside, the one behind falls",
+        "see": "The black king and rook are on the same rank.",
+        "play": "The rook gives check to the king.",
+        "play2": "The king has to step aside...",
+        "play3": "...and the rook captures the piece behind it.",
+        "why": "A skewer! The valuable piece goes first, then the other falls.",
+        "tip": "It's a pin in reverse: the valuable piece is in front."
+      },
+      "discoveredAttack": {
+        "idea": "Moving one piece unmasks the attack of another behind it",
+        "see": "The bishop blocks the rook's file. At the end of that file stands the black queen.",
+        "play": "The bishop captures with check: the king must respond.",
+        "play2": "The black king takes the bishop...",
+        "play3": "...and the rook, no longer blocked, captures the queen.",
+        "why": "A discovered attack! Two threats at once and only one can be stopped.",
+        "tip": "Look for your own pieces that block your rook, bishop or queen."
+      },
+      "doubleCheck": {
+        "idea": "Two pieces give check at once: the king can only move",
+        "see": "The white knight blocks the rook's file, and the rook points at the black king.",
+        "play": "The knight moves and gives check, unmasking the rook's check too.",
+        "why": "You can't block or capture two pieces at once: the king must run.",
+        "tip": "Double check is the strongest move: look for a discovered check that also checks."
+      },
+      "backRankMate": {
+        "idea": "The king is trapped on its back rank by its own pawns",
+        "see": "The black king's pawns block all its exits.",
+        "play": "The rook enters the back rank with check.",
+        "why": "The king can't flee or capture the rook: back-rank mate!",
+        "tip": "Always give your king an exit: push a pawn to make a luft."
+      },
+      "trappedPiece": {
+        "idea": "An attacked piece with no safe square to go to",
+        "see": "Look at the black knight on a8: its exits (b6 and c7) are covered.",
+        "play": "The bishop attacks the knight.",
+        "why": "Trapped! Every square it can reach is attacked.",
+        "then": "The king moves, and the bishop captures the trapped knight.",
+        "tip": "Pieces on the edge get trapped easily: count their exit squares."
+      },
+      "smotheredMate": {
+        "idea": "The king is smothered by its own pieces and a knight gives check",
+        "see": "The black king is surrounded by its rook and pawns.",
+        "play": "The knight jumps to f7 with check.",
+        "why": "A knight's check can't be blocked and the king has no squares: smothered mate!",
+        "tip": "Knight checks can't be blocked: use them when the king is boxed in."
+      },
+      "mateIn2": {
+        "idea": "Mate in two: first box the king in, then deliver mate",
+        "see": "Two rooks against the king in the corner.",
+        "play": "One rook cuts off the 7th rank: the king can't step down.",
+        "play2": "The king can only go to g8...",
+        "play3": "...and the other rook delivers mate on the 8th rank.",
+        "why": "One rook cuts, the other finishes: ladder mate!",
+        "tip": "Think two moves ahead: which move leaves the king with no squares?"
+      },
+      "capturingDefender": {
+        "idea": "Capture the piece that defends another, and that one is left unprotected",
+        "see": "The e5 pawn is protected only by the knight on c6.",
+        "play": "The bishop captures the knight that was protecting the pawn.",
+        "why": "Without its defender, the e5 pawn hangs!",
+        "play2": "Black recaptures with the pawn...",
+        "play3": "...and the white knight takes the e5 pawn, now unprotected.",
+        "tip": "Ask yourself: who defends that piece? Can I remove the defender?"
+      },
+      "deflection": {
+        "idea": "You force a piece to leave its defensive post",
+        "see": "The black king is the only defender of the rook on g6.",
+        "play": "The pawn promotes with check. The king must capture the queen...",
+        "why": "Deflected! The king moved away and the rook lost its defender.",
+        "then": "The white king captures the rook.",
+        "tip": "Find the piece that holds another one up and force it away with a check or capture."
+      },
+      "attraction": {
+        "idea": "You lure a piece (often the king) to a square where you can punish it",
+        "see": "The a7 pawn is one step from promoting, but the black rook watches the 8th rank.",
+        "play": "We sacrifice the rook on e8 with check.",
+        "play2": "The king captures and lands on e8...",
+        "play3": "...and the pawn promotes with check: we win.",
+        "why": "The king was lured to the fatal square.",
+        "tip": "A sacrifice can be bait: ask what happens if the piece captures it."
+      },
+      "xRayAttack": {
+        "idea": "A piece attacks \"through\" another, as if seeing inside",
+        "see": "The white rook on g7 stands right behind the black rook on g5.",
+        "play": "The pawn gives check from g4.",
+        "play2": "The black rook captures it: it has no other move.",
+        "play3": "The white rook captures the black one: it saw through the other.",
+        "why": "X-ray! The g7 rook supported g4 despite the pieces in between.",
+        "tip": "When counting attackers and defenders, count the pieces behind too."
+      },
+      "intermezzo": {
+        "idea": "An in-between move (often a check) before the expected capture",
+        "see": "Our rook is attacked by the bishop, and the pawn could capture the black rook.",
+        "play": "Before capturing, check with the rook: the opponent has no time to take it.",
+        "play2": "The king steps aside...",
+        "play3": "...and now the pawn captures the rook.",
+        "why": "An in-between move! A check saved our rook.",
+        "tip": "Before recapturing, look for a check or a bigger threat."
+      },
+      "arabianMate": {
+        "idea": "Rook and knight trap the king in the corner",
+        "see": "The king is on h8. The knight watches g8 and h7.",
+        "play": "The rook gives check from h7, protected by the knight.",
+        "why": "The king can't capture the rook or flee: Arabian mate!",
+        "tip": "With the enemy king in the corner, coordinate rook and knight."
+      },
+      "anastasiaMate": {
+        "idea": "Knight and rook mate, with the king's own pawn blocking its escape",
+        "see": "The king has its pawn next to it, and the knight watches g8 and g6.",
+        "play": "The rook gives check along the h-file.",
+        "why": "The black pawn blocks its exit and there are no more squares: Anastasia's mate!",
+        "tip": "Look for mates on the edge when the king has a pawn beside it."
+      },
+      "bodenMate": {
+        "idea": "Two crossing bishops mate the king on the queenside",
+        "see": "The black king is blocked by its own pieces.",
+        "play": "The bishop checks from a6; the other covers c7 and b8.",
+        "why": "The diagonals cross and there is no escape: Boden's mate!",
+        "tip": "Two bishops on crossing diagonals control lots of squares."
+      },
+      "hookMate": {
+        "idea": "Rook, knight and pawn work together to mate beside the king's own pawn",
+        "see": "The black king has its own pawn beside it. Look at the white knight and pawn.",
+        "play": "The rook checks from f8, protected by the knight.",
+        "why": "The king can't capture the rook or step to h7 or f7: hook mate!",
+        "tip": "The pawn protects the knight and the knight protects the rook: a chain that shuts every exit."
+      }
+    },
+    "popup": {
+      "perfect": "Perfect!",
+      "star": "Unstoppable!",
+      "record": "New record!"
+    },
+    "powers": {
+      "new": "New power",
+      "nose": {
+        "name": "Nose",
+        "desc": "Pulls cookies in: it picks them up from farther away."
+      },
+      "spring": {
+        "name": "Spring",
+        "desc": "The second jump goes higher: piece walls get easier."
+      },
+      "shield": {
+        "name": "Shield",
+        "desc": "Takes the first hit of every run."
+      },
+      "trail": {
+        "name": "Trail",
+        "desc": "A flash under the paws marks the perfect moment to tap."
+      },
+      "ghost": {
+        "name": "Ghost",
+        "desc": "Shows where each sliding or leaping piece will really land."
+      },
+      "dodge": {
+        "name": "Dodge",
+        "desc": "After a hit, the pup stays safe twice as long."
+      },
+      "heart": {
+        "name": "Extra heart",
+        "desc": "One more heart: four in total."
+      },
+      "net": {
+        "name": "Net",
+        "desc": "Cookies bring back a heart sooner: 40 instead of 60."
+      },
+      "cloak": {
+        "name": "Cloak",
+        "desc": "A tap given a little before landing is kept for longer."
+      },
+      "crown": {
+        "name": "Crown",
+        "desc": "Solving a puzzle heals two hearts instead of one."
+      }
+    },
+    "journey": {
+      "title": "The road to the jar",
+      "body": "Defeat the {{count}} guardians, one per tactical pattern, and win the cookies back."
+    },
+    "continue": "Continue",
+    "wardrobe": {
+      "title": "Wardrobe",
+      "wear": "Wear",
+      "skins": {
+        "choco": "Chocolate",
+        "golden": "Golden",
+        "snow": "Snow",
+        "night": "Night",
+        "berry": "Berry",
+        "sky": "Sky"
+      }
+    },
+    "dayStreak": "{{count}} days in a row",
+    "missions": {
+      "perfects": "Perfect {{current}}/{{target}}",
+      "cookies": "Cookies {{current}}/{{target}}",
+      "combo": "Streak {{current}}/{{target}}",
+      "star": "Grab the star",
+      "clean": "No hits",
+      "done": "Mission! +{{seconds}} s"
+    },
+    "lessonTry": "Try it yourself",
+    "lessonTryHint": "Your turn: make the move. Tap the piece, then its square.",
+    "lessonTryWrong": "Not that one. Look at what is highlighted and try again."
   },
   "KNIGHT_TOUR": {
     "title": "Knight tour",
@@ -1273,35 +1544,13 @@
     "startPosition": "Starting position",
     "startPositionDesc": "Choose where the knight starts",
     "showVisitedSquaresDesc": "Highlight squares already visited",
-    "heartsLabel": "{{count}} hearts",
-    "meters": "{{count}} m",
-    "cookiesHint": "Every {{count}} cookies you win back a heart",
-    "strikes": "Misses: {{count}} of {{max}}",
-    "legend": {
-      "touch": "Tap to jump. Two taps in a row, double jump.",
-      "keyboard": "Space or ↑ to jump; twice for a double jump"
-    },
     "random": "Random",
     "a1": "a1 (bottom left corner)",
-      "levelUp": "On to level {{level}}.",
-      "lastStrike": "You missed three exercises: the game is over.",
-      "finish": "See result",
     "h1": "h1 (bottom right corner)",
     "a8": "a8 (top left corner)",
     "h8": "h8 (top right corner)",
     "showVisitedSquares": "Show visited squares",
     "readyToStart": "Ready to start!",
-    "gameOver": {
-      "title": "Game over",
-      "hits": "You ran out of hearts.",
-      "strikes": "You missed three exercises.",
-      "newRecord": "New record",
-      "record": "Record: {{count}} m",
-      "level": "Level",
-      "solved": "Solved",
-      "cookies": "Cookies",
-      "again": "Play again"
-    },
     "gameStartsWhenMove": "The game will start when you move the knight for the first time",
     "congratulations": "Congratulations!",
     "completedTour": "You have completed the knight tour",

@@ -4,13 +4,13 @@ import {
   OBSTACLE_SHAPES,
   PIECE_BEHAVIOR,
   PIECE_DRAW_SIZE,
-  worldOfLevel,
-  WORLDS,
 } from '@features/chess-runner/config/runner.config';
+import { WORLDS } from '@features/chess-runner/campaign/runner-curriculum';
 import { RunnerRenderer, FEET_Y } from '@features/chess-runner/components/runner-canvas/runner-renderer';
 import { RunnerObstacle, RunnerState } from '@features/chess-runner/models/runner.model';
 import { RunnerSprite } from '@features/chess-runner/services/runner-sprites.service';
-import { createRun } from '@features/chess-runner/utils/runner-engine.util';
+import { modifiersFor } from '@features/chess-runner/config/runner-powers';
+import { CONTACT_X, createRun } from '@features/chess-runner/utils/runner-engine.util';
 
 /**
  * El pintor del runner: recibe un estado y dibuja. El contexto 2D es un doble que anota las llamadas
@@ -34,6 +34,10 @@ function contexto() {
     save: jest.fn(),
     restore: jest.fn(),
     translate: jest.fn(),
+    beginPath: jest.fn(),
+    ellipse: jest.fn(),
+    fill: jest.fn(),
+    stroke: jest.fn(),
   } as unknown as CanvasRenderingContext2D & {
     clearRect: jest.Mock;
     drawImage: jest.Mock;
@@ -42,6 +46,9 @@ function contexto() {
     save: jest.Mock;
     restore: jest.Mock;
     translate: jest.Mock;
+    ellipse: jest.Mock;
+    fill: jest.Mock;
+    stroke: jest.Mock;
   };
 }
 
@@ -87,7 +94,7 @@ function obstaculo(kind: RunnerObstacle['kind'], x: number, extra: Partial<Runne
   };
 }
 
-/** Una carrera con un peón que ya salió y está a la vista, por delante de Chocolate. */
+/** Una carrera con un peón que ya salió y está a la vista, por delante del perrito. */
 function estadoConPeon(): RunnerState {
   const inicial = createRun([{ kind: 'pawn', color: 'w' }], ANCHO);
   return { ...inicial, obstacles: [obstaculo('pawn', 120)] };
@@ -111,7 +118,7 @@ describe('RunnerRenderer', () => {
     expect(ctx.clearRect).toHaveBeenCalledWith(0, 0, ANCHO, expect.any(Number));
   });
 
-  it('dibuja a Chocolate y el obstáculo que tiene delante', () => {
+  it('dibuja al perrito y el obstáculo que tiene delante', () => {
     pintor.draw(estadoConPeon());
 
     expect(imagenesDibujadas(ctx)).toEqual(expect.arrayContaining([IMAGEN_PERRO, IMAGEN_PEON]));
@@ -306,30 +313,196 @@ describe('RunnerRenderer: piezas, galletas y mundos', () => {
     expect(COOKIE_SIZE).toBe(9);
   });
 
-  it('el día no se tiñe; la tarde, la noche y el amanecer sí', () => {
-    const tintes = (nivel: number) => {
+  it('el día no se tiñe; cada mundo, a su manera', () => {
+    const tintes = (world: (typeof WORLDS)[number]) => {
       colores.length = 0;
-      pintor.draw({ ...estadoConPeon(), difficulty: difficultyForLevel(nivel) });
-      return colores.filter((c) => /^rgba\((255, 130, 50|12, 20, 70|255, 120, 175)/.test(c));
+      pintor.world = world;
+      pintor.draw(estadoConPeon());
+      return colores.filter((c) => /^rgba\((255, 130, 50|12, 20, 70|150, 170, 190|255, 120, 175|70, 20, 40)/.test(c));
     };
 
-    expect(tintes(1)).toHaveLength(0);
-    expect(tintes(4)).toEqual(['rgba(255, 130, 50, 0.26)']);
-    expect(tintes(7)).toEqual(['rgba(12, 20, 70, 0.58)']);
-    expect(tintes(10)).toEqual(['rgba(255, 120, 175, 0.22)']);
+    expect(tintes('day')).toHaveLength(0);
+    expect(tintes('sunset')).toEqual(['rgba(255, 130, 50, 0.26)']);
+    expect(tintes('night')).toEqual(['rgba(12, 20, 70, 0.58)']);
+    expect(tintes('mist')).toEqual(['rgba(150, 170, 190, 0.42)']);
+    expect(tintes('dawn')).toEqual(['rgba(255, 120, 175, 0.22)']);
+    expect(tintes('storm')).toEqual(['rgba(70, 20, 40, 0.55)']);
   });
 
-  it('de noche hay estrellas', () => {
-    pintor.draw({ ...estadoConPeon(), difficulty: difficultyForLevel(7) });
-    const estrellas = colores.filter((c) => /^rgba\(255, 255, 255, 0\.(55|95)\)$/.test(c));
+  it('de noche y en la tormenta hay estrellas', () => {
+    for (const world of ['night', 'storm'] as const) {
+      colores.length = 0;
+      pintor.world = world;
+      pintor.draw(estadoConPeon());
+      const estrellas = colores.filter((c) => /^rgba\(255, 255, 255, 0\.(55|95)\)$/.test(c));
 
-    expect(estrellas.length).toBe(10);
+      expect(estrellas.length).toBe(10);
+    }
   });
 
-  it('hay cuatro escenarios, uno por cada tres niveles', () => {
-    expect(WORLDS).toEqual(['day', 'sunset', 'night', 'dawn']);
-    expect([1, 3, 4, 6, 7, 9, 10].map((n) => worldOfLevel(n))).toEqual(['day', 'day', 'sunset', 'sunset', 'night', 'night', 'dawn']);
-    // Pasada la vuelta, vuelve a empezar
-    expect(worldOfLevel(13)).toBe('day');
+  it('hay seis mundos', () => {
+    expect(WORLDS).toEqual(['day', 'sunset', 'night', 'mist', 'dawn', 'storm']);
+  });
+});
+
+describe('RunnerRenderer: lo que enseñan los poderes', () => {
+  let ctx: ReturnType<typeof contexto> & { fillStyle: string };
+  let pintor: RunnerRenderer;
+  const colores: string[] = [];
+
+  beforeEach(() => {
+    ctx = contexto() as ReturnType<typeof contexto> & { fillStyle: string };
+    colores.length = 0;
+    ctx.fillRect.mockImplementation(() => colores.push(ctx.fillStyle));
+    pintor = new RunnerRenderer(ctx, sprites(), piezas(), ANCHO);
+  });
+
+  const con = (poderes: Parameters<typeof modifiersFor>[0], extra: Partial<RunnerState> = {}): RunnerState => ({
+    ...estadoConPeon(),
+    mods: modifiersFor(poderes),
+    shields: modifiersFor(poderes).shields,
+    ...extra,
+  });
+
+  describe('el escudo', () => {
+    it('con escudo, una burbuja azul alrededor del perrito', () => {
+      pintor.draw(con(['shield']));
+
+      expect(ctx.ellipse).toHaveBeenCalledTimes(2);
+      expect(ctx.stroke).toHaveBeenCalled();
+    });
+
+    it('sin escudo, o con el escudo ya gastado, no hay burbuja', () => {
+      pintor.draw(con([]));
+      pintor.draw(con(['shield'], { shields: 0 }));
+
+      expect(ctx.ellipse).not.toHaveBeenCalled();
+    });
+
+    it('sigue al perrito cuando salta', () => {
+      const centro = (altura: number) => {
+        ctx.ellipse.mockClear();
+        const estado = con(['shield']);
+        pintor.draw({ ...estado, dog: { ...estado.dog, y: altura } });
+        return ctx.ellipse.mock.calls[0][1] as number;
+      };
+
+      expect(centro(30)).toBe(centro(0) - 30);
+    });
+  });
+
+  describe('la huella que marca cuándo tocar', () => {
+    /** Un estado con una pieza que llega al perrito en `segundos`. */
+    const llegandoEn = (segundos: number, poderes: Parameters<typeof modifiersFor>[0] = ['trail']): RunnerState => {
+      const estado = con(poderes);
+      const plan = CONTACT_X + segundos * estado.speed;
+      return { ...estado, obstacles: [obstaculo('pawn', plan, { plan })] };
+    };
+    const huella = () => colores.filter((c) => /^rgba\(255, 255, 255, 0\.(\d+)\)$/.test(c) && Number(c.match(/0\.(\d+)/)![0]) >= 0.35);
+
+    it('se enciende cuando es buen momento de tocar', () => {
+      pintor.draw(llegandoEn(0.2));
+
+      expect(colores.filter((c) => c.startsWith('rgba(255, 255, 255, 0.')).length).toBeGreaterThanOrEqual(3);
+    });
+
+    it('con la pieza lejos o ya encima, no', () => {
+      const lejos = () => {
+        colores.length = 0;
+        pintor.draw(llegandoEn(0.8));
+        return colores.filter((c) => c.startsWith('rgba(255, 255, 255, 0.'));
+      };
+      const encima = () => {
+        colores.length = 0;
+        pintor.draw(llegandoEn(0.02));
+        return colores.filter((c) => c.startsWith('rgba(255, 255, 255, 0.'));
+      };
+
+      expect(lejos()).toHaveLength(0);
+      expect(encima()).toHaveLength(0);
+    });
+
+    it('brilla más justo en el momento ideal que en los bordes', () => {
+      const brillo = (t: number) => {
+        colores.length = 0;
+        pintor.draw(llegandoEn(t));
+        return Number(colores.filter((c) => c.startsWith('rgba(255, 255, 255, 0.'))[0]?.match(/0\.\d+/)?.[0] ?? 0);
+      };
+
+      expect(brillo(0.2)).toBeGreaterThan(brillo(0.13));
+      expect(brillo(0.2)).toBeGreaterThan(brillo(0.27));
+    });
+
+    it('sin el poder, no sale; en el aire, tampoco', () => {
+      pintor.draw(llegandoEn(0.2, []));
+      expect(colores.filter((c) => c.startsWith('rgba(255, 255, 255, 0.'))).toHaveLength(0);
+
+      const aire = llegandoEn(0.2);
+      pintor.draw({ ...aire, dog: { ...aire.dog, y: 20 } });
+      expect(colores.filter((c) => c.startsWith('rgba(255, 255, 255, 0.'))).toHaveLength(0);
+      expect(huella()).toEqual([]);
+    });
+  });
+
+  describe('los fantasmas de las piezas que se deslizan o saltan', () => {
+    const torre = (poderes: Parameters<typeof modifiersFor>[0]): RunnerState => {
+      const estado = con(poderes);
+      return { ...estado, obstacles: [obstaculo('rook', 100, { plan: 80, x: 130 })] };
+    };
+    const dibujosDeLaTorre = () => ctx.drawImage.mock.calls.filter((c) => c[0] === IMAGEN_TORRE);
+
+    it('con el poder, además de la torre se dibuja su fantasma en el sitio donde llegará de verdad', () => {
+      pintor.draw(torre(['ghost']));
+
+      const llamadas = dibujosDeLaTorre();
+      expect(llamadas).toHaveLength(2);
+      const xs = llamadas.map((c) => c[1] as number).sort((a, b) => a - b);
+      expect(xs[0]).toBeLessThan(xs[1]);
+    });
+
+    it('el fantasma es tenue', () => {
+      const alfas: number[] = [];
+      ctx.drawImage.mockImplementation((imagen: unknown) => {
+        if (imagen === IMAGEN_TORRE) alfas.push(ctx.globalAlpha);
+      });
+      pintor.draw(torre(['ghost']));
+
+      expect(alfas.some((a) => a < 0.4)).toBe(true);
+      expect(ctx.globalAlpha).toBe(1);
+    });
+
+    it('sin el poder no hay fantasma', () => {
+      pintor.draw(torre([]));
+
+      expect(dibujosDeLaTorre()).toHaveLength(1);
+    });
+
+    it('las piezas que no se deslizan ni saltan no lo necesitan', () => {
+      pintor.draw(con(['ghost']));
+
+      expect(ctx.drawImage.mock.calls.filter((c) => c[0] === IMAGEN_PEON)).toHaveLength(1);
+    });
+
+    it('una pieza ya superada o con la que se chocó no deja fantasma', () => {
+      const estado = torre(['ghost']);
+      pintor.draw({ ...estado, obstacles: [{ ...estado.obstacles[0], cleared: true }] });
+
+      expect(dibujosDeLaTorre()).toHaveLength(1);
+    });
+  });
+
+  it('el equipo del perrito se dibuja sobre el sprite corriendo, pero no si no lleva nada', () => {
+    const sinEquipo = () => {
+      ctx.fillRect.mockClear();
+      pintor.gear = [];
+      pintor.draw(con([]));
+      return ctx.fillRect.mock.calls.length;
+    };
+    const base = sinEquipo();
+    ctx.fillRect.mockClear();
+    pintor.gear = ['crown', 'cloak'];
+    pintor.draw(con([]));
+
+    expect(ctx.fillRect.mock.calls.length).toBeGreaterThan(base);
   });
 });

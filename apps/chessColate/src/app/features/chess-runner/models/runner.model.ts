@@ -1,9 +1,10 @@
 /**
- * Chess Runner: un minijuego previo al ejercicio. Chocolate corre y, con un toque, salta las piezas del
+ * Chess Runner: un minijuego previo al ejercicio. El perrito corre y, con un toque, salta las piezas del
  * ejercicio como obstáculos; al superarlas aparece el tablero. La simulación es pura (sin canvas ni reloj) y
  * trabaja en píxeles lógicos: el lienzo los escala por un entero.
  */
 
+import { RunnerModifiers } from '../config/runner-powers';
 import { RunnerDifficulty } from '../config/runner.config';
 
 export type RunnerPieceKind = 'pawn' | 'rook' | 'bishop' | 'knight' | 'queen' | 'king';
@@ -19,6 +20,8 @@ export interface RunnerPiece {
   beat?: number;
   /** Cuántas piezas iguales van en fila (una falange): solo se pasan con el doble salto. Sin valor, una. */
   wall?: number;
+  /** Segundos de calma tras ella, con una cinta de galletas por el camino: el respiro entre una oleada y la siguiente. */
+  rest?: number;
 }
 
 export interface RunnerObstacle {
@@ -42,15 +45,23 @@ export interface RunnerObstacle {
   /** Piezas en fila y separación entre ellas (de izquierda a izquierda). */
   count: number;
   spacing: number;
-  /** Ya lo superó Chocolate. */
+  /** Ya lo superó el perrito. */
   cleared: boolean;
   /** Chocó con él: ya no cuenta ni estorba. */
   hit: boolean;
+  /** Ya se miró cómo lo pasó el perrito (al cruzar su centro con el del perrito). */
+  judged?: boolean;
+  /** Lo pasó en lo más alto del salto: un salto perfecto. */
+  perfect?: boolean;
+  /** Lo arrolló el perrito con la estrella. */
+  smashed?: boolean;
 }
 
-/** Una galleta de ChessColate suelta en el aire o en el suelo. */
+/** Una galleta de ChessColate suelta en el aire o en el suelo; la estrella (una por carrera) hace al perrito imparable un rato. */
 export interface RunnerCookie {
   id: number;
+  /** Sin valor, una galleta. */
+  kind?: 'cookie' | 'star';
   /** Borde izquierdo y altura de la base sobre el suelo. */
   x: number;
   y: number;
@@ -77,6 +88,10 @@ export interface RunnerState {
   /** Segundos de carrera. */
   time: number;
   difficulty: RunnerDifficulty;
+  /** Las reglas con los poderes del perrito. */
+  mods: RunnerModifiers;
+  /** Escudos que le quedan en esta carrera. */
+  shields: number;
   /** Velocidad actual del suelo (px/s): sube desde `startSpeed` hacia `endSpeed` a medida que se superan piezas. */
   speed: number;
   /** Lo que ha pasado el suelo desde el principio, en píxeles (para el paralaje del fondo). */
@@ -89,8 +104,18 @@ export interface RunnerState {
   queue: RunnerPiece[];
   /** Las galletas que hay por el camino. */
   pickups: RunnerCookie[];
-  /** Galletas cogidas en esta carrera. */
+  /** Galletas cogidas en esta carrera (también las de los saltos perfectos y las piezas arrolladas). */
   cookies: number;
+  /** Segundos que le quedan a la estrella: imparable, arrolla lo que toque. */
+  starTime: number;
+  /** La estrella de esta carrera ya salió (es una por carrera). */
+  starSpawned: boolean;
+  /** Estrellas cogidas en esta carrera. */
+  starsTaken: number;
+  /** Piezas pasadas en lo más alto del salto. */
+  perfects: number;
+  /** Piezas arrolladas con la estrella. */
+  smashed: number;
   /** Distancia que falta recorrer antes de sacar el siguiente obstáculo. */
   untilSpawn: number;
   nextId: number;
@@ -114,7 +139,17 @@ export interface RunnerEvents {
   landed: boolean;
   cleared: RunnerObstacle[];
   stumbled: RunnerObstacle | null;
-  /** Se acabó el recorrido de obstáculos: Chocolate corre hacia el tablero. */
+  /** El escudo aguantó un choque con este obstáculo. */
+  shielded: RunnerObstacle | null;
+  /** Piezas que se acaban de pasar en lo más alto del salto. */
+  perfect: RunnerObstacle[];
+  /** El perrito cogió la estrella. */
+  starTaken: boolean;
+  /** Piezas que arrolló con la estrella en este paso. */
+  smashed: RunnerObstacle[];
+  /** Se le acabó la estrella. */
+  starEnded: boolean;
+  /** Se acabó el recorrido de obstáculos: el perrito corre hacia el tablero. */
   finishing: boolean;
   /** Salió de la pantalla: toca enseñar el ejercicio. */
   done: boolean;
@@ -131,6 +166,9 @@ export interface RunnerStats {
   /** Metros que se corrieron y galletas que se cogieron. */
   meters: number;
   cookies: number;
+  /** Saltos perfectos y piezas arrolladas con la estrella. */
+  perfects: number;
+  smashed: number;
 }
 
 /** Un rectángulo en píxeles lógicos con el origen en el suelo (y crece hacia arriba). */

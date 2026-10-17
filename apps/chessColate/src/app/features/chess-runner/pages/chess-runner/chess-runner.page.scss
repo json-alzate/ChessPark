@@ -67,3 +67,19 @@
     radial-gradient(circle at 55% 25%, #3a1f0c 0 7%, transparent 8%), #d99a52;
   border: 1px solid #6b3d17;
 }
+
+// El aviso del doble salto entra con un pequeño rebote y se va solo (se quita de la plantilla al pasar su tiempo).
+.wall-hint {
+  animation: wall-hint 0.35s ease-out;
+}
+
+@keyframes wall-hint {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

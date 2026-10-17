@@ -1,3 +1,5 @@
+import { POWER_IDS } from '@features/chess-runner/campaign/runner-curriculum';
+import { DOG_SKINS } from '@features/chess-runner/rendering/dog-skins';
 import {
   COOKIE_ARC_Y,
   COOKIE_HIGH_Y,
@@ -12,8 +14,6 @@ import {
   PIECE_BEHAVIOR,
   PX_PER_METER,
   WALL_KINDS,
-  worldOfLevel,
-  WORLDS,
   OBSTACLE_SHAPES,
   PIECE_DRAW_SIZE,
   RUNNER_CANVAS_HEIGHT,
@@ -100,7 +100,7 @@ describe('configuración del Chess Runner', () => {
     expect(subida + ALTO_DE_CHOCOLATE).toBeLessThan(PIES_SOBRE_EL_LIENZO);
   });
 
-  it('las piezas son más pequeñas que Chocolate (40 de alto): no se le comen el protagonismo', () => {
+  it('las piezas son más pequeñas que el perrito (40 de alto): no se le comen el protagonismo', () => {
     expect(PIECE_DRAW_SIZE).toBeLessThan(40);
   });
 
@@ -121,7 +121,7 @@ describe('configuración del Chess Runner', () => {
     }
   });
 
-  it('solo el alfil flota, y aun así Chocolate de pie no pasa por debajo', () => {
+  it('solo el alfil flota, y aun así el perrito de pie no pasa por debajo', () => {
     const flotan = Object.entries(PIECE_BEHAVIOR).filter(([, c]) => c.lift > 0).map(([kind]) => kind);
 
     expect(flotan).toEqual(['bishop']);
@@ -142,7 +142,7 @@ describe('configuración del Chess Runner', () => {
     const doble = sencillo + subida(RUNNER_PHYSICS.doubleJumpVelocity);
 
     expect(doble).toBeGreaterThan(sencillo + 25);
-    // Chocolate coge una galleta con la cabeza (su caja es DOG_BOX.height de alto)
+    // El perrito coge una galleta con la cabeza (su caja es DOG_BOX.height de alto)
     expect(COOKIE_HIGH_Y).toBeGreaterThan(sencillo + DOG_BOX.height);
     expect(COOKIE_HIGH_Y).toBeLessThan(doble + DOG_BOX.height);
     // Las del arco se cogen con un salto sencillo pero no corriendo
@@ -155,16 +155,6 @@ describe('configuración del Chess Runner', () => {
     expect(MAX_STRIKES).toBe(3);
     expect(COOKIES_PER_HEART).toBeGreaterThanOrEqual(10);
     expect(PX_PER_METER).toBeGreaterThan(0);
-  });
-
-  it('los mundos cambian cada tres niveles y dan la vuelta', () => {
-    expect(WORLDS).toHaveLength(4);
-    expect(worldOfLevel(1)).toBe('day');
-    expect(worldOfLevel(4)).toBe('sunset');
-    expect(worldOfLevel(7)).toBe('night');
-    expect(worldOfLevel(10)).toBe('dawn');
-    expect(worldOfLevel(13)).toBe('day');
-    expect(worldOfLevel(0)).toBe('day');
   });
 
   it('el máximo de obstáculos y de copias por pieza tienen sentido', () => {
@@ -191,7 +181,7 @@ describe('assets y traducciones del Chess Runner', () => {
     }
   });
 
-  it('existen las poses de Chocolate, el escenario y el manifiesto', () => {
+  it('existen las poses del perrito, el escenario y el manifiesto', () => {
     for (const nombre of ['dog-run', 'dog-jump', 'dog-hurt', 'dog-happy', 'scene-floor', 'scene-hills', 'scene-sky', 'scene-skyline', 'fx-dust', 'fx-spark', 'runner']) {
       expect(existsSync(join(ASSETS, nombre === 'runner' ? 'runner.json' : `${nombre}.png`))).toBe(true);
     }
@@ -217,8 +207,16 @@ describe('assets y traducciones del Chess Runner', () => {
   const dinamicas = [
   ...['solved', 'wrong', 'timeout'].map((r) => `CHESS_RUNNER.result.${r}`),
   // El cartel de cada carrera y el motivo del fin de partida se eligen en tiempo de ejecución
-  ...['first', 'faster', 'doubleJump', 'world.day', 'world.sunset', 'world.night', 'world.dawn'].map((h) => `CHESS_RUNNER.levelHint.${h}`),
-  ...['hits', 'strikes'].map((r) => `CHESS_RUNNER.gameOver.${r}`),
+  ...['first', 'doubleJump', 'review', 'boss'].map((h) => `CHESS_RUNNER.levelHint.${h}`),
+  ...['hits', 'strikes', 'quit', 'lobby'].map((r) => `CHESS_RUNNER.gameOver.${r}`),
+  // Cada misión se pide por su tipo
+  ...['perfects', 'cookies', 'combo', 'star', 'clean'].map((k) => `CHESS_RUNNER.missions.${k}`),
+  // Los pelajes del armario se piden por su identificador
+  ...DOG_SKINS.map((skin) => `CHESS_RUNNER.wardrobe.skins.${skin.id}`),
+  // El nombre y la explicación de cada poder se piden por su identificador
+  ...POWER_IDS.flatMap((id) => [`CHESS_RUNNER.powers.${id}.name`, `CHESS_RUNNER.powers.${id}.desc`]),
+  // La etiqueta accesible del mapa y de cada escena de la historia
+  ...['prologue', 'intro', 'victory', 'epilogue'].map((e) => `CHESS_RUNNER.story.${e}`),
 ];
 
   it('las plantillas usan claves (no es una prueba vacía)', () => {
@@ -240,7 +238,8 @@ describe('assets y traducciones del Chess Runner', () => {
     expect(en).toEqual(es);
 
     const usadas = new Set([...claves, ...dinamicas]);
-    expect(es.filter((c) => !usadas.has(c))).toEqual([]);
+    // Las frases de las lecciones se piden por patrón y tramo (`lessons.<patrón>.<tramo>`): lo comprueba la prueba de las lecciones
+    expect(es.filter((c) => !usadas.has(c) && !c.startsWith('CHESS_RUNNER.lessons.'))).toEqual([]);
   });
 
   it('los textos no llevan guiones largos ni emojis (guía de tono)', () => {

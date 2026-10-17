@@ -1227,39 +1227,310 @@
   },
   "CHESS_RUNNER": {
     "title": "Chess Runner",
-    "canvasLabel": "Chocolate corre y salta las piezas del ejercicio",
+    "canvasLabel": "El perrito corre y salta las piezas del ejercicio",
     "loading": "Buscando un ejercicio…",
     "session": "Resueltos: {{count}}",
     "exit": "Salir",
     "skip": "Saltar carrera",
     "runClean": "Carrera sin tropiezos.",
     "runStumbles": "Carrera con {{count}} tropiezos.",
-    "level": "Nivel {{level}}",
     "combo": "Racha {{count}}",
+    "lessonLabel": "Un tablero pequeño enseña el patrón",
+    "lessonContinue": "Empezar",
+    "lessonShow": "Ver el patrón",
+    "lessonClose": "Cerrar la lección",
+    "storySkip": "Saltar la escena",
+    "map": {
+      "label": "Tu camino: {{done}} de {{total}} guardianes vencidos"
+    },
+    "story": {
+      "prologue": "El perrito duerme y el Rey de las Sombras se lleva el frasco de galletas",
+      "intro": "El perrito llega a un mundo nuevo y un guardián le corta el paso",
+      "victory": "El perrito vence al guardián y gana un poder",
+      "epilogue": "El perrito recupera el frasco y amanece"
+    },
     "levelHint": {
       "first": "Salta las piezas del ejercicio",
-      "faster": "Más rápido que la anterior",
       "doubleJump": "Nuevo: dos toques seguidos, doble salto",
-      "world": {
-        "day": "De día",
-        "sunset": "Atardecer",
-        "night": "De noche",
-        "dawn": "Amanecer"
-      }
+      "review": "Repaso",
+      "boss": "Guardián · ELO {{rating}}"
+    },
+    "heartsLabel": "{{count}} corazones",
+    "meters": "{{count}} m",
+    "cookiesHint": "Cada {{count}} galletas recuperas un corazón",
+    "strikes": "Fallos: {{count}} de {{max}}",
+    "legend": {
+      "touch": "Toca para saltar. Dos toques seguidos, doble salto.",
+      "keyboard": "Espacio o ↑ para saltar; dos veces, doble salto"
     },
     "result": {
       "solved": "Bien resuelto.",
+      "chapterDone": "Patrón dominado",
+      "stars": "{{count}} de 3 estrellas",
+      "lastStrike": "Fallaste tres ejercicios: se acabó la partida.",
+      "finish": "Ver resultado",
       "wrong": "Ese no es el mejor movimiento.",
       "timeout": "Se acabó el tiempo.",
       "solution": "Ver solución",
       "next": "Otro ejercicio"
+    },
+    "gameOver": {
+      "title": "Fin de la partida",
+      "hits": "Te quedaste sin corazones.",
+      "strikes": "Fallaste tres ejercicios.",
+      "quit": "Saliste de la partida: lo que corriste ya está guardado.",
+      "lobby": "Sigue donde lo dejaste.",
+      "play": "Jugar",
+      "newRecord": "Nuevo récord",
+      "record": "Récord: {{count}} m",
+      "level": "Capítulo",
+      "solved": "Resueltos",
+      "cookies": "Galletas",
+      "again": "Jugar otra vez"
     },
     "error": {
       "title": "No pudimos traer el ejercicio",
       "message": "Revisa tu conexión e inténtalo de nuevo.",
       "retry": "Reintentar",
       "back": "Volver al inicio"
-    }
+    },
+    "round": "Ronda {{count}}",
+    "rating": "ELO",
+    "lessons": {
+      "hangingPiece": {
+        "idea": "Una pieza sin defensa se captura gratis",
+        "see": "Mira el caballo negro: ninguna pieza lo protege.",
+        "play": "El alfil lo captura sin ningún riesgo.",
+        "why": "¡Pieza ganada! Si nadie la defiende, nadie puede recapturar.",
+        "tip": "Antes de cada jugada pregúntate: ¿qué piezas rivales están sin defensa?"
+      },
+      "mateIn1": {
+        "idea": "Jaque mate: el rey no tiene escapatoria",
+        "see": "El rey negro está en la esquina. Cuenta sus casillas libres.",
+        "play": "La dama da jaque desde g7, protegida por nuestro rey.",
+        "why": "No puede capturar la dama ni huir a ninguna casilla: ¡mate!",
+        "tip": "Busca jaques que el rey no pueda capturar ni esquivar."
+      },
+      "fork": {
+        "idea": "Una pieza ataca a dos a la vez y solo se salva una",
+        "see": "El rey y la torre negros pueden ser atacados desde una misma casilla: d6.",
+        "play": "El caballo salta a d6 y ataca a las dos piezas.",
+        "why": "El rey debe huir del jaque y la torre cae: ¡ataque doble!",
+        "tip": "Los caballos son los reyes del ataque doble: busca casillas que ataquen dos piezas."
+      },
+      "pin": {
+        "idea": "Una pieza no puede moverse porque dejaría expuesta otra más valiosa",
+        "see": "El caballo negro está en la misma columna que su rey.",
+        "play": "La torre ataca al caballo.",
+        "why": "Si el caballo se mueve, la torre captura al rey: está clavado y no puede escapar.",
+        "tip": "Ataca la pieza clavada con más piezas: no puede huir."
+      },
+      "skewer": {
+        "idea": "Atacas una pieza valiosa; al apartarse, cae la que había detrás",
+        "see": "El rey y la torre negros están en la misma fila.",
+        "play": "La torre da jaque al rey.",
+        "play2": "El rey tiene que apartarse...",
+        "play3": "...y la torre captura la que había detrás.",
+        "why": "¡Pincho! Primero se aparta la pieza más valiosa, después cae la otra.",
+        "tip": "Es como una clavada al revés: la pieza valiosa va delante."
+      },
+      "discoveredAttack": {
+        "idea": "Al mover una pieza destapas el ataque de otra que estaba detrás",
+        "see": "El alfil tapa la columna de la torre. Al final de esa columna está la dama negra.",
+        "play": "El alfil captura con jaque: el rey debe responder.",
+        "play2": "El rey negro se come el alfil...",
+        "play3": "...y la torre, ya sin estorbo, captura la dama.",
+        "why": "¡Ataque a la descubierta! Dos amenazas a la vez y solo se puede parar una.",
+        "tip": "Busca piezas tuyas que tapen a tu torre, alfil o dama."
+      },
+      "doubleCheck": {
+        "idea": "Dos piezas dan jaque a la vez: el rey solo puede moverse",
+        "see": "El caballo blanco tapa la columna de la torre, que apunta al rey negro.",
+        "play": "El caballo se mueve y da jaque, y destapa el jaque de la torre.",
+        "why": "No se pueden bloquear ni capturar dos piezas a la vez: el rey tiene que huir.",
+        "tip": "El jaque doble es la jugada más fuerte: busca un jaque descubierto que también dé jaque."
+      },
+      "backRankMate": {
+        "idea": "El rey queda atrapado en su última fila por sus propios peones",
+        "see": "Los peones del rey negro le tapan todas las salidas.",
+        "play": "La torre entra en la última fila dando jaque.",
+        "why": "El rey no puede huir ni capturar la torre: ¡mate de pasillo!",
+        "tip": "Dale siempre una salida a tu rey: mueve un peón para hacerle un ventanuco."
+      },
+      "trappedPiece": {
+        "idea": "Una pieza atacada que no tiene ninguna casilla segura a donde ir",
+        "see": "Mira el caballo negro de a8: sus salidas (b6 y c7) están vigiladas.",
+        "play": "El alfil ataca al caballo.",
+        "why": "¡Atrapado! Cualquier casilla a la que vaya está atacada.",
+        "then": "El rey se mueve, y el alfil captura el caballo atrapado.",
+        "tip": "Las piezas en el borde se atrapan fácil: cuenta sus casillas de salida."
+      },
+      "smotheredMate": {
+        "idea": "El rey está ahogado por sus propias piezas y un caballo le da jaque",
+        "see": "El rey negro está rodeado por su torre y sus peones.",
+        "play": "El caballo salta a f7 y da jaque.",
+        "why": "Ni se bloquea un jaque de caballo ni el rey tiene casillas: ¡mate de la coz!",
+        "tip": "Los jaques de caballo no se pueden bloquear: úsalos cuando el rey esté encerrado."
+      },
+      "mateIn2": {
+        "idea": "Mate en dos: primero encierras al rey, luego das el mate",
+        "see": "Dos torres contra el rey en la esquina.",
+        "play": "Una torre corta la fila 7: el rey no puede bajar.",
+        "play2": "El rey solo puede ir a la casilla g8...",
+        "play3": "...y la otra torre da mate en la fila 8.",
+        "why": "Una torre corta y la otra remata: ¡mate de escalera!",
+        "tip": "Piensa dos jugadas: ¿qué jugada deja al rey sin casillas?"
+      },
+      "capturingDefender": {
+        "idea": "Si capturas a la pieza que defiende a otra, esta se queda sin protección",
+        "see": "El peón de e5 solo está protegido por el caballo de c6.",
+        "play": "El alfil captura al caballo, que protegía el peón.",
+        "why": "¡Sin su defensor, el peón de e5 queda colgado!",
+        "play2": "Las negras recapturan con el peón...",
+        "play3": "...y el caballo blanco se come el peón de e5, ya sin protección.",
+        "tip": "Pregúntate: ¿quién defiende esa pieza? ¿Puedo quitar al defensor?"
+      },
+      "deflection": {
+        "idea": "Obligas a una pieza a abandonar su puesto de defensa",
+        "see": "El rey negro es el único que defiende la torre de g6.",
+        "play": "El peón corona con jaque. El rey tiene que capturar la dama...",
+        "why": "¡Desviado! El rey se alejó y la torre quedó sin defensor.",
+        "then": "El rey blanco se come la torre.",
+        "tip": "Busca la pieza que sostiene a otra y fuérzala a moverse con un jaque o una captura."
+      },
+      "attraction": {
+        "idea": "Atraes una pieza (casi siempre el rey) a una casilla donde puedes castigarla",
+        "see": "El peón de a7 está a un paso de coronar, pero la torre negra vigila la fila 8.",
+        "play": "Sacrificamos la torre en e8 con jaque.",
+        "play2": "El rey captura y queda en e8...",
+        "play3": "...y el peón corona dando jaque: ganamos.",
+        "why": "El rey fue atraído a la casilla fatal.",
+        "tip": "Un sacrificio puede ser un cebo: pregunta qué pasa si la pieza lo captura."
+      },
+      "xRayAttack": {
+        "idea": "Una pieza ataca «a través» de otra, como si viera por dentro",
+        "see": "La torre blanca de g7 está justo detrás de la torre negra de g5.",
+        "play": "El peón da jaque desde g4.",
+        "play2": "La torre negra lo captura: no tiene otra jugada.",
+        "play3": "La torre blanca captura a la negra: la veía a través de la otra.",
+        "why": "¡Ataque por rayos X! La torre de g7 apoyaba en g4 a pesar de las piezas del medio.",
+        "tip": "Al contar atacantes y defensores, cuenta también las piezas de detrás."
+      },
+      "intermezzo": {
+        "idea": "Una jugada intermedia (casi siempre un jaque) antes de la captura esperada",
+        "see": "Nuestra torre está atacada por el alfil, y el peón podría capturar la torre negra.",
+        "play": "Antes de capturar, jaque con la torre: el rival no tiene tiempo de comérsela.",
+        "play2": "El rey se aparta...",
+        "play3": "...y ahora sí, el peón captura la torre.",
+        "why": "¡Jugada intermedia! Un jaque en medio salvó nuestra torre.",
+        "tip": "Antes de recapturar, busca un jaque o una amenaza mayor."
+      },
+      "arabianMate": {
+        "idea": "Torre y caballo atrapan al rey en la esquina",
+        "see": "El rey está en h8. El caballo vigila g8 y h7.",
+        "play": "La torre da jaque desde h7, protegida por el caballo.",
+        "why": "El rey no puede capturar la torre ni huir: ¡mate árabe!",
+        "tip": "Con el rey rival en la esquina, coordina torre y caballo."
+      },
+      "anastasiaMate": {
+        "idea": "Caballo y torre dan mate con un peón del rey tapándole la salida",
+        "see": "El rey tiene su peón al lado, y el caballo vigila g8 y g6.",
+        "play": "La torre da jaque por la columna h.",
+        "why": "El peón negro le tapa la salida y no hay más casillas: ¡mate de Anastasia!",
+        "tip": "Busca mates en el borde cuando el rey tiene un peón pegado."
+      },
+      "bodenMate": {
+        "idea": "Dos alfiles que se cruzan dan mate al rey del lado de dama",
+        "see": "El rey negro está bloqueado por sus propias piezas.",
+        "play": "El alfil da jaque desde a6; el otro vigila c7 y b8.",
+        "why": "Las diagonales se cruzan y no hay escape: ¡mate de Boden!",
+        "tip": "Dos alfiles en diagonales que se cruzan controlan muchas casillas."
+      },
+      "hookMate": {
+        "idea": "Torre, caballo y peón se coordinan para dar mate junto al peón del rey",
+        "see": "El rey negro tiene su propio peón al lado. Mira el caballo y el peón blancos.",
+        "play": "La torre da jaque desde f8, protegida por el caballo.",
+        "why": "El rey no puede capturar la torre ni pasar a h7 o f7: ¡mate del gancho!",
+        "tip": "El peón protege al caballo y el caballo a la torre: una cadena que cierra todas las salidas."
+      }
+    },
+    "popup": {
+      "perfect": "¡Perfecto!",
+      "star": "¡Imparable!",
+      "record": "¡Récord superado!"
+    },
+    "powers": {
+      "new": "Poder nuevo",
+      "nose": {
+        "name": "Olfato",
+        "desc": "Atrae las galletas: las coge desde más lejos."
+      },
+      "spring": {
+        "name": "Resorte",
+        "desc": "El segundo salto sube más: las falanges de piezas son más fáciles."
+      },
+      "shield": {
+        "name": "Escudo",
+        "desc": "Aguanta el primer choque de cada carrera."
+      },
+      "trail": {
+        "name": "Estela",
+        "desc": "Un destello bajo las patas marca el momento justo para tocar."
+      },
+      "ghost": {
+        "name": "Fantasma",
+        "desc": "Muestra dónde llegará de verdad cada pieza que se desliza o salta."
+      },
+      "dodge": {
+        "name": "Esquiva",
+        "desc": "Tras un choque, el perrito está a salvo el doble de tiempo."
+      },
+      "heart": {
+        "name": "Corazón extra",
+        "desc": "Un corazón más: cuatro en total."
+      },
+      "net": {
+        "name": "Red",
+        "desc": "Las galletas devuelven un corazón con menos: 40 en vez de 60."
+      },
+      "cloak": {
+        "name": "Capa",
+        "desc": "Un toque dado un poco antes de aterrizar se guarda más tiempo."
+      },
+      "crown": {
+        "name": "Corona",
+        "desc": "Resolver un ejercicio cura dos corazones en vez de uno."
+      }
+    },
+    "journey": {
+      "title": "El camino hasta el frasco",
+      "body": "Vence a los {{count}} guardianes, uno por patrón táctico, y recupera las galletas."
+    },
+    "continue": "Seguir",
+    "wardrobe": {
+      "title": "Armario",
+      "wear": "Ponerle",
+      "skins": {
+        "choco": "Chocolate",
+        "golden": "Dorado",
+        "snow": "Nieve",
+        "night": "Noche",
+        "berry": "Fresa",
+        "sky": "Cielo"
+      }
+    },
+    "dayStreak": "{{count}} días seguidos jugando",
+    "missions": {
+      "perfects": "Perfectos {{current}}/{{target}}",
+      "cookies": "Galletas {{current}}/{{target}}",
+      "combo": "Racha {{current}}/{{target}}",
+      "star": "Coge la estrella",
+      "clean": "Sin choques",
+      "done": "¡Misión! +{{seconds}} s"
+    },
+    "lessonTry": "Pruébalo tú",
+    "lessonTryHint": "Ahora tú: haz la jugada. Toca la pieza y luego su casilla.",
+    "lessonTryWrong": "Esa no. Mira lo que se señala e inténtalo otra vez."
   },
   "KNIGHT_TOUR": {
     "title": "Recorrido del caballo",
@@ -1273,35 +1544,13 @@
     "startPosition": "Posición inicial",
     "startPositionDesc": "Elige desde dónde comienza el caballo",
     "showVisitedSquaresDesc": "Resalta las casillas ya visitadas",
-    "heartsLabel": "{{count}} corazones",
-    "meters": "{{count}} m",
-    "cookiesHint": "Cada {{count}} galletas recuperas un corazón",
-    "strikes": "Fallos: {{count}} de {{max}}",
-    "legend": {
-      "touch": "Toca para saltar. Dos toques seguidos, doble salto.",
-      "keyboard": "Espacio o ↑ para saltar; dos veces, doble salto"
-    },
     "random": "Aleatoria",
     "a1": "a1 (esquina inferior izquierda)",
-      "levelUp": "Subes al nivel {{level}}.",
-      "lastStrike": "Fallaste tres ejercicios: se acabó la partida.",
-      "finish": "Ver resultado",
     "h1": "h1 (esquina inferior derecha)",
     "a8": "a8 (esquina superior izquierda)",
     "h8": "h8 (esquina superior derecha)",
     "showVisitedSquares": "Mostrar casillas visitadas",
     "readyToStart": "¡Listo para comenzar!",
-    "gameOver": {
-      "title": "Fin de la partida",
-      "hits": "Te quedaste sin corazones.",
-      "strikes": "Fallaste tres ejercicios.",
-      "newRecord": "Nuevo récord",
-      "record": "Récord: {{count}} m",
-      "level": "Nivel",
-      "solved": "Resueltos",
-      "cookies": "Galletas",
-      "again": "Jugar otra vez"
-    },
     "gameStartsWhenMove": "El juego comenzará cuando muevas el caballo por primera vez",
     "congratulations": "¡Felicidades!",
     "completedTour": "Has completado el recorrido del caballo",

@@ -14,12 +14,28 @@
             <span class="text-lg font-extrabold">{{ 'CHESS_RUNNER.title' | transloco }}</span>
             <span class="mt-0.5 text-[11px] font-bold uppercase tracking-wide text-base-content/60" data-testid="session">
               {{ 'CHESS_RUNNER.session' | transloco: { count: solvedCount } }}
+              @if (campaign.round > 0) {
+              <span data-testid="round-chip"> · {{ 'CHESS_RUNNER.round' | transloco: { count: campaign.round + 1 } }}</span>
+              }
             </span>
           </div>
         </div>
       </div>
       <div class="flex flex-none items-center gap-2">
-        <button class="btn btn-square btn-ghost" (click)="goToHome()" [attr.aria-label]="'CHESS_RUNNER.exit' | transloco"
+        <!-- Días seguidos jugando -->
+        @if (dayStreak >= 2) {
+        <span class="badge badge-warning gap-1 font-bold tabular-nums" data-testid="day-streak"
+          [attr.aria-label]="'CHESS_RUNNER.dayStreak' | transloco: { count: dayStreak }">
+          <ion-icon name="flame"></ion-icon>{{ dayStreak }}
+        </span>
+        }
+        <!-- El ELO del perrito: sube al resolver y baja al fallar; el resto del tiempo se queda fijo a la vista -->
+        <span class="badge badge-ghost gap-1 font-bold tabular-nums" data-testid="rating"
+          [class.!badge-success]="status === 'result' && ratingChange && ratingChange.to > ratingChange.from"
+          [class.!badge-error]="status === 'result' && ratingChange && ratingChange.to < ratingChange.from">
+          {{ 'CHESS_RUNNER.rating' | transloco }} {{ shownRating }}
+        </span>
+        <button class="btn btn-square btn-ghost" (click)="exit()" [attr.aria-label]="'CHESS_RUNNER.exit' | transloco"
           data-testid="exit">
           <ion-icon name="close-outline" class="h-5 w-5"></ion-icon>
         </button>
@@ -51,74 +67,81 @@
 
     @case ('gameover') {
     @if (gameOver; as over) {
-    <div class="mx-auto flex w-full max-w-md flex-col items-center gap-5 px-4 py-10 text-center" data-testid="game-over">
-      <h2 class="text-2xl font-extrabold">{{ 'CHESS_RUNNER.gameOver.title' | transloco }}</h2>
-      <p class="text-sm text-base-content/70" data-testid="game-over-reason">{{ 'CHESS_RUNNER.gameOver.' + over.reason | transloco }}</p>
+    <app-runner-game-over [over]="over" [campaign]="campaign" [urls]="pieceImages" [names]="chapterNames" [chapterCount]="chapterCount"
+      [wardrobe]="wardrobe" [previews]="skinPreviews" [wallet]="wallet" [nextPattern]="patternName"
+      (again)="playAgain()" (exit)="goToHome()" (buy)="buySkin($event)" (wear)="wearSkin($event)"></app-runner-game-over>
+    }
+    }
 
-      <div class="flex flex-col items-center gap-1">
-        <span class="text-5xl font-extrabold text-primary" data-testid="game-over-meters">{{ 'CHESS_RUNNER.meters' | transloco: { count: over.meters } }}</span>
-        @if (over.newRecord) {
-        <span class="badge badge-warning gap-1 font-bold" data-testid="new-record">
-          <ion-icon name="trophy-outline"></ion-icon>
-          {{ 'CHESS_RUNNER.gameOver.newRecord' | transloco }}
-        </span>
-        } @else {
-        <span class="flex items-center gap-1 text-sm font-bold text-base-content/70" data-testid="game-over-record">
-          <ion-icon name="trophy-outline"></ion-icon>
-          {{ 'CHESS_RUNNER.gameOver.record' | transloco: { count: over.record } }}
-        </span>
-        }
-      </div>
-
-      <dl class="grid w-full grid-cols-3 gap-2 text-center">
-        <div class="rounded-xl bg-base-200 p-3">
-          <dt class="text-[11px] font-bold uppercase tracking-wide text-base-content/60">{{ 'CHESS_RUNNER.gameOver.level' | transloco }}</dt>
-          <dd class="text-xl font-extrabold" data-testid="game-over-level">{{ over.level }}</dd>
-        </div>
-        <div class="rounded-xl bg-base-200 p-3">
-          <dt class="text-[11px] font-bold uppercase tracking-wide text-base-content/60">{{ 'CHESS_RUNNER.gameOver.solved' | transloco }}</dt>
-          <dd class="text-xl font-extrabold" data-testid="game-over-solved">{{ over.solved }}</dd>
-        </div>
-        <div class="rounded-xl bg-base-200 p-3">
-          <dt class="text-[11px] font-bold uppercase tracking-wide text-base-content/60">{{ 'CHESS_RUNNER.gameOver.cookies' | transloco }}</dt>
-          <dd class="text-xl font-extrabold" data-testid="game-over-cookies">{{ over.cookies }}</dd>
-        </div>
-      </dl>
-
-      <div class="flex w-full flex-col gap-2">
-        <button class="btn btn-primary font-bold" (click)="playAgain()" data-testid="play-again">
-          <ion-icon name="refresh-outline"></ion-icon>
-          <span>{{ 'CHESS_RUNNER.gameOver.again' | transloco }}</span>
-        </button>
-        <button class="btn btn-ghost" (click)="goToHome()" data-testid="game-over-exit">{{ 'CHESS_RUNNER.error.back' | transloco }}</button>
-      </div>
+    @case ('story') {
+    <!-- Una escena de la historia, sin palabras; tocar en cualquier parte la salta -->
+    @if (scene) {
+    <div class="mx-auto flex w-full max-w-[720px] flex-col items-center gap-3 pt-4" data-testid="story" (click)="skipStory()">
+      <app-runner-story [scene]="scene" [skin]="skin" (finished)="onStoryFinished()" (failed)="onStoryFailed()"></app-runner-story>
+      <button class="btn btn-ghost btn-sm" (click)="skipStory(); $event.stopPropagation()"
+        [attr.aria-label]="'CHESS_RUNNER.storySkip' | transloco" data-testid="story-skip">
+        <ion-icon name="play-forward-outline"></ion-icon>
+      </button>
     </div>
+    }
+    }
+
+    @case ('lesson') {
+    <!-- La lección del patrón: un tablero pequeño que se explica con frases cortas; sigue hasta que el usuario pulsa «Empezar» -->
+    @if (lesson) {
+    <div class="mx-auto flex w-full max-w-[420px] flex-col items-center gap-3 px-4 pt-6" data-testid="lesson">
+      <span class="badge badge-primary badge-lg font-bold" data-testid="lesson-pattern">{{ patternName }}</span>
+      <app-runner-lesson [lesson]="lesson" (finished)="onLessonFinished()" (failed)="onLessonFailed()"></app-runner-lesson>
+      <button class="btn btn-primary btn-lg w-full max-w-xs font-extrabold" [class.animate-pulse]="lessonDone" (click)="skipLesson()"
+        data-testid="lesson-continue">
+        <ion-icon name="play-outline" class="h-6 w-6"></ion-icon>
+        <span>{{ 'CHESS_RUNNER.lessonContinue' | transloco }}</span>
+      </button>
+    </div>
+    }
+    }
+
+    @case ('card') {
+    @if (card; as current) {
+    <app-runner-card [card]="current" [urls]="pieceImages" [names]="chapterNames" [chapterCount]="chapterCount"
+      (next)="closeCard()"></app-runner-card>
     }
     }
 
     @case ('running') {
     <!-- Cualquier toque de esta zona hace saltar: el pulgar está abajo, no sobre el lienzo -->
     <div #zone class="running-zone mx-auto flex w-full max-w-[720px] flex-col justify-center pb-40 pt-3" data-testid="running">
-      <!-- Nivel, corazones y racha: lo que está en juego -->
-      <div class="flex items-center justify-between px-4 pb-1" data-testid="hud">
-        <span class="badge badge-primary font-bold" data-testid="level">{{ 'CHESS_RUNNER.level' | transloco: { level: level } }}</span>
-        <span class="flex items-center gap-0.5" data-testid="hearts" role="img"
+      <!-- El patrón que se entrena (con lo que lleva del bloque) y los corazones: lo que está en juego -->
+      <div class="flex items-center justify-between gap-2 px-4 pb-1" data-testid="hud">
+        <span class="badge min-w-0 flex-1 justify-start gap-1.5 font-bold" [ngClass]="bossKey ? 'badge-error' : 'badge-primary'" data-testid="pattern">
+          @if (bossKey) {
+          <ion-icon name="skull-outline" data-testid="boss-icon"></ion-icon>
+          }
+          <span class="truncate">{{ patternName }}</span>
+          <span class="ml-auto flex shrink-0 items-center gap-0.5" data-testid="block-dots" aria-hidden="true">
+            @for (slot of blockSlots; track slot) {
+            <span class="inline-block h-1.5 w-1.5 rounded-full bg-primary-content/40" [class.!bg-primary-content]="slot < step.index"
+              [class.ring-1]="slot === step.index" [class.ring-primary-content]="slot === step.index"></span>
+            }
+          </span>
+        </span>
+        <span class="flex shrink-0 items-center gap-0.5" data-testid="hearts" role="img"
           [attr.aria-label]="'CHESS_RUNNER.heartsLabel' | transloco: { count: hearts }">
           @for (slot of heartSlots; track slot) {
           <ion-icon [name]="slot < hearts ? 'heart' : 'heart-outline'" class="h-5 w-5 text-error"
             [attr.data-full]="slot < hearts"></ion-icon>
           }
         </span>
-        <span class="badge gap-1 font-bold transition-colors" [class.badge-warning]="progress.combo >= 3"
+      </div>
+
+      <!-- Distancia, racha, récord y galletas hacia el próximo corazón -->
+      <div class="flex items-center justify-between gap-2 px-4 pb-2 text-xs font-bold text-base-content/70" data-testid="stats">
+        <span data-testid="meters">{{ 'CHESS_RUNNER.meters' | transloco: { count: meters } }}</span>
+        <span class="badge badge-sm gap-1 font-bold transition-colors" [class.badge-warning]="progress.combo >= 3"
           [class.badge-ghost]="progress.combo < 3" data-testid="combo">
           <ion-icon name="flame"></ion-icon>
           {{ 'CHESS_RUNNER.combo' | transloco: { count: progress.combo } }}
         </span>
-      </div>
-
-      <!-- Distancia, récord y galletas hacia el próximo corazón -->
-      <div class="flex items-center justify-between px-4 pb-2 text-xs font-bold text-base-content/70" data-testid="stats">
-        <span data-testid="meters">{{ 'CHESS_RUNNER.meters' | transloco: { count: meters } }}</span>
         <span class="flex items-center gap-1" data-testid="record">
           <ion-icon name="trophy-outline"></ion-icon>
           {{ 'CHESS_RUNNER.meters' | transloco: { count: bestMeters } }}
@@ -126,33 +149,66 @@
         <span class="flex items-center gap-1" data-testid="cookies"
           [attr.title]="'CHESS_RUNNER.cookiesHint' | transloco: { count: cookiesPerHeart }">
           <span class="cookie-icon" aria-hidden="true"></span>
-          {{ cookieStreak }}/{{ cookiesPerHeart }}
+          {{ cookieStreak }}/{{ session.rules.cookiesPerHeart }}
         </span>
       </div>
 
-      <!-- Lo que falta por saltar: las piezas del ejercicio, tachadas a medida que se superan -->
-      <div class="flex items-end justify-center gap-1.5 px-3 pb-2" data-testid="pips">
-        @for (piece of sequence; track $index) {
-        @if (pieceUrl(piece); as url) {
-        <!-- Sobre un fondo suave del tema: las piezas negras del set no se pierden en un tema oscuro -->
-        <img [src]="url" alt="" class="h-8 w-8 rounded-lg bg-base-content/20 p-0.5 transition-opacity"
-          [class.opacity-30]="$index < progress.cleared" [attr.data-cleared]="$index < progress.cleared" />
-        }
+      <!-- Cuánto falta de carrera, con una marca en cada respiro entre oleadas -->
+      <div class="relative mx-4 mb-2 h-2 overflow-hidden rounded-full bg-base-content/15" data-testid="run-bar" role="progressbar"
+        aria-valuemin="0" aria-valuemax="100" [attr.aria-valuenow]="progressPercent">
+        <div class="h-full rounded-full bg-primary transition-[width] duration-300" [style.width.%]="progressPercent"></div>
+        @for (mark of waveMarks; track mark) {
+        <span class="absolute top-0 h-full w-0.5 bg-base-100" [style.left.%]="mark" data-testid="wave-mark"></span>
         }
       </div>
 
       <div class="relative">
-        <app-runner-canvas [sequence]="sequence" [difficulty]="difficulty" [tapZone]="zone"
+        <app-runner-canvas [sequence]="sequence" [difficulty]="difficulty" [world]="world" [gear]="campaign.powers" [mods]="mods" [boss]="bossKey" [carrying]="cookieStreak" [skin]="skin" [tapZone]="zone"
           (runnerEvent)="onRunnerEvent($event)" (progress)="onRunnerProgress($event)"
           (finished)="onRunnerFinished($event)" (failed)="onRunnerFailed()"></app-runner-canvas>
         <!-- Se anuncia el nivel un instante al empezar cada carrera; no recoge toques -->
         <div class="level-banner pointer-events-none absolute inset-x-0 top-6 flex flex-col items-center gap-1" aria-hidden="true"
           data-testid="level-banner">
-          <span class="rounded-xl bg-base-100/80 px-4 py-1 text-2xl font-extrabold tracking-wide">{{ 'CHESS_RUNNER.level' | transloco: { level: level } }}</span>
-          <span class="rounded-lg bg-base-100/70 px-3 py-0.5 text-xs font-bold uppercase tracking-wide text-base-content/80">
-            {{ 'CHESS_RUNNER.levelHint.' + bannerHint | transloco }}
+          <span class="rounded-xl bg-base-100/80 px-4 py-1 text-2xl font-extrabold tracking-wide" data-testid="banner-title">{{ patternName }}</span>
+          @if (bannerHint !== 'none') {
+          <span class="rounded-lg px-3 py-0.5 text-xs font-bold uppercase tracking-wide"
+            [ngClass]="bannerHint === 'boss' ? 'bg-error text-error-content' : 'bg-base-100/70 text-base-content/80'" data-testid="banner-hint">
+            {{ 'CHESS_RUNNER.levelHint.' + bannerHint | transloco: { rating: puzzleRating } }}
+          </span>
+          }
+        </div>
+        <!-- La misión de la carrera: un reto corto que, cumplido, da tiempo extra para el ejercicio -->
+        @if (mission; as m) {
+        <div class="pointer-events-none absolute left-2 top-2" data-testid="mission" [attr.data-state]="missionState">
+          <span class="flex items-center gap-1.5 rounded-lg px-2 py-1 text-[11px] font-extrabold shadow"
+            [ngClass]="missionState === 'done' ? 'bg-success text-success-content' : missionState === 'failed' ? 'bg-base-300/80 text-base-content/50 line-through' : 'bg-base-100/85'">
+            <ion-icon [name]="missionState === 'done' ? 'checkmark-circle' : 'flag-outline'"></ion-icon>
+            @if (missionState === 'done') {
+            {{ 'CHESS_RUNNER.missions.done' | transloco: { seconds: m.reward } }}
+            } @else {
+            {{ 'CHESS_RUNNER.missions.' + m.kind | transloco: { current: missionCurrent, target: m.target } }}
+            }
           </span>
         </div>
+        }
+        <!-- Se ha pasado el récord de distancia -->
+        @if (recordBannerVisible) {
+        <div class="wall-hint pointer-events-none absolute inset-x-0 top-16 flex justify-center" data-testid="record-banner">
+          <span class="flex items-center gap-2 rounded-xl bg-warning px-4 py-1.5 text-sm font-extrabold text-warning-content shadow-lg">
+            <ion-icon name="trophy-outline"></ion-icon>
+            {{ 'CHESS_RUNNER.popup.record' | transloco }}
+          </span>
+        </div>
+        }
+        <!-- El aviso del doble salto, justo antes de la primera falange -->
+        @if (wallHintVisible) {
+        <div class="wall-hint pointer-events-none absolute inset-x-0 top-4 flex justify-center" data-testid="wall-hint">
+          <span class="flex items-center gap-2 rounded-xl bg-base-100/85 px-3 py-1.5 text-sm font-extrabold">
+            <span class="flex gap-0.5" aria-hidden="true"><span class="h-2.5 w-2.5 rounded-full bg-primary"></span><span class="h-2.5 w-2.5 rounded-full bg-primary"></span></span>
+            {{ 'CHESS_RUNNER.levelHint.doubleJump' | transloco }}
+          </span>
+        </div>
+        }
       </div>
 
       <div class="flex items-center justify-between gap-3 px-4 pt-3">
@@ -187,9 +243,30 @@
         </div>
 
         <div class="flex flex-col gap-3 p-4 lg:w-[360px] lg:flex-shrink-0 lg:p-0 lg:pt-2">
-          <p class="flex items-center gap-1 text-xs font-bold text-base-content/70" data-testid="strikes">
-            {{ 'CHESS_RUNNER.strikes' | transloco: { count: strikes, max: maxStrikes } }}
-          </p>
+          <div class="flex items-center justify-between gap-2 text-xs font-bold text-base-content/70">
+            <span class="badge badge-primary gap-1.5 font-bold" data-testid="puzzle-pattern">
+              <span class="truncate">{{ puzzlePatternName }}</span>
+              <span class="flex items-center gap-0.5" aria-hidden="true">
+                @for (slot of puzzleSlots; track slot) {
+                <span class="inline-block h-1.5 w-1.5 rounded-full bg-primary-content/40" [class.!bg-primary-content]="slot < puzzleDone"></span>
+                }
+              </span>
+            </span>
+            <span class="flex items-center gap-2">
+              @if (timeBonus > 0) {
+              <span class="badge badge-success badge-sm gap-1 font-bold" data-testid="time-bonus">
+                <ion-icon name="timer-outline"></ion-icon>+{{ timeBonus }} s
+              </span>
+              }
+              @if (puzzleBoss) {
+              <span class="badge badge-error badge-sm gap-1 font-bold" data-testid="puzzle-boss">
+                <ion-icon name="skull-outline"></ion-icon>
+                {{ puzzleRating }}
+              </span>
+              }
+              <span data-testid="strikes">{{ 'CHESS_RUNNER.strikes' | transloco: { count: strikes, max: maxStrikes } }}</span>
+            </span>
+          </div>
           @if (status === 'puzzle' && puzzleToPlay) {
           <div class="flex items-center gap-3">
             <img [src]="playerColor | kingImage" [alt]="playerColor" class="h-8 w-8" />
@@ -219,14 +296,29 @@
           <!-- En móvil queda anclado abajo: los botones tienen que estar a la mano, sin hacer scroll -->
           <div class="result-panel fixed inset-x-0 bottom-0 z-20 rounded-t-2xl border border-base-300 bg-base-100 p-4 shadow-2xl lg:static lg:rounded-xl lg:shadow-none"
             data-testid="result">
-            <p class="text-base font-semibold" data-testid="result-message">
-              {{ 'CHESS_RUNNER.result.' + result.kind | transloco }}
+            <p class="flex items-center justify-between gap-2 text-base font-semibold">
+              <span data-testid="result-message">{{ 'CHESS_RUNNER.result.' + result.kind | transloco }}</span>
+              @if (ratingChange; as change) {
+              <span class="flex items-center gap-1 text-sm font-extrabold" [class.text-success]="change.to > change.from"
+                [class.text-error]="change.to < change.from" data-testid="rating-change">
+                <ion-icon [name]="change.to > change.from ? 'trending-up' : 'trending-down'"></ion-icon>
+                {{ change.to }}
+                <span class="text-xs">({{ change.to > change.from ? '+' : '' }}{{ change.to - change.from }})</span>
+              </span>
+              }
             </p>
             @if (result.kind === 'solved') {
             <!-- Resuelto: sin botones, la siguiente carrera arranca sola -->
-            <p class="mt-1 text-sm font-bold text-primary" data-testid="level-up">
-              {{ 'CHESS_RUNNER.result.levelUp' | transloco: { level: level } }}
+            @if (chapterDone; as done) {
+            <p class="mt-1 flex items-center gap-1 text-sm font-bold text-primary" data-testid="chapter-done">
+              <span>{{ 'CHESS_RUNNER.result.chapterDone' | transloco }}</span>
+              <span class="flex" role="img" [attr.aria-label]="'CHESS_RUNNER.result.stars' | transloco: { count: done.stars }">
+                @for (star of [1, 2, 3]; track star) {
+                <ion-icon [name]="star <= done.stars ? 'star' : 'star-outline'" class="h-4 w-4"></ion-icon>
+                }
+              </span>
             </p>
+            }
             <span class="loading loading-dots loading-sm mt-2 text-primary" data-testid="auto-next"></span>
             } @else {
             @if (outOfStrikes) {
@@ -237,6 +329,12 @@
                 <ion-icon name="eye"></ion-icon>
                 <span>{{ 'CHESS_RUNNER.result.solution' | transloco }}</span>
               </button>
+              @if (hasPatternLesson) {
+              <button type="button" class="btn btn-ghost btn-block" (click)="showPatternLesson()" data-testid="show-lesson">
+                <ion-icon name="bulb-outline"></ion-icon>
+                <span>{{ 'CHESS_RUNNER.lessonShow' | transloco }}</span>
+              </button>
+              }
               @if (outOfStrikes) {
               <button type="button" class="btn btn-primary btn-block font-bold" (click)="finishGame()" data-testid="finish-game">
                 <ion-icon name="trophy-outline"></ion-icon>
