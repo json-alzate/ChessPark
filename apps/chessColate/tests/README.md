@@ -12,6 +12,12 @@ tests/unit/features/reminders/utils/reminder-time.util.spec.ts      ← espejo e
   `tests/unit/features/<funcionalidad>/pages/<pantalla>/<pantalla>.page.spec.ts`.
 - **Una prueba por archivo fuente**, en la misma ruta relativa y con el mismo nombre
   más `.spec.ts`. Si un archivo fuente no tiene prueba, falta su espejo.
+- Las pantallas y componentes con carpeta propia (`components/<nombre>/`, `containers/<nombre>/`)
+  también la repiten en su espejo.
+- Dos pruebas **no tienen archivo fuente** porque vigilan a todo el código a la vez, y por eso viven
+  fuera del espejo: `tests/unit/a11y/botones-con-nombre.spec.ts` (ningún botón de solo icono sin
+  `aria-label`) y `tests/unit/i18n/traducciones.spec.ts` (es y en con las mismas claves y marcadores, y
+  toda clave usada en el código existe).
 - Las E2E son un proyecto aparte: `apps/chessColate-e2e` (Playwright).
 - Los datos y dobles que se comparten entre pruebas van en `tests/support/`.
 
