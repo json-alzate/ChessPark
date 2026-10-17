@@ -4,19 +4,79 @@ import { expect, test } from '../support/resto-test';
 import { PUZZLES } from '../support/fixtures';
 import { esperarTurnoDelUsuario, jugarJugadaErronea, resolverPuzzle } from '../support/resto-tablero';
 
-// Una carrera dura unos 10 s en tiempo real: margen para máquinas cargadas.
+// Una carrera dura unos 25 s en tiempo real: margen para máquinas cargadas.
 test.describe.configure({ timeout: 90_000 });
 
 /**
- * Chess Runner (/chess-runner): Chocolate corre y, con un toque, salta las piezas del ejercicio (las del set
+ * Chess Runner (/chess-runner): el perrito corre y, con un toque, salta las piezas del ejercicio (las del set
  * que el usuario eligió); al superarlas aparece el tablero con su reloj. Al resolverlo, confeti y la
- * siguiente carrera arranca sola. Ver docs/implementado/CHESS_RUNNER_FLOW.md.
+ * siguiente carrera arranca sola. Es una campaña de patrones con historia, lecciones, corazones y récord.
+ * Ver docs/implementado/CHESS_RUNNER_FLOW.md.
  *
  * El CDN de pruebas solo sirve los 3 ejercicios de los fixtures y la sesión no repite ninguno: al
  * tercero el catálogo se agota y sale la pantalla de error.
  */
 
 const el = (page: Page, id: string) => page.locator(`[data-testid=${id}]`);
+
+const TEMAS = [
+  'hangingPiece',
+  'mateIn1',
+  'fork',
+  'pin',
+  'skewer',
+  'backRankMate',
+  'discoveredAttack',
+  'capturingDefender',
+  'deflection',
+  'attraction',
+  'doubleCheck',
+  'trappedPiece',
+  'xRayAttack',
+  'arabianMate',
+  'anastasiaMate',
+  'intermezzo',
+  'bodenMate',
+  'hookMate',
+  'smotheredMate',
+  'mateIn2',
+];
+/** Lo ya visto de la historia (prólogo, llegadas a cada mundo y final), para entrar directo a lo que se prueba. */
+const HISTORIA_VISTA = ['prologue', 'epilogue', ...TEMAS.map((_, i) => `intro:${i}`)];
+/** Y también todas las lecciones. */
+const TODO_VISTO = [...HISTORIA_VISTA, ...TEMAS.flatMap((t) => [`lesson:${t}`, `review:${t}`])];
+
+/**
+ * Deja guardada una campaña antes de abrir la pantalla (por defecto, con la historia y las lecciones ya vistas, así la
+ * carrera empieza al abrir). Se escribe en cada carga de la página: vale para las pruebas que no recargan.
+ */
+async function sembrarCampana(page: Page, cambios: Record<string, unknown> = {}) {
+  const campana = {
+    version: 2,
+    round: 0,
+    chapter: 0,
+    rating: 900,
+    peakRating: 900,
+    cookies: 0,
+    skin: 'choco',
+    skins: ['choco'],
+    solvedInBlock: 0,
+    failsInBlock: 0,
+    puzzles: 0,
+    mastery: {},
+    powers: [],
+    stars: [],
+    review: null,
+    seen: TODO_VISTO,
+    ...cambios,
+  };
+  await page.addInitScript((datos) => localStorage.setItem('chessColate_runner_campaign', JSON.stringify(datos)), campana);
+}
+
+/** Quien ya jugó entra al panel: «Jugar» empieza la partida. */
+async function darleAJugar(page: Page) {
+  await el(page, 'play-again').click();
+}
 
 /** El lienzo escucha toques y teclas cuando ya cargó los sprites y las piezas: se espera a que la carrera exista. */
 async function carreraLista(page: Page) {
@@ -70,8 +130,8 @@ async function correrConElTeclado(page: Page) {
       if (!obstaculo) {
         return;
       }
-      const llega = (obstaculo.plan - 54) / estado.speed;
-      if (llega > (obstaculo.count > 1 ? 0.17 : 0.2)) {
+      const llega = (obstaculo.plan - 52) / estado.speed;
+      if (llega > (obstaculo.count > 1 ? 0.2 : 0.28)) {
         return;
       }
       hecho.add(obstaculo.id);
@@ -87,13 +147,17 @@ async function correrConElTeclado(page: Page) {
 }
 
 test.describe('Chess Runner · la carrera', () => {
-  test('se ve como la referencia (con el lienzo y el cartel de nivel, que se animan, tapados)', async ({ page, network }) => {
+  test.beforeEach(async ({ page }) => {
+    await sembrarCampana(page);
+  });
+
+  test('se ve como la referencia (con el lienzo y el cartel del patrón, que se animan, tapados)', async ({ page, network }) => {
     const errores: string[] = [];
     page.on('pageerror', (e) => errores.push(e.message));
 
     await page.goto('/chess-runner');
     await expect(el(page, 'runner-canvas')).toBeVisible();
-    await expect(el(page, 'pips').locator('img').first()).toBeVisible();
+    await expect(el(page, 'pattern')).toBeVisible();
     await page.waitForLoadState('networkidle');
 
     expect(errores, 'errores de JavaScript en la página').toEqual([]);
@@ -103,17 +167,17 @@ test.describe('Chess Runner · la carrera', () => {
     });
   });
 
-  test('las miniaturas son las piezas del set que el usuario eligió en Ajustes', async ({ page }) => {
+  test('el logo de la barra superior es el caballo del set de piezas que el usuario eligió en Ajustes', async ({ page }) => {
     await page.addInitScript(() => localStorage.setItem('chessColate_pieces', 'papercut'));
     await page.goto('/chess-runner');
 
-    const miniatura = el(page, 'pips').locator('img').first();
-    await expect(miniatura).toBeVisible();
+    const logo = page.locator('.navbar img').first();
+    await expect(logo).toBeVisible();
     // Los sets de Lichess llevan gradientes con su propio nombre dentro del SVG
-    expect(decodeURIComponent((await miniatura.getAttribute('src')) ?? '')).toContain('papercut');
+    expect(decodeURIComponent((await logo.getAttribute('src')) ?? '')).toContain('papercut');
   });
 
-  test('arranca con el lienzo a una escala entera, las piezas por superar y la ayuda a la vista', async ({ page }) => {
+  test('arranca con el lienzo a una escala entera, el patrón, los corazones y la ayuda a la vista', async ({ page }) => {
     await page.goto('/chess-runner');
 
     const lienzo = el(page, 'runner-canvas');
@@ -122,10 +186,11 @@ test.describe('Chess Runner · la carrera', () => {
     // 393 px de móvil: 196 px lógicos a 2×
     expect(Math.round(caja.width)).toBe(392);
     expect(Math.round(caja.height)).toBe(352);
-    expect(await el(page, 'pips').locator('img').count()).toBeGreaterThan(0);
-    expect(await el(page, 'pips').locator('img').count()).toBeLessThanOrEqual(8);
+    await expect(el(page, 'pattern')).toContainText('Hanging Piece');
+    await expect(el(page, 'block-dots').locator('span')).toHaveCount(5);
+    await expect(el(page, 'run-bar')).toBeVisible();
+    await expect(el(page, 'hearts').locator('[data-full=true]')).toHaveCount(3);
     await expect(page.getByText('Tap to jump. Two taps in a row, double jump.')).toBeVisible();
-    await expect(el(page, 'level')).toHaveText('Level 1');
     await expect(el(page, 'combo')).toContainText('Streak 0');
     await expect(el(page, 'skip')).toBeVisible();
     await expect(el(page, 'session')).toContainText('Solved: 0');
@@ -141,9 +206,24 @@ test.describe('Chess Runner · la carrera', () => {
     await expect(page.locator('svg.cm-chessboard')).toBeVisible();
     // El ejercicio trae su cuenta atrás: 60 s, la carrera no los descuenta
     await expect(page.locator('lib-board-puzzle')).toContainText(/00:(59|60)|01:00/);
+    // Y se ve qué patrón se entrena y cuántos fallos permitidos quedan
+    await expect(el(page, 'puzzle-pattern')).toContainText('Hanging Piece');
+    await expect(el(page, 'strikes')).toContainText('Misses: 0 of 3');
   });
 
-  test('sin tocar nada Chocolate choca, pierde los tres corazones y se acaba la partida', async ({ page }) => {
+  test('la carrera dura media minuta, más o menos: lo justo para entrar en materia', async ({ page }) => {
+    await page.goto('/chess-runner');
+    await carreraLista(page);
+    const t0 = Date.now();
+
+    await correrConElTeclado(page);
+
+    const segundos = (Date.now() - t0) / 1000;
+    expect(segundos).toBeGreaterThan(18);
+    expect(segundos).toBeLessThan(40);
+  });
+
+  test('sin tocar nada el perrito choca, pierde los tres corazones y se acaba la partida', async ({ page }) => {
     await page.goto('/chess-runner');
     await expect(el(page, 'runner-canvas')).toBeVisible();
     await expect(el(page, 'hearts').locator('[data-full=true]')).toHaveCount(3);
@@ -153,6 +233,10 @@ test.describe('Chess Runner · la carrera', () => {
     await expect(el(page, 'game-over-reason')).toHaveText('You ran out of hearts.');
     await expect(el(page, 'new-record')).toBeVisible();
     await expect(el(page, 'runner-canvas')).toHaveCount(0);
+    // El camino hasta el Rey de las Sombras, con el perrito en el primer guardián
+    await expect(el(page, 'map-node')).toHaveCount(20);
+    await expect(el(page, 'map-node').first()).toHaveAttribute('data-state', 'current');
+    await expect(el(page, 'map-node').last()).toHaveAttribute('data-state', 'locked');
   });
 
   test('el récord de distancia se guarda en el dispositivo y «Play again» empieza una partida nueva', async ({ page }) => {
@@ -164,7 +248,7 @@ test.describe('Chess Runner · la carrera', () => {
     await el(page, 'play-again').click();
 
     await expect(el(page, 'runner-canvas')).toBeVisible();
-    await expect(el(page, 'level')).toHaveText('Level 1');
+    await expect(el(page, 'pattern')).toContainText('Hanging Piece');
     await expect(el(page, 'hearts').locator('[data-full=true]')).toHaveCount(3);
     await expect(el(page, 'record')).toContainText(`${record} m`);
   });
@@ -183,8 +267,8 @@ test.describe('Chess Runner · la carrera', () => {
     await page.waitForTimeout(60);
     await page.keyboard.press('Space');
     await expect.poll(async () => (await saltos()).jumps).toBe(2);
-    // El segundo salto llega más alto que el primero (unos 47 px)
-    await expect.poll(async () => (await saltos()).y).toBeGreaterThan(55);
+    // El segundo salto llega más alto que el primero (unos 62 px)
+    await expect.poll(async () => (await saltos()).y).toBeGreaterThan(70);
     await page.keyboard.press('Space');
     expect((await saltos()).jumps).toBe(2);
   });
@@ -243,8 +327,126 @@ test.describe('Chess Runner · la carrera', () => {
   });
 });
 
+test.describe('Chess Runner · la historia, la lección y los poderes', () => {
+  test('la primera vez cuenta el prólogo sin una palabra y después enseña el patrón con un tablero pequeño', async ({ page }) => {
+    await page.goto('/chess-runner');
+
+    // El prólogo: una escena animada, sin texto, que se puede saltar
+    await expect(el(page, 'story-canvas')).toBeVisible();
+    await expect(el(page, 'story')).not.toContainText(/\w{4,}/);
+    await expect(el(page, 'runner-canvas')).toHaveCount(0);
+    await el(page, 'story-skip').click();
+
+    // El camino hasta el frasco: los veinte guardianes
+    await expect(el(page, 'journey-title')).toBeVisible();
+    await expect(el(page, 'map-node')).toHaveCount(20);
+    await el(page, 'card-continue').click();
+
+    // La lección del patrón: el tablero pequeño, el nombre del patrón y las frases que lo explican
+    await expect(el(page, 'lesson-canvas')).toBeVisible();
+    await expect(el(page, 'lesson-pattern')).toHaveText('Hanging Piece');
+    await expect(el(page, 'lesson-idea')).toHaveText('An undefended piece can be captured for free');
+    await expect(el(page, 'lesson-caption')).not.toBeEmpty();
+
+    // Y empieza la carrera, cuando el usuario quiere
+    await el(page, 'lesson-continue').click();
+    await expect(el(page, 'runner-canvas')).toBeVisible();
+  });
+
+  test('lo visto no se repite: al volver a entrar va directo a la carrera', async ({ page }) => {
+    await page.goto('/chess-runner');
+    await el(page, 'story-skip').click();
+    await el(page, 'card-continue').click();
+    await el(page, 'lesson-continue').click();
+    await expect(el(page, 'runner-canvas')).toBeVisible();
+
+    await page.reload();
+
+    await expect(el(page, 'runner-canvas')).toBeVisible();
+    await expect(el(page, 'story-canvas')).toHaveCount(0);
+  });
+
+  test('con un poder ganado, el perrito lo lleva: las reglas de la carrera cambian', async ({ page }) => {
+    await sembrarCampana(page, { chapter: 6, puzzles: 30, powers: ['nose', 'spring', 'shield'], stars: [3, 3, 3, 3, 3, 3] });
+    await page.goto('/chess-runner');
+    await darleAJugar(page);
+    await carreraLista(page);
+
+    const reglas = await page.evaluate(() => {
+      // @ts-expect-error `ng` solo existe en la build de desarrollo
+      const s = window.ng.getComponent(document.querySelector('app-runner-canvas')).state;
+      return { escudos: s.shields as number, muelle: s.mods.doubleJumpVelocity as number, alcance: s.mods.pickupReachX as number };
+    });
+    expect(reglas.escudos).toBe(1);
+    expect(reglas.muelle).toBeGreaterThan(270);
+    expect(reglas.alcance).toBeGreaterThan(4);
+  });
+
+  test('el escudo aguanta el primer choque: sin tocar nada no se pierde ningún corazón por el primero', async ({ page }) => {
+    await sembrarCampana(page, { chapter: 6, puzzles: 30, powers: ['nose', 'spring', 'shield'], stars: [3, 3, 3, 3, 3, 3] });
+    await page.goto('/chess-runner');
+    await darleAJugar(page);
+    await carreraLista(page);
+
+    await expect
+      .poll(() =>
+        page.evaluate(() => {
+          // @ts-expect-error `ng` solo existe en la build de desarrollo
+          const s = window.ng.getComponent(document.querySelector('app-runner-canvas')).state;
+          return { escudos: s.shields as number, choques: s.stumbles as number };
+        })
+      )
+      .toEqual({ escudos: 0, choques: 0 });
+    await expect(el(page, 'hearts').locator('[data-full=true]')).toHaveCount(3);
+  });
+
+  test('cerrar un capítulo con poder trae la escena de victoria, la tarjeta del poder y el poder se queda en la campaña', async ({ page }) => {
+    await sembrarCampana(page, { chapter: 1, solvedInBlock: 4, puzzles: 9, stars: [3] });
+    await page.goto('/chess-runner');
+    await darleAJugar(page);
+    await el(page, 'skip').click();
+    await expect(page.locator('svg.cm-chessboard')).toBeVisible();
+
+    await resolverPuzzle(page, await ejercicioEnPantalla(page));
+
+    await expect(el(page, 'chapter-done')).toBeVisible();
+    // El ELO del perrito sube con el ejercicio
+    await expect(el(page, 'rating-change')).toBeVisible();
+    await expect(el(page, 'story-canvas')).toBeVisible({ timeout: 10_000 });
+    await el(page, 'story-skip').click();
+    // El poder nuevo se explica: nombre y qué hace
+    await expect(el(page, 'power-name')).toHaveText('Nose');
+    await expect(el(page, 'power-desc')).toContainText('cookies');
+    await el(page, 'card-continue').click();
+    // Sigue el mundo siguiente: un repaso del patrón anterior, o su lección o la carrera
+    await expect(el(page, 'lesson-canvas').or(el(page, 'runner-canvas')).or(el(page, 'story-canvas'))).toBeVisible();
+    const campana = await page.evaluate(() => JSON.parse(localStorage.getItem('chessColate_runner_campaign') ?? '{}'));
+    expect(campana.chapter).toBe(2);
+    expect(campana.powers).toEqual(['nose']);
+    expect(campana.stars).toEqual([3, 3]);
+    expect(campana.rating).toBeGreaterThan(900);
+  });
+
+  test('al perder se ve el armario: las galletas guardadas compran un pelaje nuevo para el perrito', async ({ page }) => {
+    await sembrarCampana(page, { cookies: 500 });
+    await page.goto('/chess-runner');
+    await expect(el(page, 'game-over')).toBeVisible({ timeout: 60_000 });
+
+    await expect(el(page, 'wardrobe')).toBeVisible();
+    await expect(el(page, 'skin')).toHaveCount(6);
+    await el(page, 'skin').nth(1).scrollIntoViewIfNeeded();
+    await el(page, 'skin').nth(1).click();
+
+    await expect(el(page, 'skin').nth(1)).toHaveAttribute('data-state', 'worn');
+    const campana = await page.evaluate(() => JSON.parse(localStorage.getItem('chessColate_runner_campaign') ?? '{}'));
+    expect(campana.skin).toBe('golden');
+    expect(campana.skins).toEqual(['choco', 'golden']);
+  });
+});
+
 test.describe('Chess Runner · el ejercicio', () => {
   test.beforeEach(async ({ page }) => {
+    await sembrarCampana(page);
     await page.goto('/chess-runner');
     await el(page, 'skip').click();
     await expect(page.locator('svg.cm-chessboard')).toBeVisible();
@@ -267,16 +469,14 @@ test.describe('Chess Runner · el ejercicio', () => {
     ).toBe(true);
   });
 
-  test('resolverlo sube de nivel y la siguiente carrera lo anuncia', async ({ page }) => {
-    await expect(el(page, 'level')).toHaveCount(0);
-
+  test('resolverlo avanza el bloque del patrón: los ejercicios de un capítulo son del mismo tema', async ({ page }) => {
     await resolverPuzzle(page, await ejercicioEnPantalla(page));
 
-    await expect(el(page, 'level-up')).toHaveText('On to level 2.');
     await expect(el(page, 'runner-canvas')).toBeVisible({ timeout: 10_000 });
-    await expect(el(page, 'level')).toHaveText('Level 2');
-    // La primera falange trae la explicación del doble salto
-    await expect(el(page, 'level-banner')).toContainText(/double jump|Faster than the last one/);
+    // El mismo patrón, un ejercicio más hecho
+    await expect(el(page, 'pattern')).toContainText('Hanging Piece');
+    const hechos = await page.evaluate(() => JSON.parse(localStorage.getItem('chessColate_runner_campaign') ?? '{}').solvedInBlock);
+    expect(hechos).toBe(1);
   });
 
   test('resolverlo suma a la sesión, celebra y no pide ningún botón', async ({ page }) => {
@@ -317,6 +517,20 @@ test.describe('Chess Runner · el ejercicio', () => {
     await expect(el(page, 'session')).toContainText('Solved: 0');
   });
 
+  test('tras fallar se puede volver a ver el patrón con el tablero pequeño', async ({ page }) => {
+    await jugarJugadaErronea(page, await ejercicioEnPantalla(page));
+
+    await el(page, 'show-lesson').click();
+
+    const ventana = el(page, 'lesson-modal');
+    await expect(ventana).toBeVisible();
+    await expect(ventana.locator('canvas')).toBeVisible();
+    await el(page, 'lesson-modal-close').click();
+    await expect(ventana).toHaveCount(0);
+    // Seguimos en el resultado: ver el patrón no continúa el juego
+    await expect(el(page, 'result')).toBeVisible();
+  });
+
   test('fallarlo y pulsar «Another exercise» trae una carrera nueva con otro ejercicio', async ({ page }) => {
     const primero = await ejercicioEnPantalla(page);
     await jugarJugadaErronea(page, primero);
@@ -350,12 +564,31 @@ test.describe('Chess Runner · el ejercicio', () => {
 
 test.describe('Chess Runner · salidas', () => {
   test('la equis lleva al inicio', async ({ page }) => {
+    await sembrarCampana(page);
     await page.goto('/chess-runner');
     await expect(el(page, 'runner-canvas')).toBeVisible();
 
+    // A mitad de partida la equis lleva al panel; desde el panel, al inicio
+    await el(page, 'exit').click();
+    await expect(el(page, 'game-over')).toBeVisible();
+    await expect(el(page, 'game-over-reason')).toHaveText('You left the game: your distance is saved.');
     await el(page, 'exit').click();
 
     await expect(page).toHaveURL(/\/home$/);
+  });
+
+  test('al volver a entrar se ve el panel, no la partida que se dejó', async ({ page }) => {
+    await sembrarCampana(page, { chapter: 3, puzzles: 20, powers: ['nose', 'spring'], stars: [3, 3, 3] });
+    await page.goto('/chess-runner');
+
+    await expect(el(page, 'game-over-title')).toHaveText('Chess Runner');
+    await expect(el(page, 'runner-canvas')).toHaveCount(0);
+    await expect(el(page, 'power-item')).toHaveCount(2);
+    // Las piezas del set se ven ya en el panel: el logo de la barra y los guardianes del camino
+    await expect(page.locator('.navbar img').first()).toBeVisible();
+    await expect(page.locator('[data-testid=map-node] img:not([data-testid=map-power])')).toHaveCount(20);
+    await el(page, 'play-again').click();
+    await expect(el(page, 'runner-canvas')).toBeVisible();
   });
 
   test('aparece en el menú lateral, en Práctica', async ({ page }) => {
