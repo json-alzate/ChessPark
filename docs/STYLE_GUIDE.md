@@ -288,12 +288,24 @@ Los botones de inicio de sesión con proveedores externos (ej. Google) pueden us
 
 ### Tabs
 
+Las pestañas de sección (Análisis, reproductor de partidas, Apariencia, Planes públicos) usan **`cc-tabs`**, un
+control segmentado definido en `global.scss`: una pista con borde (`bg-base-100`) con las opciones dentro; la activa va
+en `btn-primary` con sombra y las demás en `btn-ghost`. Los botones llevan `btn btn-sm` (el CSS les da alto táctil de
+2,5 rem y reparte el ancho) y el contenedor `role="tablist"`, cada botón `role="tab"` y `aria-selected`.
+
 ```html
-<div class="tabs tabs-boxed justify-center">
-  <button class="tab tab-active">Tab 1</button>
-  <button class="tab">Tab 2</button>
+<div class="cc-tabs mb-3" role="tablist">
+  <button type="button" role="tab" class="btn btn-sm"
+    [class.btn-primary]="active === 'a'" [class.btn-ghost]="active !== 'a'"
+    [attr.aria-selected]="active === 'a'" (click)="active = 'a'">Tab A</button>
+  <button type="button" role="tab" class="btn btn-sm"
+    [class.btn-primary]="active === 'b'" [class.btn-ghost]="active !== 'b'"
+    [attr.aria-selected]="active === 'b'" (click)="active = 'b'">Tab B</button>
 </div>
 ```
+
+No uses `join` para pestañas: es para grupos de opciones (plataforma, tamaño, color), donde no se cambia de vista.
+Las sub-pestañas con subrayado (filtros dentro de una pestaña) siguen siendo `border-b` + botón con borde inferior.
 
 ### Loading/Skeleton
 

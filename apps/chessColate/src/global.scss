@@ -231,6 +231,25 @@ body.cc-board-resizing {
   @apply min-h-screen flex flex-col bg-base-200;
 }
 
+// Pestañas de sección (control segmentado): una pista con las opciones dentro; la activa va en
+// primario y con sombra, las demás en ghost. Los botones llevan `btn btn-sm` y alternan
+// `btn-primary` / `btn-ghost`; el contenedor, `role="tablist"`.
+.cc-tabs {
+  @apply flex w-full gap-1 rounded-xl border border-base-content/10 bg-base-100 p-1;
+
+  > .btn {
+    @apply min-h-10 min-w-0 flex-1 rounded-lg border-0 px-2 font-semibold whitespace-nowrap shadow-none;
+  }
+
+  > .btn-primary {
+    @apply shadow-md;
+  }
+
+  > .btn-ghost {
+    @apply text-base-content/70;
+  }
+}
+
 // Safe area para ion-modal: garantiza que ion-fab y ion-content respeten
 // la barra de estado en iOS cuando viewport-fit=cover está activo.
 ion-modal {

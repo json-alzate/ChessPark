@@ -35,7 +35,7 @@ const descargando = (page: Page) => page.getByText('Downloading your games…');
 const cifra = (page: Page, titulo: string) =>
   page.locator('app-analytics section.grid-cols-2 > div', { hasText: titulo }).first();
 const pestana = (page: Page, nombre: string | RegExp) =>
-  page.locator('app-analytics .join button', { hasText: nombre }).first();
+  page.locator('app-analytics [role="tablist"] button', { hasText: nombre }).first();
 const ajustesGuardados = (page: Page) =>
   page.evaluate((k) => JSON.parse(localStorage.getItem(k) ?? 'null'), CLAVE_AJUSTES);
 

@@ -25,12 +25,12 @@
 
   <!-- Pestañas: botones unidos; la activa va en el color primario -->
   @if (t) {
-  <div role="tablist" class="join w-full">
+  <div role="tablist" class="cc-tabs">
     @for (item of tabs; track item.id) {
     @if (item.id !== 'theme' || showTheme()) {
     <button type="button" role="tab"
-      class="btn btn-sm join-item flex-1"
-      [class]="tab() === item.id ? 'btn-primary' : 'btn-outline border-base-content/30'"
+      class="btn btn-sm"
+      [class]="tab() === item.id ? 'btn-primary' : 'btn-ghost'"
       [attr.aria-selected]="tab() === item.id"
       (click)="tab.set(item.id)">
       {{ item.labelKey | transloco }}

@@ -21,16 +21,20 @@
             </div>
 
             <!-- Tabs principales: segmented control -->
-            <div class="flex gap-1 bg-base-200 p-1 rounded-xl mb-6">
+            <div class="cc-tabs mb-6" role="tablist">
                 <button
-                    class="flex-1 btn btn-sm transition-all"
+                    type="button" role="tab"
+                    class="btn btn-sm"
+                    [attr.aria-selected]="activeTab === 'public'"
                     [class.btn-primary]="activeTab === 'public'"
                     [class.btn-ghost]="activeTab !== 'public'"
                     (click)="activeTab = 'public'">
                     {{ 'PUBLIC_PLANS.tabs.public' | transloco }}
                 </button>
                 <button
-                    class="flex-1 btn btn-sm transition-all"
+                    type="button" role="tab"
+                    class="btn btn-sm"
+                    [attr.aria-selected]="activeTab === 'interactions'"
                     [class.btn-primary]="activeTab === 'interactions'"
                     [class.btn-ghost]="activeTab !== 'interactions'"
                     (click)="activeTab = 'interactions'">
