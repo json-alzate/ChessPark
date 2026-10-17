@@ -2,7 +2,7 @@
 
 > **✅ Implementado.** Cómo funciona hoy y las decisiones que se tomaron:
 > [`../implementado/CHESS_RUNNER_FLOW.md`](../implementado/CHESS_RUNNER_FLOW.md). Este documento queda como la idea
-> original. Lo que cambió: el motor es propio en canvas 2D en vez de Phaser, el personaje es Chocolate (la mascota),
+> original. Lo que cambió: el motor es propio en canvas 2D en vez de Phaser, el personaje es un perrito (la mascota),
 > las piezas son las del set que el usuario eligió para el tablero, hay **un solo control (saltar)** en vez de una
 > mecánica por pieza, al resolver arranca sola la siguiente carrera, y es un modo propio del menú (Práctica) en vez
 > de ir delante de cada ejercicio de las rutinas.

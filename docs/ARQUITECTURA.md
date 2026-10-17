@@ -61,7 +61,7 @@ src/app/
                    bloques, sesión, cronómetro, pool infinito, planes y sus repositorios
     streak/        modo Racha
     woodpecker/    Método del Pájaro Carpintero: set fijo que se repite en vueltas
-    chess-runner/  Chess Runner: carrera de Chocolate sobre las piezas del ejercicio, antes de resolverlo
+    chess-runner/  Chess Runner: carrera del perrito sobre las piezas del ejercicio, antes de resolverlo
     records/       récords de Racha y Reto 333 y su sincronización con el perfil
     reminders/     recordatorios de entrenamiento
     games/         reproductor de partidas
@@ -306,28 +306,33 @@ panel; `woodpecker/play` juega una vuelta sobre el tablero de puzzles de siempre
 
 ### 5.2c Chess Runner
 
-Un minijuego previo al ejercicio, en `features/chess-runner/`, con **un solo control: tocar para saltar** (dos
-toques seguidos, doble salto). `RunnerPuzzleService` trae un ejercicio del catálogo y `buildRunnerSequence` convierte
-las piezas de su FEN en obstáculos (de la más baja a la más alta, cada una con su ritmo y, desde el nivel 2, alguna
-como **falange** de tres piezas que solo se pasa con el doble salto). La carrera es una **simulación pura**
-(`utils/runner-engine.util.ts`, sin canvas ni reloj) que mueve `RunnerCanvasComponent`: física del salto y del doble
-salto, el movimiento propio de cada pieza (`PIECE_BEHAVIOR`: la torre se desliza, el caballo y la dama saltan en L, el
-alfil flota), las galletas de ChessColate y los choques. `RunnerRenderer` la dibuja (el escenario cambia cada tres
-niveles). La dificultad la fija `difficultyForLevel` (`config/runner.config.ts`): **cada ejercicio resuelto sube un
-nivel** (más velocidad y menos hueco entre piezas) y dentro de la carrera el suelo acelera con cada pieza superada. Las
-piezas son **las del set que el usuario eligió en Ajustes**: `RunnerPiecesService` parte el sprite SVG de
-`cm-chessboard` en doce imágenes.
+Un juego de **partidas con historia** que entrena patrones tácticos antes de cada ejercicio, en `features/chess-runner/`, con **un
+solo control: tocar para saltar** (dos toques seguidos, doble salto). Una **campaña** de 20 capítulos por ronda
+(`campaign/runner-curriculum.ts`): cada uno es un patrón (el tema del catálogo) y sus ejercicios son **siempre del mismo tema**
+(bloques de 5 con el ELO subiendo, un repaso espaciado del patrón más flojo entre capítulo y capítulo, y otra ronda más difícil al
+vencer al rey); el perrito tiene su **propio ELO** (`campaign.rating`, calculado como el de ajedrez) con el que se pide cada ejercicio;
+`campaign/` es lógica pura (qué ejercicio toca, ELO, estrellas, repaso, días seguidos, datos rotos) y `RunnerPuzzleService` pide al
+catálogo un tema fijo. La carrera es una
+**simulación pura** (`utils/runner-engine.util.ts`, sin canvas ni reloj) que mueve `RunnerCanvasComponent`: física del salto y del
+doble salto, el movimiento propio de cada pieza (`PIECE_BEHAVIOR`: la torre se desliza, el caballo y la dama saltan en L, el alfil
+flota), falanges, galletas con figuras variadas (`runner-cookies.util.ts`), saltos perfectos, la estrella, escudo y choques; las
+piezas salen del FEN en **oleadas** con respiros de galletas y un ritmo que se aprieta con el nivel (`runner-sequence.util.ts`, ~25–32 s). Las piezas son **las del set que el usuario eligió en Ajustes**: `RunnerPiecesService` parte el
+sprite SVG de `cm-chessboard` en doce imágenes.
 
-Una **partida** es la cadena de carreras y ejercicios hasta perder: **3 corazones** (un choque cuesta uno; se recupera
-uno por ejercicio resuelto y otro por cada 30 galletas) o **3 ejercicios fallidos**. Lo lleva `ChessRunnerPage`, que
-cuenta los metros recorridos y, al acabar, enseña la pantalla de fin con la distancia y el récord. Al terminar la
-carrera, la pantalla muestra el ejercicio en `board-puzzle` con 60 s de reloj; **al resolverlo arranca sola la
-siguiente carrera** (con el ejercicio ya precargado), y al fallar espera al usuario. El tablero del ejercicio y el de
-su resultado son **la misma vista** (un solo `@if` fuera del `@switch`): con un `@case` por estado Angular lo
-destruía al resolver y el tablero repetía la primera jugada del rival. **No crea un `Plan`** y no toca el ELO. Lo único
-que guarda en el dispositivo es **el récord de distancia** (`RunnerRecordService`, `localStorage`). Los sprites de
-Chocolate y el escenario los genera `tools/stream-assets/export_runner.py` (el mismo pipeline que el directo 24/7).
-Detalle: [`implementado/CHESS_RUNNER_FLOW.md`](./implementado/CHESS_RUNNER_FLOW.md).
+`game/runner-game.ts` (`RunnerGame`, sin Angular) junta campaña, partida y récord; la página solo decide qué se ve y cuándo.
+Una **partida** (`game/runner-session.ts`: 3 corazones y 3 ejercicios fallidos como máximo, metros recorridos y galletas) es aparte de
+la campaña, que sigue donde iba. Los **poderes** que se ganan al dominar cada patrón (`config/runner-powers.ts`) cambian las reglas de la
+carrera y el aspecto del perrito (`rendering/dog-gear.ts`); cada carrera trae una **misión** corta (`game/runner-missions.ts`) que, cumplida,
+da tiempo extra para el ejercicio; las galletas se guardan y compran **pelajes** (`rendering/dog-skins.ts`). La **historia se cuenta sin
+letreros** (`story/`, `rendering/stage.ts`: escenas que son funciones puras del tiempo, con globos de dibujitos) y cada patrón se enseña
+con una **lección** (`lessons/`: un tablero pequeño animado con frases que explican la idea, qué mirar, qué se juega, por qué
+funciona y cómo reconocerlo; ejemplos comprobados con `chess.js`). `ChessRunnerPage` lleva el flujo (historia → camino → lección → carrera → ejercicio →
+victoria → poder) con el tablero del ejercicio y el de su resultado en **la misma vista** (un solo `@if` fuera del `@switch`): con un `@case`
+por estado Angular lo destruía al resolver y el tablero repetía la primera jugada del rival. **No crea un `Plan`** y no toca el ELO.
+Lo único que guarda en el dispositivo es **el récord de distancia y la campaña (ELO, galletas, pelajes, días seguidos)** (`RunnerRecordService`, `localStorage`). Los sprites del
+perrito y el escenario los genera `tools/stream-assets/export_runner.py` (el mismo pipeline que el directo 24/7); el resto del arte
+(galleta, frasco, iconos, equipo, guardianes teñidos) está dibujado con código. Detalle:
+[`implementado/CHESS_RUNNER_FLOW.md`](./implementado/CHESS_RUNNER_FLOW.md).
 
 ### 5.3 Recordatorios de entrenamiento
 
@@ -382,6 +387,7 @@ una facade). Las pantallas leen el store; los guards (`custom-plans.guard` y
 | **Historial de rutinas jugadas** | **`localStorage`** (`chessColate_plans_history`) | `PlanStorageService` |
 | Récords de Racha y Reto 333 | Dispositivo, sincronizado con el perfil | `*StorageService` + `UserRecordsService` |
 | **Set del Pájaro Carpintero** (ejercicios congelados) y **su progreso** | **`localStorage`** (`chessColate_woodpecker_set` y `chessColate_woodpecker_progress`), solo local | `WoodpeckerStorageService` |
+| **Récord de distancia y campaña del Chess Runner** (ronda y capítulo, ELO del perrito, dominio de cada patrón, poderes, estrellas, galletas y pelajes, días seguidos, lo visto de la historia) | **`localStorage`** (`chessColate_runner_best_m` y `chessColate_runner_campaign`), solo local | `RunnerRecordService` |
 | Recordatorios | Dispositivo | `TrainingReminderStorageService` |
 | Puzzles descargados / pool infinito | IndexedDB | `libs/puzzles-provider` (`CacheService`) |
 | Partidas de chess.com/lichess | IndexedDB | `libs/game-reporter` (`createGamesArchive`) |
@@ -390,7 +396,6 @@ una facade). Las pantallas leen el store; los guards (`custom-plans.guard` y
 
 ### Cosas que no son obvias leyendo el código
 
-| **Récord de distancia del Chess Runner** (metros de la mejor partida) | **`localStorage`** (`chessColate_runner_best_m`), solo local | `RunnerRecordService` |
 - **El historial de rutinas jugadas es solo local, a propósito.** La sincronización
   con Firestore está preparada pero **sin habilitar**: `PlanService.savePlan` y
   `PlanRepository` existen y `endPlan()` lleva un `TODO(premium)` donde se
@@ -439,7 +444,8 @@ una facade). Las pantallas leen el store; los guards (`custom-plans.guard` y
 | Añadir una estadística a Análisis | `libs/game-reporter` (reporte) + `features/game-analytics/utils/game-analytics.util.ts` (presentación) |
 | Añadir un dato a Firestore | un `*.repository.ts` en `data/` de la funcionalidad + su service (la página nunca lo inyecta) |
 | Cambiar cómo se arma el set del Pájaro Carpintero o cómo baja el tiempo por vuelta | `features/woodpecker/utils/woodpecker-set.util.ts` · `woodpecker-cycle.util.ts` · `config/woodpecker.config.ts` |
-| Afinar lo difícil que es una pieza del Chess Runner | `features/chess-runner/config/runner.config.ts` (y las pruebas de ventanas de `runner-engine.util.spec.ts`) |
+| Afinar lo difícil que es una pieza del Chess Runner | `features/chess-runner/config/runner.config.ts` (y las pruebas de ventanas de `runner-engine.util.spec.ts` y de jugadores simulados de `runner-balance.spec.ts`) |
+| Cambiar los patrones, el orden o los poderes de la campaña del Chess Runner | `features/chess-runner/campaign/runner-curriculum.ts` (y `config/runner-powers.ts`; las lecciones, en `lessons/runner-lessons.data.ts`) |
 | Cambiar el tamaño del tablero en escritorio o añadir el asa a una pantalla | [`implementado/TABLERO_REDIMENSIONABLE_FLOW.md`](./implementado/TABLERO_REDIMENSIONABLE_FLOW.md) |
 | Añadir un evento de analítica | `core/analytics/analytics-events.util.ts` y `AnalyticsService` |
 

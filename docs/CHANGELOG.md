@@ -26,14 +26,25 @@ y el versionado sigue [SemVer](https://semver.org/lang/es/) para `versionName`.
 - **Tablero redimensionable en escritorio**: arrastra el asa de la esquina inferior derecha del tablero
   para hacerlo más grande o más pequeño (también con las flechas del teclado; doble clic lo restablece).
   Vale para todos los tableros de práctica y se recuerda en el dispositivo. En móvil no cambia nada.
-- **Chess Runner** (menú Práctica): antes de cada ejercicio, Chocolate corre y salta las piezas del
+- **Chess Runner** (menú Práctica): antes de cada ejercicio, el perrito corre y salta las piezas del
   ejercicio con **un solo control, como el dinosaurio de Chrome: tocar la pantalla (o Espacio) para saltar**.
   Las piezas son las de tu set del tablero y cada una se mueve a su manera (la torre se desliza, el caballo salta
-  en L, el alfil flota); dos toques seguidos hacen el **doble salto**, que piden las falanges de piezas y las
-  galletas más altas. Es una **partida**: 3 corazones y 3 ejercicios fallidos como máximo, con **récord de distancia**
-  guardado en el dispositivo, nivel que sube con cada ejercicio resuelto y un escenario que cambia cada tres niveles.
-  Al superar las piezas aparece el tablero con su reloj; **al resolver el ejercicio, confeti y la siguiente carrera
-  arranca sola** (si fallas, se queda para que veas la solución).
+  en L, el alfil flota); dos toques seguidos hacen el **doble salto**. Es una **campaña de patrones tácticos**:
+  veinte capítulos (pieza colgada, mate en 1, ataque doble, clavada, pincho, mate del pasillo, ataque a la descubierta,
+  capturar al defensor, desviación, atracción, jaque doble, pieza atrapada, ataque por rayos X, mate árabe, mate de Anastasia,
+  jugada intermedia, mate de Boden, mate del gancho, mate de la coz y mate en 2), cada uno con **cinco ejercicios del
+  mismo patrón** y la dificultad subiendo, y un guardián al final. El perrito tiene **su propio ELO**, que sube y baja
+  como el de ajedrez y con el que se elige cada ejercicio; al vencer al rey empieza otra ronda más difícil. La primera
+  vez que entrenas un patrón sale una **lección** con un tablero pequeño y frases que explican la idea, qué mirar, qué
+  se juega y cómo reconocerlo (y puedes repetir la jugada tú: «Pruébalo tú»); repasos del patrón que peor llevas; y una **historia sin letreros** (escenas con globos
+  de dibujitos): el perrito persigue al Rey de las Sombras, que le ha robado el frasco de galletas doradas. Cada dos
+  capítulos gana un **poder** (olfato, resorte, escudo…) que se explica al ganarlo y se ve en su aspecto. Las galletas
+  se guardan y compran **pelajes** del perrito; cada carrera trae una **misión** corta que, cumplida, da tiempo extra
+  para el ejercicio; hay **saltos perfectos**, una **estrella** que te hace imparable unos segundos, galletas con
+  figuras distintas y un ritmo que se aprieta con el nivel. Tres corazones y tres ejercicios fallidos como máximo por
+  partida, **récord de distancia**, días seguidos jugando y progreso guardados en el dispositivo. Al superar las piezas
+  aparece el tablero con su reloj; **al resolver el ejercicio, confeti y la siguiente carrera arranca sola** (si fallas,
+  se queda para que veas la solución o el patrón).
 - **Reproductor de partidas en escritorio:** las flechas del teclado recorren la partida y Inicio y Fin saltan a
   los extremos.
 
