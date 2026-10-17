@@ -10,7 +10,7 @@
  * ni dentro del repo: los argumentos se ven en `ps` y en los registros. Este script no lee el
  * llavero; quien lo lanza lo hace, p. ej. con `security find-generic-password -w`.
  */
-import { spawn } from 'node:child_process';
+import { execFileSync, spawn } from 'node:child_process';
 import { randomInt } from 'node:crypto';
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
@@ -56,6 +56,28 @@ export function buildConcatList(tracks, musicDir, { cycles = 3, random } = {}) {
 /** Espera antes de reintentar: 1 s, 2 s, 4 s… hasta 60 s. */
 export function backoffMs(attempt) {
   return Math.min(1000 * 2 ** attempt, 60_000);
+}
+
+/**
+ * Resumen de los últimos mensajes de error de ffmpeg (sin las líneas de progreso), para el registro cuando
+ * termina. Quita la URL de emisión y la clave: ffmpeg suele repetir el destino en sus errores.
+ */
+export function summarizeFfmpegErrors(stderr, rtmpUrl, max = 6) {
+  const key = String(rtmpUrl ?? '').split('/').filter(Boolean).pop();
+  const hide = (line) => {
+    let out = line;
+    if (rtmpUrl) out = out.split(rtmpUrl).join('«destino»');
+    if (key && key.length >= 8) out = out.split(key).join('«clave»');
+    return out;
+  };
+  return String(stderr)
+    .split(/\r|\n/)
+    .map((l) => l.trim())
+    .filter((l) => l && !l.includes('frame=') && !l.includes('speed='))
+    .slice(-max)
+    .map(hide)
+    .join(' | ')
+    .slice(0, 500);
 }
 
 /** Argumentos de ffmpeg. El video entra por stdin (JPEG de la captura); el audio es la lista de música. */
@@ -155,9 +177,60 @@ export async function closeBrowser(browser, log = () => undefined, timeoutMs = 5
   }
 }
 
+/**
+ * PIDs de procesos que usan exactamente este perfil de Chrome, a partir de la salida de `ps -A -o pid=,command=`.
+ * Son restos de una pasada anterior que murió sin cerrar el navegador (p. ej. el runner terminó a la fuerza: launchd
+ * mata a ffmpeg pero Chrome vive en otro grupo de procesos). Mientras vivan, un Chrome nuevo no puede abrir el perfil.
+ * Solo cuenta quien lleva `--user-data-dir=<este perfil>` exacto: el Chrome personal no se toca.
+ */
+export function staleChromePids(psOutput, profile, ownPid = process.pid) {
+  const flag = `--user-data-dir=${profile}`;
+  const pids = [];
+  for (const line of String(psOutput).split('\n')) {
+    const m = line.match(/^\s*(\d+)\s+(.*)$/);
+    if (!m) continue;
+    const pid = Number(m[1]);
+    const args = m[2];
+    const at = args.indexOf(flag);
+    const after = at === -1 ? '' : args[at + flag.length];
+    // tras la ruta debe venir un espacio o el final: `…/.chrome-profile2` no es este perfil
+    if (at !== -1 && (after === undefined || after === ' ') && pid !== ownPid) pids.push(pid);
+  }
+  return pids;
+}
+
+/** Mata los Chrome huérfanos de este perfil y borra sus archivos de bloqueo. Nunca lanza. */
+export async function clearStaleChrome(profile, log = () => undefined) {
+  let pids = [];
+  try {
+    pids = staleChromePids(execFileSync('ps', ['-A', '-o', 'pid=,command='], { encoding: 'utf8', maxBuffer: 32e6 }), profile);
+  } catch (error) {
+    log(`no pude listar procesos para buscar Chrome huérfanos: ${String(error.message).slice(0, 120)}`);
+    return 0;
+  }
+  if (pids.length === 0) return 0;
+  log(`limpiando ${pids.length} procesos de Chrome huérfanos del perfil`);
+  for (const sig of ['SIGTERM', 'SIGKILL']) {
+    for (const pid of pids) {
+      try { process.kill(pid, sig); } catch { /* ya no existe */ }
+    }
+    await new Promise((ok) => setTimeout(ok, sig === 'SIGTERM' ? 2000 : 500));
+  }
+  for (const name of ['SingletonLock', 'SingletonSocket', 'SingletonCookie']) {
+    try { rmSync(join(profile, name), { force: true }); } catch { /* sin permiso o ya no está */ }
+  }
+  return pids.length;
+}
+
 /** Una pasada: navegador + ffmpeg hasta que algo termina, se congela o se pide parar. */
 export async function runOnce(cfg, log, signal) {
-  const puppeteer = require('puppeteer');
+  // En la carpeta de producción solo hay `puppeteer-core`; en el repo de desarrollo vale cualquiera de los dos.
+  let puppeteer;
+  try {
+    puppeteer = require('puppeteer-core');
+  } catch {
+    puppeteer = require('puppeteer');
+  }
 
   if (cfg.target === 'hls') {
     mkdirSync(cfg.hlsDir, { recursive: true });
@@ -180,6 +253,8 @@ export async function runOnce(cfg, log, signal) {
     log('sin música: se emite silencio');
   }
 
+  await clearStaleChrome(cfg.profile, log);
+
   const browser = await puppeteer.launch({
     executablePath: cfg.chrome,
     headless: 'new',
@@ -189,6 +264,7 @@ export async function runOnce(cfg, log, signal) {
   });
 
   let ffmpeg;
+  let stderrTail = '';
   const stats = { frames: 0, dropped: 0, lastFrameAt: Date.now(), progress: '' };
   let stopPacer = () => undefined;
   const cleanup = async () => {
@@ -222,10 +298,14 @@ export async function runOnce(cfg, log, signal) {
     ffmpeg = spawn(cfg.ffmpeg, ffmpegArgs(cfg, { audioList }), { stdio: ['pipe', 'ignore', 'pipe'] });
     ffmpeg.stdin.on('error', () => undefined);
     ffmpeg.stderr.on('data', (d) => {
+      stderrTail = (stderrTail + d.toString()).slice(-8000);
       const last = d.toString().split(/\r|\n/).filter((l) => l.includes('frame=')).pop();
       if (last) stats.progress = last.replace(/\s+/g, ' ').trim();
     });
-    const ffmpegDone = new Promise((ok) => ffmpeg.on('close', (code) => ok(`ffmpeg terminó con código ${code}`)));
+    const ffmpegDone = new Promise((ok) => ffmpeg.on('close', (code) => {
+      const detail = summarizeFfmpegErrors(stderrTail, cfg.rtmpUrl);
+      ok(`ffmpeg terminó con código ${code}${detail ? `: ${detail}` : ''}`);
+    }));
 
     pacer.begin(performance.now());
     const pacerTimer = setInterval(() => {

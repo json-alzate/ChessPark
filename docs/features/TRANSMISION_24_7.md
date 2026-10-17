@@ -181,7 +181,9 @@ Un **LaunchAgent** es la forma que tiene macOS de decir "cuando esta persona ini
 
 **Requiere aprobación explícita** (excepción a la regla global de no usar LaunchAgents para apps de desarrollo: esto es un servicio de producción). Qué se haría:
 
-- Un script envoltorio (`tools/stream-runner/start-live.sh`) que sirve la app compilada y lanza el runner; sería **el único comando** de la sección anterior.
+- **Carpeta de producción aislada del repo de desarrollo (hecha: `ChessPark-stream`, ver [production/README.md](../../tools/stream-runner/production/README.md)).** El runner se reinicia solo cada 4 h (y en cualquier caída) y en cada reinicio vuelve a leer `music/playlist.json`, los audios, la app de `dist/apps/live-stream` y su propio código. Si eso vive en el repo donde se desarrolla, un `git switch`, un `nx build` o un `npm install` en mal momento deja el directo caído o con una versión a medias. Opciones: (A) un worktree aparte fijado a una etiqueta, con su propio `dist` ya compilado, o (B) una copia mínima y autónoma (runner + app compilada + música). Se actualiza a propósito: compilar la versión nueva, cambiarla y reiniciar en un momento tranquilo. El LaunchAgent apunta a esa carpeta. *Deducido del código, no probado.*
+- Compilar o correr pruebas en el mismo Mac mientras emite puede hacer perder fotogramas (8 GB de RAM; el directo usa ~1 núcleo y ~1,5 GB). *No medido.*
+- `tools/stream-runner/start-live.mjs` sirve la app compilada y lanza el runner: **un solo comando**. Hecho y ensayado (sin YouTube, con salida HLS).
 - La clave de transmisión se lee del **llavero** (`security find-generic-password -w`), nunca del `.plist` ni del repo.
 - `KeepAlive` para que macOS lo relance si el runner muere, y registros en `~/Library/Logs/`.
 - **Requisito del Mac:** inicio de sesión automático tras un reinicio; si no, el LaunchAgent no se activa hasta que alguien escriba la contraseña. El Mac ya no se suspende y arranca solo tras un corte de luz (`pmset`).

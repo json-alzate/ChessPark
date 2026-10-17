@@ -16,6 +16,7 @@ en este macOS). `ffmpeg` debe estar instalado (`brew install ffmpeg`, con `h264_
 | `music-sample.mjs` | Arma una muestra de 25 s por autor para **escuchar** la música antes de salir en vivo. |
 | `check-smoothness.mjs` | Mide si la **tubería de captura** entrega el movimiento parejo: graba cuadrados a velocidad constante con la misma tubería del runner y cuenta los frames que no avanzan o avanzan el doble. Úsalo si cambias algo de la captura o de ffmpeg. |
 | `run-stream.mjs` | **El runner.** Chrome captura la app, ffmpeg le mezcla la música y emite por HLS (vista previa) o RTMP (YouTube). Se vigila solo: reinicia si cae ffmpeg o Chrome, o si la página deja de enviar frames. |
+| `start-live.mjs` | **Arranque de producción**: sirve la app, lee la clave del llavero y lanza `run-stream.mjs`. Lo usa el LaunchAgent desde la carpeta autónoma `ChessPark-stream`. Ver [production/README.md](production/README.md). |
 | `local-preview.mjs` | **Vista previa local:** sirve la app, arranca el runner y sirve una página con un reproductor, la descripción y datos técnicos, para ver cómo se vería en YouTube sin salir a YouTube. |
 
 Los assets de pixel art de la escena se generan con `tools/stream-assets/`.
