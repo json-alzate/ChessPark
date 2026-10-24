@@ -16,7 +16,7 @@ describe('WoodpeckerService', () => {
   let service: WoodpeckerService;
   let storage: WoodpeckerStorageService;
 
-  const setService = { generate: jest.fn(), availableThemes: ['fork', 'pin'] };
+  const setService = { generate: jest.fn(), fromPuzzles: jest.fn(), availableThemes: ['fork', 'pin'] };
   const analytics = { logEvent: jest.fn() };
 
   const puzzles = ejercicios(4);
@@ -87,6 +87,7 @@ describe('WoodpeckerService', () => {
 
       expect(eventos('woodpecker_plan_created')).toEqual([
         {
+          source: 'catalog',
           target: 4,
           actual: 4,
           elo_min: 1300,
@@ -97,6 +98,58 @@ describe('WoodpeckerService', () => {
           timing: 'decreasing',
         },
       ]);
+    });
+
+    describe('desde un PGN propio', () => {
+      const entrada = { name: 'mis-tacticas.pgn', puzzles, cycles: 3, order: 'same' as const, pace: 'relaxed' as const };
+      const setPgn = conjunto(puzzles, { id: 'set-pgn', source: 'pgn', sourceName: 'mis-tacticas.pgn' });
+
+      beforeEach(() => setService.fromPuzzles.mockReturnValue(setPgn));
+
+      it('guarda el set con el orden del archivo y el progreso en blanco, sin tocar el catálogo', () => {
+        const creacion = service.createSetFromPgn(entrada);
+
+        expect(creacion).toEqual({ status: 'ok', set: setPgn, short: false });
+        expect(setService.generate).not.toHaveBeenCalled();
+        expect(setService.fromPuzzles).toHaveBeenCalledWith(
+          expect.objectContaining({ targetCount: 4, minCount: 4, cycles: 3, order: 'same', timing: 'none' }),
+          puzzles,
+          'mis-tacticas.pgn'
+        );
+        expect(service.set).toEqual(setPgn);
+        expect(service.progress).toEqual({ setId: 'set-pgn', cycles: [] });
+        expect(storage.getState()?.set).toEqual(setPgn);
+      });
+
+      it('sustituye al set anterior', async () => {
+        setService.generate.mockResolvedValue({ status: 'ok', set, short: false });
+        await service.createSet(config);
+
+        service.createSetFromPgn(entrada);
+
+        expect(service.set?.id).toBe('set-pgn');
+      });
+
+      it('si no cabe en el dispositivo lo dice y conserva el set anterior', async () => {
+        setService.generate.mockResolvedValue({ status: 'ok', set, short: false });
+        await service.createSet(config);
+        jest.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+          throw new Error('cuota');
+        });
+
+        const creacion = service.createSetFromPgn(entrada);
+
+        expect(creacion).toEqual({ status: 'storage-full' });
+        expect(service.set).toEqual(set);
+      });
+
+      it('registra la creación con la fuente «pgn»', () => {
+        service.createSetFromPgn(entrada);
+
+        expect(eventos('woodpecker_plan_created')).toEqual([
+          expect.objectContaining({ source: 'pgn', target: 4, actual: 4, cycles: 3, order: 'same', timing: 'none' }),
+        ]);
+      });
     });
 
     it('avisa cuando el catálogo no alcanzó lo pedido, pero acepta el set', async () => {

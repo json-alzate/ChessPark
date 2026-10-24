@@ -17,6 +17,7 @@ import { homeOutline } from 'ionicons/icons';
 import { BoardPuzzleSolutionComponent } from '@chesspark/board';
 
 import { AppService } from '@core/app/app.service';
+import { themeLabel } from '@features/custom-puzzles/utils/pgn-puzzles.util';
 import { STREAK_EXCLUDED_THEMES } from '@features/streak/utils/streak.util';
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 
@@ -29,6 +30,7 @@ import { WoodpeckerState } from '../../models/woodpecker.model';
 import { WoodpeckerService } from '../../services/woodpecker.service';
 import {
   buildWoodpeckerConfig,
+  WoodpeckerPgnSetupInput,
   WoodpeckerSetupInput,
 } from '../../utils/woodpecker-config.util';
 import { problemPuzzles } from '../../utils/woodpecker-stats.util';
@@ -123,9 +125,7 @@ export class WoodpeckerPage implements ViewWillEnter, ViewWillLeave {
       this.view = 'setup';
       return;
     }
-    this.themeNames = this.state.set.config.themes.map(
-      (theme) => this.appService.getNameThemePuzzleByValue(theme) || theme
-    );
+    this.themeNames = this.state.set.config.themes.map((theme) => this.themeName(theme));
     this.problemItems = this.buildProblemItems(this.state);
     this.view = 'dashboard';
   }
@@ -143,11 +143,20 @@ export class WoodpeckerPage implements ViewWillEnter, ViewWillLeave {
           rating: puzzle.rating,
           themes: this.tacticalThemes(puzzle.themes)
             .slice(0, 2)
-            .map((theme) => this.appService.getNameThemePuzzleByValue(theme) || theme)
+            .map((theme) => this.themeName(theme))
             .join(' · '),
         },
       ];
     });
+  }
+
+  /** Nombre legible de un tema: el del catálogo, «Propio» para los sin tema, o el texto del PGN tal cual. */
+  private themeName(theme: string): string {
+    return themeLabel(
+      theme,
+      this.appService.getNameThemePuzzleByValue(theme),
+      this.translocoService.translate('CUSTOM_PGN.themeCustom')
+    );
   }
 
   /**
@@ -199,6 +208,22 @@ export class WoodpeckerPage implements ViewWillEnter, ViewWillLeave {
     }
 
     // No salió: se vuelve a lo que había (el set anterior sigue intacto)
+    this.view = 'setup';
+    this.replacingSet = !!this.woodpecker.getState();
+  }
+
+  /** Crea el set con los ejercicios de un PGN propio: no hay descarga, sale al momento. */
+  onCreateFromPgn(input: WoodpeckerPgnSetupInput): void {
+    this.error = null;
+
+    const creation = this.woodpecker.createSetFromPgn(input);
+    if (creation.status === 'ok') {
+      this.shortNotice = null;
+      this.refresh();
+      return;
+    }
+
+    this.error = { key: 'WOODPECKER.errors.storageFull' };
     this.view = 'setup';
     this.replacingSet = !!this.woodpecker.getState();
   }
@@ -264,9 +289,7 @@ export class WoodpeckerPage implements ViewWillEnter, ViewWillLeave {
       cssClass: 'puzzle-solution-modal',
       componentProps: {
         puzzle,
-        themesTranslated: puzzle.themes.map((theme) =>
-          this.appService.getNameThemePuzzleByValue(theme)
-        ),
+        themesTranslated: puzzle.themes.map((theme) => this.themeName(theme)),
       },
     });
     await modal.present();

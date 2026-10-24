@@ -28,6 +28,7 @@ import {
   latestCycleReport,
   summarizeCycle,
 } from '../utils/woodpecker-stats.util';
+import { buildPgnWoodpeckerConfig, WoodpeckerPgnSetupInput } from '../utils/woodpecker-config.util';
 import {
   WoodpeckerGeneration,
   WoodpeckerGenerationProgress,
@@ -121,6 +122,7 @@ export class WoodpeckerService {
       });
     }
     void this.analytics.logEvent('woodpecker_plan_created', {
+      source: 'catalog',
       target: config.targetCount,
       actual: generation.set.puzzles.length,
       elo_min: config.eloMin,
@@ -131,6 +133,33 @@ export class WoodpeckerService {
       timing: config.timing,
     });
     return generation;
+  }
+
+  /**
+   * Arma el set con los ejercicios de un PGN propio y, si cabe en el dispositivo,
+   * sustituye al que hubiera. No hay descarga: el archivo ya está leído.
+   */
+  createSetFromPgn(input: WoodpeckerPgnSetupInput): WoodpeckerCreation {
+    const config = buildPgnWoodpeckerConfig(input);
+    const set = this.setService.fromPuzzles(config, input.puzzles, input.name);
+
+    if (!this.storage.saveNewSet(set)) {
+      return { status: 'storage-full' };
+    }
+    this.setState({ set, progress: emptyProgress(set.id) });
+
+    void this.analytics.logEvent('woodpecker_plan_created', {
+      source: 'pgn',
+      target: config.targetCount,
+      actual: set.puzzles.length,
+      elo_min: config.eloMin,
+      elo_max: config.eloMax,
+      themes_count: config.themes.length,
+      cycles: config.cycles,
+      order: config.order,
+      timing: config.timing,
+    });
+    return { status: 'ok', set, short: false };
   }
 
   // ---------------------------------------------------------------- vueltas

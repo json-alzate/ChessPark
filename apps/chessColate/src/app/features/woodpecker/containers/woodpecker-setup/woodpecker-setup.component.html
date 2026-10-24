@@ -11,6 +11,28 @@
     </div>
   </details>
 
+  <!-- De dónde salen los ejercicios -->
+  <div class="cc-tabs" role="tablist" data-testid="source">
+    <button type="button" role="tab" class="btn btn-sm" [class.btn-primary]="source === 'catalog'"
+      [class.btn-ghost]="source !== 'catalog'" [attr.aria-selected]="source === 'catalog'"
+      (click)="setSource('catalog')" data-testid="source-catalog">
+      {{ 'WOODPECKER.setup.source.catalog' | transloco }}
+    </button>
+    <button type="button" role="tab" class="btn btn-sm" [class.btn-primary]="source === 'pgn'"
+      [class.btn-ghost]="source !== 'pgn'" [attr.aria-selected]="source === 'pgn'" (click)="setSource('pgn')"
+      data-testid="source-pgn">
+      {{ 'WOODPECKER.setup.source.pgn' | transloco }}
+    </button>
+  </div>
+
+  @if (source === 'pgn') {
+  <app-pgn-importer (imported)="onPgnImported($event)"></app-pgn-importer>
+  @if (pgn) {
+  <p class="px-1 text-xs text-base-content/60" data-testid="pgn-size-hint">
+    {{ 'WOODPECKER.setup.size.hint' | transloco: { minutes: cycleMinutesShown } }}
+  </p>
+  }
+  } @else {
   <!-- Tamaño -->
   <section class="rounded-xl border border-base-content/10 bg-base-100 p-4" data-testid="size">
     <div class="mb-2 flex items-baseline justify-between gap-2">
@@ -115,6 +137,8 @@
       }
     </div>
   </details>
+
+  }
 
   <!-- Vueltas -->
   <section class="rounded-xl border border-base-content/10 bg-base-100 p-4" data-testid="cycles">

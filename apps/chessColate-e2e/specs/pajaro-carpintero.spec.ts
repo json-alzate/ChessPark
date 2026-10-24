@@ -306,3 +306,77 @@ test.describe('Pájaro carpintero: sin reloj', () => {
     await expect(page.locator('lib-board-puzzle progress')).toHaveCount(0);
   });
 });
+
+/**
+ * Set armado con un PGN propio (docs/implementado/RUTINA_PGN_FLOW.md). Se lee el archivo en el
+ * navegador: no hace falta catálogo, así que aquí sí se arma el set por la pantalla.
+ */
+test.describe('Pájaro carpintero: con un PGN propio', () => {
+  const ejercicio = (n: number) =>
+    `[Event "Pasillo ${n}"]\n[FEN "6k1/p4ppp/8/8/8/8/5PPP/4R1K1 b - - 0 ${n}"]\n[PuzzleThemes "mateIn1"]\n\n1... a6 2. Re8# *`;
+  const PGN = [
+    ...[1, 2, 3, 4, 5].map(ejercicio),
+    '[Event "Roto"]\n[FEN "esto no es un fen"]\n\n1... a6 2. Re8# *',
+    '[Event "Ilegal"]\n[FEN "6k1/p4ppp/8/8/8/8/5PPP/4R1K1 b - - 0 1"]\n\n1... a6 2. Qh5 *',
+  ].join('\n\n');
+
+  async function elegirArchivo(page: Page, contenido: string, nombre = 'mis-ejercicios.pgn') {
+    await page.goto('/woodpecker');
+    await el(page, 'source-pgn').click();
+    await el(page, 'file-input').setInputFiles({ name: nombre, mimeType: 'text/plain', buffer: Buffer.from(contenido) });
+  }
+
+  test('la pestaña «My PGN» cambia los filtros del catálogo por el importador y su ayuda', async ({ page }) => {
+    await page.goto('/woodpecker');
+    await el(page, 'source-pgn').click();
+
+    await expect(el(page, 'pgn-importer')).toBeVisible();
+    await expect(el(page, 'size')).toHaveCount(0);
+    await expect(el(page, 'create')).toBeDisabled();
+    await el(page, 'format-help').locator('summary').click();
+    await expect(el(page, 'example')).toContainText('[FEN "6k1/p4ppp/8/8/8/8/5PPP/4R1K1 b - - 0 1"]');
+  });
+
+  test('lee el archivo, cuenta lo que entra y dice qué ejercicio falló y por qué', async ({ page }) => {
+    await elegirArchivo(page, PGN);
+
+    await expect(el(page, 'summary-count')).toContainText('5 of 7 exercises ready');
+    await expect(el(page, 'issues')).toContainText('Roto');
+    await expect(el(page, 'issues')).toContainText('Ilegal');
+    await expect(el(page, 'issues')).toContainText('not legal');
+    await expect(el(page, 'create')).toBeEnabled();
+  });
+
+  test('con menos de 5 ejercicios válidos no deja armar el set', async ({ page }) => {
+    await elegirArchivo(page, [1, 2, 3].map(ejercicio).join('\n\n'));
+
+    await expect(el(page, 'too-few')).toBeVisible();
+    await expect(el(page, 'create')).toBeDisabled();
+  });
+
+  test('un archivo que no es un PGN explica que no hay ejercicios', async ({ page }) => {
+    await elegirArchivo(page, 'esto no es un PGN', 'notas.txt');
+
+    await expect(el(page, 'failure')).toBeVisible();
+    await expect(el(page, 'create')).toBeDisabled();
+  });
+
+  test('arma el set con el archivo, lo guarda con su origen y el panel lo dice', async ({ page }) => {
+    await elegirArchivo(page, PGN);
+    await el(page, 'create').click();
+
+    await expect(el(page, 'source-pgn')).toContainText('mis-ejercicios.pgn');
+    const set = await page.evaluate((k) => JSON.parse(localStorage.getItem(k) ?? 'null'), SET_KEY);
+    expect(set).toMatchObject({ source: 'pgn', sourceName: 'mis-ejercicios.pgn' });
+    expect(set.puzzles).toHaveLength(5);
+    expect(set.puzzles[0].moves).toBe('a7a6 e1e8');
+  });
+
+  test('«Quitar» vuelve a dejar el importador sin nada cargado', async ({ page }) => {
+    await elegirArchivo(page, PGN);
+    await el(page, 'clear').click();
+
+    await expect(el(page, 'summary')).toHaveCount(0);
+    await expect(el(page, 'create')).toBeDisabled();
+  });
+});

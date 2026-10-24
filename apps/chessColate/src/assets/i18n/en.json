@@ -590,6 +590,64 @@
     "rateRowTitle": "Rate us",
     "rateRowDesc": "Leave a review on the store: it helps more people find ChessColate"
   },
+  "CUSTOM_PGN": {
+    "themeCustom": "Custom",
+    "import": {
+      "title": "Your PGN file",
+      "hint": "One exercise per game, up to {{max}} exercises. Below you can see what the file should look like.",
+      "pick": "Choose a .pgn file",
+      "pasteSummary": "Or paste the text",
+      "pasteLabel": "PGN text",
+      "pastePlaceholder": "[Event \"My exercise\"] [FEN \"…\"] 1... a6 2. Re8# *",
+      "read": "Read text"
+    },
+    "failure": {
+      "empty": "The file is empty.",
+      "too-big": "The file is too big (about 2 MB at most). Split it into several.",
+      "not-text": "That does not look like a PGN text file.",
+      "no-exercises": "No valid exercise was found. Check that each one has its [FEN] and legal moves.",
+      "unreadable": "The file could not be read."
+    },
+    "summary": {
+      "ready": "{{count}} of {{total}} exercises ready",
+      "tooFew": "You need at least {{min}} valid exercises to build a set.",
+      "dropped": "Your file has {{dropped}} exercises over the limit: the first {{max}} are used.",
+      "clear": "Remove"
+    },
+    "issues": {
+      "title": "Exercises that were left out ({{count}})",
+      "invalid-fen": "The [FEN] is not a valid position.",
+      "no-moves": "It has no moves.",
+      "too-short": "It needs at least two moves: the opponent's and your solution.",
+      "illegal-move": "The move “{{move}}” is not legal in that position.",
+      "unreadable": "Its moves could not be read.",
+      "duplicate": "It is a repeat (same position and same moves).",
+      "more": "…and {{count}} more."
+    },
+    "notes": {
+      "title": "Notices ({{count}})",
+      "trailing-opponent-move-dropped": "The line ended on an opponent move: it was removed so the exercise ends on yours.",
+      "no-fen": "It had no [FEN]: the starting position is used."
+    },
+    "help": {
+      "title": "What should the PGN look like?",
+      "intro": "Each exercise is one game in the file: a starting position and a line of moves. The first move is the opponent's and is played for you; the rest is the solution you have to find.",
+      "rule1": "An exercise is a block of bracketed tags followed by its moves. Leave a blank line between exercises.",
+      "rule2": "The [FEN] is the position BEFORE the opponent's move. If you take the exercise from a game, it is the position just before the opponent's mistake.",
+      "rule3": "The line starts with the opponent's move and continues with your solution, alternating: opponent, you, opponent, you… It must end on one of your moves.",
+      "rule4": "Only the main line counts: variations, comments and symbols are ignored. Moves use standard notation (Nf3, exd5, O-O, e8=Q).",
+      "tagsTitle": "Tags",
+      "tagFen": "the position before the opponent's move. Without it the starting position is used.",
+      "tagEvent": "optional: the exercise name.",
+      "tagRating": "optional: its difficulty (1500 if missing).",
+      "tagThemes": "optional: themes separated by spaces, like fork or mateIn2. Catalogue themes show with their translated name.",
+      "exampleTitle": "Example",
+      "copy": "Copy",
+      "copied": "Copied!",
+      "download": "Download",
+      "lichess": "Does your position already start with your turn, like in a Lichess study? Use the FEN from one move earlier and put the opponent's last move first."
+    }
+  },
   "GAME_REFLECTION": {
     "title": "My reflection",
     "subtitle": "Note what you did well and what you want to improve in this game. Later you'll be able to get personal statistics from your notes.",
@@ -1108,6 +1166,10 @@
       "note": "Seeing the same exercises again is not a bug: it is the method."
     },
     "setup": {
+      "source": {
+        "catalog": "Catalogue",
+        "pgn": "My PGN"
+      },
       "size": {
         "label": "Set size",
         "unit": "exercises",
@@ -1177,6 +1239,7 @@
     "shortNotice": "We got {{actual}} of the {{requested}} exercises you asked for: that is all the catalogue has with these filters.",
     "dashboard": {
       "yourSet": "Your set",
+      "fromPgn": "From your PGN file",
       "exercises": "{{count}} exercises",
       "cycleOf": "Round {{cycle}} of {{cycles}}",
       "completedBadge": "Completed",

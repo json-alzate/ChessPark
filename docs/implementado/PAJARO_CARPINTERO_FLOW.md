@@ -158,7 +158,7 @@ Las seis decisiones abiertas del diseño original, resueltas:
 3. **Orden**: mezclado por defecto (evita memorizar la secuencia); la vuelta 1 siempre va en el orden del set.
 4. **ELO**: métrica propia del set, no toca el ELO del perfil.
 5. **Persistencia**: los ejercicios completos, no solo los uids, para jugar sin red y sin depender de la caché.
-6. **Fuente**: solo el catálogo. El set guarda su `source` (`'catalog'`) para que la rutina con PGN propio (F07) añada `'pgn'` sin migrar.
+6. **Fuente**: el catálogo o, desde F07, un PGN propio (ver [RUTINA_PGN_FLOW](./RUTINA_PGN_FLOW.md)).  El set guarda su `source` (`'catalog'` o `'pgn'`).
 
 ## Límites conocidos
 

@@ -30,8 +30,14 @@ describe('isWoodpeckerSet', () => {
     expect(isWoodpeckerSet({ ...set, puzzles: [{ ...set.puzzles[0], moves: 3 }] })).toBe(false);
   });
 
-  it('descarta una fuente que no sea el catálogo', () => {
-    expect(isWoodpeckerSet({ ...valido(), source: 'pgn' })).toBe(false);
+  it('acepta un set armado desde un PGN propio, con o sin el nombre del archivo', () => {
+    expect(isWoodpeckerSet({ ...valido(), source: 'pgn', sourceName: 'mis-tacticas.pgn' })).toBe(true);
+    expect(isWoodpeckerSet({ ...valido(), source: 'pgn' })).toBe(true);
+  });
+
+  it('descarta una fuente desconocida o un nombre de archivo que no es texto', () => {
+    expect(isWoodpeckerSet({ ...valido(), source: 'lichess' })).toBe(false);
+    expect(isWoodpeckerSet({ ...valido(), source: 'pgn', sourceName: 7 })).toBe(false);
   });
 
   it('descarta un set cuya configuración no cuadra', () => {

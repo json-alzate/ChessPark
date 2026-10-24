@@ -61,6 +61,7 @@ src/app/
                    bloques, sesión, cronómetro, pool infinito, planes y sus repositorios
     streak/        modo Racha
     woodpecker/    Método del Pájaro Carpintero: set fijo que se repite en vueltas
+    custom-puzzles/ ejercicios propios: lee un PGN y lo convierte en puzzles (lo usa woodpecker)
     chess-runner/  Chess Runner: carrera del perrito sobre las piezas del ejercicio, antes de resolverlo
     records/       récords de Racha y Reto 333 y su sincronización con el perfil
     reminders/     recordatorios de entrenamiento
@@ -138,7 +139,7 @@ utils/*.util.ts                      Funciones PURAS: calculan, no inyectan nada
   usan varias sin ser de ninguna va a `shared/` (p. ej. `shared/utils/date.util.ts`).
   Dependencias que hay hoy (sacadas de los imports):
   `training` → `records`, `reminders`, `app-review` · `home` → `training`, `records`, `woodpecker` ·
-  `streak` → `records`, `reminders` · `woodpecker` → `streak` (la lista de temas que no son tácticos), `reminders` ·
+  `streak` → `records`, `reminders` · `woodpecker` → `streak` (la lista de temas que no son tácticos), `reminders`, `custom-puzzles` ·
   `chess-runner` → `streak` (ídem), `reminders` ·
   `game-analytics` → `games`, `training` · `games` → `game-reflection` ·
   `settings` → `training`, `games`, `game-analytics`, `app-review` (borra sus datos locales).
@@ -301,7 +302,8 @@ completo y el progreso (vueltas, orden de cada una, resultados) van a `localStor
 (`WoodpeckerStorageService`), y el progreso se escribe tras cada ejercicio para poder reanudar.
 `WoodpeckerService` orquesta y registra la analítica; las transiciones del progreso (`startCycle`,
 `recordResult`, `finishCycle`) y la medición entre vueltas son funciones puras en `utils/`.
-**No crea un `Plan`**, no toca el ELO del perfil y no necesita sesión. La pantalla `woodpecker` es el
+El set puede salir también de un **PGN propio** (`features/custom-puzzles/`, [`implementado/RUTINA_PGN_FLOW.md`](./implementado/RUTINA_PGN_FLOW.md)):
+`source: 'pgn'`, sin descargas. **No crea un `Plan`**, no toca el ELO del perfil y no necesita sesión. La pantalla `woodpecker` es el
 panel; `woodpecker/play` juega una vuelta sobre el tablero de puzzles de siempre. Detalle:
 [`implementado/PAJARO_CARPINTERO_FLOW.md`](./implementado/PAJARO_CARPINTERO_FLOW.md).
 
@@ -454,6 +456,7 @@ una facade). Las pantallas leen el store; los guards (`custom-plans.guard` y
 | Cambiar los topes de la reflexión o los tags sugeridos | `features/game-reflection/config/game-reflection.config.ts` (y `GAME_REFLECTION.systemTags` en las traducciones) |
 | Añadir una estadística a Análisis | `libs/game-reporter` (reporte) + `features/game-analytics/utils/game-analytics.util.ts` (presentación) |
 | Añadir un dato a Firestore | un `*.repository.ts` en `data/` de la funcionalidad + su service (la página nunca lo inyecta) |
+| Cambiar el formato del PGN de ejercicios propios, sus topes o su informe | `features/custom-puzzles/utils/pgn-puzzles.util.ts` (formato) · `config/custom-puzzles.config.ts` (topes) · `config/custom-pgn-template.ts` (ejemplo de la ayuda) |
 | Cambiar cómo se arma el set del Pájaro Carpintero o cómo baja el tiempo por vuelta | `features/woodpecker/utils/woodpecker-set.util.ts` · `woodpecker-cycle.util.ts` · `config/woodpecker.config.ts` |
 | Afinar lo difícil que es una pieza del Chess Runner | `features/chess-runner/config/runner.config.ts` (y las pruebas de ventanas de `runner-engine.util.spec.ts` y de jugadores simulados de `runner-balance.spec.ts`) |
 | Cambiar los patrones, el orden o los poderes de la campaña del Chess Runner | `features/chess-runner/campaign/runner-curriculum.ts` (y `config/runner-powers.ts`; las lecciones, en `lessons/runner-lessons.data.ts`) |

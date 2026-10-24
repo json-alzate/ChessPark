@@ -83,10 +83,10 @@ Decisiones a cerrar antes de mover nada:
 
 ## 3. Roadmap de features siguientes 🔴
 
-Ya implementadas: Notificaciones de Entrenamiento (F02), Game Analytics (F12) y Método del Pájaro Carpintero (F08) y Chess Runner (F11). Lo que sigue, en orden
+Ya implementadas: Notificaciones de Entrenamiento (F02), Game Analytics (F12), Método del Pájaro Carpintero (F08), Chess Runner (F11) y la 1ª entrega de la Rutina con PGN propio (F07). Lo que sigue, en orden
 (diseños en [features/](./features/)):
 
-1. **Rutina con BD de Puzzles Personalizada (PGN)** — [features/RUTINA_PGN_PERSONALIZADA.md](./features/RUTINA_PGN_PERSONALIZADA.md). Siguiente en la fila: reutiliza el set congelado del Pájaro Carpintero (`WoodpeckerSet`, que ya guarda su `source`).
+1. **Rutina con PGN propio — lo que falta de F07**: llevar los ejercicios propios a las **rutinas personalizadas por bloques** y admitir posiciones que **empiezan con el turno del usuario** (estudios de Lichess). Ver [implementado/RUTINA_PGN_FLOW.md](./implementado/RUTINA_PGN_FLOW.md#fuera-de-esta-entrega) y el diseño [features/RUTINA_PGN_PERSONALIZADA.md](./features/RUTINA_PGN_PERSONALIZADA.md).
 2. **Analizador de Partidas** — [features/ANALIZADOR_PARTIDAS.md](./features/ANALIZADOR_PARTIDAS.md).
 3. **Puzzle Feed** — [features/PUZZLE_FEED.md](./features/PUZZLE_FEED.md).
 4. Después: Sparring Personalizado, Cuadros de Conquista (necesita un *design spike* antes de codificar), Puzzle Racer, Puzzle Geo Hunt y Jugar en Lichess.
@@ -206,4 +206,18 @@ Salieron al recorrer la app entera en móvil y escritorio, y no se arreglaron po
 - **El rótulo «ELO» de las tarjetas del inicio** (10 px, `--cc-elo`) y el «1500?» sin ELO (con `opacity-50`) quedan en 3,1:1 y
   2,9:1 de contraste, por debajo de AA. Es el color de marca: decidir si se aclara para texto pequeño.
 - **Privacidad:** la pantalla de política de privacidad solo existe en inglés.
+
+## 11. Ejercicios propios con PGN (F07) — verificación 🔴 (prioridad media)
+
+Implementado y documentado en [implementado/RUTINA_PGN_FLOW.md](./implementado/RUTINA_PGN_FLOW.md). Recorrido en navegador móvil con
+un PGN real (informe, set, panel y ejercicios jugados): hecho. Lo que no se puede cerrar desde el entorno de desarrollo:
+
+- **Elegir el archivo en un móvil de verdad** 🔴 — el `<input type="file">` debería abrir el selector de archivos en el WebView de
+  Android e iOS; no se ha comprobado. Si falla, queda el cuadro de «pegar el texto».
+- **Descargar el ejemplo en nativo** 🔴 — «Descargar» usa un enlace `download` que en un WebView puede no hacer nada; «Copiar» sí
+  debería funcionar. Si no descarga, sustituirlo por el plugin de archivos de Capacitor o quitarlo en nativo.
+- **Mirar `custom_pgn_import_failed`** (campo `reason`) y `custom_pgn_import_completed` (`failed` vs `imported`) tras unas semanas: dicen
+  si la gente tropieza con el formato y con qué motivo.
+- **Posición con el turno del usuario** 🔴 — hoy el `[FEN]` tiene que ser el de antes de la jugada del rival. Es lo que más va a tropezar
+  a quien venga de un estudio de Lichess.
 

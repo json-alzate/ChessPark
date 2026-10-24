@@ -3,7 +3,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AppService } from '@core/app/app.service';
 import { ProfileService } from '@core/account/profile.service';
 import { WoodpeckerSetupComponent } from '@features/woodpecker/containers/woodpecker-setup/woodpecker-setup.component';
-import { WoodpeckerSetupInput } from '@features/woodpecker/utils/woodpecker-config.util';
+import { WoodpeckerPgnSetupInput, WoodpeckerSetupInput } from '@features/woodpecker/utils/woodpecker-config.util';
+import { ejercicio } from '@tests/support/pajaro-carpintero';
 import { translocoParaPruebas } from '@tests/support/racha-ajustes-recordatorios';
 
 const GRUPOS = [
@@ -295,6 +296,111 @@ describe('WoodpeckerSetupComponent', () => {
       setup.changeCycles(3); // 8 vueltas
       expect(setup.paceSequence('standard')).toHaveLength(5);
       expect(setup.paceHasMore).toBe(true);
+    });
+  });
+
+  describe('fuente de los ejercicios', () => {
+    const puzzlesPgn = [ejercicio('a'), ejercicio('b'), ejercicio('c'), ejercicio('d'), ejercicio('e')];
+    const emitidoPgn: WoodpeckerPgnSetupInput[] = [];
+
+    const importador = () => fixture.nativeElement.querySelector('app-pgn-importer') as HTMLElement | null;
+
+    beforeEach(async () => {
+      await iniciar();
+      emitidoPgn.length = 0;
+      setup.createFromPgn.subscribe((input) => emitidoPgn.push(input));
+    });
+
+    it('empieza en el catálogo, con sus filtros y sin el importador', () => {
+      expect(setup.source).toBe('catalog');
+      expect(importador()).toBeNull();
+      expect(el('size')).not.toBeNull();
+      expect(el('elo')).not.toBeNull();
+      expect(el('themes')).not.toBeNull();
+    });
+
+    it('«Mi PGN» cambia los filtros del catálogo por el importador y marca la pestaña', () => {
+      (el('source-pgn') as HTMLButtonElement).click();
+      fixture.detectChanges();
+
+      expect(importador()).not.toBeNull();
+      expect(el('size')).toBeNull();
+      expect(el('elo')).toBeNull();
+      expect(el('themes')).toBeNull();
+      expect(el('source-pgn')?.getAttribute('aria-selected')).toBe('true');
+      expect(el('source-catalog')?.getAttribute('aria-selected')).toBe('false');
+    });
+
+    it('vueltas, orden y ritmo se quedan con cualquiera de las dos fuentes', () => {
+      (el('source-pgn') as HTMLButtonElement).click();
+      fixture.detectChanges();
+
+      expect(el('cycles')).not.toBeNull();
+      expect(el('order')).not.toBeNull();
+      expect(el('pace')).not.toBeNull();
+    });
+
+    it('sin archivo cargado no deja crear', () => {
+      setup.setSource('pgn');
+      fixture.detectChanges();
+
+      expect(setup.canCreate).toBe(false);
+      expect((el('create') as HTMLButtonElement).disabled).toBe(true);
+    });
+
+    it('con ejercicios cargados emite los ejercicios, el nombre y lo elegido', () => {
+      setup.setSource('pgn');
+      setup.onPgnImported({ name: 'mis-tacticas.pgn', puzzles: puzzlesPgn });
+      setup.changeCycles(-1);
+      setup.setOrder('same');
+      setup.setPace('intense');
+      fixture.detectChanges();
+
+      (el('create') as HTMLButtonElement).click();
+
+      expect(emitidoPgn).toEqual([
+        { name: 'mis-tacticas.pgn', puzzles: puzzlesPgn, cycles: 4, order: 'same', pace: 'intense' },
+      ]);
+      expect(emitido).toEqual([]);
+    });
+
+    it('enseña cuánto lleva una vuelta con los ejercicios del archivo', () => {
+      setup.setSource('pgn');
+      setup.onPgnImported({ name: '', puzzles: puzzlesPgn });
+      fixture.detectChanges();
+
+      expect(el('pgn-size-hint')).not.toBeNull();
+      expect(setup.cycleMinutesShown).toBe(5);
+    });
+
+    it('si se quita el archivo vuelve a no poder crear', () => {
+      setup.setSource('pgn');
+      setup.onPgnImported({ name: '', puzzles: puzzlesPgn });
+      setup.onPgnImported(null);
+      fixture.detectChanges();
+
+      expect(setup.canCreate).toBe(false);
+      expect(el('pgn-size-hint')).toBeNull();
+    });
+
+    it('volver al catálogo emite lo del catálogo aunque haya un archivo cargado', () => {
+      setup.setSource('pgn');
+      setup.onPgnImported({ name: '', puzzles: puzzlesPgn });
+      setup.setSource('catalog');
+      fixture.detectChanges();
+
+      (el('create') as HTMLButtonElement).click();
+
+      expect(emitido).toHaveLength(1);
+      expect(emitidoPgn).toEqual([]);
+    });
+
+    it('no deja crear con el PGN mientras se está armando un set', async () => {
+      await iniciar({ busy: true });
+      setup.setSource('pgn');
+      setup.onPgnImported({ name: '', puzzles: puzzlesPgn });
+
+      expect(setup.canCreate).toBe(false);
     });
   });
 

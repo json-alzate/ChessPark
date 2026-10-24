@@ -16,10 +16,11 @@ export type WoodpeckerOrder = 'same' | 'shuffle' | 'reverse';
 export type WoodpeckerTiming = 'none' | 'decreasing';
 
 /**
- * De dónde sale el set. Hoy solo del catálogo de ejercicios de la app; la
- * rutina con PGN propio (F07) añadirá `'pgn'` sin migrar lo ya guardado.
+ * De dónde sale el set: del catálogo de ejercicios de la app o de un PGN
+ * propio del usuario (F07). Lo guardado antes de `'pgn'` no se migra: ya era
+ * `'catalog'`.
  */
-export type WoodpeckerSource = 'catalog';
+export type WoodpeckerSource = 'catalog' | 'pgn';
 
 /** Ritmos que ofrece la pantalla: cada uno fija el tiempo de arranque y su descenso. */
 export type WoodpeckerPace = 'relaxed' | 'standard' | 'intense';
@@ -50,6 +51,8 @@ export interface WoodpeckerSet {
   id: string;
   source: WoodpeckerSource;
   createdAt: number;
+  /** Solo en `'pgn'`: el nombre del archivo del que salió (vacío si se pegó el texto). */
+  sourceName?: string;
   /** Los filtros con los que se armó, por trazabilidad. */
   config: WoodpeckerConfig;
   /** Orden canónico del set (el de la vuelta 1). */

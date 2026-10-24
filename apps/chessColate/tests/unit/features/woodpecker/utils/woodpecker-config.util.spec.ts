@@ -1,5 +1,6 @@
 import {
   adjustEloRange,
+  buildPgnWoodpeckerConfig,
   buildWoodpeckerConfig,
   clampCycles,
   defaultEloRange,
@@ -10,7 +11,7 @@ import {
   resolveThemes,
   WoodpeckerSetupInput,
 } from '@features/woodpecker/utils/woodpecker-config.util';
-import { aleatorioConSemilla, configuracion } from '@tests/support/pajaro-carpintero';
+import { aleatorioConSemilla, configuracion, ejercicio } from '@tests/support/pajaro-carpintero';
 
 describe('minCountFor', () => {
   it('acepta un set con el 70 % de lo pedido', () => {
@@ -231,5 +232,65 @@ describe('adjustEloRange', () => {
 
   it('ajusta a pasos de 100', () => {
     expect(adjustEloRange(rango, 'min', 1140)).toEqual({ eloMin: 1100, eloMax: 1700 });
+  });
+});
+
+describe('buildPgnWoodpeckerConfig', () => {
+  const entrada = (puzzles = [ejercicio('a', { rating: 940, themes: ['fork'] }), ejercicio('b', { rating: 1210, themes: ['fork', 'pin'] })]) => ({
+    name: 'tacticas.pgn',
+    puzzles,
+    cycles: 4,
+    order: 'same' as const,
+    pace: 'intense' as const,
+  });
+
+  it('pide y exige todos los ejercicios del archivo: no hay catálogo del que sacar más', () => {
+    const config = buildPgnWoodpeckerConfig(entrada());
+
+    expect(config.targetCount).toBe(2);
+    expect(config.minCount).toBe(2);
+  });
+
+  it('resume el rango de ELO del archivo, ensanchado a múltiplos de 100', () => {
+    const config = buildPgnWoodpeckerConfig(entrada());
+
+    expect([config.eloMin, config.eloMax]).toEqual([900, 1300]);
+  });
+
+  it('un archivo con un solo rating sigue dando un rango de al menos 200 puntos', () => {
+    const config = buildPgnWoodpeckerConfig(entrada([ejercicio('a', { rating: 1500 }), ejercicio('b', { rating: 1500 })]));
+
+    expect(config.eloMax - config.eloMin).toBeGreaterThanOrEqual(200);
+    expect(config.eloMin).toBeLessThanOrEqual(1500);
+    expect(config.eloMax).toBeGreaterThan(1500);
+  });
+
+  it('lista los temas del archivo con los más frecuentes primero', () => {
+    const config = buildPgnWoodpeckerConfig(
+      entrada([
+        ejercicio('a', { themes: ['pin'] }),
+        ejercicio('b', { themes: ['fork', 'pin'] }),
+        ejercicio('c', { themes: ['fork'] }),
+        ejercicio('d', { themes: ['fork'] }),
+      ])
+    );
+
+    expect(config.themes).toEqual(['fork', 'pin']);
+  });
+
+  it('aplica las vueltas, el orden y el ritmo elegidos', () => {
+    const config = buildPgnWoodpeckerConfig(entrada());
+
+    expect(config).toMatchObject({
+      cycles: 4,
+      order: 'same',
+      timing: 'decreasing',
+      baseTimePerPuzzleSec: 30,
+      decreasePercent: 20,
+    });
+  });
+
+  it('el resultado pasa por la misma comprobación que una configuración del catálogo', () => {
+    expect(isWoodpeckerConfig(buildPgnWoodpeckerConfig(entrada()))).toBe(true);
   });
 });

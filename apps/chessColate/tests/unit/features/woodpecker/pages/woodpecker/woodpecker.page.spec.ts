@@ -18,7 +18,7 @@ import { AppService } from '@core/app/app.service';
 import { WoodpeckerDashboardComponent } from '@features/woodpecker/components/woodpecker-dashboard/woodpecker-dashboard.component';
 import { WoodpeckerPage } from '@features/woodpecker/pages/woodpecker/woodpecker.page';
 import { WoodpeckerService } from '@features/woodpecker/services/woodpecker.service';
-import { WoodpeckerSetupInput } from '@features/woodpecker/utils/woodpecker-config.util';
+import { WoodpeckerPgnSetupInput, WoodpeckerSetupInput } from '@features/woodpecker/utils/woodpecker-config.util';
 import {
   ejercicio,
   ejercicios,
@@ -43,6 +43,7 @@ class ConfiguracionFalsa {
   @Input() replacesExisting = false;
   @Input() introOpen = true;
   @Output() create = new EventEmitter<WoodpeckerSetupInput>();
+  @Output() createFromPgn = new EventEmitter<WoodpeckerPgnSetupInput>();
 }
 
 const ENTRADA: WoodpeckerSetupInput = {
@@ -64,6 +65,7 @@ describe('WoodpeckerPage', () => {
     load: jest.fn(),
     getState: jest.fn(),
     createSet: jest.fn(),
+    createSetFromPgn: jest.fn(),
     discard: jest.fn(),
     availableThemes: ['fork', 'pin', 'mateIn2'],
     isCompleted: false,
@@ -298,6 +300,63 @@ describe('WoodpeckerPage', () => {
 
       expect(woodpecker.createSet).not.toHaveBeenCalled();
       expect(page.error).toEqual({ key: 'WOODPECKER.errors.noThemes' });
+    });
+  });
+
+  describe('crear el set con un PGN propio', () => {
+    const ENTRADA_PGN: WoodpeckerPgnSetupInput = {
+      name: 'mis-tacticas.pgn',
+      puzzles,
+      cycles: 3,
+      order: 'same',
+      pace: 'relaxed',
+    };
+
+    beforeEach(() => mostrar());
+
+    it('crea el set al momento y pasa al panel, sin pantalla de descarga', () => {
+      woodpecker.createSetFromPgn.mockImplementation(() => {
+        woodpecker.load.mockReturnValue(estadoSinEmpezar());
+        return { status: 'ok', short: false, set: estadoSinEmpezar().set };
+      });
+
+      page.onCreateFromPgn(ENTRADA_PGN);
+
+      expect(woodpecker.createSetFromPgn).toHaveBeenCalledWith(ENTRADA_PGN);
+      expect(page.view).toBe('dashboard');
+      expect(page.error).toBeNull();
+      expect(page.shortNotice).toBeNull();
+    });
+
+    it('si no cabe en el dispositivo lo dice y sigue en la configuración', () => {
+      woodpecker.createSetFromPgn.mockReturnValue({ status: 'storage-full' });
+
+      page.onCreateFromPgn(ENTRADA_PGN);
+
+      expect(page.view).toBe('setup');
+      expect(page.error).toEqual({ key: 'WOODPECKER.errors.storageFull' });
+    });
+
+    it('si falla con un set anterior, sigue ofreciendo reemplazarlo', () => {
+      woodpecker.getState.mockReturnValue(estadoSinEmpezar());
+      woodpecker.createSetFromPgn.mockReturnValue({ status: 'storage-full' });
+
+      page.onCreateFromPgn(ENTRADA_PGN);
+
+      expect(page.replacingSet).toBe(true);
+    });
+  });
+
+  describe('temas de un set propio', () => {
+    it('los ejercicios sin tema se rotulan «Propio» y los temas libres salen tal cual', () => {
+      const estado = estadoSinEmpezar();
+      estado.set.config.themes = ['custom', 'fork', 'mi-tema'];
+      app.getNameThemePuzzleByValue.mockImplementation((tema: string) => (tema === 'fork' ? 'Ataque doble' : ''));
+      woodpecker.load.mockReturnValue(estado);
+
+      mostrar();
+
+      expect(page.themeNames).toEqual(['CUSTOM_PGN.themeCustom', 'Ataque doble', 'mi-tema']);
     });
   });
 

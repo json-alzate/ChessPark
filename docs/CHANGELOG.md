@@ -20,6 +20,10 @@ y el versionado sigue [SemVer](https://semver.org/lang/es/) para `versionName`.
 ### Añadido
 - **Catálogo de Partidas completo**: ya están los 22 campeones del mundo (de Steinitz a Gukesh, con los de FIDE 1999–2006), en orden
   cronológico de reinado. Antes solo había tres (Alekhine, Anand y Petrosian). No requiere versión nueva: el catálogo se descarga.
+- **Ejercicios propios con PGN en el Pájaro Carpintero**: en la configuración del set, la pestaña «Mi PGN» deja elegir un archivo `.pgn`
+  (o pegar el texto) con tus propios ejercicios y armar el set con ellos. La app lee el archivo al momento y enseña cuántos ejercicios entraron y,
+  de los que no, cuál es y por qué; un ejercicio malo no impide el resto. Una ayuda explica la estructura del archivo y trae un ejemplo para copiar
+  o descargar. Hasta 500 ejercicios por set; el ELO del perfil no se toca.
 - **Método del Pájaro Carpintero** (menú Práctica y tarjeta en el inicio): armas un set fijo de
   ejercicios con tu rango de ELO, tus temas y el número de vueltas, y lo repites con menos tiempo
   en cada una. Cada vuelta te dice cuánto mejoraste en acierto y en velocidad, y el panel enseña

@@ -1,5 +1,9 @@
 # Rutina con Base de Puzzles Personalizada (PGN) — Feature Document
 
+> **Estado:** la primera entrega está implementada (el set del Pájaro Carpintero acepta un PGN propio). Cómo quedó, y la guía del formato, en
+> [`../implementado/RUTINA_PGN_FLOW.md`](../implementado/RUTINA_PGN_FLOW.md). Este documento conserva el diseño original, incluidas las rutinas por bloques que
+> aún no se hicieron.
+
 ## Concepto
 
 Permitir que, al crear una **rutina personalizada**, el usuario pueda **cargar su propio archivo PGN con ejercicios** en vez de (o además de) usar el pool de puzzles del catálogo. Es decir: **cargar una BD de puzzles propia**.

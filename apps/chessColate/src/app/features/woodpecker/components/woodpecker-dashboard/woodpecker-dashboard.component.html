@@ -16,6 +16,11 @@
           ·
           <span class="font-semibold text-[var(--cc-elo)]">{{ set.config.eloMin }} – {{ set.config.eloMax }}</span>
         </p>
+        @if (set.source === 'pgn') {
+        <p class="mt-0.5 truncate text-xs text-base-content/60" data-testid="source-pgn">
+          {{ 'WOODPECKER.dashboard.fromPgn' | transloco }}@if (set.sourceName) { · {{ set.sourceName }}}
+        </p>
+        }
       </div>
       @if (completed) {
       <span class="badge badge-success badge-sm shrink-0 font-bold">{{ 'WOODPECKER.dashboard.completedBadge' | transloco }}</span>

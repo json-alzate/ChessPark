@@ -108,7 +108,10 @@ legible). El resto son **acciones semánticas**. Nombres y params en `snake_case
 | `game_analytics_synced` | termina una descarga de partidas propias | `platforms`, `months`, `games_count` | `game-analytics.service.ts` |
 | `game_analytics_filtered` | se cambia el filtro de plataforma | `platform`, `time_classes` | `features/game-analytics/pages/analytics.page.ts` |
 | `game_analytics_disconnected` | se desconecta una cuenta | `platform` | `game-analytics.service.ts` |
-| `woodpecker_plan_created` | se arma un set del Pájaro Carpintero | `target`, `actual`, `elo_min`, `elo_max`, `themes_count`, `cycles`, `order`, `timing` | `woodpecker.service.ts` |
+| `woodpecker_plan_created` | se arma un set del Pájaro Carpintero | `source` (`catalog`/`pgn`), `target`, `actual`, `elo_min`, `elo_max`, `themes_count`, `cycles`, `order`, `timing` | `woodpecker.service.ts` |
+| `custom_pgn_import_started` | se elige un archivo o se pega texto de ejercicios propios | `via` (`file`/`paste`) | `custom-puzzles-import.service.ts` |
+| `custom_pgn_import_completed` | se lee un PGN de ejercicios con al menos un ejercicio válido | `total`, `imported`, `failed`, `enough` | `custom-puzzles-import.service.ts` |
+| `custom_pgn_import_failed` | el PGN no se pudo leer o no trae ningún ejercicio válido | `reason` | `custom-puzzles-import.service.ts` |
 | `woodpecker_set_short` | el catálogo no dio lo pedido (con o sin set aceptado) | `requested`, `available` | `woodpecker.service.ts` |
 | `woodpecker_cycle_started` | se abre una vuelta (no al retomarla) | `cycle`, `set_size` | `woodpecker.service.ts` |
 | `woodpecker_cycle_completed` | termina una vuelta | `cycle`, `solved`, `failed`, `total_time_ms` | `woodpecker.service.ts` |

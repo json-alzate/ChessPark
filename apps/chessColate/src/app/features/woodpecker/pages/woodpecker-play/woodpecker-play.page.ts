@@ -9,7 +9,7 @@ import {
   ViewWillEnter,
   ViewWillLeave,
 } from '@ionic/angular/standalone';
-import { TranslocoPipe } from '@jsverse/transloco';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
 import {
   closeOutline,
@@ -28,6 +28,7 @@ import { ConfettiService, SoundsService } from '@chesspark/common-utils';
 import { AppService } from '@core/app/app.service';
 import { AnalyticsService } from '@core/analytics/analytics.service';
 import { ProfileService } from '@core/account/profile.service';
+import { themeLabel } from '@features/custom-puzzles/utils/pgn-puzzles.util';
 import { TrainingReminderService } from '@features/reminders/services/training-reminder.service';
 import { KingImagePipe } from '@shared/pipes/king-image.pipe';
 import { BoardResizeHandleComponent } from '@shared/components/board-resize-handle/board-resize-handle.component';
@@ -89,6 +90,7 @@ export class WoodpeckerPlayPage implements ViewWillEnter, ViewWillLeave, OnDestr
   private confetti = inject(ConfettiService);
   private appService = inject(AppService);
   private modalController = inject(ModalController);
+  private translocoService = inject(TranslocoService);
 
   status: PlayStatus = 'loading';
 
@@ -316,7 +318,11 @@ export class WoodpeckerPlayPage implements ViewWillEnter, ViewWillLeave, OnDestr
       componentProps: {
         puzzle,
         themesTranslated: puzzle.themes.map((theme) =>
-          this.appService.getNameThemePuzzleByValue(theme)
+          themeLabel(
+            theme,
+            this.appService.getNameThemePuzzleByValue(theme),
+            this.translocoService.translate('CUSTOM_PGN.themeCustom')
+          )
         ),
       },
     });

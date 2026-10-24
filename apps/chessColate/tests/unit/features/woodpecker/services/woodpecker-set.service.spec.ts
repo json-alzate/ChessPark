@@ -219,4 +219,27 @@ describe('WoodpeckerSetService', () => {
       expect(new Set(primeros).size).toBe(2);
     });
   });
+
+  describe('fromPuzzles', () => {
+    const puzzles = [ejercicio('a'), ejercicio('b'), ejercicio('c')];
+
+    it('arma el set con los ejercicios tal cual, en el orden del archivo, sin tocar el catálogo', () => {
+      const config = configuracion({ targetCount: 3, minCount: 3 });
+
+      const set = service.fromPuzzles(config, puzzles, 'tacticas.pgn');
+
+      expect(set).toMatchObject({ id: 'set-nuevo', source: 'pgn', sourceName: 'tacticas.pgn', config });
+      expect(set.puzzles.map((p) => p.uid)).toEqual(['a', 'b', 'c']);
+      expect(provider.getPuzzles).not.toHaveBeenCalled();
+    });
+
+    it('guarda la fecha de creación', () => {
+      const antes = Date.now();
+
+      const set = service.fromPuzzles(configuracion(), puzzles, '');
+
+      expect(set.createdAt).toBeGreaterThanOrEqual(antes);
+      expect(set.sourceName).toBe('');
+    });
+  });
 });

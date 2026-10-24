@@ -143,6 +143,29 @@ describe('WoodpeckerDashboardComponent', () => {
     expect(texto('set-card')).toContain('+3');
   });
 
+  describe('origen del set', () => {
+    it('un set del catálogo no dice nada de archivos', () => {
+      pintar(estadoConProgreso(puzzles, []));
+
+      expect(el('source-pgn')).toBeNull();
+    });
+
+    it('un set de un PGN propio lo dice, con el nombre del archivo', () => {
+      const estado = estadoConProgreso(puzzles, []);
+      pintar({ ...estado, set: { ...estado.set, source: 'pgn', sourceName: 'mis-tacticas.pgn' } });
+
+      expect(texto('source-pgn')).toContain('WOODPECKER.dashboard.fromPgn');
+      expect(texto('source-pgn')).toContain('mis-tacticas.pgn');
+    });
+
+    it('si el texto se pegó (sin nombre de archivo) lo dice sin nombre', () => {
+      const estado = estadoConProgreso(puzzles, []);
+      pintar({ ...estado, set: { ...estado.set, source: 'pgn', sourceName: '' } });
+
+      expect(texto('source-pgn').trim()).toBe('WOODPECKER.dashboard.fromPgn');
+    });
+  });
+
   it('avisa cuando salieron menos ejercicios de los pedidos', () => {
     pintar(estadoConProgreso(puzzles, []), { shortNotice: { requested: 100, actual: 87 } });
 

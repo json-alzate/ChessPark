@@ -39,7 +39,8 @@ export function isWoodpeckerSet(value: unknown): value is WoodpeckerSet {
   return (
     isObject(value) &&
     typeof value['id'] === 'string' &&
-    value['source'] === 'catalog' &&
+    (value['source'] === 'catalog' || value['source'] === 'pgn') &&
+    (value['sourceName'] === undefined || typeof value['sourceName'] === 'string') &&
     typeof value['createdAt'] === 'number' &&
     isWoodpeckerConfig(value['config']) &&
     Array.isArray(value['puzzles']) &&

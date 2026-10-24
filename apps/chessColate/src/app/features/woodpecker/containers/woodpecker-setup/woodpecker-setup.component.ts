@@ -13,6 +13,10 @@ import {
 
 import { AppService } from '@core/app/app.service';
 import { ProfileService } from '@core/account/profile.service';
+import {
+  PgnImported,
+  PgnImporterComponent,
+} from '@features/custom-puzzles/containers/pgn-importer/pgn-importer.component';
 
 import {
   WOODPECKER_CYCLES,
@@ -28,9 +32,13 @@ import {
   adjustEloRange,
   defaultEloRange,
   estimateCycleMinutes,
+  WoodpeckerPgnSetupInput,
   WoodpeckerSetupInput,
 } from '../../utils/woodpecker-config.util';
 import { timeForCycle } from '../../utils/woodpecker-cycle.util';
+
+/** De dónde salen los ejercicios del set. */
+type SetupSource = 'catalog' | 'pgn';
 
 /** Un tema que se puede elegir, listo para pintar. */
 interface ThemeOption {
@@ -52,7 +60,7 @@ interface ThemeGroupOption {
 @Component({
   selector: 'app-woodpecker-setup',
   standalone: true,
-  imports: [CommonModule, TranslocoPipe, IonIcon],
+  imports: [CommonModule, TranslocoPipe, IonIcon, PgnImporterComponent],
   templateUrl: './woodpecker-setup.component.html',
   styleUrl: './woodpecker-setup.component.scss',
 })
@@ -71,6 +79,8 @@ export class WoodpeckerSetupComponent implements OnInit {
   @Input() introOpen = true;
 
   @Output() create = new EventEmitter<WoodpeckerSetupInput>();
+  /** Crear el set con los ejercicios de un PGN propio. */
+  @Output() createFromPgn = new EventEmitter<WoodpeckerPgnSetupInput>();
 
   readonly sizes = WOODPECKER_SIZES;
   readonly eloLimits = WOODPECKER_ELO;
@@ -78,6 +88,10 @@ export class WoodpeckerSetupComponent implements OnInit {
   readonly paces = Object.keys(WOODPECKER_PACES) as WoodpeckerPace[];
   readonly orders: WoodpeckerOrder[] = ['shuffle', 'same', 'reverse'];
   readonly maxRandomThemes = WOODPECKER_MAX_RANDOM_THEMES;
+
+  source: SetupSource = 'catalog';
+  /** Lo último que se leyó bien del PGN (null si no hay nada utilizable). */
+  pgn: PgnImported | null = null;
 
   size: number = WOODPECKER_DEFAULT_SIZE;
   eloMin = 0;
@@ -105,7 +119,25 @@ export class WoodpeckerSetupComponent implements OnInit {
   }
 
   get canCreate(): boolean {
-    return !this.busy && (this.themeMode === 'all' || this.selectedThemes.size > 0);
+    if (this.busy) {
+      return false;
+    }
+    return this.source === 'pgn'
+      ? this.pgn !== null
+      : this.themeMode === 'all' || this.selectedThemes.size > 0;
+  }
+
+  /** Duración aproximada de una vuelta con la fuente elegida. */
+  get cycleMinutesShown(): number {
+    return estimateCycleMinutes(this.source === 'pgn' ? this.pgn?.puzzles.length ?? 0 : this.size);
+  }
+
+  setSource(source: SetupSource): void {
+    this.source = source;
+  }
+
+  onPgnImported(imported: PgnImported | null): void {
+    this.pgn = imported;
   }
 
   /** Segundos por ejercicio de las primeras vueltas del ritmo, para enseñar cómo baja. */
@@ -179,6 +211,16 @@ export class WoodpeckerSetupComponent implements OnInit {
 
   submit(): void {
     if (!this.canCreate) {
+      return;
+    }
+    if (this.source === 'pgn' && this.pgn) {
+      this.createFromPgn.emit({
+        name: this.pgn.name,
+        puzzles: this.pgn.puzzles,
+        cycles: this.cycles,
+        order: this.order,
+        pace: this.pace,
+      });
       return;
     }
     this.create.emit({

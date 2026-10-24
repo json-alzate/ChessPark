@@ -23,7 +23,7 @@ la feature se implemente o cambie de posición. Por eso los IDs se leen salteado
 | ✅ | F12 | [Análisis de Partidas (Game Analytics)](../implementado/GAME_ANALYTICS_FLOW.md) | Alto | Alto | APIs externas (chess.com/lichess) |
 | ✅ | F08 | [Método del Pájaro Carpintero](../implementado/PAJARO_CARPINTERO_FLOW.md) | Alto | Medio | — (estrenó el set congelado; usa solo el catálogo de puzzles que ya existe) |
 | ✅ | F11 | [Chess Runner](../implementado/CHESS_RUNNER_FLOW.md) | Medio | Medio | — (el perrito y el pipeline de pixel art del directo) |
-| ⬜ | F07 | [Rutina con BD de Puzzles Personalizada (PGN)](./RUTINA_PGN_PERSONALIZADA.md) | Alto | Medio | F06 (lector de PGN, ya hecho); reutiliza el set congelado de F08 |
+| ✅ | F07 | [Rutina con BD de Puzzles Personalizada (PGN)](../implementado/RUTINA_PGN_FLOW.md) | Alto | Medio | F06 (lector de PGN, ya hecho); reutiliza el set congelado de F08. 1ª entrega: el Pájaro Carpintero con PGN propio; faltan las rutinas por bloques |
 | ⬜ | F09 | [Analizador de Partidas (capas de dibujo)](./ANALIZADOR_PARTIDAS.md) | Alto (estudio) | Alto | F06 (lector de PGN + reproducción, ya hechos) |
 | ⬜ | F10 | [Puzzle Feed](./PUZZLE_FEED.md) | Alto (engagement) | Medio-Alto | — |
 | ⬜ | F13 | [Sparring Personalizado (IA con tu estilo)](./SPARRING_PERSONALIZADO.md) | Alto | Alto (Nivel 1) / Muy Alto (Nivel 2) | F12 (ingesta de partidas, ya hecha) + `stockfish-wasm` |
@@ -45,7 +45,9 @@ la feature se implemente o cambie de posición. Por eso los IDs se leen salteado
 ### F08 · [Método del Pájaro Carpintero](../implementado/PAJARO_CARPINTERO_FLOW.md) ✅
 **Implementado.** No dependía de nada pendiente. Genera su set una sola vez con los puzzles que ya se descargan del catálogo ([`PuzzlesProvider`](../../libs/puzzles-provider/src/lib/puzzles-provider.ts) / `getPuzzlesForBlock`), lo **congela y lo persiste** (`WoodpeckerSet`), y encima añade **vueltas + timing decreciente + comparación entre pasadas**. Estrena el patrón de **"set de puzzles congelado y persistido"** que antes se le atribuía a F07.
 
-### F07 · [Rutina con BD de Puzzles Personalizada (PGN)](./RUTINA_PGN_PERSONALIZADA.md)
+### F07 · [Rutina con BD de Puzzles Personalizada (PGN)](../implementado/RUTINA_PGN_FLOW.md) ✅ (1ª entrega)
+**Primera entrega implementada:** el Pájaro Carpintero acepta un PGN propio como fuente del set (`source: 'pgn'`), con la guía del formato y un informe de importación tolerante a fallos. Quedan las rutinas personalizadas por bloques y los estudios cuya posición ya empieza con el turno del usuario.
+
 Va **después de F08**: reutiliza el lector de PGN que dejó F06 y, en vez de inventar su propio `CustomPuzzleSet`, se apoya en el set congelado de F08 cambiando solo la **fuente** (un archivo PGN en lugar del catálogo). Es también la "2ª iteración" prevista de F08 (set del Pájaro Carpintero armado desde un PGN propio). Alto valor para entrenadores y estudio dirigido.
 
 ### F09 · [Analizador de Partidas (capas de dibujo)](./ANALIZADOR_PARTIDAS.md)

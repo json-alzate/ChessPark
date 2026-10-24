@@ -134,6 +134,21 @@ export class WoodpeckerSetService {
   }
 
   /**
+   * El set de un PGN propio: los ejercicios ya están leídos, así que no hay
+   * catálogo ni descargas. Se conserva el orden del archivo, que es el de la vuelta 1.
+   */
+  fromPuzzles(config: WoodpeckerConfig, puzzles: Puzzle[], sourceName: string): WoodpeckerSet {
+    return {
+      id: this.uidGenerator.generateSimpleUid(),
+      source: 'pgn',
+      createdAt: Date.now(),
+      sourceName,
+      config,
+      puzzles,
+    };
+  }
+
+  /**
    * Cuántos ejercicios ha dado de media cada archivo con contenido, para saber
    * cuántos más hacen falta si el set quedó corto.
    */

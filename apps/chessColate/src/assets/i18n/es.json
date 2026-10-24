@@ -590,6 +590,64 @@
     "rateRowTitle": "Califícanos",
     "rateRowDesc": "Deja tu opinión en la tienda: ayuda a que más gente encuentre ChessColate"
   },
+  "CUSTOM_PGN": {
+    "themeCustom": "Propio",
+    "import": {
+      "title": "Tu archivo PGN",
+      "hint": "Un ejercicio por partida, hasta {{max}} ejercicios. Más abajo tienes cómo debe ser el archivo.",
+      "pick": "Elegir archivo .pgn",
+      "pasteSummary": "O pega el texto",
+      "pasteLabel": "Texto del PGN",
+      "pastePlaceholder": "[Event \"Mi ejercicio\"] [FEN \"…\"] 1... a6 2. Re8# *",
+      "read": "Leer texto"
+    },
+    "failure": {
+      "empty": "El archivo está vacío.",
+      "too-big": "El archivo es demasiado grande (máximo unos 2 MB). Pártelo en varios.",
+      "not-text": "Eso no parece un archivo de texto PGN.",
+      "no-exercises": "No se encontró ningún ejercicio válido. Revisa que cada uno tenga su [FEN] y jugadas legales.",
+      "unreadable": "No se pudo leer el archivo."
+    },
+    "summary": {
+      "ready": "{{count}} de {{total}} ejercicios listos",
+      "tooFew": "Hacen falta al menos {{min}} ejercicios válidos para armar un set.",
+      "dropped": "Tu archivo trae {{dropped}} ejercicios más del máximo: se usan los primeros {{max}}.",
+      "clear": "Quitar"
+    },
+    "issues": {
+      "title": "Ejercicios que no entraron ({{count}})",
+      "invalid-fen": "El [FEN] no es una posición válida.",
+      "no-moves": "No tiene jugadas.",
+      "too-short": "Necesita al menos dos jugadas: la del rival y tu solución.",
+      "illegal-move": "La jugada «{{move}}» no es legal en esa posición.",
+      "unreadable": "No se pudieron leer sus jugadas.",
+      "duplicate": "Está repetido (misma posición y mismas jugadas).",
+      "more": "…y {{count}} más."
+    },
+    "notes": {
+      "title": "Avisos ({{count}})",
+      "trailing-opponent-move-dropped": "La línea acababa en una jugada del rival: se quitó para que el ejercicio termine en la tuya.",
+      "no-fen": "No traía [FEN]: se usa la posición inicial."
+    },
+    "help": {
+      "title": "¿Cómo debe ser el PGN?",
+      "intro": "Cada ejercicio es una partida del archivo: una posición de partida y una línea de jugadas. La primera jugada es del rival y se juega sola; el resto es la solución que tienes que encontrar.",
+      "rule1": "Un ejercicio es un bloque de etiquetas entre corchetes seguido de sus jugadas. Deja una línea en blanco entre ejercicios.",
+      "rule2": "El [FEN] es la posición ANTES de la jugada del rival. Si sacas el ejercicio de una partida, es la posición justo antes del error del rival.",
+      "rule3": "La línea empieza con la jugada del rival y sigue con tu solución, alternando: rival, tú, rival, tú… Tiene que acabar en una jugada tuya.",
+      "rule4": "Solo cuenta la línea principal: variantes, comentarios y símbolos se ignoran. Las jugadas van en notación estándar (Nf3, exd5, O-O, e8=Q).",
+      "tagsTitle": "Etiquetas",
+      "tagFen": "la posición antes de la jugada del rival. Sin ella se usa la posición inicial.",
+      "tagEvent": "opcional: el nombre del ejercicio.",
+      "tagRating": "opcional: su dificultad (1500 si falta).",
+      "tagThemes": "opcional: temas separados por espacios, como fork o mateIn2. Los del catálogo salen con su nombre traducido.",
+      "exampleTitle": "Ejemplo",
+      "copy": "Copiar",
+      "copied": "¡Copiado!",
+      "download": "Descargar",
+      "lichess": "¿Tu posición ya empieza con tu turno, como en un estudio de Lichess? Usa el FEN de una jugada antes y pon primero la última jugada del rival."
+    }
+  },
   "GAME_REFLECTION": {
     "title": "Mi reflexión",
     "subtitle": "Anota qué hiciste bien y qué quieres mejorar de esta partida. Más adelante podrás sacar estadísticas personales con tus anotaciones.",
@@ -1108,6 +1166,10 @@
       "note": "Que los ejercicios se repitan no es un fallo: es el método."
     },
     "setup": {
+      "source": {
+        "catalog": "Catálogo",
+        "pgn": "Mi PGN"
+      },
       "size": {
         "label": "Tamaño del set",
         "unit": "ejercicios",
@@ -1177,6 +1239,7 @@
     "shortNotice": "Salieron {{actual}} de los {{requested}} ejercicios que pedías: es lo que hay en el catálogo con estos filtros.",
     "dashboard": {
       "yourSet": "Tu set",
+      "fromPgn": "De tu archivo PGN",
       "exercises": "{{count}} ejercicios",
       "cycleOf": "Vuelta {{cycle}} de {{cycles}}",
       "completedBadge": "Terminado",

@@ -3,6 +3,8 @@
  * puras: no leen el catálogo ni el dispositivo.
  */
 
+import { Puzzle } from '@chesspark/models';
+
 import {
   WOODPECKER_CYCLES,
   WOODPECKER_ELO,
@@ -24,6 +26,16 @@ export interface WoodpeckerSetupInput {
   eloMax: number;
   /** Temas elegidos, o `'all'` para una mezcla variada. */
   themes: string[] | 'all';
+  cycles: number;
+  order: WoodpeckerOrder;
+  pace: WoodpeckerPace;
+}
+
+/** Lo que se deja elegido al armar el set con un PGN propio: los ejercicios ya vienen del archivo. */
+export interface WoodpeckerPgnSetupInput {
+  /** Nombre del archivo (vacío si se pegó el texto). */
+  name: string;
+  puzzles: Puzzle[];
   cycles: number;
   order: WoodpeckerOrder;
   pace: WoodpeckerPace;
@@ -143,6 +155,44 @@ export function buildWoodpeckerConfig(
     eloMin,
     eloMax,
     themes: resolveThemes(input.themes, availableThemes, random),
+    cycles: clampCycles(input.cycles),
+    order: input.order,
+    timing: pace.timing,
+    baseTimePerPuzzleSec: pace.baseTimePerPuzzleSec,
+    decreasePercent: pace.decreasePercent,
+  };
+}
+
+/**
+ * Configuración de un set armado con un PGN propio. No hay filtros que
+ * aplicar: se usa el archivo entero, así que pedido y mínimo coinciden y el
+ * rango de ELO y los temas son un resumen de lo que trae.
+ */
+export function buildPgnWoodpeckerConfig(input: WoodpeckerPgnSetupInput): WoodpeckerConfig {
+  const pace = WOODPECKER_PACES[input.pace];
+  const ratings = input.puzzles.map((puzzle) => puzzle.rating);
+  const { step } = WOODPECKER_ELO;
+
+  const { eloMin, eloMax } = normalizeEloRange(
+    Math.floor(Math.min(...ratings) / step) * step,
+    Math.ceil((Math.max(...ratings) + 1) / step) * step
+  );
+
+  // Los temas más frecuentes primero, para que los chips del panel digan de qué va el set
+  const counts = new Map<string, number>();
+  for (const puzzle of input.puzzles) {
+    for (const theme of puzzle.themes) {
+      counts.set(theme, (counts.get(theme) ?? 0) + 1);
+    }
+  }
+  const themes = [...counts.entries()].sort((a, b) => b[1] - a[1]).map(([theme]) => theme);
+
+  return {
+    targetCount: input.puzzles.length,
+    minCount: input.puzzles.length,
+    eloMin,
+    eloMax,
+    themes,
     cycles: clampCycles(input.cycles),
     order: input.order,
     timing: pace.timing,
