@@ -546,6 +546,17 @@ describe('AnalyticsPage', () => {
         expect(page.ratingPoints).toHaveLength(3);
       });
 
+      it('las pestañas son un tablist y marcan cuál está activa', async () => {
+        await abrir();
+        const pestanas = Array.from<HTMLButtonElement>(
+          fixture.nativeElement.querySelectorAll('[role="tablist"] button[role="tab"]')
+        );
+        expect(pestanas).toHaveLength(3);
+        expect(pestanas.map((b) => b.getAttribute('aria-selected'))).toEqual(['true', 'false', 'false']);
+        expect(pestanas[0].classList).toContain('btn-primary');
+        expect(pestanas[1].classList).toContain('btn-ghost');
+      });
+
       it('el botón de Aperturas cambia la vista a la tabla de aperturas', async () => {
         await abrir();
         botonCon('ANALYTICS.openings.title')?.click();

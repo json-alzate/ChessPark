@@ -12,6 +12,7 @@ describe('LanguageService', () => {
     getActiveLang: jest.Mock;
     setActiveLang: jest.Mock;
     selectTranslate: jest.Mock;
+    langChanges$: Subject<string>;
   };
 
   const setBrowserLang = (lang: string | undefined) =>
@@ -23,6 +24,7 @@ describe('LanguageService', () => {
       getActiveLang: jest.fn().mockReturnValue('en'),
       setActiveLang: jest.fn(),
       selectTranslate: jest.fn().mockReturnValue(of('Cancel')),
+      langChanges$: new Subject<string>(),
     };
     TestBed.configureTestingModule({
       providers: [{ provide: TranslocoService, useValue: transloco }],
@@ -31,6 +33,16 @@ describe('LanguageService', () => {
   });
 
   afterEach(() => jest.restoreAllMocks());
+
+  describe('idioma del documento', () => {
+    it('cada cambio de idioma de Transloco queda en <html lang> para los lectores de pantalla', () => {
+      transloco.langChanges$.next('es');
+      expect(document.documentElement.getAttribute('lang')).toBe('es');
+
+      transloco.langChanges$.next('en');
+      expect(document.documentElement.getAttribute('lang')).toBe('en');
+    });
+  });
 
   describe('getCurrentLang', () => {
     it('devuelve el idioma activo de Transloco', () => {

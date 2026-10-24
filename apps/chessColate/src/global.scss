@@ -56,6 +56,50 @@
   --cc-elo: #e8a857;
 }
 
+/* Tablero redimensionable en escritorio
+ * ----------------------------------------------------------------------------
+ * La columna del tablero (cuadrado que lo llena) toma su ancho de `--cc-board-size`, la
+ * preferencia que el usuario fija arrastrando el asa de la esquina (BoardSizeService). Mientras
+ * no haya elegido nada la variable no existe y cada pantalla usa el tamaño de siempre:
+ *   - `.cc-board-column`            pantallas de ejercicios (Entrenamiento, Racha, Pájaro carpintero)
+ *   - `.cc-board-column--compact`   pantallas con título y ajustes sobre el tablero
+ * Lo elegido nunca pasa del alto que cabe en la ventana; las reservas (150 y 240 px) son las de
+ * BOARD_RESERVE_PUZZLE y BOARD_RESERVE_COMPACT en core/app/board-size.util.ts: si cambias una,
+ * cambia la otra. En móvil el tablero sigue llenando el ancho. */
+@media (min-width: 1024px) {
+  .cc-board-column {
+    width: max(320px, min(var(--cc-board-size, clamp(480px, calc(100vh - 190px), 640px)), calc(100vh - 150px)));
+
+    &.cc-board-column--compact {
+      width: max(320px, min(var(--cc-board-size, 480px), calc(100vh - 240px)));
+    }
+  }
+}
+
+/* Teléfono apaisado: el alto manda. Sin este tope el tablero llenaría el ancho (un cuadrado mayor que la
+ * propia pantalla) y habría que desplazarse para verlo entero. Va centrado; la columna de texto sigue debajo. */
+@media (max-width: 1023px) and (orientation: landscape) and (max-height: 600px) {
+  .cc-board-column {
+    width: max(240px, calc(100vh - 120px));
+    margin-inline: auto;
+
+    &.cc-board-column--compact {
+      width: max(240px, calc(100vh - 170px));
+    }
+  }
+}
+
+/* Mientras se arrastra el asa no se selecciona texto y el cursor no parpadea al pasar por encima de otros elementos */
+body.cc-board-resizing {
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: nwse-resize;
+
+  * {
+    cursor: nwse-resize !important;
+  }
+}
+
 /* Importar estilos de cm-chessboard */
 // cm-chessboard
 @import 'assets/cm-chessboard/assets/chessboard.scss';
@@ -187,6 +231,25 @@
   @apply min-h-screen flex flex-col bg-base-200;
 }
 
+// Pestañas de sección (control segmentado): una pista con las opciones dentro; la activa va en
+// primario y con sombra, las demás en ghost. Los botones llevan `btn btn-sm` y alternan
+// `btn-primary` / `btn-ghost`; el contenedor, `role="tablist"`.
+.cc-tabs {
+  @apply flex w-full gap-1 rounded-xl border border-base-content/10 bg-base-100 p-1;
+
+  > .btn {
+    @apply min-h-10 min-w-0 flex-1 rounded-lg border-0 px-2 font-semibold whitespace-nowrap shadow-none;
+  }
+
+  > .btn-primary {
+    @apply shadow-md;
+  }
+
+  > .btn-ghost {
+    @apply text-base-content/70;
+  }
+}
+
 // Safe area para ion-modal: garantiza que ion-fab y ion-content respeten
 // la barra de estado en iOS cuando viewport-fit=cover está activo.
 ion-modal {
@@ -213,6 +276,10 @@ ion-modal {
     --width: 860px;
     --height: 85vh;
     --border-radius: 16px;
+    // Con el 0.4 por defecto de Ionic, en pantallas anchas se alcanza a ver (y leer)
+    // el tablero y el panel de la página de atrás alrededor del modal: parece una
+    // sección rota en vez de un diálogo enfocado. Más opaco lo tapa de verdad.
+    --backdrop-opacity: 0.85;
   }
 
   ion-modal.puzzle-solution-modal::part(handle) {

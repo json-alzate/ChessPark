@@ -1,0 +1,9 @@
+{
+  "name": "chesscolate-live-runner",
+  "private": true,
+  "type": "module",
+  "description": "Runner del directo 24/7 de ChessColate (carpeta de producción, ver tools/stream-runner/production/README.md)",
+  "dependencies": {
+    "puppeteer-core": "21.11.0"
+  }
+}

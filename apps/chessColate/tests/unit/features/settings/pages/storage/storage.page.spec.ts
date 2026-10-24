@@ -369,7 +369,7 @@ describe('StoragePage', () => {
         grupos[0] = grupo('fork', grupos[0].files.filter((f) => f.url !== url));
       });
 
-      await pulsar(botonPorEtiqueta('STORAGE.confirm.delete')[0]);
+      await pulsar(botonPorEtiqueta('STORAGE.deleteFile')[0]);
 
       expect(puzzleStorage.deleteFile).toHaveBeenCalledWith('u1');
       expect(analytics.logEvent).toHaveBeenCalledWith('puzzle_storage_file_deleted', {
@@ -410,7 +410,7 @@ describe('StoragePage', () => {
       await crear();
       responderConfirmacion('cancel');
 
-      await pulsar(botonPorEtiqueta('STORAGE.deleteAll').find((b) => b.classList.contains('text-error')));
+      await pulsar(botonPorEtiqueta('STORAGE.deleteGroup')[0]);
 
       expect(alertController.create).toHaveBeenCalledTimes(1);
       expect(alertController.create.mock.calls[0][0].header).toBe('STORAGE.confirm.groupTitle');

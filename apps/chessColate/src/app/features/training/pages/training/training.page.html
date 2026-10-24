@@ -126,6 +126,7 @@
         <button
           class="btn btn-square btn-ghost btn-error"
           (click)="onExitTraining()"
+          [attr.aria-label]="'APP.components.exit' | transloco"
         >
           <ion-icon name="close-outline" class="h-5 w-5"></ion-icon>
         </button>
@@ -136,7 +137,7 @@
     <div class="lg:flex lg:justify-center lg:gap-8 lg:items-start lg:px-6 lg:pt-4">
 
       <!-- COLUMNA IZQUIERDA: Tablero -->
-      <div class="lg:w-[480px] lg:flex-shrink-0">
+      <div class="cc-board-column relative lg:flex-shrink-0">
         <lib-board-puzzle
           [setPuzzle]="puzzleToPlay"
           [setForceStopTimer]="forceStopTimerInPuzzleBoard"
@@ -146,6 +147,14 @@
           (puzzleEndByTime)="onPuzzleCompleted($any($event), 'timeOut')"
           (streamSolutionFinished)="onStreamSolutionFinished()"
         ></lib-board-puzzle>
+        @if (isLoadingPuzzles) {
+        <!-- Sin ejercicio que jugar todavía: se tapa el tablero y el reloj del bloque espera -->
+        <div class="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-base-300/90" data-testid="loading-puzzles">
+          <span class="loading loading-spinner loading-lg text-primary"></span>
+          <span class="text-sm font-semibold">{{ 'TRAINING.loadingPuzzles' | transloco }}</span>
+        </div>
+        }
+        <app-board-resize-handle></app-board-resize-handle>
       </div>
 
       <!-- COLUMNA DERECHA: Info del jugador -->
@@ -236,7 +245,7 @@
         <div class="py-4 space-y-3">
           <div class="stat bg-base-200 rounded-box shadow-sm px-4 py-2">
             <div class="stat-title">{{ 'RETO_333.puzzlesSolved' | transloco }}</div>
-            <div class="stat-value text-primary">{{ reto333AlertData?.solvedCount }} <span class="text-lg text-base-content/50">/ 333</span></div>
+            <div class="stat-value text-primary">{{ reto333AlertData?.solvedCount }} <span class="text-lg text-base-content/60">/ 333</span></div>
           </div>
           <div class="stat bg-base-200 rounded-box shadow-sm px-4 py-2">
             <div class="stat-title">{{ 'RETO_333.totalTime' | transloco }}</div>
@@ -252,7 +261,7 @@
           <button class="btn btn-primary shadow-md" (click)="restartReto333()">{{ 'RETO_333.retry' | transloco }}</button>
         </div>
       </div>
-      <div class="modal-backdrop bg-base-300/60" (click)="closeReto333Modal()"></div>
+      <div class="modal-backdrop bg-base-300/85" (click)="closeReto333Modal()"></div>
     </div>
     }
 

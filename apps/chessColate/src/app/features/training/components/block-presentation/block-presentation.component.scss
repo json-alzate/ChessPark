@@ -1,16 +1,52 @@
+// Mismo fondo que las páginas (`main-container` = base-200) para que el modal no parezca otra app.
+ion-content {
+    --background: var(--color-base-200);
+}
+
 .block-presentation {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 90%;
-    padding-top: 5vh;
-    padding-bottom: 5vh;
+    gap: 2rem;
+    min-height: 100%;
+    text-align: center;
+}
+
+// Título y descripción con jerarquía: lo que se va a entrenar manda, la explicación acompaña.
+.block-presentation__text {
+    max-width: 28rem;
+
+    h1 {
+        margin: 0 0 0.75rem;
+        font-size: 1.75rem;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+
+    p {
+        margin: 0;
+        font-size: 1rem;
+        line-height: 1.5;
+        color: var(--color-base-content);
+        opacity: 0.7;
+    }
 }
 
 img {
-    max-height: 20vh;
+    max-height: 24vh;
     width: auto;
     height: auto;
     object-fit: contain;
+}
+
+// El primario de Ionic es azul; el botón de acción de la app es el primario de DaisyUI (naranja).
+ion-button {
+    --background: var(--color-primary);
+    --background-activated: var(--color-primary);
+    --background-hover: var(--color-primary);
+    --color: var(--color-primary-content);
+    --border-radius: var(--radius-field, 0.5rem);
+    min-width: 12rem;
+    font-weight: 700;
 }

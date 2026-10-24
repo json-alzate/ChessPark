@@ -18,9 +18,111 @@ y el versionado sigue [SemVer](https://semver.org/lang/es/) para `versionName`.
 ## [Sin publicar]
 
 ### Añadido
+- **Catálogo de Partidas completo**: ya están los 22 campeones del mundo (de Steinitz a Gukesh, con los de FIDE 1999–2006), en orden
+  cronológico de reinado. Antes solo había tres (Alekhine, Anand y Petrosian). No requiere versión nueva: el catálogo se descarga.
+- **Ejercicios propios con PGN en el Pájaro Carpintero**: en la configuración del set, la pestaña «Mi PGN» deja elegir un archivo `.pgn`
+  (o pegar el texto) con tus propios ejercicios y armar el set con ellos. La app lee el archivo al momento y enseña cuántos ejercicios entraron y,
+  de los que no, cuál es y por qué; un ejercicio malo no impide el resto. Una ayuda explica la estructura del archivo y trae un ejemplo para copiar
+  o descargar. Hasta 500 ejercicios por set; el ELO del perfil no se toca.
+- **Método del Pájaro Carpintero** (menú Práctica y tarjeta en el inicio): armas un set fijo de
+  ejercicios con tu rango de ELO, tus temas y el número de vueltas, y lo repites con menos tiempo
+  en cada una. Cada vuelta te dice cuánto mejoraste en acierto y en velocidad, y el panel enseña
+  los ejercicios que se te resisten. El progreso se guarda tras cada ejercicio: puedes salir y
+  seguir cuando quieras. Solo hay un set a la vez y vive en el dispositivo.
+- **Tablero redimensionable en escritorio**: arrastra el asa de la esquina inferior derecha del tablero
+  para hacerlo más grande o más pequeño (también con las flechas del teclado; doble clic lo restablece).
+  Vale para todos los tableros de práctica y se recuerda en el dispositivo. En móvil no cambia nada.
+- **Chess Runner** (menú Práctica): antes de cada ejercicio, el perrito corre y salta las piezas del
+  ejercicio con **un solo control, como el dinosaurio de Chrome: tocar la pantalla (o Espacio) para saltar**.
+  Las piezas son las de tu set del tablero y cada una se mueve a su manera (la torre se desliza, el caballo salta
+  en L, el alfil flota); dos toques seguidos hacen el **doble salto**. Es una **campaña de patrones tácticos**:
+  veinte capítulos (pieza colgada, mate en 1, ataque doble, clavada, pincho, mate del pasillo, ataque a la descubierta,
+  capturar al defensor, desviación, atracción, jaque doble, pieza atrapada, ataque por rayos X, mate árabe, mate de Anastasia,
+  jugada intermedia, mate de Boden, mate del gancho, mate de la coz y mate en 2), cada uno con **cinco ejercicios del
+  mismo patrón** y la dificultad subiendo, y un guardián al final. El perrito tiene **su propio ELO**, que sube y baja
+  como el de ajedrez y con el que se elige cada ejercicio; al vencer al rey empieza otra ronda más difícil. La primera
+  vez que entrenas un patrón sale una **lección** con un tablero pequeño y frases que explican la idea, qué mirar, qué
+  se juega y cómo reconocerlo (y puedes repetir la jugada tú: «Pruébalo tú»); repasos del patrón que peor llevas; y una **historia sin letreros** (escenas con globos
+  de dibujitos): el perrito persigue al Rey de las Sombras, que le ha robado el frasco de galletas doradas. Cada dos
+  capítulos gana un **poder** (olfato, resorte, escudo…) que se explica al ganarlo y se ve en su aspecto. Las galletas
+  se guardan y compran **pelajes** del perrito; cada carrera trae una **misión** corta que, cumplida, da tiempo extra
+  para el ejercicio; hay **saltos perfectos**, una **estrella** que te hace imparable unos segundos, galletas con
+  figuras distintas y un ritmo que se aprieta con el nivel. Tres corazones y tres ejercicios fallidos como máximo por
+  partida, **récord de distancia**, días seguidos jugando y progreso guardados en el dispositivo. Al superar las piezas
+  aparece el tablero con su reloj; **al resolver el ejercicio, confeti y la siguiente carrera arranca sola** (si fallas,
+  se queda para que veas la solución o el patrón).
+- **Reproductor de partidas en escritorio:** las flechas del teclado recorren la partida y Inicio y Fin saltan a
+  los extremos.
+
+### Corregido
+- **Descargas de ejercicios sin jsDelivr:** el reintento de una descarga que falla por red, tiempo o error del
+  servidor va a un espejo (`raw.githubusercontent.com`) con el mismo archivo; con jsDelivr caído o colgado los
+  ejercicios cargan igual (un 404 no consulta el espejo).
+- **Descargas de ejercicios:** una descarga que no responde se abandona a los 8 s y se reintenta una vez; si
+  todo un grupo de archivos falla por error del servidor, la búsqueda se corta en vez de encadenar esperas
+  (antes la pantalla podía quedarse en «Creando sesión…» o «Buscando un ejercicio…» sin fin). Con el catálogo
+  sin responder, el Chess Runner da el aviso a los ~17 s y la Racha a los ~32 s (antes 64 s y más de 2 min).
+- **Temas sin traducción:** un tema de Lichess que no está en la lista de nombres ya no sale como etiqueta vacía.
+- **Racha:** si falla la descarga del siguiente ejercicio, «Reintentar» lo vuelve a pedir y conserva la racha; antes la
+  única salida era «Otra racha», que la daba por terminada.
+- **Pájaro carpintero:** en la evolución, «100 %» y los tiempos de más de una hora se partían en dos líneas.
+- **Sesiones con bloques:** si un bloque se quedaba sin ejercicios (un tema sin archivos a ese nivel o la red lenta), la pantalla
+  dejaba el tablero del bloque anterior con el reloj corriendo y nunca se recuperaba. Ahora, al crear la sesión, un tema
+  sorteado que no da ejercicios se cambia por otros; en la pantalla se espera la descarga con un aviso de carga y el reloj
+  del bloque parado, y un bloque que sigue vacío se salta. Los ejercicios repetidos en una misma lista se descartan.
+- **Almacenamiento:** los botones de papelera de cada tema y de cada archivo se anunciaban a los lectores de pantalla como
+  «Borrar todo»; ahora dicen qué borran.
+- **Teléfono apaisado:** el tablero de las pantallas de ejercicios ya no pasa del alto de la pantalla (antes era un cuadrado
+  del ancho completo, mayor que la ventana, y había que desplazarse para verlo entero).
+- **Accesibilidad:** los botones de solo icono (cerrar, salir, ajustes, estadísticas, girar el tablero, navegar la solución, guardar una
+  sesión pública, color aleatorio, marcar leída, editar y borrar un recordatorio) ya tienen nombre para los lectores de pantalla; el campo de Chess960 está asociado a su
+  etiqueta; y el idioma del documento (`lang`) sigue al de la app en vez de quedarse en inglés.
+- **Legibilidad:** el texto de apoyo (pistas, notas, rótulos pequeños) pasa de 50 % a 60 % de opacidad: en el tema por defecto
+  el contraste subía solo a 3,7:1 y ahora es de 4,8:1 (el mínimo recomendado es 4,5:1).
+- **Donación en la web:** la pantalla ya no pide las ofertas a la tienda (fallaba con un aviso de error) y, al tocar un
+  importe o «Restaurar compras», explica que las donaciones son de la app móvil, como ya hacía la ventana de donación.
+- **Texto grande del sistema:** con el tamaño de letra al máximo, «Ingresar / Registrarse» pisaba la campana de recordatorios;
+  ahora el rótulo pasa a dos líneas.
+- **Arranque con sesión y mala conexión:** si al abrir la app con la sesión iniciada fallaba la lectura del perfil (sin red,
+  Firestore caído), la pantalla se quedaba en «Cargando…» para siempre y los cambios de sesión posteriores dejaban de
+  procesarse. Ahora el inicio se pinta en cuanto falla o pasados 6 s, lo que falte sigue cargando por detrás y se
+  reintenta al volver la conexión.
+- **Sesiones públicas sin conexión:** decía «No hay sesiones públicas disponibles» (Firestore responde vacío desde su caché);
+  ahora avisa de que no pudo cargarlas y ofrece «Reintentar».
+- **Sesión sin ejercicios:** si el catálogo no responde y no llega ni un ejercicio, la sesión avisa («No pudimos traer los
+  ejercicios») y vuelve al inicio en vez de abrir un resumen vacío.
+- **Ortografía:** «05:00 o 3 ejercicios» ya no lleva tilde en la «o».
+- **Textos sin traducir:** los avisos de la donación (cargas, errores y agradecimiento), el aviso «Iniciando entrenamiento» y el
+  diálogo de borrar una sesión del historial salían siempre en español; ahora siguen el idioma de la app.
+- **Registro:** si te equivocabas en la confirmación de la contraseña y corregías la contraseña principal, el botón
+  seguía bloqueado con «Las contraseñas no coinciden» hasta reescribir la confirmación; ahora coinciden en cuanto
+  son iguales. El campo de confirmación también se pinta en rojo (antes seguía verde).
+
+---
+
+## [2.2.0] — 2026-10-13 · `versionCode 24`
+
+### Añadido
 - **Créditos y licencias** (Ajustes → Acerca de): autores y licencias de los sets de piezas, de los
   puzzles de Lichess y de la música del directo de YouTube. Es una pantalla pública
   (`/settings/credits`): su URL va en la descripción del canal.
+
+### Corregido
+- **Entrenamiento:** el bloque vence aunque se abra la solución con el reloj en 00:00; en las
+  rutinas propias y públicas se arregló el ELO de arranque, el nombre en blanco y la hoja de bloque.
+- **Tablero:** el diálogo de coronación y el arrastre ya no sobreviven al puzzle siguiente; el
+  botón «Pedir una pista» muestra su ícono; ya no se vuelve atrás deslizando desde el borde en las
+  pantallas con tablero.
+- **Partidas:** el catálogo olvida un paquete borrado y el modo TV ya no se repite sin fin.
+- **Chess960** con decimales, **hora vacía** en los recordatorios y **reintento de la Racha** tras un error.
+- **Inicio de sesión:** el aviso de error ya no tapa el botón y el de contraseñas distintas se ve.
+- Una ruta desconocida lleva a inicio; el modal de estadísticas usa breakpoints válidos; el
+  confeti se dibuja por encima de los modales; textos que faltaban por traducir en inicio de
+  bloque, historial, caballo y menú.
+
+### Cambiado
+- Reorganización interna del código por funcionalidad y suite de pruebas ampliada (unitarias y
+  E2E con Playwright). No cambia nada visible.
 
 ### Eliminado
 - **Set de piezas Staunty**: su licencia (CC BY-NC-SA) no permite uso comercial y la app acepta

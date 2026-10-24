@@ -5,13 +5,13 @@
 
     <!-- Header (mobile only) -->
     <div class="flex items-center justify-between px-3 py-2 flex-shrink-0 lg:hidden">
-      <button class="btn btn-ghost btn-square btn-sm" (click)="closeModal()" [disabled]="isAnyActionInProgress">
+      <button class="btn btn-ghost btn-square btn-sm" (click)="closeModal()" [disabled]="isAnyActionInProgress" [attr.aria-label]="'PUZZLE_SOLUTION.controls.close' | transloco">
         <ion-icon name="close-outline" class="text-xl"></ion-icon>
       </button>
       <div class="flex items-center gap-3">
         <span class="badge badge-md font-bold" style="background-color: #bf811c; color: white;">{{ puzzle.rating }}</span>
         <label class="flex items-center gap-1.5 cursor-pointer">
-          <span class="text-xs text-base-content/50">Stockfish</span>
+          <span class="text-xs text-base-content/60">Stockfish</span>
           <input
             type="checkbox"
             class="toggle toggle-warning toggle-xs"
@@ -29,27 +29,31 @@
 
     <!-- Controles de navegación -->
     <div class="flex items-center justify-between px-3 py-1 flex-shrink-0">
-      <button class="btn btn-ghost btn-square btn-sm" (click)="turnRoundBoard()">
+      <button class="btn btn-ghost btn-square btn-sm" (click)="turnRoundBoard()" [attr.aria-label]="'PUZZLE_SOLUTION.controls.flip' | transloco">
         <ion-icon name="swap-vertical-outline" class="text-base"></ion-icon>
       </button>
       <div class="flex items-center gap-0.5">
         <button class="btn btn-ghost btn-square btn-sm"
           [disabled]="!allowMoveArrows || currentMoveNumber === 0"
+          [attr.aria-label]="'PUZZLE_SOLUTION.controls.start' | transloco"
           (click)="starPosition()">
           <ion-icon name="play-back-outline" class="text-base"></ion-icon>
         </button>
         <button class="btn btn-ghost btn-square btn-sm"
           [disabled]="!allowMoveArrows || currentMoveNumber === 0"
+          [attr.aria-label]="'PUZZLE_SOLUTION.controls.previous' | transloco"
           (click)="backMove()">
           <ion-icon name="chevron-back-outline" class="text-base"></ion-icon>
         </button>
         <button class="btn btn-ghost btn-square btn-sm"
           [disabled]="!allowMoveArrows || currentMoveNumber >= totalMoves"
+          [attr.aria-label]="'PUZZLE_SOLUTION.controls.next' | transloco"
           (click)="nextMove()">
           <ion-icon name="chevron-forward-outline" class="text-base"></ion-icon>
         </button>
         <button class="btn btn-ghost btn-square btn-sm"
           [disabled]="!allowMoveArrows || currentMoveNumber >= totalMoves"
+          [attr.aria-label]="'PUZZLE_SOLUTION.controls.end' | transloco"
           (click)="moveToEnd()">
           <ion-icon name="play-forward-outline" class="text-base"></ion-icon>
         </button>
@@ -66,7 +70,7 @@
       <div class="flex items-center gap-3">
         <span class="badge badge-md font-bold" style="background-color: #bf811c; color: white;">{{ puzzle.rating }}</span>
         <label class="flex items-center gap-1.5 cursor-pointer">
-          <span class="text-xs text-base-content/50">Stockfish</span>
+          <span class="text-xs text-base-content/60">Stockfish</span>
           <input
             type="checkbox"
             class="toggle toggle-warning toggle-xs"
@@ -75,7 +79,7 @@
             (change)="startStockfish({ detail: { checked: $any($event.target).checked } })" />
         </label>
       </div>
-      <button class="btn btn-ghost btn-square btn-sm" (click)="closeModal()" [disabled]="isAnyActionInProgress">
+      <button class="btn btn-ghost btn-square btn-sm" (click)="closeModal()" [disabled]="isAnyActionInProgress" [attr.aria-label]="'PUZZLE_SOLUTION.controls.close' | transloco">
         <ion-icon name="close-outline" class="text-xl"></ion-icon>
       </button>
     </div>

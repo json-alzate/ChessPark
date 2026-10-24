@@ -1792,31 +1792,6 @@
   "attribution": "\"Spheres (Hip Hop Instrumental)\" by Robbero (https://ccmixter.org/files/Robbero/43483) – licensed under CC BY 3.0 (https://creativecommons.org/licenses/by/3.0/). Contains samples from: https://ccmixter.org/files/doxent/43475"
  },
  {
-  "id": "ccmixter-44803",
-  "title": "Whisper",
-  "author": "Robbero",
-  "author_username": "Robbero",
-  "source": "ccMixter",
-  "page_url": "https://ccmixter.org/files/Robbero/44803",
-  "license_name": "CC BY 3.0",
-  "license_url": "https://creativecommons.org/licenses/by/3.0/",
-  "license_verified_on_page": "Licensed under Creative Commons Attribution (3.0)",
-  "audio_download_url": "https://ccmixter.org/content/Robbero/Robbero_-_Whisper.mp3",
-  "download_date": "2026-10-12",
-  "duration_sec": 204.3,
-  "filename": "raw/ccmixter_2026-10-12/44803_Robbero_Whisper.mp3",
-  "license_evidence_file": "licencias/ccmixter_44803_Robbero_Whisper.html",
-  "codec": "mp3",
-  "loudness_lufs": -13.8,
-  "lra": 3.5,
-  "bpm_declared": 80,
-  "tags": "hip_hop,instrumental,beat,nigid,robbero",
-  "samples_from": [
-   "https://ccmixter.org/files/NiGiD/44797"
-  ],
-  "attribution": "\"Whisper\" by Robbero (https://ccmixter.org/files/Robbero/44803) – licensed under CC BY 3.0 (https://creativecommons.org/licenses/by/3.0/). Contains samples from: https://ccmixter.org/files/NiGiD/44797"
- },
- {
   "id": "ccmixter-41751",
   "title": "Klaus",
   "author": "Skill_Borrower",

@@ -255,6 +255,9 @@ describe('PublicPlanItemComponent', () => {
       const saveButton = findButtonByIcon(el, 'bookmark') as HTMLButtonElement;
       expect(iconName(saveButton.querySelector('ion-icon'))).toBe('bookmark-outline');
       expect(saveButton.className).toContain('btn-ghost');
+      // Un botón de solo icono necesita nombre y estado para los lectores de pantalla
+      expect(saveButton.getAttribute('aria-label')).toBe('PUBLIC_PLANS.saveSession');
+      expect(saveButton.getAttribute('aria-pressed')).toBe('false');
       saveButton.click();
 
       expect(emitted).toEqual([{ plan, saved: true }]);
@@ -269,6 +272,8 @@ describe('PublicPlanItemComponent', () => {
       const saveButton = findButtonByIcon(el, 'bookmark') as HTMLButtonElement;
       expect(iconName(saveButton.querySelector('ion-icon'))).toBe('bookmark');
       expect(saveButton.className).toContain('btn-primary');
+      expect(saveButton.getAttribute('aria-label')).toBe('PUBLIC_PLANS.unsaveSession');
+      expect(saveButton.getAttribute('aria-pressed')).toBe('true');
       saveButton.click();
 
       expect(emitted).toEqual([{ plan, saved: false }]);

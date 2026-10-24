@@ -1,0 +1,50 @@
+<section class="mb-4">
+  <div class="flex items-baseline justify-between gap-2 mb-2">
+    <h4 class="text-sm font-bold">{{ title }}</h4>
+    <span class="text-xs text-base-content/60 font-mono">{{ selected.length }}/{{ max }}</span>
+  </div>
+
+  <!-- Lo elegido -->
+  @if (selected.length > 0) {
+    <ul class="flex flex-wrap gap-1.5 mb-2">
+      @for (tag of selected; track tag.id) {
+        <li>
+          <button type="button" class="badge badge-primary badge-lg gap-1" [disabled]="disabled"
+            (click)="removed.emit(tag.id)"
+            [attr.aria-label]="('GAME_REFLECTION.removeTag' | transloco: { tag: tag.label })">
+            {{ tag.label }}
+            <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+          </button>
+        </li>
+      }
+    </ul>
+  }
+
+  <!-- Buscar o crear: solo mientras quepan más -->
+  @if (!isFull) {
+    <label class="input input-bordered input-sm flex items-center gap-2 mb-2">
+      <input type="text" class="grow" [value]="query" [attr.maxlength]="maxLabelLength" [disabled]="disabled"
+        (input)="onInput($event)" (keydown.enter)="onEnter()"
+        [placeholder]="'GAME_REFLECTION.searchPlaceholder' | transloco"
+        [attr.aria-label]="title" />
+    </label>
+
+    <ul class="flex flex-wrap gap-1.5">
+      @for (option of visibleOptions; track option.id) {
+        <li>
+          <button type="button" class="btn btn-xs btn-soft" [disabled]="disabled" (click)="picked.emit(option)">
+            {{ option.label }}
+          </button>
+        </li>
+      }
+      @if (canCreate) {
+        <li>
+          <button type="button" class="btn btn-xs btn-primary" [disabled]="disabled" (click)="created.emit()">
+            <ion-icon name="add-outline" aria-hidden="true"></ion-icon>
+            {{ 'GAME_REFLECTION.create' | transloco: { tag: query.trim() } }}
+          </button>
+        </li>
+      }
+    </ul>
+  }
+</section>

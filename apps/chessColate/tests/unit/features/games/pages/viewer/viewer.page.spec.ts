@@ -13,20 +13,29 @@ jest.mock('@chesspark/stockfish-wasm', () => ({
   StockfishEvaluationService: class {},
 }));
 
+import { Component, Input } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 
 import { ParsedGame } from '@chesspark/games-provider';
+import { ChessGame } from '@chesspark/models';
 import { GameReview, MoveReview, PieceRating, reviewGame } from '@chesspark/game-reporter';
 import { BoardGamePlayerComponent } from '@chesspark/board';
 
 import { GamesViewerPage } from '@features/games/pages/viewer/viewer.page';
+import { GameReflectionComponent } from '@features/game-reflection/containers/game-reflection/game-reflection.component';
 import { AnalyticsService } from '@core/analytics/analytics.service';
 import { GameReviewService } from '@features/games/services/game-review.service';
 import { GamesService } from '@features/games/services/games.service';
 import { DEFAULT_PLAYBACK_SETTINGS, PlaybackSettings } from '@features/games/utils/games.util';
 
-import { textoDe, translocoTesting } from '@tests/support/analisis-juegos';
+import { sustituirImports, textoDe, translocoTesting } from '@tests/support/analisis-juegos';
+
+/** La reflexión habla con Firestore; aquí solo importa cuándo y con qué partida se pinta. */
+@Component({ selector: 'app-game-reflection', standalone: true, template: '<p>reflexión de {{ game.id }}</p>' })
+class StubGameReflection {
+  @Input() game!: ChessGame;
+}
 
 const PGN = '[Event "Torneo"]\n[White "Petrosian, Tigran V"]\n[Black "Botvinnik, Mikhail"]\n\n1. e4 e5 2. Nf3 Nc6 *';
 
@@ -95,6 +104,7 @@ describe('GamesViewerPage', () => {
     currentPack: unknown;
     getGame: jest.Mock;
     getGamePgn: jest.Mock;
+    getOwnGame: jest.Mock;
     getSettings: jest.Mock;
     saveSettings: jest.Mock;
     keepScreenAwake: jest.Mock;
@@ -135,6 +145,7 @@ describe('GamesViewerPage', () => {
       },
       getGame: jest.fn((index: number) => juegos[index] ?? null),
       getGamePgn: jest.fn(() => PGN),
+      getOwnGame: jest.fn(() => null),
       getSettings: jest.fn(() => settings),
       saveSettings: jest.fn((patch: Partial<PlaybackSettings>) => (settings = { ...settings, ...patch })),
       keepScreenAwake: jest.fn().mockResolvedValue(undefined),
@@ -144,6 +155,7 @@ describe('GamesViewerPage', () => {
       cancel: jest.fn(),
     };
 
+    sustituirImports(GamesViewerPage, [[GameReflectionComponent, StubGameReflection]]);
     await TestBed.configureTestingModule({
       imports: [GamesViewerPage, translocoTesting()],
       providers: [
@@ -162,6 +174,46 @@ describe('GamesViewerPage', () => {
   afterEach(() => {
     jest.clearAllTimers();
     jest.useRealTimers();
+  });
+
+  describe('mi reflexión', () => {
+    const propia = { id: 'q7ZvsdUF', source: 'lichess' } as ChessGame;
+
+    it('en una partida propia pinta la reflexión de esa partida', () => {
+      query = { index: '1', source: 'analytics' };
+      gamesService.getOwnGame.mockReturnValue(propia);
+
+      abrir();
+
+      expect(gamesService.getOwnGame).toHaveBeenCalledWith(1);
+      expect(texto()).toContain('reflexión de q7ZvsdUF');
+    });
+
+    it('en el catálogo de campeones no hay reflexión', () => {
+      query = { index: '1' };
+      gamesService.getOwnGame.mockReturnValue(propia);
+
+      abrir();
+
+      expect(texto()).not.toContain('reflexión de');
+    });
+
+    it('en modo TV no hay reflexión aunque sean partidas propias', () => {
+      query = { tv: '1', source: 'analytics' };
+      gamesService.getOwnGame.mockReturnValue(propia);
+
+      abrir();
+
+      expect(texto()).not.toContain('reflexión de');
+    });
+
+    it('si el paquete no trae la partida propia, no pinta nada', () => {
+      query = { source: 'analytics' };
+
+      abrir();
+
+      expect(texto()).not.toContain('reflexión de');
+    });
   });
 
   describe('apertura', () => {
@@ -201,6 +253,21 @@ describe('GamesViewerPage', () => {
       expect(page.orientation).toBe('w');
       expect(page.topPlayer).toEqual({ name: 'Botvinnik, Mikhail', rating: 2690 });
       expect(page.bottomPlayer).toEqual({ name: 'Petrosian, Tigran V', rating: 2650 });
+    });
+
+    it('el Elo que se ve es el que trae la partida: si no trae, no se muestra', () => {
+      juegos[0] = partida({ whiteElo: null, blackElo: null });
+      abrir();
+      expect(page.topPlayer.rating).toBeNull();
+      expect(page.bottomPlayer.rating).toBeNull();
+      expect(texto()).not.toContain('(');
+    });
+
+    it('si solo trae el Elo de un jugador, solo se muestra ese', () => {
+      juegos[0] = partida({ whiteElo: 1500, blackElo: null });
+      abrir();
+      expect(page.bottomPlayer).toEqual({ name: 'Petrosian, Tigran V', rating: 1500 });
+      expect(page.topPlayer).toEqual({ name: 'Botvinnik, Mikhail', rating: null });
     });
 
     it('una partida propia pide el lado del usuario (color=b): las negras abajo', () => {
@@ -266,6 +333,58 @@ describe('GamesViewerPage', () => {
       expect(jugadas()[0].classList).not.toContain('bg-primary');
     });
 
+    describe('desplazamiento de la lista de jugadas', () => {
+      /** jsdom no calcula el diseño: se simula una lista de 200 px y la jugada 3 a 300 px del borde. */
+      function listaConDiseno() {
+        const lista = fixture.nativeElement.querySelector('[data-move-list]') as HTMLElement;
+        const scrollTo = jest.fn();
+        Object.defineProperty(lista, 'clientWidth', { value: 200 });
+        lista.scrollTo = scrollTo as unknown as typeof lista.scrollTo;
+        lista.getBoundingClientRect = () => ({ left: 0, width: 200 } as DOMRect);
+        const boton = lista.querySelector('[data-ply="3"]') as HTMLElement;
+        boton.getBoundingClientRect = () => ({ left: 300, width: 40 } as DOMRect);
+        return scrollTo;
+      }
+
+      it('cada jugada de la lista lleva su número para poder localizarla', () => {
+        abrir();
+        const numeros = Array.from<HTMLElement>(
+          fixture.nativeElement.querySelectorAll('[data-move-list] [data-ply]')
+        ).map((b) => b.getAttribute('data-ply'));
+        expect(numeros).toEqual(['1', '2', '3', '4']);
+      });
+
+      it('al avanzar la jugada desde fuera de la lista (flechas, play, barras) la lista centra la jugada actual', () => {
+        abrir();
+        const scrollTo = listaConDiseno();
+
+        page.onIndexChange(3);
+
+        // 300 (donde está la jugada) - (200 - 40) / 2 (para dejarla centrada)
+        expect(scrollTo).toHaveBeenCalledWith({ left: 220, behavior: 'smooth' });
+      });
+
+      it('en la posición inicial la lista vuelve al principio', () => {
+        abrir();
+        const scrollTo = listaConDiseno();
+
+        page.onIndexChange(0);
+
+        expect(scrollTo).toHaveBeenCalledWith({ left: 0, behavior: 'smooth' });
+      });
+
+      it('en el mapa de calor la lista no se desplaza (se parte en líneas)', () => {
+        abrir();
+        page.setMode('heatmap');
+        fixture.detectChanges();
+        const scrollTo = listaConDiseno();
+
+        page.onIndexChange(3);
+
+        expect(scrollTo).not.toHaveBeenCalled();
+      });
+    });
+
     it('los controles de reproducción mandan al tablero', () => {
       abrir();
       botonPorEtiqueta('GAMES.controls.start').click();
@@ -278,6 +397,67 @@ describe('GamesViewerPage', () => {
       expect(tablero()['togglePlay']).toHaveBeenCalledTimes(1);
       expect(tablero()['next']).toHaveBeenCalledTimes(1);
       expect(tablero()['toEnd']).toHaveBeenCalledTimes(1);
+    });
+
+    describe('atajos de teclado', () => {
+      const pulsar = (key: string, init: KeyboardEventInit = {}, target: EventTarget = document.body) => {
+        const event = new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true, ...init });
+        target.dispatchEvent(event);
+        return event;
+      };
+
+      it('las flechas recorren la partida y Inicio y Fin van a los extremos', () => {
+        abrir();
+        pulsar('ArrowRight');
+        pulsar('ArrowRight');
+        pulsar('ArrowLeft');
+        pulsar('Home');
+        pulsar('End');
+
+        expect(tablero()['next']).toHaveBeenCalledTimes(2);
+        expect(tablero()['previous']).toHaveBeenCalledTimes(1);
+        expect(tablero()['toStart']).toHaveBeenCalledTimes(1);
+        expect(tablero()['toEnd']).toHaveBeenCalledTimes(1);
+      });
+
+      it('evita el desplazamiento de la página solo con las teclas que usa', () => {
+        abrir();
+
+        expect(pulsar('ArrowRight').defaultPrevented).toBe(true);
+        expect(pulsar('a').defaultPrevented).toBe(false);
+      });
+
+      it('con un campo de texto enfocado o un modificador pulsado no hace nada', () => {
+        abrir();
+        const campo = document.createElement('input');
+        document.body.appendChild(campo);
+
+        pulsar('ArrowRight', {}, campo);
+        pulsar('ArrowRight', { ctrlKey: true });
+        pulsar('ArrowRight', { metaKey: true });
+        pulsar('ArrowRight', { altKey: true });
+
+        expect(tablero()['next']).not.toHaveBeenCalled();
+        campo.remove();
+      });
+
+      it('si Ionic la dejó oculta en segundo plano, las teclas no son para ella', () => {
+        abrir();
+        fixture.nativeElement.classList.add('ion-page-hidden');
+
+        pulsar('ArrowRight');
+
+        expect(tablero()['next']).not.toHaveBeenCalled();
+      });
+
+      it('en el mapa de calor no recorre nada', () => {
+        abrir();
+        page.mode = 'heatmap';
+
+        pulsar('ArrowRight');
+
+        expect(tablero()['next']).not.toHaveBeenCalled();
+      });
     });
 
     it('al empezar a reproducir mantiene la pantalla encendida y cambia el icono', () => {

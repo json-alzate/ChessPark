@@ -189,6 +189,45 @@ describe('LoginComponent', () => {
       expect(authService.createUserWithEmailAndPassword).not.toHaveBeenCalled();
     });
 
+    it('el campo de confirmación se pinta en error mientras no coincide y deja de estarlo al corregirlo', () => {
+      component.setSegmentTab('singUp');
+      fill('secreta123', 'otra-distinta');
+      fixture.detectChanges();
+
+      const campo = () =>
+        fixture.nativeElement.querySelectorAll('form label.input')[2] as HTMLElement;
+      expect(campo().classList).toContain('input-error');
+
+      component.passwordFieldSingUp?.setValue('otra-distinta');
+      fixture.detectChanges();
+      expect(campo().classList).not.toContain('input-error');
+    });
+
+    it('corregir la contraseña principal para que coincida libera el formulario sin reescribir la confirmación', () => {
+      fill('secreta123', 'otra-distinta');
+      expect(component.formSingUp.valid).toBe(false);
+
+      component.passwordFieldSingUp?.setValue('otra-distinta');
+
+      expect(component.rePasswordFieldSingUp?.hasError('notMatch')).toBe(false);
+      expect(component.formSingUp.valid).toBe(true);
+    });
+
+    it('corregir la confirmación vuelve a avisar si la contraseña principal cambia después', () => {
+      fill('secreta123', 'secreta123');
+      expect(component.formSingUp.valid).toBe(true);
+
+      component.passwordFieldSingUp?.setValue('cambiada-despues');
+
+      expect(component.rePasswordFieldSingUp?.hasError('notMatch')).toBe(true);
+    });
+
+    it('sin confirmación escrita no avisa de que no coinciden: solo falta rellenarla', () => {
+      component.formSingUp.patchValue({ password: 'secreta123' });
+
+      expect(component.rePasswordFieldSingUp?.hasError('notMatch')).toBe(false);
+    });
+
     it('una contraseña de menos de 8 caracteres no se envía', async () => {
       fill('corta', 'corta');
 

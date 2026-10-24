@@ -3,6 +3,7 @@ import { DEFAULT_CONFIG } from './constants';
 import { getManifestThemes, getValidEloStarts } from './manifest';
 import { Puzzle, PuzzleQueryOptions, PuzzlesProviderConfig } from './types';
 import {
+  buildMirrorUrl,
   buildPuzzleUrl,
   filterByColor,
   filterEloSequenceByManifest,
@@ -12,6 +13,14 @@ import {
   normalizeElo,
   shuffleArray,
 } from './utils';
+
+/** Un archivo que no respondió a tiempo. */
+class TimeoutError extends Error {
+  constructor(url: string, ms: number) {
+    super(`Tiempo de espera agotado (${ms} ms) al descargar ${url}`);
+    this.name = 'TimeoutError';
+  }
+}
 
 /**
  * Proveedor principal para obtener puzzles de ajedrez
@@ -30,6 +39,8 @@ export class PuzzlesProvider {
       cacheExpirationMs: config?.cacheExpirationMs ?? DEFAULT_CONFIG.CACHE_EXPIRATION_MS,
       maxConcurrentDownloads: config?.maxConcurrentDownloads ?? DEFAULT_CONFIG.MAX_CONCURRENT_DOWNLOADS,
       batchSize: config?.batchSize ?? DEFAULT_CONFIG.BATCH_SIZE,
+      requestTimeoutMs: config?.requestTimeoutMs ?? DEFAULT_CONFIG.REQUEST_TIMEOUT_MS,
+      mirrorEnabled: config?.mirrorEnabled ?? DEFAULT_CONFIG.MIRROR_ENABLED,
     };
 
     this.cacheService = new PuzzlesCacheService(
@@ -110,10 +121,12 @@ export class PuzzlesProvider {
       const batch = eloSequence.slice(i, i + this.config.batchSize);
 
       // Descargar el batch en paralelo con control de concurrencia
+      let failedInBatch = 0;
       const batchPromises = batch.map(currentElo =>
         this.fetchWithConcurrencyLimit(() =>
           this.fetchPuzzlesByElo(currentElo, theme, openingFamily)
             .catch((error) => {
+              failedInBatch++;
               console.warn(`Error al obtener puzzles para ELO ${currentElo}:`, error);
               return [] as Puzzle[];
             })
@@ -127,9 +140,17 @@ export class PuzzlesProvider {
         allPuzzles = allPuzzles.concat(batchPuzzles);
       }
 
+      // Si todo un batch falló por error (no por archivos que no existen) y aún no hay nada, el CDN
+      // no está respondiendo: seguir con los ELOs vecinos solo suma esperas de varios segundos cada una.
+      // Quien llama decide si prueba otro tema.
+      if (allPuzzles.length === 0 && failedInBatch === batch.length) break;
+
       // Si ya tenemos suficientes puzzles, detener la búsqueda
       if (allPuzzles.length >= count) break;
     }
+
+    // Un mismo ejercicio no debe salir dos veces en la lista (archivos vecinos con contenido repetido)
+    allPuzzles = this.withoutRepeated(allPuzzles);
 
     // Filtrar por color si se especificó
     if (color !== 'N/A') {
@@ -139,6 +160,21 @@ export class PuzzlesProvider {
     // Mezclar y limitar a la cantidad solicitada
     const shuffled = shuffleArray(allPuzzles);
     return shuffled.slice(0, count);
+  }
+
+  /** Conserva la primera aparición de cada `uid`; los ejercicios sin `uid` no se comparan entre sí. */
+  private withoutRepeated(puzzles: Puzzle[]): Puzzle[] {
+    const seen = new Set<string>();
+    return puzzles.filter((puzzle) => {
+      if (!puzzle.uid) {
+        return true;
+      }
+      if (seen.has(puzzle.uid)) {
+        return false;
+      }
+      seen.add(puzzle.uid);
+      return true;
+    });
   }
 
   /**
@@ -202,11 +238,46 @@ export class PuzzlesProvider {
   }
 
   /**
-   * Descarga puzzles desde el CDN
+   * Descarga puzzles desde el CDN.
+   *
+   * Cada intento tiene un tiempo máximo (`requestTimeoutMs`) y un archivo que no responde se reintenta
+   * una vez antes de rendirse: una descarga colgada no puede dejar la pantalla esperando para siempre ni
+   * ocupar una de las plazas de descarga simultánea. El segundo intento va al espejo
+   * (`raw.githubusercontent.com`) si lo hay: cuando jsDelivr falla suele ser él, no el archivo; sin
+   * espejo se repite el mismo servidor (solo ante tiempo agotado o corte de red, no ante un error 5xx).
    */
   private async fetchFromCDN(url: string): Promise<Puzzle[]> {
+    const mirror = this.config.mirrorEnabled ? buildMirrorUrl(url) : null;
+    const attempts = [url, mirror ?? url];
+    let firstError: unknown;
+
+    for (let attempt = 0; attempt < attempts.length; attempt++) {
+      try {
+        return await this.fetchOnce(attempts[attempt]);
+      } catch (error) {
+        firstError ??= error;
+        const transient = error instanceof TimeoutError || error instanceof TypeError;
+        // Un error de servidor (distinto de 404/403, que ya devuelven vacío) solo merece otro intento si
+        // hay otro servidor al que pedirlo
+        if (!transient && !(mirror && attempt === 0)) {
+          break;
+        }
+      }
+    }
+
+    if (firstError instanceof TypeError && firstError.message.includes('fetch')) {
+      throw new Error('Error de red al obtener puzzles. Verifica tu conexión.');
+    }
+    throw firstError;
+  }
+
+  /** Un intento de descarga, con su tiempo máximo. */
+  private async fetchOnce(url: string): Promise<Puzzle[]> {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), this.config.requestTimeoutMs);
+
     try {
-      const response = await fetch(url);
+      const response = await fetch(url, { signal: controller.signal });
 
       if (!response.ok) {
         if (response.status === 404 || response.status === 403) {
@@ -221,10 +292,12 @@ export class PuzzlesProvider {
       // Convertir los puzzles del CDN al formato completo esperado
       return puzzles.map((puzzle: any) => this.enrichPuzzle(puzzle));
     } catch (error) {
-      if (error instanceof TypeError && error.message.includes('fetch')) {
-        throw new Error('Error de red al obtener puzzles. Verifica tu conexión.');
+      if (controller.signal.aborted) {
+        throw new TimeoutError(url, this.config.requestTimeoutMs);
       }
       throw error;
+    } finally {
+      clearTimeout(timer);
     }
   }
 

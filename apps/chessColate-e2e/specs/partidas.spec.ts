@@ -379,7 +379,7 @@ test.describe('Partidas propias desde el análisis', () => {
     await page.locator('app-analytics label', { hasText: 'Lichess' }).locator('input').fill(USUARIO_LICHESS);
     await page.getByRole('button', { name: '3 months' }).click();
     await page.getByRole('button', { name: 'Analyse my games' }).click();
-    await page.locator('app-analytics .join button', { hasText: /Games \(6\)/ }).click();
+    await page.locator('app-analytics [role="tablist"] button', { hasText: /Games \(6\)/ }).click();
 
     const lista = page.locator('app-analytics ul.divide-y > li');
     await expect(lista).toHaveCount(6);

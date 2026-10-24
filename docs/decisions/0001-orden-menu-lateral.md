@@ -69,3 +69,9 @@ El orden de grupos se mantiene, con estos cambios:
 
 Las decisiones de grupo anteriores siguen vigentes; esta revisión solo añade
 etiquetas y renombra.
+
+## Revisión 2026-10-14
+
+**Pájaro carpintero** se añade al grupo **Práctica**, justo después de Racha: son los dos
+modos de ejercicios con marca propia y comparten tarjeta en el inicio. **Chess Runner** va a continuación:
+también es un modo de ejercicios suelto, con su propio contador de sesión.

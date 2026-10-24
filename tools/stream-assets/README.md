@@ -1,4 +1,4 @@
-# Assets de la escena del directo
+# Assets de la escena del directo y del Chess Runner
 
 Los scripts que **dibujan por código** todo el pixel art de la escena del directo 24/7
 (`apps/live-stream`): Chocolate, el gato, la casa, el árbol, el hoyo, el hueso, los fondos de día
@@ -67,3 +67,25 @@ Un perro de **otra raza** (otras proporciones) pide dibujar sus propios poses en
   `alpha_only=False` para comparar todos los canales; no lo quites.
 - El gato y el perro tienen la nariz y el contorno en tonos muy oscuros pero no negros puros; si cambias
   la paleta, conserva ese contraste con el fondo para que se lean de lejos.
+
+## Los assets del Chess Runner
+
+El mismo pipeline dibuja el pixel art del **Chess Runner** de chessColate (`apps/chessColate`): Chocolate corriendo,
+saltando y tropezando (reutiliza su cuerpo y paleta de `dog.py`), los efectos (polvo y chispa) y los tiles del escenario
+(suelo, colinas, cielo, nubes y un horizonte de piezas gigantes). Salen a `apps/chessColate/src/assets/images/runner/` con un
+`runner.json` que describe cada tira. **Las piezas que hacen de obstáculos no salen de aquí**: son las del set que el
+usuario eligió para el tablero.
+
+```bash
+./.venv/bin/python export_runner.py          # regenera los PNG y runner.json en la app
+./.venv/bin/python export_runner.py --check  # no escribe: falla si lo versionado no coincide, píxel a píxel
+./.venv/bin/python preview_runner.py         # preview-runner.png: todo ampliado ×4, para revisarlo a ojo
+./.venv/bin/python -m unittest               # incluye test_runner_assets.py
+```
+
+| Archivo | Qué contiene |
+|---|---|
+| `runner.py` | Poses de Chocolate para el runner, los efectos y los tiles del escenario (las siluetas de pieza de pixel art, `WHITE`/`BLACK`, solo dibujan el horizonte) |
+| `export_runner.py` | Pega los cuadros en tiras y escribe `runner.json` (con `--check`) |
+| `preview_runner.py` | Hoja de contacto de los assets del runner |
+| `test_runner_assets.py` | Determinismo, coincidencia con la app, manifiesto y que exista todo lo que el juego pide por nombre |

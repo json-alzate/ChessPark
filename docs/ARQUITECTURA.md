@@ -53,21 +53,25 @@ src/app/
   core/        Lo que usa toda la app                       (@core/*)
     account/     sesión (AuthService) y perfil (ProfileService + ProfileRepository)
     analytics/   AnalyticsService, eventos y manejador de errores de Crashlytics
-    app/         ajustes de la app: idioma, apariencia, PWA, AppService
+    app/         ajustes de la app: idioma, apariencia, tamaño del tablero, PWA, AppService
     firestore/   conexión única a Firestore y serialización
     guards/      auth.guard
   features/    Una carpeta por funcionalidad                (@features/*)
     training/      rutinas: entrenar, resumen, historial, rutinas propias y públicas,
                    bloques, sesión, cronómetro, pool infinito, planes y sus repositorios
     streak/        modo Racha
+    woodpecker/    Método del Pájaro Carpintero: set fijo que se repite en vueltas
+    custom-puzzles/ ejercicios propios: lee un PGN y lo convierte en puzzles (lo usa woodpecker)
+    chess-runner/  Chess Runner: carrera del perrito sobre las piezas del ejercicio, antes de resolverlo
     records/       récords de Racha y Reto 333 y su sincronización con el perfil
     reminders/     recordatorios de entrenamiento
     games/         reproductor de partidas
+    game-reflection/ lo mejor y lo que mejorar de una partida propia, con tags (Firestore)
     game-analytics/ análisis de partidas (chess.com / lichess)
     app-review/    pedir la calificación de la app
     home/ settings/ donation/ privacy/ coordinates/ knight-tour/ chess960/
   shared/      Lo que usan varias funcionalidades            (@shared/*)
-    components/  navbar, login, onboarding, donación, selector de apariencia, count-up…
+    components/  navbar, login, onboarding, donación, selector de apariencia, asa para redimensionar el tablero, count-up…
     pipes/ utils/
 ```
 
@@ -134,8 +138,10 @@ utils/*.util.ts                      Funciones PURAS: calculan, no inyectan nada
   funcionalidad que necesita algo de otra lo importa de su `services/` o `utils/`, y lo que
   usan varias sin ser de ninguna va a `shared/` (p. ej. `shared/utils/date.util.ts`).
   Dependencias que hay hoy (sacadas de los imports):
-  `training` → `records`, `reminders`, `app-review` · `home` → `training`, `records` ·
-  `streak` → `records`, `reminders` · `game-analytics` → `games`, `training` ·
+  `training` → `records`, `reminders`, `app-review` · `home` → `training`, `records`, `woodpecker` ·
+  `streak` → `records`, `reminders` · `woodpecker` → `streak` (la lista de temas que no son tácticos), `reminders`, `custom-puzzles` ·
+  `chess-runner` → `streak` (ídem), `reminders` ·
+  `game-analytics` → `games`, `training` · `games` → `game-reflection` ·
   `settings` → `training`, `games`, `game-analytics`, `app-review` (borra sus datos locales).
   **Conocido:** `reminders` y `training` se importan mutuamente (recordatorios lee el historial
   de `PlanStorageService`; entrenamiento le avisa al empezar y terminar una sesión). Es
@@ -180,6 +186,11 @@ comparten van en `tests/support/` (alias `@tests/*`). Convenciones en
      analítica con el UID.
    - **Sin usuario:** `ProfileService.clearProfile()`.
    - En ambos casos termina con `AuthService.markAsInitialized()`.
+   - **La carga del usuario no puede colgar el arranque:** `AppComponent.waitForUserSession()` espera como
+     mucho `SESSION_LOAD_WAIT_MS` (6 s) y, si falla (sin red, Firestore caído), lo apunta y lo reintenta
+     al volver `online`. Un rechazo dentro del `switchMap` mataría el flujo de sesión entero y la app se
+     quedaría en «Cargando…» para siempre; por eso `loadUserSession()` captura sus errores. Mientras no
+     hay perfil la interfaz se comporta como la de un invitado (no se escribe nada en el perfil).
 
 El **perfil** (`ProfileService`, estado en `libs/state`) es el dato central: elo
 global, elos por tema/plan, idioma, cuentas. Casi todos los flujos lo leen.
@@ -200,9 +211,12 @@ ruta está en `features/<funcionalidad>/pages/`.
 | `puzzles/custom-plans*` | `training` · Rutinas propias (requiere sesión) | `CustomPlansService` → `CustomPlanRepository` |
 | `puzzles/public-plans` | `training` · Rutinas públicas | `PublicPlansService` → `PublicPlanRepository` |
 | `streak` | `streak` · Modo Racha | `StreakService`, `StreakStorageService`, `UserRecordsService` |
-| `games`, `games/viewer`, `games/:id` | `games` · Reproductor de partidas | `GamesService`, `GameReviewService` |
+| `games`, `games/viewer`, `games/:id` | `games` · Reproductor de partidas (con «Mi reflexión» en partidas propias) | `GamesService`, `GameReviewService`, `GameReflectionService` |
 | `analytics` | `game-analytics` · Análisis de partidas | `GameAnalyticsService` |
 | `reminders` | `reminders` · Recordatorios | `TrainingReminderService` |
+| `woodpecker` | `woodpecker` · El set del Pájaro Carpintero: configurar, panel y evolución | `WoodpeckerService`, `WoodpeckerSetService` |
+| `woodpecker/play` | `woodpecker` · Una vuelta del set | `WoodpeckerService`, `TrainingReminderService` |
+| `chess-runner` | `chess-runner` · Carrera previa al ejercicio y el ejercicio | `RunnerPuzzleService`, `RunnerSpritesService`, `RunnerPiecesService`, `RunnerRecordService`, `TrainingReminderService` |
 | `coordinates`, `knight-tour`, `chess960` | una funcionalidad cada una · Minijuegos | Servicios propios / `libs/board` |
 | `settings`, `settings/storage`, `settings/credits` | `settings` · Ajustes, descargas y créditos (la de créditos es pública y solo lee `config/credits.config.ts` y el `music-credits.config.ts` generado) | `AppService`, `AppearanceService`, `LanguageService`, caché de `puzzles-provider` |
 | `donation`, `privacy` | `donation`, `privacy` | `RevenueCatService` (donación) |
@@ -234,6 +248,15 @@ El más largo y el que más cuesta seguir. En orden:
    puro) → `BlockService.getPuzzlesForBlock()` pide puzzles a `PuzzlesProvider`
    (libs/puzzles-provider; descarga + caché en IndexedDB) → se pinta el tablero
    (`libs/board`, `board-puzzle`).
+   - Un bloque puede quedarse **sin ejercicios** (tema sin archivos a ese nivel, red lenta).
+     `PlanService.makeCustomPlanForPlay` prueba hasta 2 temas más si el sorteado deja el bloque vacío;
+     `selectPuzzleToPlay()` espera la descarga con el tablero tapado (`isLoadingPuzzles`) y el reloj del
+     bloque parado, y si sigue vacío salta al siguiente bloque. Si en toda la sesión no llegó ni un
+     ejercicio, `abortWithoutPuzzles()` avisa y vuelve en vez de abrir un resumen vacío.
+   - `PuzzlesProvider` limita cada descarga a 8 s (con un reintento que va al espejo
+     `raw.githubusercontent.com` si la ruta es de jsDelivr; un 404 no lo consulta), corta la búsqueda de ELOs vecinos
+     cuando falla un grupo entero de archivos y no devuelve el mismo ejercicio dos veces. `StreakService` y
+     `RunnerPuzzleService` añaden un presupuesto de tiempo para no encadenar esperas con el CDN caído.
 6. Cada puzzle termina en `onPuzzleCompleted(puzzle, resultado)`, que en orden:
    - ignora resultados tardíos si ya se está cambiando de bloque;
    - construye el `UserPuzzle` (`buildUserPuzzle`, util);
@@ -269,6 +292,51 @@ Muerte súbita: el primer fallo termina. `StreakService` pide un puzzle a la vez
 a `StreakStorageService` (dispositivo, en `features/records`) y `UserRecordsService` lo sincroniza con el
 perfil. No toca el elo del usuario. Detalle: [`implementado/RACHA_STREAK_FLOW.md`](./implementado/RACHA_STREAK_FLOW.md).
 
+### 5.2b Método del Pájaro Carpintero
+
+Un set **fijo** de ejercicios que se repite en varias vueltas, cada una con menos tiempo. Todo en
+`features/woodpecker/`. El usuario elige tamaño, rango de ELO, temas, vueltas, orden y ritmo;
+`WoodpeckerSetService` arma el set con pocos archivos del catálogo repartidos por el rango
+(`utils/woodpecker-set.util.ts` decide cuáles y qué ejercicios se quedan) y lo **congela**: el set
+completo y el progreso (vueltas, orden de cada una, resultados) van a `localStorage` por separado
+(`WoodpeckerStorageService`), y el progreso se escribe tras cada ejercicio para poder reanudar.
+`WoodpeckerService` orquesta y registra la analítica; las transiciones del progreso (`startCycle`,
+`recordResult`, `finishCycle`) y la medición entre vueltas son funciones puras en `utils/`.
+El set puede salir también de un **PGN propio** (`features/custom-puzzles/`, [`implementado/RUTINA_PGN_FLOW.md`](./implementado/RUTINA_PGN_FLOW.md)):
+`source: 'pgn'`, sin descargas. **No crea un `Plan`**, no toca el ELO del perfil y no necesita sesión. La pantalla `woodpecker` es el
+panel; `woodpecker/play` juega una vuelta sobre el tablero de puzzles de siempre. Detalle:
+[`implementado/PAJARO_CARPINTERO_FLOW.md`](./implementado/PAJARO_CARPINTERO_FLOW.md).
+
+### 5.2c Chess Runner
+
+Un juego de **partidas con historia** que entrena patrones tácticos antes de cada ejercicio, en `features/chess-runner/`, con **un
+solo control: tocar para saltar** (dos toques seguidos, doble salto). Una **campaña** de 20 capítulos por ronda
+(`campaign/runner-curriculum.ts`): cada uno es un patrón (el tema del catálogo) y sus ejercicios son **siempre del mismo tema**
+(bloques de 5 con el ELO subiendo, un repaso espaciado del patrón más flojo entre capítulo y capítulo, y otra ronda más difícil al
+vencer al rey); el perrito tiene su **propio ELO** (`campaign.rating`, calculado como el de ajedrez) con el que se pide cada ejercicio;
+`campaign/` es lógica pura (qué ejercicio toca, ELO, estrellas, repaso, días seguidos, datos rotos) y `RunnerPuzzleService` pide al
+catálogo un tema fijo. La carrera es una
+**simulación pura** (`utils/runner-engine.util.ts`, sin canvas ni reloj) que mueve `RunnerCanvasComponent`: física del salto y del
+doble salto, el movimiento propio de cada pieza (`PIECE_BEHAVIOR`: la torre se desliza, el caballo y la dama saltan en L, el alfil
+flota), falanges, galletas con figuras variadas (`runner-cookies.util.ts`), saltos perfectos, la estrella, escudo y choques; las
+piezas salen del FEN en **oleadas** con respiros de galletas y un ritmo que se aprieta con el nivel (`runner-sequence.util.ts`, ~25–32 s). Las piezas son **las del set que el usuario eligió en Ajustes**: `RunnerPiecesService` parte el
+sprite SVG de `cm-chessboard` en doce imágenes.
+
+`game/runner-game.ts` (`RunnerGame`, sin Angular) junta campaña, partida y récord; la página solo decide qué se ve y cuándo.
+Una **partida** (`game/runner-session.ts`: 3 corazones y 3 ejercicios fallidos como máximo, metros recorridos y galletas) es aparte de
+la campaña, que sigue donde iba. Los **poderes** que se ganan al dominar cada patrón (`config/runner-powers.ts`) cambian las reglas de la
+carrera y el aspecto del perrito (`rendering/dog-gear.ts`); cada carrera trae una **misión** corta (`game/runner-missions.ts`) que, cumplida,
+da tiempo extra para el ejercicio; las galletas se guardan y compran **pelajes** (`rendering/dog-skins.ts`). La **historia se cuenta sin
+letreros** (`story/`, `rendering/stage.ts`: escenas que son funciones puras del tiempo, con globos de dibujitos) y cada patrón se enseña
+con una **lección** (`lessons/`: un tablero pequeño animado con frases que explican la idea, qué mirar, qué se juega, por qué
+funciona y cómo reconocerlo; ejemplos comprobados con `chess.js`). `ChessRunnerPage` lleva el flujo (historia → camino → lección → carrera → ejercicio →
+victoria → poder) con el tablero del ejercicio y el de su resultado en **la misma vista** (un solo `@if` fuera del `@switch`): con un `@case`
+por estado Angular lo destruía al resolver y el tablero repetía la primera jugada del rival. **No crea un `Plan`** y no toca el ELO.
+Lo único que guarda en el dispositivo es **el récord de distancia y la campaña (ELO, galletas, pelajes, días seguidos)** (`RunnerRecordService`, `localStorage`). Los sprites del
+perrito y el escenario los genera `tools/stream-assets/export_runner.py` (el mismo pipeline que el directo 24/7); el resto del arte
+(galleta, frasco, iconos, equipo, guardianes teñidos) está dibujado con código. Detalle:
+[`implementado/CHESS_RUNNER_FLOW.md`](./implementado/CHESS_RUNNER_FLOW.md).
+
 ### 5.3 Recordatorios de entrenamiento
 
 Todo vive en `features/reminders/`:
@@ -303,6 +371,14 @@ Detalle: [`implementado/GAME_ANALYTICS_FLOW.md`](./implementado/GAME_ANALYTICS_F
 `libs/stockfish-wasm`). `games.util.ts` guarda filtros y ajustes de reproducción.
 Detalle: [`implementado/REPRODUCTOR_PARTIDAS_FLOW.md`](./implementado/REPRODUCTOR_PARTIDAS_FLOW.md).
 
+### 5.5b Reflexión de partidas
+
+Al ver una partida propia en el reproductor, `features/game-reflection/` deja anotar hasta 2 cosas bien hechas y 3 por
+mejorar, como **tags** (sugeridos o creados por el usuario, nombres cortos y sin traducir). Se guarda en Firestore
+(`Users/{uid}/gameReflections/{gameKey}` y `Users/{uid}/gameTags/{tagId}`), con la clave de la partida en su
+plataforma (`lichess:<id>`, `chesscom:<uuid>`), así que sobrevive a borrar la descarga y reinstalar. Detalle:
+[`implementado/REFLEXION_PARTIDAS_FLOW.md`](./implementado/REFLEXION_PARTIDAS_FLOW.md).
+
 ### 5.6 Rutinas propias y públicas
 
 `CustomPlansService` / `PublicPlansService` van por **NgRx** (`libs/state`:
@@ -321,10 +397,14 @@ una facade). Las pantallas leen el store; los guards (`custom-plans.guard` y
 | Rutinas propias / públicas | Firestore + store | `CustomPlans*` / `PublicPlans*` |
 | **Historial de rutinas jugadas** | **`localStorage`** (`chessColate_plans_history`) | `PlanStorageService` |
 | Récords de Racha y Reto 333 | Dispositivo, sincronizado con el perfil | `*StorageService` + `UserRecordsService` |
+| **Set del Pájaro Carpintero** (ejercicios congelados) y **su progreso** | **`localStorage`** (`chessColate_woodpecker_set` y `chessColate_woodpecker_progress`), solo local | `WoodpeckerStorageService` |
+| **Récord de distancia y campaña del Chess Runner** (ronda y capítulo, ELO del perrito, dominio de cada patrón, poderes, estrellas, galletas y pelajes, días seguidos, lo visto de la historia) | **`localStorage`** (`chessColate_runner_best_m` y `chessColate_runner_campaign`), solo local | `RunnerRecordService` |
 | Recordatorios | Dispositivo | `TrainingReminderStorageService` |
 | Puzzles descargados / pool infinito | IndexedDB | `libs/puzzles-provider` (`CacheService`) |
 | Partidas de chess.com/lichess | IndexedDB | `libs/game-reporter` (`createGamesArchive`) |
+| Reflexión de cada partida (tags de lo mejor y a mejorar) y tags propios | Firestore (`Users/{uid}/gameReflections`, `…/gameTags`) | `GameReflectionService` → `GameReflectionRepository` |
 | Ajustes de análisis | `localStorage` | `GameAnalyticsService` |
+| Tamaño del tablero en escritorio | `localStorage` (`chessColate_board_size`) + variable CSS `--cc-board-size` | `BoardSizeService` |
 
 ### Cosas que no son obvias leyendo el código
 
@@ -373,8 +453,14 @@ una facade). Las pantallas leen el store; los guards (`custom-plans.guard` y
 | Cambiar el flujo entre ejercicios/bloques | `TrainingSessionService` (decisión) y `TrainingPage.follow` (efecto) |
 | Cambiar de dónde salen los puzzles | `libs/puzzles-provider` |
 | Cambiar la hora/texto de los recordatorios | `features/reminders/utils/` (cálculo), `features/reminders/services/training-reminder.service.ts` (agenda) |
+| Cambiar los topes de la reflexión o los tags sugeridos | `features/game-reflection/config/game-reflection.config.ts` (y `GAME_REFLECTION.systemTags` en las traducciones) |
 | Añadir una estadística a Análisis | `libs/game-reporter` (reporte) + `features/game-analytics/utils/game-analytics.util.ts` (presentación) |
 | Añadir un dato a Firestore | un `*.repository.ts` en `data/` de la funcionalidad + su service (la página nunca lo inyecta) |
+| Cambiar el formato del PGN de ejercicios propios, sus topes o su informe | `features/custom-puzzles/utils/pgn-puzzles.util.ts` (formato) · `config/custom-puzzles.config.ts` (topes) · `config/custom-pgn-template.ts` (ejemplo de la ayuda) |
+| Cambiar cómo se arma el set del Pájaro Carpintero o cómo baja el tiempo por vuelta | `features/woodpecker/utils/woodpecker-set.util.ts` · `woodpecker-cycle.util.ts` · `config/woodpecker.config.ts` |
+| Afinar lo difícil que es una pieza del Chess Runner | `features/chess-runner/config/runner.config.ts` (y las pruebas de ventanas de `runner-engine.util.spec.ts` y de jugadores simulados de `runner-balance.spec.ts`) |
+| Cambiar los patrones, el orden o los poderes de la campaña del Chess Runner | `features/chess-runner/campaign/runner-curriculum.ts` (y `config/runner-powers.ts`; las lecciones, en `lessons/runner-lessons.data.ts`) |
+| Cambiar el tamaño del tablero en escritorio o añadir el asa a una pantalla | [`implementado/TABLERO_REDIMENSIONABLE_FLOW.md`](./implementado/TABLERO_REDIMENSIONABLE_FLOW.md) |
 | Añadir un evento de analítica | `core/analytics/analytics-events.util.ts` y `AnalyticsService` |
 
 ---

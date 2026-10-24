@@ -427,6 +427,11 @@ describe('PlansHistoryPage', () => {
       await Promise.resolve();
 
       expect(alertController.create).toHaveBeenCalledTimes(1);
+      // El diálogo sale de las traducciones, no de texto escrito a mano
+      expect(alertController.create.mock.calls[0][0]).toMatchObject({
+        header: 'PLANS_HISTORY.deleteConfirm.title',
+        message: 'PLANS_HISTORY.deleteConfirm.message',
+      });
       expect(router.navigate).not.toHaveBeenCalled();
       expect(planStorage.deletePlan).not.toHaveBeenCalled();
       const alert = await alertController.create.mock.results[0].value;
@@ -440,7 +445,7 @@ describe('PlansHistoryPage', () => {
       await Promise.resolve();
 
       const buttons = alertController.create.mock.calls[0][0].buttons;
-      const confirm = buttons.find((b: { text: string }) => b.text === 'Eliminar');
+      const confirm = buttons.find((b: { text: string }) => b.text === 'PLANS_HISTORY.delete');
       expect(confirm.role).toBe('destructive');
       confirm.handler();
       fixture.detectChanges();
@@ -457,7 +462,7 @@ describe('PlansHistoryPage', () => {
       await Promise.resolve();
 
       const buttons = alertController.create.mock.calls[0][0].buttons;
-      const cancel = buttons.find((b: { text: string }) => b.text === 'Cancelar');
+      const cancel = buttons.find((b: { text: string }) => b.text === 'COMMON.actions.cancel');
 
       expect(cancel.role).toBe('cancel');
       expect(cancel.handler).toBeUndefined();

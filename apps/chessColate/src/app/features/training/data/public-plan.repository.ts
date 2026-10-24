@@ -206,6 +206,11 @@ export class PublicPlanRepository {
 
     const querySnapshot = await getDocs(q);
 
+    // Sin conexión Firestore no falla: responde desde su caché, y vacía. Eso no es «no hay planes públicos»
+    if (querySnapshot.metadata?.fromCache && querySnapshot.size === 0) {
+      throw new Error('No se pudo consultar los planes públicos: sin conexión');
+    }
+
     querySnapshot.forEach((document) => {
       const data = document.data();
 

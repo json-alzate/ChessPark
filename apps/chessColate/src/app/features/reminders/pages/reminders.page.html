@@ -1,8 +1,8 @@
 <ion-content [fullscreen]="true">
-  <div class="min-h-screen bg-base-100">
+  <div class="main-container">
     <app-navbar></app-navbar>
 
-    <div class="container mx-auto px-4 py-8 max-w-lg pb-16">
+    <div class="container mx-auto px-4 pt-2 max-w-lg pb-16">
       <!-- Header -->
       <div class="mb-8">
         <div class="breadcrumbs text-sm mb-1">
@@ -19,7 +19,7 @@
       </div>
 
       @if (!isNativePlatform) {
-        <div role="alert" class="alert text-sm">
+        <div role="alert" class="alert bg-base-100 border-base-content/10 text-sm">
           <span>{{ 'TRAINING_REMINDER.webOnlyNotice' | transloco }}</span>
         </div>
       } @else {
@@ -31,7 +31,7 @@
             <h3 class="text-lg font-bold">{{ 'TRAINING_REMINDER.automaticTitle' | transloco }}</h3>
           </div>
 
-          <div class="bg-base-200/40 border border-base-content/10 w-full rounded-box p-4 flex flex-col gap-4">
+          <div class="bg-base-100 border border-base-content/10 w-full rounded-box p-4 flex flex-col gap-4">
             <label class="flex items-center justify-between gap-4 cursor-pointer">
               <div>
                 <div class="text-base">{{ 'TRAINING_REMINDER.toggleTitle' | transloco }}</div>
@@ -96,7 +96,7 @@
           } @else {
             <ul class="flex flex-col gap-2">
               @for (reminder of manualReminders; track reminder.id) {
-                <li class="bg-base-200/40 border border-base-content/10 rounded-box p-3 flex items-center gap-3">
+                <li class="bg-base-100 border border-base-content/10 rounded-box p-3 flex items-center gap-3">
                   <div class="flex-1 min-w-0">
                     <div class="font-semibold">
                       {{ reminderTime(reminder) }}
@@ -111,10 +111,10 @@
                     class="toggle toggle-sm toggle-primary"
                     [checked]="reminder.enabled"
                     (change)="toggleManual(reminder, $event)" />
-                  <button class="btn btn-ghost btn-sm btn-circle" (click)="openManualModal(reminder)">
+                  <button class="btn btn-ghost btn-sm btn-circle" (click)="openManualModal(reminder)" [attr.aria-label]="'TRAINING_REMINDER.manual.editTitle' | transloco">
                     <ion-icon name="create-outline"></ion-icon>
                   </button>
-                  <button class="btn btn-ghost btn-sm btn-circle text-error" (click)="confirmDeleteManual(reminder)">
+                  <button class="btn btn-ghost btn-sm btn-circle text-error" (click)="confirmDeleteManual(reminder)" [attr.aria-label]="'TRAINING_REMINDER.manual.deleteTitle' | transloco">
                     <ion-icon name="trash-outline"></ion-icon>
                   </button>
                 </li>

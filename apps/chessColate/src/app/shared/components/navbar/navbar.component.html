@@ -1,5 +1,6 @@
 <div class="navbar">
-  <div class="navbar-start">
+  <!-- En pantallas pequeñas ocupa el espacio libre (no el 50 % fijo) y puede encoger: con el texto del sistema grande el rótulo pasa a varias líneas en vez de pisar la campana -->
+  <div class="navbar-start min-w-0 max-lg:w-auto max-lg:flex-1">
     <div tabindex="0" role="button" class="btn btn-ghost btn-circle" (click)="openSideMenu()"
       [attr.aria-label]="'APP.components.openMenu' | transloco">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -14,8 +15,9 @@
       <span class="text-sm text-base-content/60">{{ 'APP.components.loading' | transloco }}</span>
     </div>
     } @else if (!isAuthenticated) {
-    <div class="flex gap-2">
-      <button class="btn btn-outline btn-sm" (click)="openLoginModal()">
+    <div class="flex min-w-0 gap-2">
+      <!-- Con el texto del sistema al máximo el rótulo pasa a dos líneas en vez de pisar la campana -->
+      <button class="btn btn-outline btn-sm h-auto min-h-8 min-w-0 shrink whitespace-normal py-1 leading-tight" (click)="openLoginModal()">
         {{ 'AUTH.login.menuBar' | transloco }}
       </button>
     </div>
@@ -40,7 +42,7 @@
         }
       </div>
 
-      <div class="max-w-[110px] truncate text-sm font-medium" [title]="displayName || displayEmail">
+      <div class="max-w-[110px] truncate text-sm font-medium lg:max-w-[260px]" [title]="displayName || displayEmail">
         {{ (displayName || displayEmail) || '' }}
       </div>
 
@@ -57,7 +59,7 @@
     </a>
   </div>
 
-  <div class="navbar-end flex items-center gap-2">
+  <div class="navbar-end flex items-center gap-2 max-lg:w-auto max-lg:flex-none">
     @if (isNativePlatform) {
       <button class="btn btn-ghost btn-circle btn-sm" (click)="navigateToDonation()"
         [title]="'APP.components.donate' | transloco" [attr.aria-label]="'APP.components.donate' | transloco"

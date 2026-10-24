@@ -14,7 +14,10 @@ export class LanguageService {
 
   private translocoService = inject(TranslocoService);
 
-  constructor() { }
+  constructor() {
+    // El idioma del documento sigue al de la app: los lectores de pantalla lo usan para elegir la voz
+    this.translocoService.langChanges$.subscribe((lang) => document.documentElement.setAttribute('lang', lang));
+  }
 
   /**
    * Obtiene el idioma actual

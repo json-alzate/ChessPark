@@ -194,7 +194,8 @@
             </span>
           </ion-col>
           <ion-col size="12" class="ion-padding-horizontal pt-4">
-            <label class="input input-lg validator w-full">
+            <label class="input input-lg validator w-full"
+              [class.input-error]="rePasswordFieldSingUp?.hasError('notMatch')">
               <ion-icon name="key-outline"></ion-icon>
               <input formControlName="rePassword" type="password" required
                 [placeholder]="'AUTH.register.confirmPasswordPlaceholder' | transloco" maxlength="100" minlength="8" />

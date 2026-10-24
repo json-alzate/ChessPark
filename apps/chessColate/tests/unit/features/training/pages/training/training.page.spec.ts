@@ -481,6 +481,53 @@ describe('TrainingPage · caracterización del flujo de entrenamiento', () => {
     jest.restoreAllMocks();
   });
 
+  describe('bloque cuyos ejercicios aún no llegaron', () => {
+    it('al cerrar la presentación el reloj del bloque no corre hasta que llega el primer ejercicio', async () => {
+      let llegan!: (puzzles: Puzzle[]) => void;
+      mocks.blockService.getPuzzlesForBlock.mockReturnValue(
+        new Promise<Puzzle[]>((resolve) => (llegan = resolve))
+      );
+      component = await createComponent(mocks);
+      component.plan = makePlan({ blocks: [makeBlock({ time: 60, puzzles: [] })] });
+      component.currentIndexBlock = 0;
+
+      await component.showBlockPresentation();
+      await closeLastModal();
+
+      // Tablero tapado y sin reloj mientras se espera la red
+      expect(component.isLoadingPuzzles).toBe(true);
+      expect(component.showBlockTimer).toBe(false);
+      expect(jest.getTimerCount()).toBe(0);
+
+      llegan(makePuzzles(2, 'n'));
+      await flushMicrotasks();
+
+      expect(component.isLoadingPuzzles).toBe(false);
+      expect(component.puzzleToPlay.uid).toBe('n1');
+      expect(component.showBlockTimer).toBe(true);
+      expect(jest.getTimerCount()).toBe(1);
+    });
+
+    it('si el bloque queda sin ejercicios se salta y el reloj del bloque saltado no arranca', async () => {
+      jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+      mocks.blockService.getPuzzlesForBlock.mockResolvedValue([]);
+      component = await createComponent(mocks);
+      component.plan = makePlan({
+        blocks: [makeBlock({ time: 60, puzzles: [] }), makeBlock({ time: 60, puzzles: makePuzzles(2, 'b') })],
+      });
+      component.currentIndexBlock = 0;
+      const siguiente = jest.spyOn(component, 'playNextBlock').mockImplementation(() => {
+        component.currentIndexBlock = 1;
+      });
+
+      await component.showBlockPresentation();
+      await closeLastModal();
+
+      expect(siguiente).toHaveBeenCalledTimes(1);
+      expect(jest.getTimerCount()).toBe(0);
+    });
+  });
+
   describe('arranque desde el store', () => {
     it('al llegar el plan arranca en el bloque 0 y abre su presentación con título, descripción e imagen del tema', async () => {
       component = await createComponent(mocks);
@@ -855,19 +902,102 @@ describe('TrainingPage · caracterización del flujo de entrenamiento', () => {
       expect(component.puzzleToPlay.uid).toBe('p1');
     });
 
-    it('sin puzzle disponible avisa por consola y conserva el puzzle anterior', async () => {
-      const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+    it('sin ejercicios que jugar espera la descarga con el tablero tapado y juega el primero que llega', async () => {
+      let llegan!: (puzzles: Puzzle[]) => void;
+      mocks.blockService.getPuzzlesForBlock.mockReturnValue(
+        new Promise<Puzzle[]>((resolve) => (llegan = resolve))
+      );
       const plan = makePlan({ blocks: [makeBlock({ time: -1, puzzles: [] })] });
       component = await createComponent(mocks);
       component.plan = plan;
       component.currentIndexBlock = 0;
       component.puzzleToPlay = makePuzzle('previo');
 
-      component.selectPuzzleToPlay();
+      const seleccion = component.selectPuzzleToPlay();
+
+      // Mientras tanto el aviso de carga tapa el tablero anterior
+      expect(component.isLoadingPuzzles).toBe(true);
+      expect(component.puzzleToPlay.uid).toBe('previo');
+
+      llegan(makePuzzles(2, 'n'));
+      await seleccion;
+
+      expect(component.isLoadingPuzzles).toBe(false);
+      expect(component.puzzleToPlay.uid).toBe('n1');
+    });
+
+    it('si la descarga no trae nada avisa por consola y salta al siguiente bloque', async () => {
+      const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+      mocks.blockService.getPuzzlesForBlock.mockResolvedValue([]);
+      const plan = makePlan({ blocks: [makeBlock({ time: -1, puzzles: [] }), makeBlock()] });
+      component = await createComponent(mocks);
+      component.plan = plan;
+      component.currentIndexBlock = 0;
+      const siguiente = jest.spyOn(component, 'playNextBlock').mockImplementation(() => undefined);
+
+      await component.selectPuzzleToPlay();
 
       expect(warn).toHaveBeenCalledTimes(1);
-      expect(component.puzzleToPlay.uid).toBe('previo');
+      expect(siguiente).toHaveBeenCalledTimes(1);
+      expect(component.isLoadingPuzzles).toBe(false);
       expect(mocks.analyticsService.logEvent).not.toHaveBeenCalled();
+    });
+
+    it('si no llegó ni un ejercicio en toda la sesión avisa y vuelve, sin enseñar un resumen vacío', async () => {
+      jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+      mocks.blockService.getPuzzlesForBlock.mockResolvedValue([]);
+      component = await createComponent(mocks);
+      component.plan = makePlan({ blocks: [makeBlock({ time: -1, puzzles: [] })] });
+      component.currentIndexBlock = 0;
+
+      await component.selectPuzzleToPlay();
+      await flushMicrotasks();
+
+      expect(mocks.alertController.create).toHaveBeenCalledWith(
+        expect.objectContaining({ header: 'TRAINING.noPuzzles.title', message: 'TRAINING.noPuzzles.message' })
+      );
+      expect(mocks.router.navigateByUrl).toHaveBeenCalled();
+      expect(mocks.router.navigate).not.toHaveBeenCalledWith(['/puzzles/plan-played']);
+      expect(mocks.planStorageService.savePlan).not.toHaveBeenCalled();
+    });
+
+    it('si la descarga falla tampoco deja la pantalla esperando: salta al siguiente bloque', async () => {
+      jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+      jest.spyOn(console, 'error').mockImplementation(() => undefined);
+      mocks.blockService.getPuzzlesForBlock.mockRejectedValue(new Error('sin red'));
+      component = await createComponent(mocks);
+      component.plan = makePlan({ blocks: [makeBlock({ time: -1, puzzles: [] }), makeBlock()] });
+      component.currentIndexBlock = 0;
+      const siguiente = jest.spyOn(component, 'playNextBlock').mockImplementation(() => undefined);
+
+      await component.selectPuzzleToPlay();
+
+      expect(siguiente).toHaveBeenCalledTimes(1);
+      expect(component.isLoadingPuzzles).toBe(false);
+    });
+
+    it('si se agotan los ejercicios a mitad de bloque el reloj espera la descarga y sigue después', async () => {
+      jest.useFakeTimers();
+      let llegan!: (puzzles: Puzzle[]) => void;
+      mocks.blockService.getPuzzlesForBlock.mockReturnValue(
+        new Promise<Puzzle[]>((resolve) => (llegan = resolve))
+      );
+      component = await createComponent(mocks);
+      component.plan = makePlan({ blocks: [makeBlock({ time: 60, puzzles: [] })] });
+      component.currentIndexBlock = 0;
+      component.initTimeToEndBlock(60);
+      expect(jest.getTimerCount()).toBe(1);
+
+      const seleccion = component.selectPuzzleToPlay();
+      expect(jest.getTimerCount()).toBe(0);
+
+      llegan(makePuzzles(1, 'n'));
+      await seleccion;
+
+      expect(jest.getTimerCount()).toBe(1);
+      expect(component.puzzleToPlay.uid).toBe('n1');
+      component.ngOnDestroy();
+      jest.useRealTimers();
     });
   });
 

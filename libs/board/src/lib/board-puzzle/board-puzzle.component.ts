@@ -36,6 +36,7 @@ import { takeUntil } from 'rxjs/operators';
 
 // Ionic
 import { IonIcon } from '@ionic/angular/standalone';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
 import {
   eyeOutline,
@@ -88,7 +89,7 @@ import {
   selector: 'lib-board-puzzle',
   templateUrl: './board-puzzle.component.html',
   styleUrls: ['./board-puzzle.component.scss'],
-  imports: [SecondsToMinutesSecondsPipe, IonIcon],
+  imports: [SecondsToMinutesSecondsPipe, IonIcon, TranslocoPipe],
 })
 export class BoardPuzzleComponent implements OnInit, AfterViewInit, OnDestroy {
   soundsService = inject(SoundsService);

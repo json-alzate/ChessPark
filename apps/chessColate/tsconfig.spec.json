@@ -9,7 +9,7 @@
     "isolatedModules": false,
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "types": ["jest"]
+    "types": ["jest", "node"]
   },
   "files": ["src/test-setup.ts"],
   "include": ["jest.config.ts", "tests/**/*.spec.ts", "src/**/*.d.ts"]

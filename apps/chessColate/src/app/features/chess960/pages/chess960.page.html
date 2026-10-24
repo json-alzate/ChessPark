@@ -28,14 +28,15 @@
       <div class="lg:flex lg:justify-center lg:gap-8 lg:items-start">
 
         <!-- COLUMNA IZQUIERDA: Tablero + controles -->
-        <div class="lg:w-[480px] lg:flex-shrink-0">
+        <div class="cc-board-column cc-board-column--compact lg:flex-shrink-0">
 
           <!-- Tablero -->
-          <div class="mb-4">
+          <div class="relative mb-4">
             @if (!isLoading) {
             <lib-chess960-board
               [boardConfig]="{ position: currentFen }"
             ></lib-chess960-board>
+            <app-board-resize-handle [reserve]="240"></app-board-resize-handle>
             } @else {
             <div class="flex justify-center items-center h-64">
               <span class="loading loading-spinner loading-lg"></span>
@@ -53,10 +54,11 @@
             <div class="card-body">
               <div class="flex items-end gap-4">
                 <div class="form-control flex-1">
-                  <label class="label">
+                  <label class="label" for="chess960-position">
                     <span class="label-text font-bold">{{ 'CHESS960.controls.positionLabel' | transloco }}</span>
                   </label>
                   <input
+                    id="chess960-position"
                     type="number"
                     [(ngModel)]="currentPositionId"
                     (ngModelChange)="onIdChange()"

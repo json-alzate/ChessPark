@@ -1,8 +1,8 @@
 <ion-content [fullscreen]="true">
-  <div class="min-h-screen bg-base-100">
+  <div class="main-container">
     <app-navbar></app-navbar>
 
-    <div class="container mx-auto px-4 py-8 max-w-2xl pb-16">
+    <div class="container mx-auto px-4 pt-2 max-w-2xl pb-16">
 
       <!-- Header -->
       <div class="mb-6">
@@ -34,7 +34,7 @@
           <a [href]="lichessLilaUrl" target="_blank" rel="noopener noreferrer" class="link link-primary">lichess-org/lila</a>
         </p>
 
-        <ul class="bg-base-200/40 border border-base-content/10 rounded-box divide-y divide-base-content/10">
+        <ul class="bg-base-100 border border-base-content/10 rounded-box divide-y divide-base-content/10">
           @for (piece of pieces; track piece.id) {
             <li class="flex items-center justify-between gap-3 px-4 py-3" [attr.data-piece]="piece.id">
               <div class="min-w-0">
@@ -74,7 +74,7 @@
         <p class="text-sm font-semibold mb-3">{{ 'CREDITS.musicSummary' | transloco: musicSummary }}</p>
 
         @for (group of musicGroups; track group.license) {
-          <details class="collapse collapse-arrow bg-base-200/40 border border-base-content/10 mb-2" [attr.data-license]="group.license">
+          <details class="collapse collapse-arrow bg-base-100 border border-base-content/10 mb-2" [attr.data-license]="group.license">
             <summary class="collapse-title font-semibold">
               {{ licenses[group.license].label }} · {{ group.tracks.length }}
             </summary>

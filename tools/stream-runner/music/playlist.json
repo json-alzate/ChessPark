@@ -1440,26 +1440,6 @@
     }
   },
   {
-    "id": "ccmixter-44803",
-    "file": "normalized/73-robbero-whisper.m4a",
-    "title": "Whisper",
-    "author": "Robbero",
-    "durationSec": 204.3,
-    "source": "ccMixter",
-    "license": "CC BY 3.0",
-    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
-    "pageUrl": "https://ccmixter.org/files/Robbero/44803",
-    "before": {
-      "lufs": -13.8,
-      "truePeak": null
-    },
-    "after": {
-      "lufs": -18,
-      "lra": 3.5,
-      "truePeak": -3.8
-    }
-  },
-  {
     "id": "ccmixter-41751",
     "file": "normalized/74-skill-borrower-klaus.m4a",
     "title": "Klaus",

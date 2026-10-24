@@ -1,0 +1,156 @@
+<div class="space-y-3" data-testid="pgn-importer">
+
+  <!-- Elegir el archivo -->
+  <section class="rounded-xl border border-base-content/10 bg-base-100 p-4">
+    <h3 class="font-semibold">{{ 'CUSTOM_PGN.import.title' | transloco }}</h3>
+    <p class="mt-1 text-xs text-base-content/60">
+      {{ 'CUSTOM_PGN.import.hint' | transloco: { max: maxExercises } }}
+    </p>
+
+    <input #fileInput type="file" class="hidden" accept=".pgn,.txt,text/plain,application/x-chess-pgn"
+      (change)="onFile($event)" data-testid="file-input" />
+    <button type="button" class="btn btn-primary mt-3 w-full" [disabled]="reading" (click)="pickFile()"
+      data-testid="pick-file">
+      @if (reading) {
+      <span class="loading loading-spinner loading-sm"></span>
+      } @else {
+      <ion-icon name="document-text-outline"></ion-icon>
+      }
+      <span>{{ 'CUSTOM_PGN.import.pick' | transloco }}</span>
+    </button>
+
+    <details class="mt-3">
+      <summary class="cursor-pointer text-sm text-base-content/70">{{ 'CUSTOM_PGN.import.pasteSummary' | transloco }}</summary>
+      <textarea class="textarea textarea-bordered mt-2 h-32 w-full font-mono text-xs" spellcheck="false"
+        [attr.aria-label]="'CUSTOM_PGN.import.pasteLabel' | transloco"
+        [placeholder]="'CUSTOM_PGN.import.pastePlaceholder' | transloco" [value]="pastedText"
+        (input)="pastedText = $any($event.target).value" data-testid="paste"></textarea>
+      <button type="button" class="btn btn-sm btn-soft mt-2 w-full" [disabled]="pastedText.trim() === ''"
+        (click)="readPasted()" data-testid="read-pasted">
+        {{ 'CUSTOM_PGN.import.read' | transloco }}
+      </button>
+    </details>
+  </section>
+
+  <!-- Resultado -->
+  @if (failure) {
+  <div role="alert" class="alert alert-warning text-sm" data-testid="failure">
+    <ion-icon name="warning-outline" class="shrink-0 text-lg"></ion-icon>
+    <span>{{ 'CUSTOM_PGN.failure.' + failure | transloco }}</span>
+  </div>
+  }
+
+  @if (loaded) {
+  <section class="rounded-xl border p-4" [class.border-success]="!tooFew" [class.border-warning]="tooFew"
+    data-testid="summary">
+    <div class="flex items-start gap-3">
+      <ion-icon [name]="tooFew ? 'warning-outline' : 'checkmark-circle-outline'" class="mt-0.5 shrink-0 text-2xl"
+        [class.text-success]="!tooFew" [class.text-warning]="tooFew"></ion-icon>
+      <div class="min-w-0 flex-1">
+        <p class="font-semibold" data-testid="summary-count">
+          {{ 'CUSTOM_PGN.summary.ready' | transloco: { count: loaded.puzzles.length, total: loaded.report.total } }}
+        </p>
+        @if (loaded.name) {
+        <p class="truncate text-xs text-base-content/60">{{ loaded.name }}</p>
+        }
+        @if (tooFew) {
+        <p class="mt-1 text-xs text-warning" data-testid="too-few">
+          {{ 'CUSTOM_PGN.summary.tooFew' | transloco: { min: minExercises } }}
+        </p>
+        }
+        @if (loaded.dropped > 0) {
+        <p class="mt-1 text-xs text-base-content/70" data-testid="dropped">
+          {{ 'CUSTOM_PGN.summary.dropped' | transloco: { max: maxExercises, dropped: loaded.dropped } }}
+        </p>
+        }
+      </div>
+      <button type="button" class="btn btn-ghost btn-xs" (click)="clear()" data-testid="clear">
+        {{ 'CUSTOM_PGN.summary.clear' | transloco }}
+      </button>
+    </div>
+  </section>
+  }
+
+  @if (issues.length > 0) {
+  <section class="rounded-xl border border-base-content/10 bg-base-100 p-4" data-testid="issues">
+    <h4 class="text-sm font-semibold">{{ 'CUSTOM_PGN.issues.title' | transloco: { count: issues.length } }}</h4>
+    <ul class="mt-2 space-y-1.5 text-xs">
+      @for (issue of issues.slice(0, issuesShown); track issue.index) {
+      <li class="flex gap-2">
+        <span class="shrink-0 font-mono text-base-content/50">#{{ issue.index }}</span>
+        <span class="min-w-0">
+          @if (issue.title) {
+          <span class="font-medium">{{ issue.title }}</span> ·
+          }
+          {{ 'CUSTOM_PGN.issues.' + issue.code | transloco: { move: issue.move } }}
+        </span>
+      </li>
+      }
+    </ul>
+    @if (hiddenIssues > 0) {
+    <p class="mt-2 text-xs text-base-content/60">{{ 'CUSTOM_PGN.issues.more' | transloco: { count: hiddenIssues } }}</p>
+    }
+  </section>
+  }
+
+  @if (notes.length > 0) {
+  <section class="rounded-xl border border-base-content/10 bg-base-100 p-4" data-testid="notes">
+    <h4 class="text-sm font-semibold">{{ 'CUSTOM_PGN.notes.title' | transloco: { count: notes.length } }}</h4>
+    <ul class="mt-2 space-y-1.5 text-xs text-base-content/70">
+      @for (note of notes.slice(0, issuesShown); track $index) {
+      <li class="flex gap-2">
+        <span class="shrink-0 font-mono text-base-content/50">#{{ note.index }}</span>
+        <span class="min-w-0">
+          @if (note.title) {
+          <span class="font-medium">{{ note.title }}</span> ·
+          }
+          {{ 'CUSTOM_PGN.notes.' + note.code | transloco }}
+        </span>
+      </li>
+      }
+    </ul>
+  </section>
+  }
+
+  <!-- Cómo debe ser el archivo -->
+  <details class="collapse collapse-arrow rounded-xl border border-base-content/10 bg-base-100" data-testid="format-help">
+    <summary class="collapse-title font-semibold">{{ 'CUSTOM_PGN.help.title' | transloco }}</summary>
+    <div class="collapse-content space-y-3 text-sm text-base-content/80">
+      <p>{{ 'CUSTOM_PGN.help.intro' | transloco }}</p>
+
+      <ol class="list-decimal space-y-1.5 pl-5">
+        <li>{{ 'CUSTOM_PGN.help.rule1' | transloco }}</li>
+        <li>{{ 'CUSTOM_PGN.help.rule2' | transloco }}</li>
+        <li>{{ 'CUSTOM_PGN.help.rule3' | transloco }}</li>
+        <li>{{ 'CUSTOM_PGN.help.rule4' | transloco }}</li>
+      </ol>
+
+      <div>
+        <h4 class="text-xs font-bold uppercase tracking-wide text-base-content/50">{{ 'CUSTOM_PGN.help.tagsTitle' | transloco }}</h4>
+        <ul class="mt-1 space-y-1 text-xs">
+          <li><code class="font-mono">[FEN "…"]</code> — {{ 'CUSTOM_PGN.help.tagFen' | transloco }}</li>
+          <li><code class="font-mono">[Event "…"]</code> — {{ 'CUSTOM_PGN.help.tagEvent' | transloco }}</li>
+          <li><code class="font-mono">[PuzzleRating "1450"]</code> — {{ 'CUSTOM_PGN.help.tagRating' | transloco }}</li>
+          <li><code class="font-mono">[PuzzleThemes "fork pin"]</code> — {{ 'CUSTOM_PGN.help.tagThemes' | transloco }}</li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="text-xs font-bold uppercase tracking-wide text-base-content/50">{{ 'CUSTOM_PGN.help.exampleTitle' | transloco }}</h4>
+        <pre class="mt-1 max-h-72 overflow-auto rounded-lg bg-base-200 p-3 text-xs leading-relaxed" data-testid="example">{{ template }}</pre>
+        <div class="mt-2 flex gap-2">
+          <button type="button" class="btn btn-sm btn-soft flex-1" (click)="copyTemplate()" data-testid="copy-example">
+            <ion-icon name="copy-outline"></ion-icon>
+            <span>{{ (copied ? 'CUSTOM_PGN.help.copied' : 'CUSTOM_PGN.help.copy') | transloco }}</span>
+          </button>
+          <button type="button" class="btn btn-sm btn-soft flex-1" (click)="downloadTemplate()" data-testid="download-example">
+            <ion-icon name="download-outline"></ion-icon>
+            <span>{{ 'CUSTOM_PGN.help.download' | transloco }}</span>
+          </button>
+        </div>
+      </div>
+
+      <p class="text-xs text-base-content/60">{{ 'CUSTOM_PGN.help.lichess' | transloco }}</p>
+    </div>
+  </details>
+</div>

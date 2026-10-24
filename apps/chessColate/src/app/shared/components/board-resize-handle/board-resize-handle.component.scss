@@ -1,0 +1,62 @@
+// Un cuadrado superpuesto del ancho de la columna del tablero (que es el del
+// tablero): el asa va en su esquina inferior derecha. No se ve ni responde en
+// móvil ni con el dedo, solo en escritorio con ratón.
+:host {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  // El cuadrado no debe comerse los clics del tablero; solo el asa los recibe
+  pointer-events: none;
+  z-index: 5;
+}
+
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+  :host {
+    display: block;
+  }
+}
+
+.grip {
+  position: absolute;
+  right: -10px;
+  bottom: -10px;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: 4px;
+  border-radius: 8px;
+  cursor: nwse-resize;
+  // Sin esto el navegador interpreta el arrastre como un gesto de scroll
+  touch-action: none;
+  pointer-events: auto;
+  color: color-mix(in oklab, var(--color-base-content) 45%, transparent);
+  background: color-mix(in oklab, var(--color-base-100) 70%, transparent);
+  opacity: 0.7;
+  transition: opacity 120ms, color 120ms;
+
+  &:hover,
+  &:focus-visible,
+  &.dragging {
+    opacity: 1;
+    color: var(--color-primary);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 1px;
+  }
+
+  svg {
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+}

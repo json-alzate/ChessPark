@@ -87,7 +87,7 @@
           <!-- Título + subtítulo del menú -->
           <div class="px-3 pt-4 pb-2 lg:px-1">
             <h1 class="text-2xl font-extrabold tracking-tight">{{ 'PUZZLES.menu.title' | transloco }}</h1>
-            <p class="mt-1 text-sm text-base-content/50">{{ 'TRAINING.subtitle' | transloco }}</p>
+            <p class="mt-1 text-sm text-base-content/60">{{ 'TRAINING.subtitle' | transloco }}</p>
           </div>
 
           <app-training-menu class="lg:flex-1"></app-training-menu>
@@ -104,7 +104,7 @@
               </div>
               <div class="mt-2.5 min-w-0">
                 <div class="text-sm font-bold leading-tight">{{ 'CUSTOM_PLANS.shortTitle' | transloco }}</div>
-                <div class="mt-0.5 truncate text-[11px] leading-tight text-base-content/50">{{ 'CUSTOM_PLANS.cardSubtitle' | transloco }}</div>
+                <div class="mt-0.5 truncate text-[11px] leading-tight text-base-content/60">{{ 'CUSTOM_PLANS.cardSubtitle' | transloco }}</div>
               </div>
             </a>
             <a class="card flex-1 min-w-0 cursor-pointer rounded-xl border border-base-300 bg-base-100 p-3.5 transition-colors hover:bg-base-200/30"
@@ -117,7 +117,7 @@
               </div>
               <div class="mt-2.5 min-w-0">
                 <div class="text-sm font-bold leading-tight">{{ 'PUBLIC_PLANS.shortTitle' | transloco }}</div>
-                <div class="mt-0.5 truncate text-[11px] leading-tight text-base-content/50">{{ 'PUBLIC_PLANS.cardSubtitle' | transloco }}</div>
+                <div class="mt-0.5 truncate text-[11px] leading-tight text-base-content/60">{{ 'PUBLIC_PLANS.cardSubtitle' | transloco }}</div>
               </div>
             </a>
           </div>
@@ -139,7 +139,7 @@
               </div>
               <div class="mt-2.5 min-w-0">
                 <div class="text-sm font-bold leading-tight">{{ 'CUSTOM_PLANS.shortTitle' | transloco }}</div>
-                <div class="mt-0.5 truncate text-xs leading-tight text-base-content/50">{{ 'CUSTOM_PLANS.cardSubtitle' | transloco }}</div>
+                <div class="mt-0.5 truncate text-xs leading-tight text-base-content/60">{{ 'CUSTOM_PLANS.cardSubtitle' | transloco }}</div>
               </div>
             </a>
             <a class="card flex-1 min-w-0 cursor-pointer rounded-xl border border-base-300 bg-base-100 p-3.5 transition-colors hover:bg-base-200/30"
@@ -152,7 +152,7 @@
               </div>
               <div class="mt-2.5 min-w-0">
                 <div class="text-sm font-bold leading-tight">{{ 'PUBLIC_PLANS.shortTitle' | transloco }}</div>
-                <div class="mt-0.5 truncate text-xs leading-tight text-base-content/50">{{ 'PUBLIC_PLANS.cardSubtitle' | transloco }}</div>
+                <div class="mt-0.5 truncate text-xs leading-tight text-base-content/60">{{ 'PUBLIC_PLANS.cardSubtitle' | transloco }}</div>
               </div>
             </a>
           </div>
@@ -172,6 +172,7 @@
             <ng-container [ngTemplateOutlet]="reto333Card"></ng-container>
             }
             <ng-container [ngTemplateOutlet]="streakCard"></ng-container>
+            <ng-container [ngTemplateOutlet]="woodpeckerCard"></ng-container>
           </div>
 
           <!-- Retos — visible solo en mobile -->
@@ -182,8 +183,65 @@
             <ng-container [ngTemplateOutlet]="reto333Card"></ng-container>
             }
             <ng-container [ngTemplateOutlet]="streakCard"></ng-container>
+            <ng-container [ngTemplateOutlet]="woodpeckerCard"></ng-container>
           </div>
         </div>
+
+        <!-- Pájaro carpintero — tarjeta (mismo lenguaje visual que la Racha) -->
+        <ng-template #woodpeckerCard>
+          <div
+            class="card bg-base-100 border border-base-300 rounded-2xl shadow-sm overflow-hidden cursor-pointer transition-all hover:-translate-y-0.5 active:scale-[0.98] lg:col-span-2"
+            data-testid="woodpecker-card" (click)="goToWoodpecker()">
+            <div class="relative p-4 pl-6">
+              <!-- Barra de acento lateral -->
+              <div class="absolute left-0 top-3.5 bottom-3.5 w-1 bg-primary rounded-r-sm"></div>
+
+              <!-- Título + estado -->
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="font-bold text-[15px] leading-none flex items-center gap-1.5">
+                  <ion-icon name="repeat-outline" class="text-base text-primary"></ion-icon>
+                  {{ 'WOODPECKER.title' | transloco }}
+                </span>
+                @if (woodpeckerSummary) {
+                <span class="rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-primary">
+                  @if (woodpeckerSummary.completed) {
+                  {{ 'WOODPECKER.homeCard.completed' | transloco }}
+                  } @else {
+                  {{ 'WOODPECKER.homeCard.cycleOf' | transloco: { cycle: woodpeckerSummary.cycle, cycles: woodpeckerSummary.cycles } }}
+                  }
+                </span>
+                }
+              </div>
+
+              <!-- Descripción -->
+              <p class="mt-1.5 text-xs leading-snug text-base-content/60">
+                {{ 'WOODPECKER.homeCard.description' | transloco }}
+              </p>
+
+              @if (woodpeckerSummary && !woodpeckerSummary.completed && woodpeckerSummary.answered > 0) {
+              <!-- Avance de la vuelta en curso -->
+              <div class="mt-3.5">
+                <div class="mb-1 flex items-baseline justify-between text-[11px] text-base-content/60">
+                  <span>{{ 'WOODPECKER.dashboard.played' | transloco: { played: woodpeckerSummary.answered, total: woodpeckerSummary.total } }}</span>
+                </div>
+                <progress class="progress progress-primary h-1.5 w-full" [value]="woodpeckerSummary.answered"
+                  [max]="woodpeckerSummary.total"></progress>
+              </div>
+              }
+
+              <!-- CTA -->
+              <button class="btn btn-outline btn-primary btn-sm w-full mt-3.5 font-bold">
+                @if (!woodpeckerSummary) {
+                {{ 'WOODPECKER.homeCard.start' | transloco }}
+                } @else if (woodpeckerSummary.completed) {
+                {{ 'WOODPECKER.homeCard.view' | transloco }}
+                } @else {
+                {{ 'WOODPECKER.homeCard.continue' | transloco }}
+                }
+              </button>
+            </div>
+          </div>
+        </ng-template>
 
         <!-- Racha — tarjeta (mismo lenguaje visual que el Reto 333) -->
         <ng-template #streakCard>
@@ -215,10 +273,10 @@
               <div class="mt-3.5 flex items-baseline justify-between gap-2">
                 <div class="leading-none">
                   <span class="text-xl font-extrabold text-base-content">{{ streakRecord.lastScore }}</span>
-                  <span class="text-[13px] font-semibold text-base-content/50"> {{ 'STREAK.homeCard.lastRun' | transloco }}</span>
+                  <span class="text-[13px] font-semibold text-base-content/60"> {{ 'STREAK.homeCard.lastRun' | transloco }}</span>
                 </div>
                 @if (streakRecord.bestScore > 0) {
-                <span class="text-[11px] text-base-content/50">{{ 'STREAK.record' | transloco }}:
+                <span class="text-[11px] text-base-content/60">{{ 'STREAK.record' | transloco }}:
                   <b class="font-bold text-[var(--cc-elo)]">{{ streakRecord.bestScore }}</b></span>
                 }
               </div>
@@ -277,10 +335,10 @@
                 <div class="flex items-baseline justify-between gap-2">
                   <div class="leading-none">
                     <span class="text-xl font-extrabold text-base-content">{{ reto333Stats.lastScore }}</span>
-                    <span class="text-[13px] font-semibold text-base-content/50"> / 333</span>
+                    <span class="text-[13px] font-semibold text-base-content/60"> / 333</span>
                   </div>
                   @if (reto333Stats.bestScore) {
-                  <span class="text-[11px] text-base-content/50">{{ 'RETO_333.record' | transloco }}:
+                  <span class="text-[11px] text-base-content/60">{{ 'RETO_333.record' | transloco }}:
                     <b class="font-bold text-[var(--cc-elo)]">{{ reto333Stats.bestScore }}</b></span>
                   }
                 </div>
@@ -291,7 +349,7 @@
               </div>
 
               <!-- Tiempo de la racha -->
-              <div class="mt-3 flex items-center gap-1.5 text-xs text-base-content/50">
+              <div class="mt-3 flex items-center gap-1.5 text-xs text-base-content/60">
                 <ion-icon name="time-outline" class="text-sm"></ion-icon>
                 <span>{{ 'RETO_333.time' | transloco }} · <b class="font-semibold text-base-content/80">{{ reto333Stats.timeString }}</b></span>
               </div>
@@ -396,7 +454,8 @@
                       {{ 'TRAINING.elo' | transloco }}
                     </div>
                   </div>
-                  <button class="btn btn-circle btn-xs md:btn-sm btn-ghost" (click)="isStatsModalOpen = true">
+                  <button class="btn btn-circle btn-xs md:btn-sm btn-ghost" (click)="isStatsModalOpen = true"
+                    [attr.aria-label]="'APP.components.viewStats' | transloco">
                     <ion-icon name="stats-chart-outline" class="text-base"></ion-icon>
                   </button>
                 </div>
@@ -532,7 +591,7 @@
                   </div>
                 </div>
                 <button class="btn btn-sm btn-circle btn-ghost bg-base-200 flex-shrink-0 mt-1"
-                  (click)="isStatsModalOpen = false">
+                  (click)="isStatsModalOpen = false" [attr.aria-label]="'COMMON.actions.close' | transloco">
                   <ion-icon name="close"></ion-icon>
                 </button>
               </div>

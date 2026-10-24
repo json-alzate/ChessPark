@@ -1,0 +1,33 @@
+<section class="bg-base-100 border border-base-content/10 rounded-box p-4 mt-4">
+  <h3 class="text-xl font-semibold mb-1">{{ 'GAME_REFLECTION.title' | transloco }}</h3>
+
+  @if (!canSave) {
+    <p class="text-sm text-base-content/70 mb-3">{{ 'GAME_REFLECTION.needsLogin' | transloco }}</p>
+    <button type="button" class="btn btn-primary btn-block" (click)="openLogin()">
+      {{ 'GAME_REFLECTION.login' | transloco }}
+    </button>
+  } @else if (loading) {
+    <span class="loading loading-spinner loading-sm"></span>
+  } @else {
+    <p class="text-sm text-base-content/70 mb-3">{{ 'GAME_REFLECTION.subtitle' | transloco }}</p>
+
+    @for (list of lists; track list) {
+      <app-tag-picker
+        [title]="titleOf(list)"
+        [max]="limits[list]"
+        [selected]="selectedOptions(list)"
+        [options]="optionsFor(list)"
+        [canCreate]="canCreate(list)"
+        [query]="queries[list]"
+        [disabled]="saving"
+        (queryChange)="setQuery(list, $event)"
+        (picked)="pick(list, $event)"
+        (removed)="remove(list, $event)"
+        (created)="create(list)" />
+    }
+
+    @if (failed) {
+      <p class="text-sm text-error" role="alert">{{ 'GAME_REFLECTION.saveFailed' | transloco }}</p>
+    }
+  }
+</section>

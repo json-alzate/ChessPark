@@ -29,6 +29,12 @@ export function translocoParaPruebas(
 @Component({ selector: 'app-navbar', standalone: true, template: '' })
 export class NavbarFalsa {}
 
+/** Asa para cambiar el tamaño del tablero falsa: solo existe en escritorio con ratón. */
+@Component({ selector: 'app-board-resize-handle', standalone: true, template: '' })
+export class AsaRedimensionarFalsa {
+  @Input() reserve = 150;
+}
+
 /** Selector de apariencia falso (tema, piezas y tablero). */
 @Component({ selector: 'app-appearance-picker', standalone: true, template: '' })
 export class SelectorAparienciaFalso {
@@ -46,6 +52,7 @@ export class TableroPuzzleFalso {
   @Input() setForceStopTimer = false;
   @Output() puzzleCompleted = new EventEmitter<unknown>();
   @Output() puzzleFailed = new EventEmitter<unknown>();
+  @Output() puzzleEndByTime = new EventEmitter<unknown>();
 }
 
 /**

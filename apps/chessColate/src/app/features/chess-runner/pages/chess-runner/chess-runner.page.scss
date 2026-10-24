@@ -1,0 +1,85 @@
+// Estilos vía DaisyUI/Tailwind en la plantilla.
+// La barra superior es propia de la pantalla (no usa app-navbar), así que
+// tiene que respetar ella misma el notch en iOS.
+.navbar {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+// Anclado al borde inferior en móvil: respeta la barra de gestos de iOS.
+.result-panel {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+}
+
+@media (min-width: 1024px) {
+  .result-panel {
+    padding-bottom: 1rem;
+  }
+}
+
+// La zona de juego llena la pantalla bajo la barra: los toques valen en cualquier punto, y sin
+// `touch-action: none` el navegador los leería como un desplazamiento de la página.
+.running-zone {
+  min-height: calc(100dvh - 64px - env(safe-area-inset-top, 0px));
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+// El nivel se anuncia al empezar la carrera y se desvanece solo (se crea con cada carrera, así que arranca de nuevo).
+.level-banner {
+  animation: level-banner 2.2s ease-out forwards;
+}
+
+@keyframes level-banner {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.9);
+  }
+  12% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .level-banner {
+    animation-duration: 0.01s;
+    animation-delay: 1.6s;
+  }
+}
+
+// La galleta de ChessColate en miniatura, junto al contador de galletas.
+.cookie-icon {
+  display: inline-block;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 30% 35%, #3a1f0c 0 8%, transparent 9%),
+    radial-gradient(circle at 65% 60%, #3a1f0c 0 8%, transparent 9%),
+    radial-gradient(circle at 55% 25%, #3a1f0c 0 7%, transparent 8%), #d99a52;
+  border: 1px solid #6b3d17;
+}
+
+// El aviso del doble salto entra con un pequeño rebote y se va solo (se quita de la plantilla al pasar su tiempo).
+.wall-hint {
+  animation: wall-hint 0.35s ease-out;
+}
+
+@keyframes wall-hint {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

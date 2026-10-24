@@ -11,16 +11,16 @@ normaliza el volumen) y SA (compartir igual).
 
 | Licencia | Pistas | Autores | Minutos |
 |---|---:|---:|---:|
-| [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | 80 | 35 | 278.1 |
+| [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | 79 | 35 | 274.7 |
 | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | 5 | 1 | 18.2 |
 | [CC0](https://creativecommons.org/publicdomain/zero/1.0/) | 3 | 3 | 14.4 |
-| **Total** | **88** | **37** | **310.8** |
+| **Total** | **87** | **37** | **307.4** |
 
 Máximo 6 pistas por autor, para repartir el riesgo de reclamos de Content ID.
 
 ## Cómo se verificó la licencia
 
-- **ccMixter (83 pistas):** en la página de cada pista, el enlace `rel="license"` apunta a la licencia
+- **ccMixter (82 pistas):** en la página de cada pista, el enlace `rel="license"` apunta a la licencia
   declarada (CC BY 3.0 o CC0). Se guardó la página como evidencia en `tools/stream-runner/music/licencias/`.
 - **Chris Zabriskie (5 pistas, vía Wikimedia Commons):** la página de Commons declara CC BY 4.0 pero figura
   como *"License review needed"* (sin revisar por voluntarios). Se confirmó en la web del propio autor
@@ -50,16 +50,18 @@ Full track-by-track credits and links: https://chesscolate.web.app/settings/cred
 ## Riesgos y límites
 
 - **Content ID:** una licencia libre no evita reclamos automáticos. Un autor o un editor puede registrar una pista
-  en Content ID y reclamar el directo. Las cinco pistas de Zabriskie figuran con un editor ASCAP. No se pudo
+  en Content ID y reclamar el directo. Las 5 pistas de Zabriskie figuran con un editor ASCAP. No se pudo
   comprobar qué autores están registrados. Si llega un reclamo, se disputa citando la licencia y esta evidencia.
-- **Sin escuchar:** que sean instrumentales y suaves se basa en las etiquetas de ccMixter (83 de 88 llevan
+- **Prueba de derechos:** subir las pistas como videos privados (`rights-check.mjs`) detectó reclamos de Content ID en 1 pista(s), ya **retirada(s)** de la lista:
+  - Robbero – Whisper: Content ID: coincide con «Quanto Tempos Mais» \(Nine\), reclamante ONErpm en nombre de 3x3 Records; efecto: limitación de ingresos. 4 tramos entre 39:24 y 41:39 del video 5 de la prueba de derechos \(2026-10-13\). Es un remi
+- **Sin escuchar:** que sean instrumentales y suaves se basa en las etiquetas de ccMixter (82 de 87 llevan
   `instrumental`; las 5 de Zabriskie no tienen etiquetas), el BPM declarado y mediciones de volumen. Conviene
   oír una muestra de cada autor (`prepare-music` y `music-sample`).
-- **Remezclas:** 54 pistas de ccMixter son remezclas con material de otros autores (lista abajo). ccMixter exige
+- **Remezclas:** 53 pistas de ccMixter son remezclas con material de otros autores (lista abajo). ccMixter exige
   licencias compatibles, pero no se verificó la licencia de cada pista de origen por separado.
 - **Material descartado:** las pistas rechazadas y el motivo están en `tools/stream-runner/music/descartadas.json`.
 
-## Pistas (88)
+## Pistas (87)
 
 | # | Título | Autor | Fuente | Licencia | Dur. |
 |--:|---|---|---|---|--:|
@@ -135,22 +137,21 @@ Full track-by-track credits and links: https://chesscolate.web.app/settings/cred
 | 70 | mysterious light bells | Robbero | [ccMixter](https://ccmixter.org/files/Robbero/40042) | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | 1:56 |
 | 71 | Sad Night | Robbero | [ccMixter](https://ccmixter.org/files/Robbero/63869) | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | 4:19 |
 | 72 | Spheres \(Hip Hop Instrumental\) | Robbero | [ccMixter](https://ccmixter.org/files/Robbero/43483) | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | 4:31 |
-| 73 | Whisper | Robbero | [ccMixter](https://ccmixter.org/files/Robbero/44803) | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | 3:24 |
-| 74 | Klaus | Skill\_Borrower | [ccMixter](https://ccmixter.org/files/Skill_Borrower/41751) | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | 3:37 |
-| 75 | bloodonthesouthernstreets | Skye Jordan | [ccMixter](https://ccmixter.org/files/SkyeJordan/62938) | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | 4:05 |
-| 76 | between worlds | smilingcynic | [ccMixter](https://ccmixter.org/files/smilingcynic/48420) | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | 2:33 |
-| 77 | one track piano piece 2 | smilingcynic | [ccMixter](https://ccmixter.org/files/smilingcynic/36568) | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | 2:28 |
-| 78 | piano impv 2 | smilingcynic | [ccMixter](https://ccmixter.org/files/smilingcynic/39618) | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | 3:59 |
-| 79 | Si | smilingcynic | [ccMixter](https://ccmixter.org/files/smilingcynic/39598) | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | 4:14 |
-| 80 | Reiswerk's Weather \(dubwise\) | Speck | [ccMixter](https://ccmixter.org/files/speck/50758) | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | 4:20 |
-| 81 | Intergalactic Journey | spinmeister | [ccMixter](https://ccmixter.org/files/spinmeister/21067) | [CC0](https://creativecommons.org/publicdomain/zero/1.0/) | 5:59 |
-| 82 | Moments in Space | spinmeister | [ccMixter](https://ccmixter.org/files/spinmeister/12093) | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | 4:44 |
-| 83 | Moonrise | Stefan Kartenberg | [ccMixter](https://ccmixter.org/files/JeffSpeed68/57218) | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | 3:09 |
-| 84 | Smokey Eyes | Stefan Kartenberg | [ccMixter](https://ccmixter.org/files/JeffSpeed68/56377) | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | 2:42 |
-| 85 | Two Pianos | Stefan Kartenberg | [ccMixter](https://ccmixter.org/files/JeffSpeed68/57454) | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | 3:28 |
-| 86 | 2011 Even | unreal\_dm | [ccMixter](https://ccmixter.org/files/unreal_dm/29561) | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | 3:25 |
-| 87 | Eternal Loop of Glue - Instrumental | Wired Ant | [ccMixter](https://ccmixter.org/files/Wired_Ant/39945) | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | 3:23 |
-| 88 | Rio sleeping \(Instrumental\) | Wired Ant | [ccMixter](https://ccmixter.org/files/Wired_Ant/38273) | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | 2:33 |
+| 73 | Klaus | Skill\_Borrower | [ccMixter](https://ccmixter.org/files/Skill_Borrower/41751) | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | 3:37 |
+| 74 | bloodonthesouthernstreets | Skye Jordan | [ccMixter](https://ccmixter.org/files/SkyeJordan/62938) | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | 4:05 |
+| 75 | between worlds | smilingcynic | [ccMixter](https://ccmixter.org/files/smilingcynic/48420) | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | 2:33 |
+| 76 | one track piano piece 2 | smilingcynic | [ccMixter](https://ccmixter.org/files/smilingcynic/36568) | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | 2:28 |
+| 77 | piano impv 2 | smilingcynic | [ccMixter](https://ccmixter.org/files/smilingcynic/39618) | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | 3:59 |
+| 78 | Si | smilingcynic | [ccMixter](https://ccmixter.org/files/smilingcynic/39598) | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | 4:14 |
+| 79 | Reiswerk's Weather \(dubwise\) | Speck | [ccMixter](https://ccmixter.org/files/speck/50758) | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | 4:20 |
+| 80 | Intergalactic Journey | spinmeister | [ccMixter](https://ccmixter.org/files/spinmeister/21067) | [CC0](https://creativecommons.org/publicdomain/zero/1.0/) | 5:59 |
+| 81 | Moments in Space | spinmeister | [ccMixter](https://ccmixter.org/files/spinmeister/12093) | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | 4:44 |
+| 82 | Moonrise | Stefan Kartenberg | [ccMixter](https://ccmixter.org/files/JeffSpeed68/57218) | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | 3:09 |
+| 83 | Smokey Eyes | Stefan Kartenberg | [ccMixter](https://ccmixter.org/files/JeffSpeed68/56377) | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | 2:42 |
+| 84 | Two Pianos | Stefan Kartenberg | [ccMixter](https://ccmixter.org/files/JeffSpeed68/57454) | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | 3:28 |
+| 85 | 2011 Even | unreal\_dm | [ccMixter](https://ccmixter.org/files/unreal_dm/29561) | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | 3:25 |
+| 86 | Eternal Loop of Glue - Instrumental | Wired Ant | [ccMixter](https://ccmixter.org/files/Wired_Ant/39945) | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | 3:23 |
+| 87 | Rio sleeping \(Instrumental\) | Wired Ant | [ccMixter](https://ccmixter.org/files/Wired_Ant/38273) | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | 2:33 |
 
 ## Remezclas con material de terceros
 
@@ -202,7 +203,6 @@ Full track-by-track credits and links: https://chesscolate.web.app/settings/cred
 - «mysterious light bells» (Robbero): <https://ccmixter.org/files/nickleus/39792>
 - «Sad Night» (Robbero): <https://ccmixter.org/files/Klaus_Neumaier/14316>
 - «Spheres \(Hip Hop Instrumental\)» (Robbero): <https://ccmixter.org/files/doxent/43475>
-- «Whisper» (Robbero): <https://ccmixter.org/files/NiGiD/44797>
 - «Klaus» (Skill\_Borrower): <https://ccmixter.org/files/Klaus_Neumaier/6652>, <https://ccmixter.org/files/Klaus_Neumaier/6660>, <https://ccmixter.org/files/Klaus_Neumaier/6792>, <https://ccmixter.org/files/Klaus_Neumaier/7263>, <https://ccmixter.org/files/Klaus_Neumaier/7265>, <https://ccmixter.org/files/Klaus_Neumaier/7293>, <https://ccmixter.org/files/Klaus_Neumaier/7778>, <https://ccmixter.org/files/Klaus_Neumaier/10284>
 - «Reiswerk's Weather \(dubwise\)» (Speck): <https://ccmixter.org/files/Reiswerk/50363>
 - «Moments in Space» (spinmeister): <https://ccmixter.org/files/DJ_Rkod/11368>

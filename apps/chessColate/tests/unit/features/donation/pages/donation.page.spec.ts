@@ -140,6 +140,38 @@ describe('DonationPage', () => {
     jest.restoreAllMocks();
   });
 
+  describe('en la web', () => {
+    it('no pide las ofertas a la tienda ni avisa de un error que no es tal', async () => {
+      await crear({ sesion: true });
+
+      expect(revenueCat.getOfferings).not.toHaveBeenCalled();
+      expect(avisoMostrado()).toEqual([]);
+    });
+
+    it('tocar una oferta explica que las donaciones son del móvil', async () => {
+      await crear({ sesion: true });
+
+      await page.processDonation(page.donationOptions[1]);
+
+      expect(revenueCat.purchasePackage).not.toHaveBeenCalled();
+      expect(avisoMostrado()).toEqual([
+        expect.objectContaining({ message: 'DONATION.messages.mobileOnly', color: 'warning' }),
+      ]);
+    });
+
+    it('restaurar compras también lo explica sin abrir la carga', async () => {
+      await crear({ sesion: true });
+
+      await page.restorePurchases();
+
+      expect(revenueCat.restorePurchases).not.toHaveBeenCalled();
+      expect(loadingController.create).not.toHaveBeenCalled();
+      expect(avisoMostrado()).toEqual([
+        expect.objectContaining({ message: 'DONATION.messages.mobileOnly', color: 'warning' }),
+      ]);
+    });
+  });
+
   describe('sin sesión', () => {
     it('pide iniciar sesión y no ofrece importes ni consulta RevenueCat', async () => {
       await crear();
@@ -164,7 +196,7 @@ describe('DonationPage', () => {
     });
 
     it('al iniciar sesión carga las opciones y desaparece el aviso', async () => {
-      await crear();
+      await crear({ nativo: true });
 
       perfil$.next({ uid: 'u1' });
       await vaciarPromesas();
@@ -179,7 +211,7 @@ describe('DonationPage', () => {
 
   describe('con sesión: opciones de donación', () => {
     it('muestra los tres importes con el precio y la moneda que devuelve RevenueCat', async () => {
-      await crear({ sesion: true });
+      await crear({ sesion: true, nativo: true });
 
       expect(page.donationOptions.map((o) => o.label)).toEqual([
         '$2.99 USD',
@@ -194,7 +226,7 @@ describe('DonationPage', () => {
     });
 
     it('solo conserva los paquetes "donation_" de la oferta', async () => {
-      await crear({ sesion: true });
+      await crear({ sesion: true, nativo: true });
 
       expect(page.availablePackages.map((p) => p.identifier)).toEqual([
         'donation_small',
@@ -204,7 +236,7 @@ describe('DonationPage', () => {
     });
 
     it('destaca la opción del medio como la más popular', async () => {
-      await crear({ sesion: true });
+      await crear({ sesion: true, nativo: true });
 
       const popular = el().querySelectorAll('.badge-primary');
       expect(popular).toHaveLength(1);
@@ -215,14 +247,14 @@ describe('DonationPage', () => {
       revenueCat.getOfferings.mockResolvedValue({
         current: { availablePackages: [paquete('donation_small', 2.99, '$2.99')] },
       });
-      await crear({ sesion: true });
+      await crear({ sesion: true, nativo: true });
 
       expect(page.donationOptions.map((o) => o.label)).toEqual(['$2.99 USD', '$5', '$8']);
     });
 
     it('sin oferta actual deja los importes por defecto', async () => {
       revenueCat.getOfferings.mockResolvedValue({ current: null });
-      await crear({ sesion: true });
+      await crear({ sesion: true, nativo: true });
 
       expect(page.donationOptions.map((o) => o.label)).toEqual(['$2', '$5', '$8']);
       expect(page.availablePackages).toEqual([]);
@@ -230,7 +262,7 @@ describe('DonationPage', () => {
 
     it('mientras carga enseña un indicador y no los importes', async () => {
       revenueCat.getOfferings.mockReturnValue(new Promise(() => undefined));
-      await crear({ sesion: true });
+      await crear({ sesion: true, nativo: true });
 
       expect(page.isLoading).toBe(true);
       expect(el().querySelector('.loading')).not.toBeNull();
@@ -239,12 +271,12 @@ describe('DonationPage', () => {
 
     it('si falla la carga avisa con un toast de error y deja de cargar', async () => {
       revenueCat.getOfferings.mockRejectedValue(new Error('sin red'));
-      await crear({ sesion: true });
+      await crear({ sesion: true, nativo: true });
 
       expect(page.isLoading).toBe(false);
       expect(avisoMostrado()).toEqual([
         expect.objectContaining({
-          message: 'Error al cargar opciones de donación',
+          message: 'DONATION.messages.loadFailed',
           color: 'danger',
         }),
       ]);
@@ -253,7 +285,7 @@ describe('DonationPage', () => {
 
   describe('donar', () => {
     it('pulsar un importe inicia la compra de su paquete', async () => {
-      await crear({ sesion: true });
+      await crear({ sesion: true, nativo: true });
 
       const tarjetas = el().querySelectorAll('.card.cursor-pointer');
       (tarjetas[2] as HTMLElement).click();
@@ -265,17 +297,17 @@ describe('DonationPage', () => {
     });
 
     it('compra correcta: muestra "procesando", agradece y registra donation_completed', async () => {
-      await crear({ sesion: true });
+      await crear({ sesion: true, nativo: true });
 
       await donarMedio();
 
       expect(loadingController.create).toHaveBeenCalledWith(
-        expect.objectContaining({ message: 'Procesando donación...' })
+        expect.objectContaining({ message: 'DONATION.messages.processing' })
       );
       expect(loading.present).toHaveBeenCalledTimes(1);
       expect(loading.dismiss).toHaveBeenCalledTimes(1);
       expect(avisoMostrado()).toEqual([
-        expect.objectContaining({ message: '¡Gracias por tu donación!', color: 'success' }),
+        expect.objectContaining({ message: 'DONATION.messages.thanks', color: 'success' }),
       ]);
       expect(analytics.logEvent).toHaveBeenCalledWith('donation_completed', {
         value: 5.99,
@@ -286,19 +318,19 @@ describe('DonationPage', () => {
 
     it('si no hay paquete para esa opción avisa y no abre ninguna compra', async () => {
       revenueCat.getOfferings.mockResolvedValue({ current: { availablePackages: [] } });
-      await crear({ sesion: true });
+      await crear({ sesion: true, nativo: true });
 
       await donarMedio();
 
       expect(avisoMostrado()).toEqual([
-        expect.objectContaining({ message: 'Opción de donación no disponible', color: 'danger' }),
+        expect.objectContaining({ message: 'DONATION.messages.optionUnavailable', color: 'danger' }),
       ]);
       expect(loadingController.create).not.toHaveBeenCalled();
       expect(revenueCat.purchasePackage).not.toHaveBeenCalled();
     });
 
     it('si el usuario cancela la compra no se le muestra ningún error', async () => {
-      await crear({ sesion: true });
+      await crear({ sesion: true, nativo: true });
       revenueCat.purchasePackage.mockRejectedValue(
         new PurchasesError(PURCHASES_ERROR_CODE.PURCHASE_CANCELLED, 'cancelada')
       );
@@ -311,11 +343,11 @@ describe('DonationPage', () => {
     });
 
     it.each([
-      [PURCHASES_ERROR_CODE.PURCHASE_NOT_ALLOWED, 'Las compras no están permitidas en este dispositivo', 'warning'],
-      [PURCHASES_ERROR_CODE.NETWORK_ERROR, 'Error de conexión. Verifica tu internet.', 'danger'],
-      [PURCHASES_ERROR_CODE.PRODUCT_NOT_AVAILABLE_FOR_PURCHASE, 'Esta opción no está disponible en este momento', 'warning'],
+      [PURCHASES_ERROR_CODE.PURCHASE_NOT_ALLOWED, 'DONATION.messages.purchasesNotAllowed', 'warning'],
+      [PURCHASES_ERROR_CODE.NETWORK_ERROR, 'DONATION.messages.networkError', 'danger'],
+      [PURCHASES_ERROR_CODE.PRODUCT_NOT_AVAILABLE_FOR_PURCHASE, 'DONATION.messages.notAvailableNow', 'warning'],
     ])('el error %s se explica con "%s"', async (codigo, mensaje, color) => {
-      await crear({ sesion: true });
+      await crear({ sesion: true, nativo: true });
       revenueCat.purchasePackage.mockRejectedValue(new PurchasesError(codigo, 'x'));
 
       await donarMedio();
@@ -325,7 +357,7 @@ describe('DonationPage', () => {
     });
 
     it('un error de compra no catalogado muestra el mensaje que trae', async () => {
-      await crear({ sesion: true });
+      await crear({ sesion: true, nativo: true });
       revenueCat.purchasePackage.mockRejectedValue(
         new PurchasesError(PURCHASES_ERROR_CODE.STORE_PROBLEM, 'La tienda no responde')
       );
@@ -333,18 +365,18 @@ describe('DonationPage', () => {
       await donarMedio();
 
       expect(avisoMostrado()).toEqual([
-        expect.objectContaining({ message: 'Error: La tienda no responde', color: 'danger' }),
+        expect.objectContaining({ message: 'DONATION.messages.errorWith', color: 'danger' }),
       ]);
     });
 
     it('un fallo inesperado (que no es de RevenueCat) muestra el aviso genérico', async () => {
-      await crear({ sesion: true });
+      await crear({ sesion: true, nativo: true });
       revenueCat.purchasePackage.mockRejectedValue(new Error('boom'));
 
       await donarMedio();
 
       expect(avisoMostrado()).toEqual([
-        expect.objectContaining({ message: 'Error al procesar la donación', color: 'danger' }),
+        expect.objectContaining({ message: 'DONATION.messages.processFailed', color: 'danger' }),
       ]);
       expect(loading.dismiss).toHaveBeenCalledTimes(1);
     });
@@ -352,31 +384,31 @@ describe('DonationPage', () => {
 
   describe('restaurar compras', () => {
     it('restaura y confirma con un toast de éxito', async () => {
-      await crear();
+      await crear({ nativo: true });
 
       await page.restorePurchases();
 
       expect(revenueCat.restorePurchases).toHaveBeenCalledTimes(1);
       expect(loading.dismiss).toHaveBeenCalledTimes(1);
       expect(avisoMostrado()).toEqual([
-        expect.objectContaining({ message: 'Compras restauradas exitosamente', color: 'success' }),
+        expect.objectContaining({ message: 'DONATION.messages.restored', color: 'success' }),
       ]);
     });
 
     it('si falla avisa del error y cierra el indicador de carga', async () => {
-      await crear();
+      await crear({ nativo: true });
       revenueCat.restorePurchases.mockRejectedValue(new Error('fallo'));
 
       await page.restorePurchases();
 
       expect(loading.dismiss).toHaveBeenCalledTimes(1);
       expect(avisoMostrado()).toEqual([
-        expect.objectContaining({ message: 'Error al restaurar compras', color: 'danger' }),
+        expect.objectContaining({ message: 'DONATION.messages.restoreFailed', color: 'danger' }),
       ]);
     });
 
     it('el enlace del pie lanza la restauración', async () => {
-      await crear();
+      await crear({ nativo: true });
 
       (el().querySelector('button.btn-link') as HTMLButtonElement).click();
       await vaciarPromesas();
@@ -387,7 +419,7 @@ describe('DonationPage', () => {
 
   describe('otros', () => {
     it('los avisos duran 3 segundos y salen abajo', async () => {
-      await crear();
+      await crear({ nativo: true });
 
       await page.restorePurchases();
 

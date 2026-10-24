@@ -1,0 +1,17 @@
+// Estilos vía DaisyUI/Tailwind en la plantilla.
+// La barra superior es propia de la pantalla (no usa app-navbar), así que
+// tiene que respetar ella misma el notch en iOS.
+.navbar {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+// Anclado al borde inferior en móvil: respeta la barra de gestos de iOS.
+.feedback-panel {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+}
+
+@media (min-width: 1024px) {
+  .feedback-panel {
+    padding-bottom: 1rem;
+  }
+}

@@ -163,6 +163,9 @@
     }
   },
   "TRAINING": {
+    "noPuzzles": {"title": "No pudimos traer los ejercicios", "message": "Revisa tu conexión e inténtalo de nuevo."},
+    "loadingPuzzles": "Cargando ejercicios…",
+    "starting": "Iniciando entrenamiento…",
     "menu": {
       "customTrainingSlideTitle": "Tus creaciones",
       "warmup": "Calentamiento",
@@ -308,7 +311,7 @@
     "form": {
       "title": "Nuevo bloque",
       "duration": "Duración",
-      "or": "ó"
+      "or": "o"
     },
     "fields": {
       "minSec": "min:seg",
@@ -388,6 +391,7 @@
     "list": "Lista"
   },
   "PLANS_HISTORY": {
+    "deleteConfirm": {"title": "Eliminar sesión", "message": "¿Seguro que quieres eliminar esta sesión del historial?"},
     "title": "Historial",
     "more": "Ver más",
     "empty": "No hay planes guardados",
@@ -433,6 +437,10 @@
     "authRequired": "Inicia sesión para crear y gestionar tus sesiones personalizadas"
   },
   "PUBLIC_PLANS": {
+    "loadError": "No pudimos traer las sesiones públicas. Revisa tu conexión e inténtalo de nuevo.",
+    "retry": "Reintentar",
+      "saveSession": "Guardar sesión",
+      "unsaveSession": "Quitar de guardadas",
     "title": "Sesiones públicas",
     "shortTitle": "Público",
     "cardSubtitle": "Sesiones listas para jugar",
@@ -581,6 +589,90 @@
   "APP_REVIEW": {
     "rateRowTitle": "Califícanos",
     "rateRowDesc": "Deja tu opinión en la tienda: ayuda a que más gente encuentre ChessColate"
+  },
+  "CUSTOM_PGN": {
+    "themeCustom": "Propio",
+    "import": {
+      "title": "Tu archivo PGN",
+      "hint": "Un ejercicio por partida, hasta {{max}} ejercicios. Más abajo tienes cómo debe ser el archivo.",
+      "pick": "Elegir archivo .pgn",
+      "pasteSummary": "O pega el texto",
+      "pasteLabel": "Texto del PGN",
+      "pastePlaceholder": "[Event \"Mi ejercicio\"] [FEN \"…\"] 1... a6 2. Re8# *",
+      "read": "Leer texto"
+    },
+    "failure": {
+      "empty": "El archivo está vacío.",
+      "too-big": "El archivo es demasiado grande (máximo unos 2 MB). Pártelo en varios.",
+      "not-text": "Eso no parece un archivo de texto PGN.",
+      "no-exercises": "No se encontró ningún ejercicio válido. Revisa que cada uno tenga su [FEN] y jugadas legales.",
+      "unreadable": "No se pudo leer el archivo."
+    },
+    "summary": {
+      "ready": "{{count}} de {{total}} ejercicios listos",
+      "tooFew": "Hacen falta al menos {{min}} ejercicios válidos para armar un set.",
+      "dropped": "Tu archivo trae {{dropped}} ejercicios más del máximo: se usan los primeros {{max}}.",
+      "clear": "Quitar"
+    },
+    "issues": {
+      "title": "Ejercicios que no entraron ({{count}})",
+      "invalid-fen": "El [FEN] no es una posición válida.",
+      "no-moves": "No tiene jugadas.",
+      "too-short": "Necesita al menos dos jugadas: la del rival y tu solución.",
+      "illegal-move": "La jugada «{{move}}» no es legal en esa posición.",
+      "unreadable": "No se pudieron leer sus jugadas.",
+      "duplicate": "Está repetido (misma posición y mismas jugadas).",
+      "more": "…y {{count}} más."
+    },
+    "notes": {
+      "title": "Avisos ({{count}})",
+      "trailing-opponent-move-dropped": "La línea acababa en una jugada del rival: se quitó para que el ejercicio termine en la tuya.",
+      "no-fen": "No traía [FEN]: se usa la posición inicial."
+    },
+    "help": {
+      "title": "¿Cómo debe ser el PGN?",
+      "intro": "Cada ejercicio es una partida del archivo: una posición de partida y una línea de jugadas. La primera jugada es del rival y se juega sola; el resto es la solución que tienes que encontrar.",
+      "rule1": "Un ejercicio es un bloque de etiquetas entre corchetes seguido de sus jugadas. Deja una línea en blanco entre ejercicios.",
+      "rule2": "El [FEN] es la posición ANTES de la jugada del rival. Si sacas el ejercicio de una partida, es la posición justo antes del error del rival.",
+      "rule3": "La línea empieza con la jugada del rival y sigue con tu solución, alternando: rival, tú, rival, tú… Tiene que acabar en una jugada tuya.",
+      "rule4": "Solo cuenta la línea principal: variantes, comentarios y símbolos se ignoran. Las jugadas van en notación estándar (Nf3, exd5, O-O, e8=Q).",
+      "tagsTitle": "Etiquetas",
+      "tagFen": "la posición antes de la jugada del rival. Sin ella se usa la posición inicial.",
+      "tagEvent": "opcional: el nombre del ejercicio.",
+      "tagRating": "opcional: su dificultad (1500 si falta).",
+      "tagThemes": "opcional: temas separados por espacios, como fork o mateIn2. Los del catálogo salen con su nombre traducido.",
+      "exampleTitle": "Ejemplo",
+      "copy": "Copiar",
+      "copied": "¡Copiado!",
+      "download": "Descargar",
+      "lichess": "¿Tu posición ya empieza con tu turno, como en un estudio de Lichess? Usa el FEN de una jugada antes y pon primero la última jugada del rival."
+    }
+  },
+  "GAME_REFLECTION": {
+    "title": "Mi reflexión",
+    "subtitle": "Anota qué hiciste bien y qué quieres mejorar de esta partida. Más adelante podrás sacar estadísticas personales con tus anotaciones.",
+    "best": "Lo mejor que hice",
+    "improve": "A mejorar",
+    "searchPlaceholder": "Busca o crea un tag",
+    "create": "Crear «{{tag}}»",
+    "removeTag": "Quitar {{tag}}",
+    "login": "Iniciar sesión",
+    "needsLogin": "Inicia sesión para anotar qué hiciste bien y qué quieres mejorar en tus partidas, y poder sacar estadísticas personales más adelante.",
+    "saveFailed": "No se pudo guardar. Revisa tu conexión e inténtalo otra vez.",
+    "systemTags": {
+      "dynamism": "Dinamismo",
+      "tactics": "Táctica",
+      "endgames": "Finales",
+      "openings": "Aperturas",
+      "checks": "Ver jaques",
+      "calculation": "Cálculo",
+      "king_safety": "Seguridad del rey",
+      "piece_activity": "Actividad de piezas",
+      "time_management": "Gestión del tiempo",
+      "patience": "Paciencia",
+      "converting_advantage": "Convertir ventaja",
+      "defense": "Defensa"
+    }
   },
   "GAMES": {
     "title": "Partidas históricas",
@@ -736,7 +828,7 @@
     },
     "gamesList": {
       "title": "Partidas",
-      "hint": "Toca una partida para verla jugada a jugada.",
+      "hint": "Toca una partida para verla jugada a jugada y anotar qué hiciste bien y qué quieres mejorar.",
       "vs": "vs {{name}}",
       "showMore": "Ver más",
       "outcome": {
@@ -791,6 +883,8 @@
     "oneFile": "1 archivo",
     "puzzlesCount": "{{count}} ejercicios",
     "deleteAll": "Borrar todo",
+    "deleteGroup": "Borrar {{name}}",
+    "deleteFile": "Borrar el archivo de {{range}}",
     "confirm": {
       "delete": "Borrar",
       "fileTitle": "¿Borrar este archivo?",
@@ -866,6 +960,7 @@
     }
   },
   "PUZZLE_SOLUTION": {
+    "controls": {"flip": "Girar el tablero", "start": "Ir al inicio", "previous": "Jugada anterior", "next": "Jugada siguiente", "end": "Ir al final", "close": "Cerrar"},
     "game": {
       "turn": "Tu turno",
       "findBestMove": "Encuentra el mejor movimiento para las",
@@ -901,8 +996,15 @@
       "installApp": "Instalar App"
     },
     "components": {
+      "markAsRead": "Marcar como leída",
+      "settings": "Ajustes",
+      "viewStats": "Ver estadísticas",
+      "exit": "Salir",
+      "randomColor": "Color aleatorio",
       "loading": "Cargando…",
       "openMenu": "Abrir menú",
+      "resizeBoard": "Cambiar el tamaño del tablero",
+      "resizeBoardHint": "Arrastra para cambiar el tamaño. Doble clic para volver al original.",
       "reminders": "Recordatorios",
       "donate": "Donar",
       "googleLogo": "Logo de Google",
@@ -964,6 +1066,22 @@
       "button": "Realizar una donación",
       "woodpeckerTitle": "Nuevas funciones en camino",
       "comingSoon": "Próximamente…"
+    },
+    "messages": {
+      "loadFailed": "Error al cargar opciones de donación",
+      "optionUnavailable": "Opción de donación no disponible",
+      "thanks": "¡Gracias por tu donación!",
+      "purchasesNotAllowed": "Las compras no están permitidas en este dispositivo",
+      "networkError": "Error de conexión. Verifica tu internet.",
+      "notAvailableNow": "Esta opción no está disponible en este momento",
+      "errorWith": "Error: {{message}}",
+      "unknownError": "Error desconocido",
+      "processFailed": "Error al procesar la donación",
+      "processing": "Procesando donación...",
+      "restoring": "Restaurando compras...",
+      "restored": "Compras restauradas exitosamente",
+      "restoreFailed": "Error al restaurar compras",
+      "mobileOnly": "Las donaciones solo están disponibles en dispositivos móviles"
     }
   },
   "DOWNLOAD": {
@@ -1024,9 +1142,484 @@
       "confirm": "Salir"
     },
     "error": {
+      "retry": "Reintentar",
       "title": "No pudimos traer el ejercicio",
       "message": "Revisa tu conexión e inténtalo de nuevo."
     }
+  },
+  "WOODPECKER": {
+    "title": "Pájaro carpintero",
+    "subtitle": "Repite el mismo set hasta reconocer los patrones sin pensarlo.",
+    "homeCard": {
+      "description": "Arma un set fijo de ejercicios y repítelo en varias vueltas, cada una más rápida.",
+      "cycleOf": "Vuelta {{cycle}} de {{cycles}}",
+      "completed": "Set terminado",
+      "start": "Armar mi set",
+      "continue": "Continuar",
+      "view": "Ver resultados"
+    },
+    "intro": {
+      "title": "¿Cómo funciona?",
+      "step1": "Armas un set de ejercicios con el rango de ELO y los temas que quieras.",
+      "step2": "Lo resuelves entero y después lo repites: siempre los mismos ejercicios.",
+      "step3": "En cada vuelta tienes menos tiempo. Lo que miras es cómo mejoras de una vuelta a otra.",
+      "note": "Que los ejercicios se repitan no es un fallo: es el método."
+    },
+    "setup": {
+      "source": {
+        "catalog": "Catálogo",
+        "pgn": "Mi PGN"
+      },
+      "size": {
+        "label": "Tamaño del set",
+        "unit": "ejercicios",
+        "hint": "Cada vuelta lleva unos {{minutes}} min."
+      },
+      "elo": {
+        "label": "Rango de ELO",
+        "min": "Desde",
+        "max": "Hasta",
+        "hint": "Mejor un poco por debajo de tu nivel: se trata de ganar velocidad."
+      },
+      "themes": {
+        "label": "Temas",
+        "all": "Mezcla variada",
+        "allHint": "Sorteamos {{count}} temas del catálogo.",
+        "pick": "Elegir temas",
+        "pickHint": "Solo los que marques.",
+        "selected": "{{count}} elegidos",
+        "none": "Elige al menos un tema.",
+        "groups": {
+          "Fases": "Fases",
+          "Temas": "Temas",
+          "Avanzado": "Avanzado",
+          "Mates": "Mates",
+          "Objetivos": "Objetivos",
+          "Duración": "Duración"
+        }
+      },
+      "cycles": {
+        "label": "Vueltas",
+        "hint": "El método clásico usa 7.",
+        "less": "Una vuelta menos",
+        "more": "Una vuelta más"
+      },
+      "order": {
+        "label": "Orden en cada vuelta",
+        "shuffle": "Mezclado",
+        "shuffleHint": "Cambia en cada vuelta para que no memorices la secuencia.",
+        "same": "El mismo",
+        "sameHint": "Siempre el mismo orden, posición a posición.",
+        "reverse": "Alterno",
+        "reverseHint": "Las vueltas pares van del último al primero."
+      },
+      "pace": {
+        "label": "Tiempo por ejercicio",
+        "relaxed": "Sin reloj",
+        "standard": "Estándar",
+        "intense": "Intenso",
+        "noClockHint": "Sin límite: tú marcas el ritmo.",
+        "decreasingHint": "{{seconds}} s en la vuelta 1 y un {{percent}} % menos en cada una."
+      },
+      "replaceNotice": "Si armas un set nuevo, el actual y su progreso se borran.",
+      "create": "Armar mi set",
+      "cancel": "Volver al set"
+    },
+    "generating": {
+      "title": "Armando tu set…",
+      "message": "Elegimos los ejercicios y los guardamos en tu dispositivo.",
+      "progress": "{{done}} de {{total}} archivos"
+    },
+    "errors": {
+      "noThemes": "Elige al menos un tema para armar el set.",
+      "tooFew": "Con estos filtros solo encontramos {{found}} ejercicios y necesitamos al menos {{required}}. Amplía el rango de ELO o elige más temas.",
+      "unavailable": "No pudimos traer los ejercicios. Revisa tu conexión e inténtalo de nuevo.",
+      "storageFull": "No hay espacio en tu dispositivo para guardar el set. Libera espacio e inténtalo de nuevo."
+    },
+    "shortNotice": "Salieron {{actual}} de los {{requested}} ejercicios que pedías: es lo que hay en el catálogo con estos filtros.",
+    "dashboard": {
+      "yourSet": "Tu set",
+      "fromPgn": "De tu archivo PGN",
+      "exercises": "{{count}} ejercicios",
+      "cycleOf": "Vuelta {{cycle}} de {{cycles}}",
+      "completedBadge": "Terminado",
+      "secondsPerExercise": "{{seconds}} s por ejercicio",
+      "noClock": "Sin reloj",
+      "played": "{{played}} de {{total}} ejercicios",
+      "solvedCount": "Aciertos: {{count}}",
+      "start": "Empezar vuelta {{cycle}}",
+      "resume": "Continuar vuelta {{cycle}}",
+      "completedTitle": "Set terminado",
+      "completedMessage": "Completaste las {{cycles}} vueltas. Aquí abajo ves cuánto mejoraste.",
+      "newSet": "Armar otro set",
+      "discard": "Abandonar set",
+      "deleteSet": "Borrar set",
+      "discardConfirm": {
+        "title": "¿Abandonar el set?",
+        "message": "Se borran el set y todo tu progreso en él. No afecta a tu ELO.",
+        "messageCompleted": "Se borran el set y sus resultados. No afecta a tu ELO.",
+        "cancel": "Seguir con el set",
+        "confirm": "Abandonar"
+      }
+    },
+    "progress": {
+      "title": "Tu evolución",
+      "empty": "Aún no has terminado ninguna vuelta. Cuando lo hagas verás aquí cómo mejoras.",
+      "cycle": "Vuelta {{cycle}}",
+      "accuracy": "Acierto",
+      "time": "Tiempo",
+      "perExercise": "{{time}} por ejercicio",
+      "moreAccurate": "+{{points}} pts de acierto",
+      "lessAccurate": "−{{points}} pts de acierto",
+      "faster": "{{percent}} % más rápido",
+      "slower": "{{percent}} % más lento",
+      "failedByTime": "{{count}} sin tiempo"
+    },
+    "problems": {
+      "title": "Los que más se resisten",
+      "description": "Ejercicios que has fallado en dos vueltas o más. Vale la pena mirarlos con calma.",
+      "failedIn": "Fallado en {{count}} vueltas",
+      "view": "Ver solución"
+    },
+    "play": {
+      "cycle": "Vuelta {{cycle}} de {{cycles}}",
+      "counter": "{{current}} de {{total}}",
+      "solved": "Aciertos",
+      "exit": "Salir",
+      "rules": "Son siempre los mismos ejercicios. Tu progreso se guarda: puedes salir cuando quieras y seguir después.",
+      "ready": {
+        "title": "Vuelta {{cycle}} de {{cycles}}",
+        "exercises": "{{count}} ejercicios",
+        "resume": "Retomas por el ejercicio {{current}}.",
+        "firstCycleHint": "Esta vuelta marca tu punto de partida: no corras y concéntrate en acertar.",
+        "laterHint": "Mismos ejercicios, menos tiempo: ahora toca ir más rápido.",
+        "start": "Empezar",
+        "continue": "Continuar",
+        "back": "Volver al set"
+      },
+      "feedback": {
+        "wrong": "Ese no es el mejor movimiento.",
+        "timeout": "Se acabó el tiempo.",
+        "solution": "Ver solución",
+        "next": "Siguiente"
+      },
+      "done": {
+        "title": "Vuelta {{cycle}} terminada",
+        "finalTitle": "Set terminado",
+        "baseNote": "Esta es tu base: desde aquí se mide cuánto mejoras en cada vuelta.",
+        "finalNote": "Completaste todas las vueltas. Mira tu evolución en el set.",
+        "nextCycle": "Empezar vuelta {{cycle}}",
+        "backToSet": "Volver al set",
+        "seeResults": "Ver resultados"
+      }
+    }
+  },
+  "CHESS_RUNNER": {
+    "title": "Chess Runner",
+    "canvasLabel": "El perrito corre y salta las piezas del ejercicio",
+    "loading": "Buscando un ejercicio…",
+    "session": "Resueltos: {{count}}",
+    "exit": "Salir",
+    "skip": "Saltar carrera",
+    "runClean": "Carrera sin tropiezos.",
+    "runStumbles": "Carrera con {{count}} tropiezos.",
+    "combo": "Racha {{count}}",
+    "lessonLabel": "Un tablero pequeño enseña el patrón",
+    "lessonContinue": "Empezar",
+    "lessonShow": "Ver el patrón",
+    "lessonClose": "Cerrar la lección",
+    "storySkip": "Saltar la escena",
+    "map": {
+      "label": "Tu camino: {{done}} de {{total}} guardianes vencidos"
+    },
+    "story": {
+      "prologue": "El perrito duerme y el Rey de las Sombras se lleva el frasco de galletas",
+      "intro": "El perrito llega a un mundo nuevo y un guardián le corta el paso",
+      "victory": "El perrito vence al guardián y gana un poder",
+      "epilogue": "El perrito recupera el frasco y amanece"
+    },
+    "levelHint": {
+      "first": "Salta las piezas del ejercicio",
+      "doubleJump": "Nuevo: dos toques seguidos, doble salto",
+      "review": "Repaso",
+      "boss": "Guardián · ELO {{rating}}"
+    },
+    "heartsLabel": "{{count}} corazones",
+    "meters": "{{count}} m",
+    "cookiesHint": "Cada {{count}} galletas recuperas un corazón",
+    "strikes": "Fallos: {{count}} de {{max}}",
+    "legend": {
+      "touch": "Toca para saltar. Dos toques seguidos, doble salto.",
+      "keyboard": "Espacio o ↑ para saltar; dos veces, doble salto"
+    },
+    "result": {
+      "solved": "Bien resuelto.",
+      "chapterDone": "Patrón dominado",
+      "stars": "{{count}} de 3 estrellas",
+      "lastStrike": "Fallaste tres ejercicios: se acabó la partida.",
+      "finish": "Ver resultado",
+      "wrong": "Ese no es el mejor movimiento.",
+      "timeout": "Se acabó el tiempo.",
+      "solution": "Ver solución",
+      "next": "Otro ejercicio"
+    },
+    "gameOver": {
+      "title": "Fin de la partida",
+      "hits": "Te quedaste sin corazones.",
+      "strikes": "Fallaste tres ejercicios.",
+      "quit": "Saliste de la partida: lo que corriste ya está guardado.",
+      "lobby": "Sigue donde lo dejaste.",
+      "play": "Jugar",
+      "newRecord": "Nuevo récord",
+      "record": "Récord: {{count}} m",
+      "level": "Capítulo",
+      "solved": "Resueltos",
+      "cookies": "Galletas",
+      "again": "Jugar otra vez"
+    },
+    "error": {
+      "title": "No pudimos traer el ejercicio",
+      "message": "Revisa tu conexión e inténtalo de nuevo.",
+      "retry": "Reintentar",
+      "back": "Volver al inicio"
+    },
+    "round": "Ronda {{count}}",
+    "rating": "ELO",
+    "lessons": {
+      "hangingPiece": {
+        "idea": "Una pieza sin defensa se captura gratis",
+        "see": "Mira el caballo negro: ninguna pieza lo protege.",
+        "play": "El alfil lo captura sin ningún riesgo.",
+        "why": "¡Pieza ganada! Si nadie la defiende, nadie puede recapturar.",
+        "tip": "Antes de cada jugada pregúntate: ¿qué piezas rivales están sin defensa?"
+      },
+      "mateIn1": {
+        "idea": "Jaque mate: el rey no tiene escapatoria",
+        "see": "El rey negro está en la esquina. Cuenta sus casillas libres.",
+        "play": "La dama da jaque desde g7, protegida por nuestro rey.",
+        "why": "No puede capturar la dama ni huir a ninguna casilla: ¡mate!",
+        "tip": "Busca jaques que el rey no pueda capturar ni esquivar."
+      },
+      "fork": {
+        "idea": "Una pieza ataca a dos a la vez y solo se salva una",
+        "see": "El rey y la torre negros pueden ser atacados desde una misma casilla: d6.",
+        "play": "El caballo salta a d6 y ataca a las dos piezas.",
+        "why": "El rey debe huir del jaque y la torre cae: ¡ataque doble!",
+        "tip": "Los caballos son los reyes del ataque doble: busca casillas que ataquen dos piezas."
+      },
+      "pin": {
+        "idea": "Una pieza no puede moverse porque dejaría expuesta otra más valiosa",
+        "see": "El caballo negro está en la misma columna que su rey.",
+        "play": "La torre ataca al caballo.",
+        "why": "Si el caballo se mueve, la torre captura al rey: está clavado y no puede escapar.",
+        "tip": "Ataca la pieza clavada con más piezas: no puede huir."
+      },
+      "skewer": {
+        "idea": "Atacas una pieza valiosa; al apartarse, cae la que había detrás",
+        "see": "El rey y la torre negros están en la misma fila.",
+        "play": "La torre da jaque al rey.",
+        "play2": "El rey tiene que apartarse...",
+        "play3": "...y la torre captura la que había detrás.",
+        "why": "¡Pincho! Primero se aparta la pieza más valiosa, después cae la otra.",
+        "tip": "Es como una clavada al revés: la pieza valiosa va delante."
+      },
+      "discoveredAttack": {
+        "idea": "Al mover una pieza destapas el ataque de otra que estaba detrás",
+        "see": "El alfil tapa la columna de la torre. Al final de esa columna está la dama negra.",
+        "play": "El alfil captura con jaque: el rey debe responder.",
+        "play2": "El rey negro se come el alfil...",
+        "play3": "...y la torre, ya sin estorbo, captura la dama.",
+        "why": "¡Ataque a la descubierta! Dos amenazas a la vez y solo se puede parar una.",
+        "tip": "Busca piezas tuyas que tapen a tu torre, alfil o dama."
+      },
+      "doubleCheck": {
+        "idea": "Dos piezas dan jaque a la vez: el rey solo puede moverse",
+        "see": "El caballo blanco tapa la columna de la torre, que apunta al rey negro.",
+        "play": "El caballo se mueve y da jaque, y destapa el jaque de la torre.",
+        "why": "No se pueden bloquear ni capturar dos piezas a la vez: el rey tiene que huir.",
+        "tip": "El jaque doble es la jugada más fuerte: busca un jaque descubierto que también dé jaque."
+      },
+      "backRankMate": {
+        "idea": "El rey queda atrapado en su última fila por sus propios peones",
+        "see": "Los peones del rey negro le tapan todas las salidas.",
+        "play": "La torre entra en la última fila dando jaque.",
+        "why": "El rey no puede huir ni capturar la torre: ¡mate de pasillo!",
+        "tip": "Dale siempre una salida a tu rey: mueve un peón para hacerle un ventanuco."
+      },
+      "trappedPiece": {
+        "idea": "Una pieza atacada que no tiene ninguna casilla segura a donde ir",
+        "see": "Mira el caballo negro de a8: sus salidas (b6 y c7) están vigiladas.",
+        "play": "El alfil ataca al caballo.",
+        "why": "¡Atrapado! Cualquier casilla a la que vaya está atacada.",
+        "then": "El rey se mueve, y el alfil captura el caballo atrapado.",
+        "tip": "Las piezas en el borde se atrapan fácil: cuenta sus casillas de salida."
+      },
+      "smotheredMate": {
+        "idea": "El rey está ahogado por sus propias piezas y un caballo le da jaque",
+        "see": "El rey negro está rodeado por su torre y sus peones.",
+        "play": "El caballo salta a f7 y da jaque.",
+        "why": "Ni se bloquea un jaque de caballo ni el rey tiene casillas: ¡mate de la coz!",
+        "tip": "Los jaques de caballo no se pueden bloquear: úsalos cuando el rey esté encerrado."
+      },
+      "mateIn2": {
+        "idea": "Mate en dos: primero encierras al rey, luego das el mate",
+        "see": "Dos torres contra el rey en la esquina.",
+        "play": "Una torre corta la fila 7: el rey no puede bajar.",
+        "play2": "El rey solo puede ir a la casilla g8...",
+        "play3": "...y la otra torre da mate en la fila 8.",
+        "why": "Una torre corta y la otra remata: ¡mate de escalera!",
+        "tip": "Piensa dos jugadas: ¿qué jugada deja al rey sin casillas?"
+      },
+      "capturingDefender": {
+        "idea": "Si capturas a la pieza que defiende a otra, esta se queda sin protección",
+        "see": "El peón de e5 solo está protegido por el caballo de c6.",
+        "play": "El alfil captura al caballo, que protegía el peón.",
+        "why": "¡Sin su defensor, el peón de e5 queda colgado!",
+        "play2": "Las negras recapturan con el peón...",
+        "play3": "...y el caballo blanco se come el peón de e5, ya sin protección.",
+        "tip": "Pregúntate: ¿quién defiende esa pieza? ¿Puedo quitar al defensor?"
+      },
+      "deflection": {
+        "idea": "Obligas a una pieza a abandonar su puesto de defensa",
+        "see": "El rey negro es el único que defiende la torre de g6.",
+        "play": "El peón corona con jaque. El rey tiene que capturar la dama...",
+        "why": "¡Desviado! El rey se alejó y la torre quedó sin defensor.",
+        "then": "El rey blanco se come la torre.",
+        "tip": "Busca la pieza que sostiene a otra y fuérzala a moverse con un jaque o una captura."
+      },
+      "attraction": {
+        "idea": "Atraes una pieza (casi siempre el rey) a una casilla donde puedes castigarla",
+        "see": "El peón de a7 está a un paso de coronar, pero la torre negra vigila la fila 8.",
+        "play": "Sacrificamos la torre en e8 con jaque.",
+        "play2": "El rey captura y queda en e8...",
+        "play3": "...y el peón corona dando jaque: ganamos.",
+        "why": "El rey fue atraído a la casilla fatal.",
+        "tip": "Un sacrificio puede ser un cebo: pregunta qué pasa si la pieza lo captura."
+      },
+      "xRayAttack": {
+        "idea": "Una pieza ataca «a través» de otra, como si viera por dentro",
+        "see": "La torre blanca de g7 está justo detrás de la torre negra de g5.",
+        "play": "El peón da jaque desde g4.",
+        "play2": "La torre negra lo captura: no tiene otra jugada.",
+        "play3": "La torre blanca captura a la negra: la veía a través de la otra.",
+        "why": "¡Ataque por rayos X! La torre de g7 apoyaba en g4 a pesar de las piezas del medio.",
+        "tip": "Al contar atacantes y defensores, cuenta también las piezas de detrás."
+      },
+      "intermezzo": {
+        "idea": "Una jugada intermedia (casi siempre un jaque) antes de la captura esperada",
+        "see": "Nuestra torre está atacada por el alfil, y el peón podría capturar la torre negra.",
+        "play": "Antes de capturar, jaque con la torre: el rival no tiene tiempo de comérsela.",
+        "play2": "El rey se aparta...",
+        "play3": "...y ahora sí, el peón captura la torre.",
+        "why": "¡Jugada intermedia! Un jaque en medio salvó nuestra torre.",
+        "tip": "Antes de recapturar, busca un jaque o una amenaza mayor."
+      },
+      "arabianMate": {
+        "idea": "Torre y caballo atrapan al rey en la esquina",
+        "see": "El rey está en h8. El caballo vigila g8 y h7.",
+        "play": "La torre da jaque desde h7, protegida por el caballo.",
+        "why": "El rey no puede capturar la torre ni huir: ¡mate árabe!",
+        "tip": "Con el rey rival en la esquina, coordina torre y caballo."
+      },
+      "anastasiaMate": {
+        "idea": "Caballo y torre dan mate con un peón del rey tapándole la salida",
+        "see": "El rey tiene su peón al lado, y el caballo vigila g8 y g6.",
+        "play": "La torre da jaque por la columna h.",
+        "why": "El peón negro le tapa la salida y no hay más casillas: ¡mate de Anastasia!",
+        "tip": "Busca mates en el borde cuando el rey tiene un peón pegado."
+      },
+      "bodenMate": {
+        "idea": "Dos alfiles que se cruzan dan mate al rey del lado de dama",
+        "see": "El rey negro está bloqueado por sus propias piezas.",
+        "play": "El alfil da jaque desde a6; el otro vigila c7 y b8.",
+        "why": "Las diagonales se cruzan y no hay escape: ¡mate de Boden!",
+        "tip": "Dos alfiles en diagonales que se cruzan controlan muchas casillas."
+      },
+      "hookMate": {
+        "idea": "Torre, caballo y peón se coordinan para dar mate junto al peón del rey",
+        "see": "El rey negro tiene su propio peón al lado. Mira el caballo y el peón blancos.",
+        "play": "La torre da jaque desde f8, protegida por el caballo.",
+        "why": "El rey no puede capturar la torre ni pasar a h7 o f7: ¡mate del gancho!",
+        "tip": "El peón protege al caballo y el caballo a la torre: una cadena que cierra todas las salidas."
+      }
+    },
+    "popup": {
+      "perfect": "¡Perfecto!",
+      "star": "¡Imparable!",
+      "record": "¡Récord superado!"
+    },
+    "powers": {
+      "new": "Poder nuevo",
+      "nose": {
+        "name": "Olfato",
+        "desc": "Atrae las galletas: las coge desde más lejos."
+      },
+      "spring": {
+        "name": "Resorte",
+        "desc": "El segundo salto sube más: las falanges de piezas son más fáciles."
+      },
+      "shield": {
+        "name": "Escudo",
+        "desc": "Aguanta el primer choque de cada carrera."
+      },
+      "trail": {
+        "name": "Estela",
+        "desc": "Un destello bajo las patas marca el momento justo para tocar."
+      },
+      "ghost": {
+        "name": "Fantasma",
+        "desc": "Muestra dónde llegará de verdad cada pieza que se desliza o salta."
+      },
+      "dodge": {
+        "name": "Esquiva",
+        "desc": "Tras un choque, el perrito está a salvo el doble de tiempo."
+      },
+      "heart": {
+        "name": "Corazón extra",
+        "desc": "Un corazón más: cuatro en total."
+      },
+      "net": {
+        "name": "Red",
+        "desc": "Las galletas devuelven un corazón con menos: 40 en vez de 60."
+      },
+      "cloak": {
+        "name": "Capa",
+        "desc": "Un toque dado un poco antes de aterrizar se guarda más tiempo."
+      },
+      "crown": {
+        "name": "Corona",
+        "desc": "Resolver un ejercicio cura dos corazones en vez de uno."
+      }
+    },
+    "journey": {
+      "title": "El camino hasta el frasco",
+      "body": "Vence a los {{count}} guardianes, uno por patrón táctico, y recupera las galletas."
+    },
+    "continue": "Seguir",
+    "wardrobe": {
+      "title": "Armario",
+      "wear": "Ponerle",
+      "skins": {
+        "choco": "Chocolate",
+        "golden": "Dorado",
+        "snow": "Nieve",
+        "night": "Noche",
+        "berry": "Fresa",
+        "sky": "Cielo"
+      }
+    },
+    "dayStreak": "{{count}} días seguidos jugando",
+    "missions": {
+      "perfects": "Perfectos {{current}}/{{target}}",
+      "cookies": "Galletas {{current}}/{{target}}",
+      "combo": "Racha {{current}}/{{target}}",
+      "star": "Coge la estrella",
+      "clean": "Sin choques",
+      "done": "¡Misión! +{{seconds}} s"
+    },
+    "lessonTry": "Pruébalo tú",
+    "lessonTryHint": "Ahora tú: haz la jugada. Toca la pieza y luego su casilla.",
+    "lessonTryWrong": "Esa no. Mira lo que se señala e inténtalo otra vez."
   },
   "KNIGHT_TOUR": {
     "title": "Recorrido del caballo",

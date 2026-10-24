@@ -6,7 +6,7 @@
     <div style="height: env(safe-area-inset-top, 0px); background: hsl(var(--b1)); flex-shrink: 0;"></div>
 
     <!-- User Profile / Header -->
-    <div class="p-4 border-b border-base-200">
+    <div class="px-4 py-3 border-b border-base-200">
       @if (isAuthenticated) {
       <div class="flex items-center gap-3">
         <div class="avatar">
@@ -41,12 +41,12 @@
     </div>
 
     <!-- Menu Content -->
-    <div class="flex-1 overflow-y-auto p-2">
-      <ul class="menu bg-base-100 w-full rounded-box gap-1">
+    <div class="menu-scroll flex-1 overflow-y-auto p-2">
+      <ul class="menu w-full rounded-box gap-0.5">
         @for (option of menuOptions; track option.title) {
           @if (!option.hideOnWeb || isNativePlatform) {
             @if (option.divider) {
-              <div class="divider my-1"></div>
+              <div class="divider my-0 h-2"></div>
             }
             @if (option.section) {
               <li class="menu-title text-[10px] uppercase tracking-wide opacity-50 pb-0">
@@ -54,7 +54,7 @@
               </li>
             }
             <li [class.disabled]="!option.enabled">
-              <a (click)="option.enabled ? navigateTo(option.route) : null" class="flex gap-4 py-3">
+              <a (click)="option.enabled ? navigateTo(option.route) : null" class="flex gap-4 py-2.5">
                 <ion-icon [name]="option.icon" class="text-xl"></ion-icon>
                 <span class="text-base">{{ option.title | transloco }}</span>
               </a>
@@ -63,9 +63,9 @@
         }
 
         @if (isAuthenticated) {
-        <div class="divider my-1"></div>
+        <div class="divider my-0 h-2"></div>
         <li>
-          <a (click)="logout()" class="text-error hover:bg-error/20 hover:text-error flex gap-4 py-3">
+          <a (click)="logout()" class="text-error hover:bg-error/20 hover:text-error flex gap-4 py-2.5">
             <ion-icon name="log-out-outline" class="text-xl"></ion-icon>
             <span class="text-base">{{ 'APP.menu.logout' | transloco }}</span>
           </a>
@@ -73,9 +73,9 @@
         }
 
         @if (pwaService.isMobileBrowser && pwaService.canInstall()) {
-        <div class="divider my-1"></div>
+        <div class="divider my-0 h-2"></div>
         <li>
-          <a (click)="installPwa()" class="text-primary hover:bg-primary/20 hover:text-primary flex gap-4 py-3">
+          <a (click)="installPwa()" class="text-primary hover:bg-primary/20 hover:text-primary flex gap-4 py-2.5">
             <ion-icon name="download-outline" class="text-xl"></ion-icon>
             <span class="text-base">{{ 'APP.menu.installApp' | transloco }}</span>
           </a>
@@ -85,7 +85,7 @@
     </div>
 
     <!-- Version Info -->
-    <div class="p-4 mt-auto text-center border-t border-base-200 space-y-1">
+    <div class="px-4 py-2 mt-auto flex items-center justify-between border-t border-base-200">
       <p class="text-xs opacity-50">{{ 'APP.navigation.version' | transloco }} {{ version }}</p>
       <ion-menu-toggle>
         <a (click)="navigateTo('/privacy')" class="text-xs opacity-40 hover:opacity-70 cursor-pointer transition-opacity">
@@ -107,7 +107,7 @@
     <!-- Header -->
     <div class="p-4 border-b border-base-200 flex justify-between items-center bg-base-200/50">
       <h2 class="text-xl font-bold">{{ 'APP.navigation.notifications' | transloco }}</h2>
-      <button class="btn btn-sm btn-ghost btn-circle" (click)="closeNotificationsMenu()">
+      <button class="btn btn-sm btn-ghost btn-circle" (click)="closeNotificationsMenu()" [attr.aria-label]="'COMMON.actions.close' | transloco">
         <ion-icon name="close-outline" class="text-xl"></ion-icon>
       </button>
     </div>
@@ -146,7 +146,7 @@
             </div>
 
             @if (!notification.read) {
-            <button class="btn btn-xs btn-ghost btn-circle absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity" (click)="markAsRead(notification.id)">
+            <button class="btn btn-xs btn-ghost btn-circle absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity" (click)="markAsRead(notification.id)" [attr.aria-label]="'APP.components.markAsRead' | transloco">
               <ion-icon name="checkmark-outline" class="text-base"></ion-icon>
             </button>
             <div class="w-2.5 h-2.5 rounded-full bg-primary absolute top-4 right-4 group-hover:hidden"></div>

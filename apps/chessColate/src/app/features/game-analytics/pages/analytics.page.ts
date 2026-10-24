@@ -7,6 +7,7 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { addIcons } from 'ionicons';
 import {
   chevronDownOutline,
+  chevronForwardOutline,
   filterOutline,
   homeOutline,
   refreshOutline,
@@ -71,6 +72,7 @@ import { KingImagePipe } from '@shared/pipes/king-image.pipe';
 
 addIcons({
   chevronDownOutline,
+  chevronForwardOutline,
   filterOutline,
   homeOutline,
   refreshOutline,

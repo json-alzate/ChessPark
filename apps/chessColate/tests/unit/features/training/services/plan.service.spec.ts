@@ -238,6 +238,55 @@ describe('PlanService', () => {
         expect(result.blocks.every((b) => b.puzzlesPlayed.length === 0)).toBe(true);
       });
 
+      it('si el tema sorteado deja el bloque vacío prueba con otros temas hasta que haya ejercicios', async () => {
+        blockService.getRandomTheme
+          .mockReturnValueOnce('short')
+          .mockReturnValueOnce('fork')
+          .mockReturnValueOnce('pin');
+        blockService.getPuzzlesForBlock
+          .mockResolvedValueOnce([])
+          .mockResolvedValueOnce([{ id: 'ok' }]);
+
+        const result = await service.makeCustomPlanForPlay(customPlan([block({ theme: 'all' })]));
+
+        expect(blockService.getPuzzlesForBlock).toHaveBeenCalledTimes(2);
+        expect(result.blocks[0].theme).toBe('fork');
+        expect(result.blocks[0].puzzles).toEqual([{ id: 'ok' }]);
+      });
+
+      it('con tema "weakness" también prueba otros si no hubo ejercicios', async () => {
+        plansElosService.getOnePlanElo.mockResolvedValue({ themes: { pin: 1200 }, total: 1400 });
+        plansElosService.getWeakness.mockReturnValue('pin');
+        blockService.getRandomTheme.mockReturnValue('fork');
+        blockService.getPuzzlesForBlock
+          .mockResolvedValueOnce([])
+          .mockResolvedValueOnce([{ id: 'ok' }]);
+
+        const result = await service.makeCustomPlanForPlay(customPlan([block({ theme: 'weakness' })]));
+
+        expect(result.blocks[0].theme).toBe('fork');
+        expect(result.blocks[0].puzzles).toEqual([{ id: 'ok' }]);
+      });
+
+      it('un tema elegido a mano no se cambia aunque no dé ejercicios', async () => {
+        blockService.getPuzzlesForBlock.mockResolvedValue([]);
+
+        const result = await service.makeCustomPlanForPlay(customPlan([block({ theme: 'pin' })]));
+
+        expect(blockService.getPuzzlesForBlock).toHaveBeenCalledTimes(1);
+        expect(result.blocks[0].theme).toBe('pin');
+        expect(result.blocks[0].puzzles).toEqual([]);
+      });
+
+      it('tras dos temas más sin resultado deja el bloque vacío en vez de seguir sin fin', async () => {
+        blockService.getPuzzlesForBlock.mockResolvedValue([]);
+
+        const result = await service.makeCustomPlanForPlay(customPlan([block({ theme: 'all' })]));
+
+        expect(blockService.getPuzzlesForBlock).toHaveBeenCalledTimes(3);
+        expect(result.blocks[0].puzzles).toEqual([]);
+      });
+
       it('reporta el progreso (cargados, total) tras cada bloque', async () => {
         const onProgress = jest.fn();
 

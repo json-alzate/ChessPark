@@ -1,8 +1,8 @@
 <ion-content [fullscreen]="true">
-  <div class="min-h-screen bg-base-100">
+  <div class="main-container">
     <app-navbar></app-navbar>
 
-    <div class="container mx-auto px-4 py-8 max-w-lg pb-16">
+    <div class="container mx-auto px-4 pt-2 max-w-lg pb-16">
 
       <!-- Header -->
       <div class="mb-6">
@@ -48,7 +48,7 @@
       </div>
 
       @if (loading) {
-        <div class="bg-base-200/40 border border-base-content/10 rounded-box p-6 text-center mb-4">
+        <div class="bg-base-100 border border-base-content/10 rounded-box p-6 text-center mb-4">
           <span class="loading loading-spinner loading-md"></span>
           <p class="mt-3 text-sm opacity-70">
             @if (progress !== null) {
@@ -63,7 +63,7 @@
           }
         </div>
       } @else if (error) {
-        <div class="bg-base-200/40 border border-base-content/10 rounded-box p-6 text-center">
+        <div class="bg-base-100 border border-base-content/10 rounded-box p-6 text-center">
           <p class="text-sm opacity-70">{{ 'GAMES.openFailed' | transloco }}</p>
         </div>
       } @else {
@@ -108,7 +108,7 @@
         </div>
 
         @if (visibleGames.length === 0) {
-          <div class="bg-base-200/40 border border-base-content/10 rounded-box p-6 text-center">
+          <div class="bg-base-100 border border-base-content/10 rounded-box p-6 text-center">
             <p class="text-sm opacity-70">{{ 'GAMES.noGamesMatch' | transloco }}</p>
           </div>
         } @else {

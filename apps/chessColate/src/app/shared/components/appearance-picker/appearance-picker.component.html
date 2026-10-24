@@ -18,19 +18,19 @@
     </div>
   </div>
   } @else {
-  <div class="mx-auto w-full max-w-[280px]">
+  <div class="mx-auto w-full max-w-[220px] sm:max-w-[280px]">
     <lib-fen-board [fen]="previewFen"></lib-fen-board>
   </div>
   }
 
   <!-- Pestañas: botones unidos; la activa va en el color primario -->
   @if (t) {
-  <div role="tablist" class="join w-full">
+  <div role="tablist" class="cc-tabs">
     @for (item of tabs; track item.id) {
     @if (item.id !== 'theme' || showTheme()) {
     <button type="button" role="tab"
-      class="btn btn-sm join-item flex-1"
-      [class]="tab() === item.id ? 'btn-primary' : 'btn-outline border-base-content/30'"
+      class="btn btn-sm"
+      [class]="tab() === item.id ? 'btn-primary' : 'btn-ghost'"
       [attr.aria-selected]="tab() === item.id"
       (click)="tab.set(item.id)">
       {{ item.labelKey | transloco }}
@@ -48,7 +48,7 @@
   <div [class.hidden]="t && tab() !== 'pieces'">
     <h3 class="mb-1 text-center text-sm font-semibold text-base-content/70">
       {{ 'APPEARANCE.pieces' | transloco }}
-      <span class="font-normal text-base-content/50">· {{ 'APPEARANCE.piecesNames.' + appearance.pieces() | transloco }}</span>
+      <span class="font-normal text-base-content/60">· {{ 'APPEARANCE.piecesNames.' + appearance.pieces() | transloco }}</span>
     </h3>
     <div #piecesStrip class="strip relative flex snap-x snap-mandatory items-center gap-3 overflow-x-auto overflow-y-hidden"
       [class]="t ? 'py-3' : 'py-4'"
@@ -72,7 +72,7 @@
   <div [class.hidden]="t && tab() !== 'board'">
     <h3 class="mb-1 text-center text-sm font-semibold text-base-content/70">
       {{ 'APPEARANCE.board' | transloco }}
-      <span class="font-normal text-base-content/50">· {{ 'APPEARANCE.boardsNames.' + appearance.board() | transloco }}</span>
+      <span class="font-normal text-base-content/60">· {{ 'APPEARANCE.boardsNames.' + appearance.board() | transloco }}</span>
     </h3>
     <div #boardStrip class="strip relative flex snap-x snap-mandatory items-center gap-3 overflow-x-auto overflow-y-hidden"
       [class]="t ? 'py-3' : 'py-4'"

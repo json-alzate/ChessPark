@@ -83,7 +83,7 @@ test.describe('Almacenamiento', () => {
     await expect(grupos(page)).toHaveCount(1);
     expect(await contarDescargas(page)).toEqual([2, 2]);
     await grupos(page).first().locator('button').first().click();
-    const botonArchivo = grupos(page).first().locator('ul button[aria-label="Delete"]');
+    const botonArchivo = grupos(page).first().locator('ul button[aria-label^="Delete the"]');
     await expect(botonArchivo).toHaveCount(2);
 
     // Cancelar: todo sigue igual
@@ -112,7 +112,8 @@ test.describe('Almacenamiento', () => {
     await expect(grupos(page)).toHaveCount(2);
     const horquilla = grupos(page).filter({ hasText: '2 files' });
 
-    await horquilla.locator('button[aria-label="Delete all"]').click();
+    // La papelera del tema dice qué borra (no «Delete all», que es el botón de toda la lista)
+    await horquilla.locator('button[aria-label^="Delete "]:not([aria-label^="Delete the"])').first().click();
     await expect(aviso(page)).toContainText('2 files');
     await aviso(page).getByRole('button', { name: 'Delete', exact: true }).click();
 

@@ -1,0 +1,48 @@
+<div class="space-y-3">
+  @for (row of rows; track row.summary.cycle) {
+  <div class="rounded-xl bg-base-200/40 p-3" data-testid="cycle-row">
+    <div class="mb-2 flex items-center justify-between">
+      <span class="text-sm font-semibold">{{ 'WOODPECKER.progress.cycle' | transloco: { cycle: row.summary.cycle } }}</span>
+      <span class="text-xs text-base-content/60">{{ row.summary.solved }} / {{ row.summary.answered }}</span>
+    </div>
+
+    <!-- Acierto -->
+    <div class="flex items-center gap-2">
+      <span class="w-14 shrink-0 text-xs text-base-content/60">{{ 'WOODPECKER.progress.accuracy' | transloco }}</span>
+      <progress class="progress progress-primary h-2 flex-1" [value]="row.summary.accuracy" max="100"></progress>
+      <span class="min-w-14 shrink-0 whitespace-nowrap text-right text-sm font-bold tabular-nums">{{ roundedPercent(row.summary.accuracy) }} %</span>
+    </div>
+    @if (accuracyTrend(row); as accuracy) {
+    @if (accuracy !== 'same') {
+    <div class="mt-1 text-right text-[11px] font-semibold"
+      [class.text-success]="accuracy === 'better'" [class.text-error]="accuracy === 'worse'" data-testid="accuracy-delta">
+      @if (accuracy === 'better') {
+      {{ 'WOODPECKER.progress.moreAccurate' | transloco: { points: roundedPercent(row.comparison!.accuracyDelta) } }}
+      } @else {
+      {{ 'WOODPECKER.progress.lessAccurate' | transloco: { points: roundedPercent(row.comparison!.accuracyDelta) } }}
+      }
+    </div>
+    }
+    }
+
+    <!-- Tiempo -->
+    <div class="mt-2 flex items-center gap-2">
+      <span class="w-14 shrink-0 text-xs text-base-content/60">{{ 'WOODPECKER.progress.time' | transloco }}</span>
+      <progress class="progress progress-secondary h-2 flex-1" [value]="row.timeBar" max="100"></progress>
+      <span class="min-w-14 shrink-0 whitespace-nowrap text-right text-sm font-bold tabular-nums">{{ formatDuration(row.summary.totalTimeMs) }}</span>
+    </div>
+    @if (timeTrend(row); as time) {
+    @if (time !== 'same') {
+    <div class="mt-1 text-right text-[11px] font-semibold"
+      [class.text-success]="time === 'better'" [class.text-error]="time === 'worse'" data-testid="time-delta">
+      @if (time === 'better') {
+      {{ 'WOODPECKER.progress.faster' | transloco: { percent: roundedPercent(row.comparison!.timeDeltaPercent!) } }}
+      } @else {
+      {{ 'WOODPECKER.progress.slower' | transloco: { percent: roundedPercent(row.comparison!.timeDeltaPercent!) } }}
+      }
+    </div>
+    }
+    }
+  </div>
+  }
+</div>

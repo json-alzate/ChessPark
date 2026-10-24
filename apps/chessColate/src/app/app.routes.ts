@@ -108,6 +108,27 @@ export const routes: Routes = [
       import('./features/streak/pages/streak.page').then((m) => m.StreakPage),
   },
   {
+    path: 'woodpecker',
+    loadComponent: () =>
+      import('./features/woodpecker/pages/woodpecker/woodpecker.page').then(
+        (m) => m.WoodpeckerPage
+      ),
+  },
+  {
+    path: 'woodpecker/play',
+    loadComponent: () =>
+      import('./features/woodpecker/pages/woodpecker-play/woodpecker-play.page').then(
+        (m) => m.WoodpeckerPlayPage
+      ),
+  },
+  {
+    path: 'chess-runner',
+    loadComponent: () =>
+      import('./features/chess-runner/pages/chess-runner/chess-runner.page').then(
+        (m) => m.ChessRunnerPage
+      ),
+  },
+  {
     path: 'coordinates',
     loadComponent: () =>
       import('./features/coordinates/pages/coordinates.page').then(

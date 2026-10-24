@@ -83,15 +83,13 @@ Decisiones a cerrar antes de mover nada:
 
 ## 3. Roadmap de features siguientes 🔴
 
-Ya implementadas: Notificaciones de Entrenamiento (F02) y Game Analytics (F12). Lo que sigue, en orden
+Ya implementadas: Notificaciones de Entrenamiento (F02), Game Analytics (F12), Método del Pájaro Carpintero (F08), Chess Runner (F11) y la 1ª entrega de la Rutina con PGN propio (F07). Lo que sigue, en orden
 (diseños en [features/](./features/)):
 
-1. **Método del Pájaro Carpintero** — [features/METODO_PAJARO_CARPINTERO.md](./features/METODO_PAJARO_CARPINTERO.md). Siguiente en la fila; no depende de otra feature (genera y congela su set desde el catálogo).
-2. **Rutina con BD de Puzzles Personalizada (PGN)** — [features/RUTINA_PGN_PERSONALIZADA.md](./features/RUTINA_PGN_PERSONALIZADA.md). Reutiliza el set congelado del Pájaro Carpintero.
-3. **Analizador de Partidas** — [features/ANALIZADOR_PARTIDAS.md](./features/ANALIZADOR_PARTIDAS.md).
-4. **Puzzle Feed** — [features/PUZZLE_FEED.md](./features/PUZZLE_FEED.md).
-5. **Chess Runner** — [features/CHESS_RUNNER.md](./features/CHESS_RUNNER.md). Requiere assets pixel-art + cerrar decisiones abiertas del doc.
-6. Después: Sparring Personalizado, Cuadros de Conquista (necesita un *design spike* antes de codificar), Puzzle Racer, Puzzle Geo Hunt y Jugar en Lichess.
+1. **Rutina con PGN propio — lo que falta de F07**: llevar los ejercicios propios a las **rutinas personalizadas por bloques** y admitir posiciones que **empiezan con el turno del usuario** (estudios de Lichess). Ver [implementado/RUTINA_PGN_FLOW.md](./implementado/RUTINA_PGN_FLOW.md#fuera-de-esta-entrega) y el diseño [features/RUTINA_PGN_PERSONALIZADA.md](./features/RUTINA_PGN_PERSONALIZADA.md).
+2. **Analizador de Partidas** — [features/ANALIZADOR_PARTIDAS.md](./features/ANALIZADOR_PARTIDAS.md).
+3. **Puzzle Feed** — [features/PUZZLE_FEED.md](./features/PUZZLE_FEED.md).
+4. Después: Sparring Personalizado, Cuadros de Conquista (necesita un *design spike* antes de codificar), Puzzle Racer, Puzzle Geo Hunt y Jugar en Lichess.
 
 > El orden vivo está en [features/README.md](./features/README.md), que es el que se
 > mantiene al día conforme salen features.
@@ -125,13 +123,101 @@ Lo que queda:
   tablero, la descarga real desde el CDN y el encadenado del modo TV no se han
   ejecutado en un dispositivo. Comprobar sobre todo que la pantalla se queda
   encendida al reproducir y **se suelta al salir**.
-- **Completar el catálogo** 🔴 — hoy hay tres campeones (Alekhine, Anand y
-  Petrosian). Los demás salen de [PGN Mentor](https://www.pgnmentor.com/files.html)
-  y **no requieren tocar la app**: dejar el `.pgn` en `players/`, añadir su
-  entrada en `players.meta.json`, ejecutar `node tools/build-index.mjs` y hacer
-  push en [chesscolate_pngs_packs](https://github.com/json-alzate/chesscolate_pngs_packs).
+- ~~**Completar el catálogo**~~ ✅ — ya están los 22 campeones del mundo, de Steinitz a
+  Gukesh (incluidos los de FIDE 1999–2006: Khalifman, Ponomariov, Kasimdzhanov y Topalov), en
+  [chesscolate_pngs_packs](https://github.com/json-alzate/chesscolate_pngs_packs). Falta solo que el CDN
+  sirva el índice nuevo: jsDelivr cachea `@main` hasta ~12 h; para forzarlo, abrir
+  `https://purge.jsdelivr.net/gh/json-alzate/chesscolate_pngs_packs@main/index.json`.
 - **Mirar `games_pack_downloaded`** tras unas semanas: dice qué campeones pide
   la gente y por tanto a quién añadir después.
 - **Segunda entrega**: listas de reproducción y la lista automática de "me
   gusta" (ver el documento de la feature).
+
+---
+
+## 6. Directo 24/7 a YouTube (F18) 🔴 (prioridad alta)
+
+Diseño: [features/TRANSMISION_24_7.md](./features/TRANSMISION_24_7.md). Hecho: la app `live-stream`, el runner (reinicio
+solo si cae ffmpeg/Chrome o se congela la página), la música y la pantalla pública de créditos. Lo que falta, **en este orden**:
+
+- **Canal personal listo** 🔴 — verificar por teléfono y activar la transmisión en vivo (hasta 24 h de espera, así que se hace primero).
+- **Publicar ChessColate** 🔴 (PR #36) — la descripción del directo enlaza a `https://chesscolate.web.app/settings/credits`; sin el despliegue daría 404 y las licencias CC BY exigen esa lista pública.
+- **Prueba de derechos de la música** 🟡 — los 6 videos se generan con `tools/stream-runner/rights-check.mjs` y ya están subidos. Resultado hasta ahora: video 1 limpio; video 5 con un reclamo (**Robbero – Whisper**, ya retirada: quedan 87 pistas). **Falta confirmar los videos 2, 3, 4 y 6** (están como borrador). La pantalla de créditos de la app aún lista Whisper hasta el próximo despliegue. Ver [Plan de derechos](./features/TRANSMISION_24_7.md#plan-de-derechos-de-la-música).
+- **Primer directo no listado (2–3 h)** 🔴 — el envío por RTMP **nunca se ha probado contra YouTube**. Ver [Prueba en el canal personal](./features/TRANSMISION_24_7.md#prueba-en-el-canal-personal).
+- **Carpeta de producción del directo, aislada del repo de desarrollo** 🟢 (hecha: `ChessPark-stream`, `deploy-stream.sh`, `start-live.mjs`; ensayo sin YouTube OK) — el runner relee playlist, audios, `dist` y su código en cada reinicio (cada 4 h o tras una caída); cambiar de rama o compilar en el repo de trabajo puede tumbar el directo. Ver [LaunchAgent](./features/TRANSMISION_24_7.md#launchagent-arranque-automático).
+- **LaunchAgent** 🟡 — script `install-launchagent.sh` listo, **sin instalar**; falta la clave de producción en el llavero y tu confirmación. Antes: que el directo vuelva solo tras un reinicio o un corte de luz. **Requiere tu aprobación explícita** y el inicio de sesión automático del Mac. Ver [LaunchAgent](./features/TRANSMISION_24_7.md#launchagent-arranque-automático).
+- **Aviso de caída por correo** 🔴 — latido a un servicio externo (recomendado) o SMTP desde el Mac. Ver [Aviso de caída](./features/TRANSMISION_24_7.md#aviso-de-caída-por-correo).
+- **Directo no listado de 24 h seguidas** 🔴 — antes de hacerlo público.
+- **Política de YouTube** 🔴 — revisar las reglas vigentes de directos 24/7 repetitivos y los límites del archivo de directos.
+
+---
+
+## 7. Método del Pájaro Carpintero (F08) — verificación 🔴 (prioridad media)
+
+Implementado y documentado en [implementado/PAJARO_CARPINTERO_FLOW.md](./implementado/PAJARO_CARPINTERO_FLOW.md).
+Recorrido en navegador móvil con el catálogo real: hecho. Lo que no se puede cerrar desde el entorno de desarrollo:
+
+- **Probarlo en un móvil de verdad** 🔴 — sobre todo el panel de fallo anclado al borde inferior (zona de gestos de iOS), el teclado de los controles de la configuración y que el set grande (500) se guarde sin problemas en WebView.
+- **Mirar `woodpecker_plan_created` / `woodpecker_set_short`** tras unas semanas: dicen qué tamaños y rangos pide la gente y si el 70 % de mínimo es demasiado estricto.
+- **Mirar `woodpecker_plan_abandoned`** (con `cycles_done`): si casi todos abandonan en la vuelta 1, el set por defecto (100 ejercicios, ≈ 40 min por vuelta) es demasiado grande.
+- **Sincronizar el set con la cuenta** 🔴 — hoy solo vive en el dispositivo; encaja con la decisión pendiente del historial de rutinas (`TODO(premium)`).
+
+---
+
+## 8. Tablero redimensionable — verificación 🔴 (prioridad baja)
+
+Implementado y documentado en [implementado/TABLERO_REDIMENSIONABLE_FLOW.md](./implementado/TABLERO_REDIMENSIONABLE_FLOW.md).
+Probado con ratón en un navegador de escritorio. Pendiente:
+
+- **Probarlo en un iPad con trackpad o ratón** 🔴 — el asa depende de `hover` y puntero fino; en iPadOS con ratón
+  debería aparecer, pero no se ha comprobado en un dispositivo.
+- **El reproductor de partidas no lo usa** 🔴 — tiene su propio layout (`games/viewer`) y su tablero no se agranda.
+  Si se quiere, hay que pasarlo a `cc-board-column` y decidir su reserva de alto.
+
+---
+
+## 9. Chess Runner (F11) — verificación 🔴 (prioridad media)
+
+Implementado y documentado en [implementado/CHESS_RUNNER_FLOW.md](./implementado/CHESS_RUNNER_FLOW.md). Probado en un navegador
+móvil con toques reales y con el teclado. Lo que no se puede cerrar desde el entorno de desarrollo:
+
+- **Probarlo en un móvil de verdad** 🔴 — la sensación del salto (¿se siente justo?) solo se juzga con el
+  pulgar. Si resulta difícil o fácil, se ajusta `config/runner.config.ts` (las pruebas de equilibrio dicen qué margen queda).
+- **Mirar `chess_runner_finished`** tras unas semanas: `skipped` alto = la carrera molesta; `clean` bajo = es demasiado dura.
+- **Llevarlo delante de las rutinas** 🔴 — hoy es un modo suelto del menú. Meterlo antes de cada ejercicio de las rutinas
+  (con un interruptor en Ajustes) es la segunda fase; toca `TrainingPage`.
+- **Sonidos propios** 🔴 (salto, tropiezo, llegada) y respetar «reducir movimiento» del sistema.
+
+## 10. Hallazgos de la pasada de pruebas 🔴 (prioridad baja)
+
+Salieron al recorrer la app entera en móvil y escritorio, y no se arreglaron por salirse del alcance:
+
+- **No se puede borrar una sesión personalizada** 🔴 — `CustomPlansService` solo tiene `getById`, `save` y `update`; la lista
+  (`/puzzles/custom-plans`) no ofrece borrar. Hace falta borrado en Firestore, quitarla del store, retirar su copia pública
+  (`PublicPlanRepository`) y revisar las reglas de seguridad (no están en este repo).
+- **El contador del bloque cuenta ejercicios jugados, no resueltos** — tras fallar el primero del Reto 333 el encabezado dice
+  «1 / 333» y el resultado «0 / 333». Es el comportamiento de siempre en todas las rutinas; decidir si se quiere cambiar.
+- **Errores 401 de RevenueCat en la web** — esperados sin credenciales de la tienda; ensucian la consola en desarrollo.
+- **`libs/stockfish-wasm` registra cada comando y cada mensaje del motor con `console.log`** (~48 llamadas): un análisis de
+  una partida deja cientos de líneas en la consola. Conviene dejarlos tras un interruptor de depuración o quitarlos.
+- **Con sesión pero sin poder cargar el perfil** (sin red al abrir la app) la barra superior muestra «Ingresar / Registrarse»
+  hasta que vuelve la conexión y se reintenta la carga. Mostrar el nombre y la foto de la cuenta de Firebase (que sí están en el
+  dispositivo) evitaría el equívoco; ojo con no crear un perfil provisional que pueda pisar el ELO real al guardarse.
+- **El rótulo «ELO» de las tarjetas del inicio** (10 px, `--cc-elo`) y el «1500?» sin ELO (con `opacity-50`) quedan en 3,1:1 y
+  2,9:1 de contraste, por debajo de AA. Es el color de marca: decidir si se aclara para texto pequeño.
+- **Privacidad:** la pantalla de política de privacidad solo existe en inglés.
+
+## 11. Ejercicios propios con PGN (F07) — verificación 🔴 (prioridad media)
+
+Implementado y documentado en [implementado/RUTINA_PGN_FLOW.md](./implementado/RUTINA_PGN_FLOW.md). Recorrido en navegador móvil con
+un PGN real (informe, set, panel y ejercicios jugados): hecho. Lo que no se puede cerrar desde el entorno de desarrollo:
+
+- **Elegir el archivo en un móvil de verdad** 🔴 — el `<input type="file">` debería abrir el selector de archivos en el WebView de
+  Android e iOS; no se ha comprobado. Si falla, queda el cuadro de «pegar el texto».
+- **Descargar el ejemplo en nativo** 🔴 — «Descargar» usa un enlace `download` que en un WebView puede no hacer nada; «Copiar» sí
+  debería funcionar. Si no descarga, sustituirlo por el plugin de archivos de Capacitor o quitarlo en nativo.
+- **Mirar `custom_pgn_import_failed`** (campo `reason`) y `custom_pgn_import_completed` (`failed` vs `imported`) tras unas semanas: dicen
+  si la gente tropieza con el formato y con qué motivo.
+- **Posición con el turno del usuario** 🔴 — hoy el `[FEN]` tiene que ser el de antes de la jugada del rival. Es lo que más va a tropezar
+  a quien venga de un estudio de Lichess.
 

@@ -1,0 +1,95 @@
+{
+ "sprites": {
+  "dog-run": {
+   "file": "dog-run.png",
+   "frameW": 52,
+   "frameH": 40,
+   "frames": 4,
+   "fps": 12
+  },
+  "dog-jump": {
+   "file": "dog-jump.png",
+   "frameW": 52,
+   "frameH": 40,
+   "frames": 3,
+   "fps": 1
+  },
+  "dog-hurt": {
+   "file": "dog-hurt.png",
+   "frameW": 52,
+   "frameH": 40,
+   "frames": 2,
+   "fps": 8
+  },
+  "dog-happy": {
+   "file": "dog-happy.png",
+   "frameW": 52,
+   "frameH": 40,
+   "frames": 2,
+   "fps": 6
+  },
+  "dog-idle": {
+   "file": "dog-idle.png",
+   "frameW": 44,
+   "frameH": 42,
+   "frames": 2,
+   "fps": 3
+  },
+  "scene-floor": {
+   "file": "scene-floor.png",
+   "frameW": 32,
+   "frameH": 20,
+   "frames": 1,
+   "fps": 1
+  },
+  "scene-hills": {
+   "file": "scene-hills.png",
+   "frameW": 128,
+   "frameH": 44,
+   "frames": 1,
+   "fps": 1
+  },
+  "scene-sky": {
+   "file": "scene-sky.png",
+   "frameW": 4,
+   "frameH": 128,
+   "frames": 1,
+   "fps": 1
+  },
+  "scene-cloud-0": {
+   "file": "scene-cloud-0.png",
+   "frameW": 50,
+   "frameH": 22,
+   "frames": 1,
+   "fps": 1
+  },
+  "scene-cloud-1": {
+   "file": "scene-cloud-1.png",
+   "frameW": 40,
+   "frameH": 22,
+   "frames": 1,
+   "fps": 1
+  },
+  "scene-skyline": {
+   "file": "scene-skyline.png",
+   "frameW": 192,
+   "frameH": 92,
+   "frames": 1,
+   "fps": 1
+  },
+  "fx-dust": {
+   "file": "fx-dust.png",
+   "frameW": 12,
+   "frameH": 8,
+   "frames": 3,
+   "fps": 12
+  },
+  "fx-spark": {
+   "file": "fx-spark.png",
+   "frameW": 11,
+   "frameH": 11,
+   "frames": 3,
+   "fps": 14
+  }
+ }
+}

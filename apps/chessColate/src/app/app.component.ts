@@ -12,6 +12,8 @@ import {
   gridOutline,
   extensionPuzzleOutline,
   flameOutline,
+  repeatOutline,
+  footstepsOutline,
   shuffleOutline,
   timeOutline,
   heartOutline,
@@ -85,6 +87,9 @@ interface Notification {
   time: string;
   read: boolean;
 }
+
+/** Usuario que entrega la autenticación al arrancar. */
+type SessionUser = Parameters<ProfileService['checkProfile']>[0];
 
 @Component({
   selector: 'app-root',
@@ -189,6 +194,18 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       section: 'MENU.sections.practice',
     },
     {
+      title: 'WOODPECKER.title',
+      icon: 'repeat-outline',
+      route: '/woodpecker',
+      enabled: true,
+    },
+    {
+      title: 'CHESS_RUNNER.title',
+      icon: 'footsteps-outline',
+      route: '/chess-runner',
+      enabled: true,
+    },
+    {
       title: 'MENU.navigation.coordinates',
       icon: 'grid-outline',
       route: '/coordinates',
@@ -250,6 +267,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       'library-outline': libraryOutline,
       'extension-puzzle-outline': extensionPuzzleOutline,
       'flame-outline': flameOutline,
+      'repeat-outline': repeatOutline,
+      'footsteps-outline': footstepsOutline,
       'shuffle-outline': shuffleOutline,
       'time-outline': timeOutline,
       'heart-outline': heartOutline,
@@ -313,6 +332,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     this.profileSubscription?.unsubscribe();
     this.routerSubscription?.unsubscribe();
+    this.clearRetryListener();
   }
 
   async initApp() {
@@ -363,19 +383,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           console.log('Auth state changed:', dataAuth);
 
           if (dataAuth) {
-            // Usuario autenticado - obtener o crear perfil
-            await this.profileService.checkProfile(dataAuth);
-            // Récords del Reto 333 y de la Racha: fusionar lo del dispositivo
-            // con lo del perfil antes de marcar la app como inicializada, para
-            // que el inicio ya pinte las marcas buenas
-            await this.userRecordsService.syncFromProfile();
-            // Reconfigurar RevenueCat con el nuevo user ID
-            await this.configureRevenueCatUser(dataAuth.uid);
-            // Correlacionar analítica/crashes con el usuario (UID, nunca email)
-            await this.analyticsService.setUserId(dataAuth.uid);
-            if (Capacitor.isNativePlatform()) {
-              try { await FirebaseCrashlytics.setUserId({ userId: dataAuth.uid }); } catch { /* no-op */ }
-            }
+            // Usuario autenticado - cargar lo suyo sin dejar el inicio colgado de la red
+            await this.waitForUserSession(dataAuth);
           } else {
             // Usuario no autenticado - limpiar perfil
             await this.profileService.clearProfile();
@@ -392,6 +401,69 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         })
       )
       .subscribe();
+  }
+
+  /**
+   * Cuánto espera el arranque a la red para cargar al usuario. Pasado ese tiempo el inicio se pinta con lo
+   * que haya en el dispositivo y lo que falte sigue cargando por detrás: una red lenta o caída no puede
+   * dejar la pantalla en «Cargando…» para siempre.
+   */
+  private readonly SESSION_LOAD_WAIT_MS = 6_000;
+
+  /** Escucha de `online` pendiente para reintentar la carga del usuario; una sola a la vez. */
+  private retryOnlineListener: (() => void) | null = null;
+
+  private async waitForUserSession(dataAuth: SessionUser): Promise<void> {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const timeout = new Promise<void>((resolve) => {
+      timer = setTimeout(resolve, this.SESSION_LOAD_WAIT_MS);
+    });
+    await Promise.race([this.loadUserSession(dataAuth), timeout]);
+    clearTimeout(timer);
+  }
+
+  /**
+   * Perfil, récords, tienda y analítica del usuario, en ese orden. Un fallo (sin conexión, Firestore
+   * caído) no se propaga: rechazar aquí mataría el flujo de sesión entero y la app no volvería a
+   * inicializarse. Se avisa y se reintenta cuando vuelva la conexión.
+   */
+  private async loadUserSession(dataAuth: SessionUser): Promise<void> {
+    try {
+      // Usuario autenticado - obtener o crear perfil
+      await this.profileService.checkProfile(dataAuth);
+      // Récords del Reto 333 y de la Racha: fusionar lo del dispositivo
+      // con lo del perfil antes de marcar la app como inicializada, para
+      // que el inicio ya pinte las marcas buenas
+      await this.userRecordsService.syncFromProfile();
+      // Reconfigurar RevenueCat con el nuevo user ID
+      await this.configureRevenueCatUser(dataAuth.uid);
+      // Correlacionar analítica/crashes con el usuario (UID, nunca email)
+      await this.analyticsService.setUserId(dataAuth.uid);
+      if (Capacitor.isNativePlatform()) {
+        try { await FirebaseCrashlytics.setUserId({ userId: dataAuth.uid }); } catch { /* no-op */ }
+      }
+    } catch (error) {
+      console.warn('No se pudo cargar al usuario; se reintenta al volver la conexión:', error);
+      this.retryUserSessionWhenOnline(dataAuth);
+    }
+  }
+
+  private retryUserSessionWhenOnline(dataAuth: SessionUser): void {
+    if (this.retryOnlineListener) {
+      return;
+    }
+    this.retryOnlineListener = () => {
+      this.clearRetryListener();
+      void this.loadUserSession(dataAuth);
+    };
+    window.addEventListener('online', this.retryOnlineListener);
+  }
+
+  private clearRetryListener(): void {
+    if (this.retryOnlineListener) {
+      window.removeEventListener('online', this.retryOnlineListener);
+      this.retryOnlineListener = null;
+    }
   }
 
   /**

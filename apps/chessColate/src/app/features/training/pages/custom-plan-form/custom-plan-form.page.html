@@ -81,14 +81,14 @@
         <ng-container *ngIf="planElosForBlocks$ | async as planElos; else blocksSkeleton">
 
           <div class="flex items-center justify-between mb-3">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-base-content/50">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-base-content/60">
               {{ 'COMMON.chess.blocks' | transloco }}
             </h3>
             <span class="text-xs text-base-content/40">{{ blocks.length }} / 5</span>
           </div>
 
           @if (!canModifyBlocks(planElos)) {
-            <p class="text-xs text-base-content/50 mb-3 flex items-center gap-1.5">
+            <p class="text-xs text-base-content/60 mb-3 flex items-center gap-1.5">
               <ion-icon name="lock-closed-outline" class="text-base"></ion-icon>
               {{ 'CUSTOM_TRAINING.blocksLockedReason' | transloco }}
             </p>
@@ -130,7 +130,7 @@
                   <!-- Info -->
                   <div class="flex-1 min-w-0">
                     <p class="text-sm font-semibold truncate">{{ getThemeName(block.theme) }}</p>
-                    <p class="text-xs text-base-content/50 mt-0.5">
+                    <p class="text-xs text-base-content/60 mt-0.5">
                       @if (block.time > 0 || block.puzzlesCount) {
                         @if (block.time > 0) {
                           <span>{{ block.time | secondsToMinutesSeconds }}</span>
@@ -174,7 +174,11 @@
           <!-- Botón añadir bloque -->
           <button
             type="button"
-            class="btn btn-outline btn-block btn-sm border-dashed"
+            class="btn btn-block"
+            [class.btn-primary]="blocks.length === 0"
+            [class.btn-outline]="blocks.length > 0"
+            [class.btn-sm]="blocks.length > 0"
+            [class.border-dashed]="blocks.length > 0"
             [disabled]="blocks.length >= 5 || !canModifyBlocks(planElos)"
             (click)="openBlockSettingsModal()"
           >

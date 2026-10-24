@@ -1,7 +1,9 @@
 import {
   Component,
+  ElementRef,
   OnInit,
   OnDestroy,
+  HostListener,
   ViewChild,
   inject,
 } from '@angular/core';
@@ -29,6 +31,7 @@ import {
 } from 'ionicons/icons';
 
 import { ParsedGame } from '@chesspark/games-provider';
+import { ChessGame } from '@chesspark/models';
 import {
   GameReview,
   getPieceHeatmap,
@@ -45,6 +48,7 @@ import {
 } from '@chesspark/board';
 
 import { AnalyticsService } from '@core/analytics/analytics.service';
+import { GameReflectionComponent } from '@features/game-reflection/containers/game-reflection/game-reflection.component';
 import { GamesService } from '@features/games/services/games.service';
 import { GameReviewService } from '@features/games/services/game-review.service';
 import {
@@ -88,6 +92,13 @@ const GAP_BETWEEN_GAMES_MS = 2500;
 /** Las pestañas del reproductor. */
 type ViewerMode = 'game' | 'heatmap' | 'review';
 
+/** Las pestañas, en el orden en que se pintan. */
+const VIEWER_TABS: { mode: ViewerMode; labelKey: string }[] = [
+  { mode: 'game', labelKey: 'GAMES.heatmap.tabGame' },
+  { mode: 'heatmap', labelKey: 'GAMES.heatmap.tabHeatmap' },
+  { mode: 'review', labelKey: 'GAMES.review.tab' },
+];
+
 /**
  * Reproductor de una partida, y el modo TV que encadena toda la colección.
  *
@@ -106,11 +117,13 @@ type ViewerMode = 'game' | 'heatmap' | 'review';
     BoardGamePlayerComponent,
     BoardHeatmapComponent,
     BoardPlayerInfoComponent,
+    GameReflectionComponent,
   ],
 })
 export class GamesViewerPage implements OnInit, OnDestroy {
   @ViewChild(BoardGamePlayerComponent) board?: BoardGamePlayerComponent;
 
+  private host = inject<ElementRef<HTMLElement>>(ElementRef);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private gamesService = inject(GamesService);
@@ -129,6 +142,8 @@ export class GamesViewerPage implements OnInit, OnDestroy {
    * partidas propias de Análisis piden el color con el que jugó el usuario.
    */
   private startOrientation: 'w' | 'b' = 'w';
+
+  readonly viewerTabs = VIEWER_TABS;
 
   settings: PlaybackSettings = this.gamesService.getSettings();
   readonly speeds = PLAYBACK_SPEEDS;
@@ -296,6 +311,13 @@ export class GamesViewerPage implements OnInit, OnDestroy {
     );
   }
 
+  /** La partida propia que se está viendo (para anotar su reflexión); null en el catálogo y en modo TV. */
+  get ownGame(): ChessGame | null {
+    return this.isOwnGame && !this.isTv
+      ? this.gamesService.getOwnGame(this.currentIndex)
+      : null;
+  }
+
   get bestPiece(): PieceRating | null {
     return this.review?.best[this.reviewColor] ?? null;
   }
@@ -362,6 +384,8 @@ export class GamesViewerPage implements OnInit, OnDestroy {
     this.game = game;
     this.currentIndex = index;
     this.currentMove = 0;
+    // Las listas siguen donde estaban en la partida anterior: de vuelta al inicio
+    queueMicrotask(() => this.scrollToCurrentMove(false));
     this.notFound = false;
     // Blancas abajo, salvo que quien abrió la partida pidiera otro lado
     this.orientation = this.startOrientation;
@@ -532,6 +556,47 @@ export class GamesViewerPage implements OnInit, OnDestroy {
 
   onIndexChange(index: number): void {
     this.currentMove = index;
+    this.scrollToCurrentMove();
+  }
+
+  /**
+   * Lleva las listas que se desplazan de lado (las jugadas y las barras de
+   * tiempo) hasta la jugada actual, para que no se quede fuera de vista cuando
+   * se avanza con las flechas, el play o tocando una barra.
+   *
+   * Se mueve solo cada lista, no la página: `scrollIntoView` también la
+   * desplazaría en vertical y el tablero saltaría.
+   */
+  private scrollToCurrentMove(smooth = true): void {
+    if (this.heatmapMode) {
+      return;
+    }
+
+    const root = this.host.nativeElement;
+    for (const selector of ['[data-move-list]', '[data-move-times]']) {
+      const container = root.querySelector<HTMLElement>(selector);
+      if (!container) {
+        continue;
+      }
+
+      let left = 0;
+      const target = container.querySelector<HTMLElement>(`[data-ply="${this.currentMove}"]`);
+      if (target) {
+        const targetBox = target.getBoundingClientRect();
+        const containerBox = container.getBoundingClientRect();
+        // Centrada en la lista; el navegador recorta lo que se pase de los extremos
+        left =
+          container.scrollLeft +
+          (targetBox.left - containerBox.left) -
+          (container.clientWidth - targetBox.width) / 2;
+      }
+
+      if (typeof container.scrollTo === 'function') {
+        container.scrollTo({ left, behavior: smooth ? 'smooth' : 'auto' });
+      } else {
+        container.scrollLeft = left;
+      }
+    }
   }
 
   /** Terminó la partida: en modo TV, encadenar con la siguiente. */
@@ -560,6 +625,45 @@ export class GamesViewerPage implements OnInit, OnDestroy {
 
   goToMove(index: number): void {
     this.board?.goTo(index);
+  }
+
+  /**
+   * Atajos de teclado para escritorio: flechas para avanzar o retroceder una jugada, Inicio y Fin para
+   * ir a los extremos. No actúan en el mapa de calor (no hay partida que recorrer), con un campo de
+   * texto enfocado ni con modificadores, que son del navegador. Ionic puede conservar la página oculta
+   * en segundo plano: entonces las teclas no son para ella.
+   */
+  @HostListener('window:keydown', ['$event'])
+  onKeydown(event: KeyboardEvent): void {
+    if (
+      this.mode === 'heatmap' ||
+      event.defaultPrevented ||
+      event.altKey ||
+      event.ctrlKey ||
+      event.metaKey ||
+      this.host.nativeElement.closest('.ion-page-hidden') ||
+      (event.target as HTMLElement | null)?.closest?.('input, textarea, select, [contenteditable="true"]')
+    ) {
+      return;
+    }
+
+    switch (event.key) {
+      case 'ArrowLeft':
+        this.previousMove();
+        break;
+      case 'ArrowRight':
+        this.nextMove();
+        break;
+      case 'Home':
+        this.toStart();
+        break;
+      case 'End':
+        this.toEnd();
+        break;
+      default:
+        return;
+    }
+    event.preventDefault();
   }
 
   flipBoard(): void {

@@ -23,7 +23,7 @@
           <div class="flex items-center gap-2 bg-base-200 px-3 py-1.5 rounded-full shadow-sm border border-base-300">
             <ion-icon [name]="isStreakActive ? 'flame' : 'flame-outline'" [class.text-orange-500]="isStreakActive"
               [class.text-base-content/30]="!isStreakActive" class="text-xl"></ion-icon>
-            <span class="text-sm font-bold" [class.text-base-content/50]="!isStreakActive">
+            <span class="text-sm font-bold" [class.text-base-content/60]="!isStreakActive">
               {{ streakDays }} {{ (streakDays === 1 ? 'PLANS_HISTORY.day' : 'PLANS_HISTORY.days') | transloco }}
             </span>
           </div>
@@ -44,7 +44,7 @@
         <div class="card-body items-center text-center py-12">
           <ion-icon name="time-outline" class="text-6xl text-base-content/30 mb-4"></ion-icon>
           <p class="text-base-content/70 text-lg mb-2">{{ 'PLANS_HISTORY.empty' | transloco }}</p>
-          <p class="text-base-content/50 text-sm">
+          <p class="text-base-content/60 text-sm">
             {{ 'PLANS_HISTORY.emptyDescription' | transloco }}
           </p>
         </div>
@@ -115,11 +115,11 @@
 
                   <!-- Botones de acción -->
                   <div class="flex gap-2 flex-shrink-0" (click)="$event.stopPropagation()">
-                    <button type="button" class="btn btn-sm btn-ghost" (click)="viewPlanDetails(plan)"
+                    <button type="button" class="btn btn-circle btn-ghost" (click)="viewPlanDetails(plan)"
                       [attr.aria-label]="'PLANS_HISTORY.viewDetails' | transloco">
                       <ion-icon name="eye-outline"></ion-icon>
                     </button>
-                    <button type="button" class="btn btn-sm btn-ghost btn-error" (click)="deletePlan(plan, $event)"
+                    <button type="button" class="btn btn-circle btn-ghost btn-error" (click)="deletePlan(plan, $event)"
                       [attr.aria-label]="'PLANS_HISTORY.delete' | transloco">
                       <ion-icon name="trash-outline"></ion-icon>
                     </button>

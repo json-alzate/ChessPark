@@ -25,18 +25,17 @@ export interface FakeQuery {
 }
 
 export function createFirestoreMock() {
-  const doc = jest.fn(
-    (_db: unknown, collection: string, id: string): FakeDocRef => ({
-      type: 'doc',
-      path: `${collection}/${id}`,
-      collection,
-      id,
-    })
-  );
-  const collection = jest.fn((_db: unknown, name: string) => ({
+  // Acepta rutas largas (subcolecciones): doc(db, 'Users', uid, 'gameTags', id)
+  const doc = jest.fn((_db: unknown, ...segments: string[]): FakeDocRef => ({
+    type: 'doc',
+    path: segments.join('/'),
+    collection: segments.slice(0, -1).join('/'),
+    id: segments[segments.length - 1],
+  }));
+  const collection = jest.fn((_db: unknown, ...segments: string[]) => ({
     type: 'collection',
-    name,
-    collection: name,
+    name: segments.join('/'),
+    collection: segments.join('/'),
     constraints: [] as unknown[],
   }));
   const where = jest.fn((field: string, op: string, value: unknown) => ({
@@ -76,6 +75,7 @@ export function createFirestoreMock() {
     setDoc: jest.fn(),
     addDoc: jest.fn(),
     updateDoc: jest.fn(),
+    deleteDoc: jest.fn(),
     getFirestore: jest.fn(),
     initializeFirestore: jest.fn(),
   };
@@ -91,11 +91,15 @@ export function fakeDocSnap<T extends object>(id: string, data?: T) {
 }
 
 /** Snapshot de una consulta con los documentos indicados, en orden. */
-export function fakeQuerySnap<T extends object>(docs: Array<{ id: string; data: T }>) {
+export function fakeQuerySnap<T extends object>(
+  docs: Array<{ id: string; data: T }>,
+  opciones: { fromCache?: boolean } = {}
+) {
   const items = docs.map((d) => ({ id: d.id, data: () => d.data }));
   return {
     docs: items,
     size: items.length,
+    metadata: { fromCache: !!opciones.fromCache },
     forEach: (fn: (d: (typeof items)[number]) => void) => items.forEach(fn),
   };
 }

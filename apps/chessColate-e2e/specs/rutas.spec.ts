@@ -3,7 +3,7 @@ import { expect, test } from '../support/test';
 /**
  * Todas las rutas públicas de la app (sin sesión) abren, no terminan en blanco y
  * se ven igual que en la captura de referencia. Es la red de seguridad de los
- * refactors: si mover una carpeta rompe un import, un `templateUrl` o una ruta
+ * refactors (el Chess Runner tiene su captura en `chess-runner.spec.ts`: su lienzo se anima): si mover una carpeta rompe un import, un `templateUrl` o una ruta
  * lazy, la pantalla correspondiente falla aquí.
  */
 const RUTAS = [
@@ -12,6 +12,7 @@ const RUTAS = [
   { ruta: '/games', nombre: 'partidas' },
   { ruta: '/analytics', nombre: 'analisis-de-partidas' },
   { ruta: '/streak', nombre: 'racha' },
+  { ruta: '/woodpecker', nombre: 'pajaro-carpintero' },
   { ruta: '/coordinates', nombre: 'coordenadas' },
   { ruta: '/knight-tour', nombre: 'recorrido-del-caballo' },
   { ruta: '/chess960', nombre: 'chess960' },

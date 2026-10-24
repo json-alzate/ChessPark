@@ -45,6 +45,12 @@ const byLicense = Object.fromEntries(ORDER.map((k) => [k, manifest.filter((t) =>
 const authors = (list) => [...new Set(list.map((t) => clean(t.author, 60)))].sort((a, b) => a.localeCompare(b, 'en', { sensitivity: 'base' }));
 const totalMin = manifest.reduce((a, t) => a + t.duration_sec, 0) / 60;
 const withSamples = manifest.filter((t) => (t.samples_from ?? []).length > 0);
+const instrumental = manifest.filter((t) => (t.tags ?? '').split(',').includes('instrumental')).length;
+const zabriskie = manifest.filter((t) => t.author === 'Chris Zabriskie').length;
+// Pistas retiradas tras la prueba de derechos (rights-check.mjs): quedan en descartadas.json con su motivo.
+const droppedByContentId = JSON.parse(readFileSync(join(HERE, 'music', 'descartadas.json'), 'utf8')).filter((d) =>
+  /^Content ID/.test(d.motivo ?? '')
+);
 
 // ---- bloque para la descripción (inglés sencillo) ----------------------------------------------
 const lines = ['Music (instrumental, used under Creative Commons licenses):', ''];
@@ -105,10 +111,10 @@ ${description}
 ## Riesgos y límites
 
 - **Content ID:** una licencia libre no evita reclamos automáticos. Un autor o un editor puede registrar una pista
-  en Content ID y reclamar el directo. Las cinco pistas de Zabriskie figuran con un editor ASCAP. No se pudo
+  en Content ID y reclamar el directo. Las ${zabriskie} pistas de Zabriskie figuran con un editor ASCAP. No se pudo
   comprobar qué autores están registrados. Si llega un reclamo, se disputa citando la licencia y esta evidencia.
-- **Sin escuchar:** que sean instrumentales y suaves se basa en las etiquetas de ccMixter (83 de 88 llevan
-  \`instrumental\`; las 5 de Zabriskie no tienen etiquetas), el BPM declarado y mediciones de volumen. Conviene
+${droppedByContentId.length ? `- **Prueba de derechos:** subir las pistas como videos privados (\`rights-check.mjs\`) detectó reclamos de Content ID en ${droppedByContentId.length} pista(s), ya **retirada(s)** de la lista:\n${droppedByContentId.map((d) => `  - ${md(d.track, 80)}: ${md(d.motivo, 220)}`).join('\n')}\n` : ''}- **Sin escuchar:** que sean instrumentales y suaves se basa en las etiquetas de ccMixter (${instrumental} de ${manifest.length} llevan
+  \`instrumental\`; las ${zabriskie} de Zabriskie no tienen etiquetas), el BPM declarado y mediciones de volumen. Conviene
   oír una muestra de cada autor (\`prepare-music\` y \`music-sample\`).
 - **Remezclas:** ${withSamples.length} pistas de ccMixter son remezclas con material de otros autores (lista abajo). ccMixter exige
   licencias compatibles, pero no se verificó la licencia de cada pista de origen por separado.

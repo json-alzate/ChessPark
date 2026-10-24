@@ -4,6 +4,8 @@ import { HttpClient } from '@angular/common/http';
 import { lastValueFrom, take } from 'rxjs';
 import { TranslocoService } from '@jsverse/transloco';
 
+import { fallbackThemeName } from './theme-name.util';
+
 import {
   Opening,
   PuzzleThemes,
@@ -51,11 +53,11 @@ export class AppService {
     if (!lang) {
       lang = this.translocoService.getActiveLang();
     }
-    if (lang === 'es') {
-      return this.getThemePuzzleByValue(value)?.nameEs || '';
-    } else {
-      return this.getThemePuzzleByValue(value)?.nameEn || '';
-    }
+    // Sin pasar por `getThemePuzzleByValue`, que avisa en consola de cada tema que no conoce: aquí es
+    // normal (los ejercicios traen etiquetas que la app no ofrece para elegir)
+    const theme = this.themesPuzzlesList.find((themeItem) => themeItem.value === value);
+    const name = lang === 'es' ? theme?.nameEs : theme?.nameEn;
+    return name || fallbackThemeName(value, lang);
   }
 
   getDescriptionThemePuzzleByValue(value: string) {

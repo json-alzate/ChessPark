@@ -1,5 +1,5 @@
 <ion-content [fullscreen]="true">
-  <div class="min-h-screen bg-base-100">
+  <div class="main-container">
     <app-navbar></app-navbar>
 
     <!-- Con qué color practicar: antes de empezar la rutina -->
@@ -69,7 +69,7 @@
 
         <!-- Conectar cuentas -->
         @if (!hasAccounts) {
-          <section class="bg-base-200/40 border border-base-content/10 rounded-box p-5">
+          <section class="bg-base-100 border border-base-content/10 rounded-box p-5">
             <div class="flex items-center gap-2 mb-1">
               <ion-icon name="link-outline" class="text-xl opacity-60"></ion-icon>
               <h3 class="text-base font-bold">{{ 'ANALYTICS.connect.title' | transloco }}</h3>
@@ -138,7 +138,7 @@
             </h3>
             <ul class="flex flex-col gap-2">
               @for (account of connectedList; track account.platform) {
-                <li class="bg-base-200/40 border border-base-content/10 rounded-box p-3
+                <li class="bg-base-100 border border-base-content/10 rounded-box p-3
                            flex items-center justify-between gap-3">
                   <div class="min-w-0">
                     <div class="text-sm font-bold truncate">{{ account.username }}</div>
@@ -182,7 +182,7 @@
 
           <!-- Descarga en curso -->
           @if (syncing) {
-            <div class="bg-base-200/40 border border-base-content/10 rounded-box p-4 mb-4">
+            <div class="bg-base-100 border border-base-content/10 rounded-box p-4 mb-4">
               <div class="flex items-center justify-between gap-3 text-sm">
                 <span>{{ 'ANALYTICS.syncing' | transloco }}</span>
                 <span class="font-mono opacity-60">{{ progressPercent }}%</span>
@@ -202,7 +202,7 @@
           }
 
           @if (!syncing && allGamesEmpty) {
-            <div class="bg-base-200/40 border border-base-content/10 rounded-box p-6 text-center">
+            <div class="bg-base-100 border border-base-content/10 rounded-box p-6 text-center">
               <ion-icon name="stats-chart-outline" class="text-4xl opacity-40"></ion-icon>
               <p class="mt-3 text-sm opacity-70">{{ 'ANALYTICS.noGames' | transloco }}</p>
             </div>
@@ -210,7 +210,7 @@
 
           @if (stats) {
             <!-- Filtros -->
-            <section class="mb-5 bg-base-200/40 border border-base-content/10 rounded-box p-3">
+            <section class="mb-5 bg-base-100 border border-base-content/10 rounded-box p-3">
               <div class="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide opacity-60 mb-2">
                 <ion-icon name="filter-outline" class="text-base"></ion-icon>
                 {{ 'ANALYTICS.filters.title' | transloco }}
@@ -247,19 +247,22 @@
 
             <!-- Estadísticas / Aperturas / Partidas -->
             <section class="mb-6">
-              <div class="join w-full mb-3">
-                <button class="btn btn-sm join-item flex-1"
-                  [class.btn-primary]="activeTab === 'stats'"
+              <div class="cc-tabs mb-3" role="tablist">
+                <button type="button" role="tab" class="btn btn-sm"
+                  [class.btn-primary]="activeTab === 'stats'" [class.btn-ghost]="activeTab !== 'stats'"
+                  [attr.aria-selected]="activeTab === 'stats'"
                   (click)="setActiveTab('stats')">
                   {{ 'ANALYTICS.statsTab' | transloco }}
                 </button>
-                <button class="btn btn-sm join-item flex-1"
-                  [class.btn-primary]="activeTab === 'openings'"
+                <button type="button" role="tab" class="btn btn-sm"
+                  [class.btn-primary]="activeTab === 'openings'" [class.btn-ghost]="activeTab !== 'openings'"
+                  [attr.aria-selected]="activeTab === 'openings'"
                   (click)="setActiveTab('openings')">
                   {{ 'ANALYTICS.openings.title' | transloco }}
                 </button>
-                <button class="btn btn-sm join-item flex-1"
-                  [class.btn-primary]="activeTab === 'games'"
+                <button type="button" role="tab" class="btn btn-sm"
+                  [class.btn-primary]="activeTab === 'games'" [class.btn-ghost]="activeTab !== 'games'"
+                  [attr.aria-selected]="activeTab === 'games'"
                   (click)="setActiveTab('games')">
                   {{ 'ANALYTICS.gamesList.title' | transloco }} ({{ gamesList.length }})
                 </button>
@@ -268,15 +271,15 @@
               @if (activeTab === 'stats') {
                 <!-- Cifras generales -->
                 <section class="grid grid-cols-2 gap-2 mb-6">
-                  <div class="bg-base-200/40 border border-base-content/10 rounded-box p-3">
+                  <div class="bg-base-100 border border-base-content/10 rounded-box p-3">
                     <div class="text-xs opacity-60">{{ 'ANALYTICS.stats.games' | transloco }}</div>
                     <div class="text-2xl font-bold font-mono">{{ stats.games }}</div>
                   </div>
-                  <div class="bg-base-200/40 border border-base-content/10 rounded-box p-3">
+                  <div class="bg-base-100 border border-base-content/10 rounded-box p-3">
                     <div class="text-xs opacity-60">{{ 'ANALYTICS.stats.score' | transloco }}</div>
                     <div class="text-2xl font-bold font-mono">{{ toPercent(stats.winRate) }}%</div>
                   </div>
-                  <div class="bg-base-200/40 border border-base-content/10 rounded-box p-3">
+                  <div class="bg-base-100 border border-base-content/10 rounded-box p-3">
                     <div class="text-xs opacity-60">{{ 'ANALYTICS.stats.record' | transloco }}</div>
                     <div class="text-base font-bold font-mono">
                       <span class="text-success">{{ stats.wins }}</span> /
@@ -284,7 +287,7 @@
                       <span class="text-error">{{ stats.losses }}</span>
                     </div>
                   </div>
-                  <div class="bg-base-200/40 border border-base-content/10 rounded-box p-3">
+                  <div class="bg-base-100 border border-base-content/10 rounded-box p-3">
                     <div class="text-xs opacity-60">{{ 'ANALYTICS.stats.avgOpponent' | transloco }}</div>
                     <div class="text-2xl font-bold font-mono">{{ stats.averageOpponentRating || '—' }}</div>
                   </div>
@@ -296,7 +299,7 @@
                     {{ 'ANALYTICS.ratingProgress' | transloco }}
                   </h3>
                   @if (ratingPoints.length > 1) {
-                    <div class="bg-base-200/40 border border-base-content/10 rounded-box p-3">
+                    <div class="bg-base-100 border border-base-content/10 rounded-box p-3">
                       <app-rating-chart [points]="ratingPoints"></app-rating-chart>
                     </div>
                   } @else {
@@ -309,7 +312,7 @@
                   <h3 class="text-xs font-bold uppercase tracking-wide opacity-60 mb-2">
                     {{ 'ANALYTICS.activity.title' | transloco }}
                   </h3>
-                  <div class="bg-base-200/40 border border-base-content/10 rounded-box p-3">
+                  <div class="bg-base-100 border border-base-content/10 rounded-box p-3">
                     <app-activity-heatmap [days]="activityDays"></app-activity-heatmap>
                   </div>
                 </section>
@@ -320,14 +323,14 @@
                     {{ 'ANALYTICS.byColor' | transloco }}
                   </h3>
                   <div class="grid grid-cols-2 gap-2">
-                    <div class="bg-base-200/40 border border-base-content/10 rounded-box p-3">
+                    <div class="bg-base-100 border border-base-content/10 rounded-box p-3">
                       <div class="text-xs opacity-60">{{ 'GAMES.filters.white' | transloco }}</div>
                       <div class="text-xl font-bold font-mono">{{ toPercent(stats.byColor.white.winRate) }}%</div>
                       <div class="text-xs opacity-50">
                         {{ 'ANALYTICS.openings.gamesCount' | transloco: { count: stats.byColor.white.games } }}
                       </div>
                     </div>
-                    <div class="bg-base-200/40 border border-base-content/10 rounded-box p-3">
+                    <div class="bg-base-100 border border-base-content/10 rounded-box p-3">
                       <div class="text-xs opacity-60">{{ 'GAMES.filters.black' | transloco }}</div>
                       <div class="text-xl font-bold font-mono">{{ toPercent(stats.byColor.black.winRate) }}%</div>
                       <div class="text-xs opacity-50">
@@ -343,7 +346,7 @@
                   </h3>
                   @if (practiceOpenings.length) {
                     <ul class="flex flex-col divide-y divide-base-content/10
-                               bg-base-200/40 border border-base-content/10 rounded-box">
+                               bg-base-100 border border-base-content/10 rounded-box">
                       @for (opening of practiceOpenings; track opening.value) {
                         <li class="flex items-center justify-between gap-3 px-3 py-2">
                           <div class="min-w-0">
@@ -366,10 +369,10 @@
               } @else if (activeTab === 'openings') {
                 <app-openings-table [openings]="openings" [catalog]="catalog" (practice)="practice($event)"></app-openings-table>
               } @else {
-                <p class="text-xs opacity-50 mb-2">{{ 'ANALYTICS.gamesList.hint' | transloco }}</p>
+                <p class="text-sm text-base-content/70 mb-3">{{ 'ANALYTICS.gamesList.hint' | transloco }}</p>
 
                 <ul class="flex flex-col divide-y divide-base-content/10
-                           bg-base-200/40 border border-base-content/10 rounded-box">
+                           bg-base-100 border border-base-content/10 rounded-box">
                   @for (game of pagedGames; track game.source + game.id) {
                     <li>
                       <button class="w-full text-left py-3 px-3 flex items-center gap-3"
@@ -415,6 +418,9 @@
                             </span>
                           }
                         }
+
+                        <ion-icon name="chevron-forward-outline" class="text-lg text-base-content/40 shrink-0"
+                          aria-hidden="true"></ion-icon>
                       </button>
                     </li>
                   }

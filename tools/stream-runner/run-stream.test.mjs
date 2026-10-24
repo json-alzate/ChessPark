@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { resolve } from 'node:path';
 import { parseRange, resolveInside } from './lib/static-server.mjs';
-import { backoffMs, buildConcatList, closeBrowser, defaultConfig, escapeConcatPath, ffmpegArgs, shuffled } from './run-stream.mjs';
+import { backoffMs, buildConcatList, closeBrowser, defaultConfig, escapeConcatPath, ffmpegArgs, shuffled, staleChromePids, summarizeFfmpegErrors } from './run-stream.mjs';
 
 const tracks = Array.from({ length: 6 }, (_, i) => ({ file: `normalized/${i}.m4a` }));
 // "azar" determinista: siempre devuelve 0 -> el baraje queda en un orden conocido
@@ -149,4 +149,60 @@ test('parseRange rechaza tramos fuera del archivo', () => {
   assert.equal(parseRange('bytes=1000-1100', 1000), 'invalid');
   assert.equal(parseRange('bytes=50-10', 1000), 'invalid');
   assert.equal(parseRange('bytes=-0', 1000), 'invalid');
+});
+
+// ---- Chrome huérfano: tras una caída brusca el perfil queda ocupado y el runner no podía volver a emitir ----
+
+const PERFIL = '/Users/x/ChessPark-stream/runner/.chrome-profile';
+const PS = [
+  `  100 /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --headless=new --user-data-dir=${PERFIL} --hide-scrollbars`,
+  `  101 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Helper --type=renderer --user-data-dir=${PERFIL} --lang=es`,
+  `  102 /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --user-data-dir=${PERFIL}`,
+  `  200 /Applications/Google Chrome.app/Contents/MacOS/Google Chrome`,
+  `  201 /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --user-data-dir=${PERFIL}2 --headless`,
+  `  202 /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --user-data-dir=/otro/perfil`,
+  `  300 node start-live.mjs`,
+  '',
+].join('\n');
+
+test('staleChromePids encuentra solo los procesos de este perfil exacto', () => {
+  assert.deepEqual(staleChromePids(PS, PERFIL), [100, 101, 102]);
+});
+
+test('staleChromePids no confunde un perfil con otro que empieza igual ni toca el Chrome personal', () => {
+  const pids = staleChromePids(PS, PERFIL);
+  assert.ok(!pids.includes(200) && !pids.includes(201) && !pids.includes(202));
+});
+
+test('staleChromePids nunca incluye al propio proceso', () => {
+  assert.deepEqual(staleChromePids(PS, PERFIL, 101), [100, 102]);
+});
+
+test('staleChromePids con salida vacía o rara devuelve lista vacía', () => {
+  assert.deepEqual(staleChromePids('', PERFIL), []);
+  assert.deepEqual(staleChromePids('no es una tabla\n\n', PERFIL), []);
+});
+
+// ---- registro del error de ffmpeg (el corte de las 10:26 solo decía «código 187») ----
+
+const URL_RTMP = 'rtmp://a.rtmp.youtube.com/live2/abcd-1234-efgh-5678';
+
+test('summarizeFfmpegErrors deja los últimos mensajes y quita las líneas de progreso', () => {
+  const stderr = ['frame= 100 fps=30 q=-0.0 size=1KiB speed=1x', 'Connection reset by peer', 'frame= 101 fps=30 speed=1x', 'av_interleaved_write_frame(): Broken pipe', 'Error writing trailer', ''].join('\r\n');
+  assert.equal(summarizeFfmpegErrors(stderr, undefined), 'Connection reset by peer | av_interleaved_write_frame(): Broken pipe | Error writing trailer');
+});
+
+test('summarizeFfmpegErrors nunca deja ver la URL ni la clave', () => {
+  const text = summarizeFfmpegErrors(`Error opening output ${URL_RTMP}: Input/output error\nclave suelta abcd-1234-efgh-5678 aquí`, URL_RTMP);
+  assert.ok(!text.includes('abcd-1234-efgh-5678'));
+  assert.ok(!text.includes('a.rtmp.youtube.com'));
+  assert.match(text, /«destino»: Input\/output error/);
+  assert.match(text, /«clave»/);
+});
+
+test('summarizeFfmpegErrors acota cantidad y largo, y sin errores devuelve vacío', () => {
+  const muchas = Array.from({ length: 30 }, (_, i) => `error número ${i}`).join('\n');
+  assert.equal(summarizeFfmpegErrors(muchas, undefined, 3), 'error número 27 | error número 28 | error número 29');
+  assert.ok(summarizeFfmpegErrors('x'.repeat(2000), undefined).length <= 500);
+  assert.equal(summarizeFfmpegErrors('frame= 1 speed=1x\n', undefined), '');
 });

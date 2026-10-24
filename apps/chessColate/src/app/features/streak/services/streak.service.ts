@@ -41,6 +41,13 @@ export class StreakService {
   private readonly ATTEMPTS_PER_BAND = 3;
 
   /**
+   * Tiempo tras el que se deja de probar otro tema. Con el catálogo sin responder cada intento agota sus
+   * tiempos de espera (unos 16 s) y nueve seguidos tendrían la pantalla en carga más de dos minutos; con
+   * el aviso a la vista el usuario puede reintentar.
+   */
+  private readonly TIME_BUDGET_MS = 20_000;
+
+  /**
    * Cuántos puzzles pedir al catálogo en cada intento. Basta un puñado: solo
    * se juega uno, y pedir menos evita descargar archivos de más.
    */
@@ -113,8 +120,14 @@ export class StreakService {
     const preferred =
       cached.length >= this.MIN_CACHED_THEMES ? cached : available;
 
+    const startedAt = Date.now();
+
     for (const band of this.ELO_BANDS) {
       for (let attempt = 0; attempt < this.ATTEMPTS_PER_BAND; attempt++) {
+        if (Date.now() - startedAt >= this.TIME_BUDGET_MS) {
+          return null;
+        }
+
         // Solo el primer intento tira de la caché: un archivo trae cientos de
         // puzzles, así que si ese no sirve es que hay que descargar.
         const isFirstTry = band === this.ELO_BANDS[0] && attempt === 0;

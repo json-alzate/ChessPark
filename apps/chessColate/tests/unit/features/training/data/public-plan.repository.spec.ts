@@ -217,6 +217,23 @@ describe('PublicPlanRepository', () => {
 
     const queryUsed = () => (getDocs as jest.Mock).mock.calls[0][0];
 
+    it('sin conexión (respuesta vacía de la caché) falla en vez de decir que no hay planes', async () => {
+      (getDocs as jest.Mock).mockResolvedValue(fakeQuerySnap([], { fromCache: true }));
+
+      await expect(repo.getPublicPlans('recent', 10)).rejects.toThrow('sin conexión');
+    });
+
+    it('vacío desde el servidor sí es una lista vacía, y con datos en caché se usan', async () => {
+      (getDocs as jest.Mock).mockResolvedValueOnce(fakeQuerySnap([], { fromCache: false }));
+      await expect(repo.getPublicPlans('recent', 10)).resolves.toEqual({ plans: [], lastPlanUid: null });
+
+      (getDocs as jest.Mock).mockResolvedValueOnce(
+        fakeQuerySnap([{ id: 'p1', data: stored() }], { fromCache: true })
+      );
+      const { plans } = await repo.getPublicPlans('recent', 10);
+      expect(plans.map((p) => p.uid)).toEqual(['p1']);
+    });
+
     it('pide solo planes activos (isPublic == true) de public-plans', async () => {
       await repo.getPublicPlans('recent', 10);
 

@@ -1,8 +1,8 @@
 <ion-content [fullscreen]="true">
-  <div class="min-h-screen bg-base-100">
+  <div class="main-container">
     <app-navbar></app-navbar>
 
-    <div class="container mx-auto px-4 py-8 max-w-lg pb-16">
+    <div class="container mx-auto px-4 pt-2 max-w-lg pb-16">
 
       <!-- Hero -->
       <div class="text-center mb-8 pt-2">
@@ -25,7 +25,7 @@
 
       <!-- No autenticado -->
       @if (!isAuthenticated) {
-        <div class="card bg-base-200/40 border border-base-content/10 text-center p-8 mb-6">
+        <div class="card bg-base-100 border border-base-content/10 text-center p-8 mb-6">
           <ion-icon name="log-in-outline" class="text-5xl text-primary mb-4 mx-auto block"></ion-icon>
           <h3 class="text-lg font-bold mb-2">{{ 'DONATION.page.loginRequired' | transloco }}</h3>
           <p class="text-sm text-base-content/60 mb-5">{{ 'DONATION.page.loginRequiredDesc' | transloco }}</p>
@@ -65,7 +65,7 @@
                       </div>
                       <div class="flex-1 min-w-0">
                         <h2 class="text-2xl font-black text-primary">{{ option.label }}
-                          <span class="text-xs font-normal text-base-content/50 ml-1">{{ 'DONATION.perMonth' | transloco }}</span>
+                          <span class="text-xs font-normal text-base-content/60 ml-1">{{ 'DONATION.perMonth' | transloco }}</span>
                         </h2>
                       </div>
                     </div>
@@ -92,7 +92,7 @@
                     </div>
                     <div class="flex-1 min-w-0">
                       <h2 class="text-xl font-bold">{{ option.label }}
-                        <span class="text-xs font-normal text-base-content/50 ml-1">{{ 'DONATION.perMonth' | transloco }}</span>
+                        <span class="text-xs font-normal text-base-content/60 ml-1">{{ 'DONATION.perMonth' | transloco }}</span>
                       </h2>
                     </div>
                     <div class="shrink-0">
@@ -110,7 +110,7 @@
       }
 
       <!-- Qué financia tu apoyo -->
-      <div class="card bg-base-200/40 border border-base-content/10 mb-6">
+      <div class="card bg-base-100 border border-base-content/10 mb-6">
         <div class="card-body p-4">
           <h3 class="text-xs font-bold uppercase tracking-wider text-base-content/40 mb-3">
             {{ 'DONATION.page.whatsIncluded' | transloco }}

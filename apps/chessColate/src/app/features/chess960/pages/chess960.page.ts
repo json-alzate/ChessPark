@@ -13,6 +13,7 @@ import { homeOutline, refreshOutline, shuffleOutline } from 'ionicons/icons';
 import { TranslocoPipe } from '@jsverse/transloco';
 
 import { Chess960Board } from '@chesspark/board';
+import { BoardResizeHandleComponent } from '@shared/components/board-resize-handle/board-resize-handle.component';
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 import { AnalyticsService } from '@core/analytics/analytics.service';
 
@@ -29,6 +30,7 @@ interface Chess960Position {
   styleUrls: ['./chess960.page.scss'],
   standalone: true,
   imports: [
+    BoardResizeHandleComponent,
     CommonModule,
     FormsModule,
     HttpClientModule,

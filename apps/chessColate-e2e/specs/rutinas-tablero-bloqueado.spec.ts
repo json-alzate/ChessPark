@@ -45,9 +45,16 @@ const CORONACION_ESPEJO: PuzzleFixture = {
 
 test.describe.configure({ timeout: 90_000 });
 
+/**
+ * Varias copias de cada una con `uid` distinto: el catálogo no repite un ejercicio en una misma lista,
+ * así que el bloque necesita más de uno de cada color para seguir cuando se acaba el tiempo del primero.
+ */
+const variantes = (base: PuzzleFixture) =>
+  Array.from({ length: 4 }, (_, i): PuzzleFixture => ({ ...base, uid: `${base.uid}${i}` }));
+
 test.beforeEach(async ({ page }) => {
   await relojAcelerable(page);
-  await servirPuzzles(page, [CORONACION, CORONACION_ESPEJO]);
+  await servirPuzzles(page, [...variantes(CORONACION), ...variantes(CORONACION_ESPEJO)]);
 });
 
 /** Casillas de la coronación del usuario en el puzzle que hay en el tablero (e7e8 o e2e1). */

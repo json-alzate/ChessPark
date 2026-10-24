@@ -1,7 +1,7 @@
 import type { MusicCredit } from '../models/credits.model';
 
 /**
- * Música del directo 24/7 (88 pistas). **Generado** por `tools/stream-runner/music-credits.mjs`
+ * Música del directo 24/7 (87 pistas). **Generado** por `tools/stream-runner/music-credits.mjs`
  * a partir de `music/manifest.json`; no se edita a mano. Se muestra en la pantalla de créditos.
  */
 export const MUSIC_CREDITS: readonly MusicCredit[] = [
@@ -77,7 +77,6 @@ export const MUSIC_CREDITS: readonly MusicCredit[] = [
   {"title":"mysterious light bells","author":"Robbero","source":"ccmixter","url":"https://ccmixter.org/files/Robbero/40042","license":"CC-BY-3.0","durationSec":116},
   {"title":"Sad Night","author":"Robbero","source":"ccmixter","url":"https://ccmixter.org/files/Robbero/63869","license":"CC-BY-3.0","durationSec":259},
   {"title":"Spheres (Hip Hop Instrumental)","author":"Robbero","source":"ccmixter","url":"https://ccmixter.org/files/Robbero/43483","license":"CC-BY-3.0","durationSec":271},
-  {"title":"Whisper","author":"Robbero","source":"ccmixter","url":"https://ccmixter.org/files/Robbero/44803","license":"CC-BY-3.0","durationSec":204},
   {"title":"Klaus","author":"Skill_Borrower","source":"ccmixter","url":"https://ccmixter.org/files/Skill_Borrower/41751","license":"CC-BY-3.0","durationSec":217},
   {"title":"bloodonthesouthernstreets","author":"Skye Jordan","source":"ccmixter","url":"https://ccmixter.org/files/SkyeJordan/62938","license":"CC-BY-3.0","durationSec":245},
   {"title":"between worlds","author":"smilingcynic","source":"ccmixter","url":"https://ccmixter.org/files/smilingcynic/48420","license":"CC-BY-3.0","durationSec":153},

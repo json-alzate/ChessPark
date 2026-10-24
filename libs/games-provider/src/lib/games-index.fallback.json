@@ -1,6 +1,30 @@
 {
-  "generatedAt": "2026-08-06T17:27:16.848Z",
+  "generatedAt": "2026-10-21T20:10:52.080Z",
   "collections": [
+    {
+      "id": "steinitz",
+      "name": "Wilhelm Steinitz",
+      "reign": "1886–1894",
+      "games": 590,
+      "sizeBytes": 382472,
+      "file": "players/steinitz.pgn"
+    },
+    {
+      "id": "lasker",
+      "name": "Emanuel Lasker",
+      "reign": "1894–1921",
+      "games": 900,
+      "sizeBytes": 576410,
+      "file": "players/lasker.pgn"
+    },
+    {
+      "id": "capablanca",
+      "name": "José Raúl Capablanca",
+      "reign": "1921–1927",
+      "games": 597,
+      "sizeBytes": 385341,
+      "file": "players/capablanca.pgn"
+    },
     {
       "id": "alekhine",
       "name": "Alexander Alekhine",
@@ -8,6 +32,94 @@
       "games": 1661,
       "sizeBytes": 1080504,
       "file": "players/alekhine.pgn"
+    },
+    {
+      "id": "euwe",
+      "name": "Max Euwe",
+      "reign": "1935–1937",
+      "games": 1122,
+      "sizeBytes": 697955,
+      "file": "players/euwe.pgn"
+    },
+    {
+      "id": "botvinnik",
+      "name": "Mikhail Botvinnik",
+      "reign": "1948–1957, 1958–1960, 1961–1963",
+      "games": 891,
+      "sizeBytes": 601380,
+      "file": "players/botvinnik.pgn"
+    },
+    {
+      "id": "smyslov",
+      "name": "Vasily Smyslov",
+      "reign": "1957–1958",
+      "games": 2627,
+      "sizeBytes": 1660039,
+      "file": "players/smyslov.pgn"
+    },
+    {
+      "id": "tal",
+      "name": "Mikhail Tal",
+      "reign": "1960–1961",
+      "games": 2431,
+      "sizeBytes": 1455126,
+      "file": "players/tal.pgn"
+    },
+    {
+      "id": "petrosian",
+      "name": "Tigran Petrosian",
+      "reign": "1963–1969",
+      "games": 1893,
+      "sizeBytes": 1130944,
+      "file": "players/petrosian.pgn"
+    },
+    {
+      "id": "spassky",
+      "name": "Boris Spassky",
+      "reign": "1969–1972",
+      "games": 2231,
+      "sizeBytes": 1312022,
+      "file": "players/spassky.pgn"
+    },
+    {
+      "id": "fischer",
+      "name": "Robert J. Fischer",
+      "reign": "1972–1975",
+      "games": 827,
+      "sizeBytes": 550330,
+      "file": "players/fischer.pgn"
+    },
+    {
+      "id": "karpov",
+      "name": "Anatoly Karpov",
+      "reign": "1975–1985, 1993–1999",
+      "games": 3529,
+      "sizeBytes": 2386235,
+      "file": "players/karpov.pgn"
+    },
+    {
+      "id": "kasparov",
+      "name": "Garry Kasparov",
+      "reign": "1985–2000",
+      "games": 2128,
+      "sizeBytes": 1350234,
+      "file": "players/kasparov.pgn"
+    },
+    {
+      "id": "khalifman",
+      "name": "Alexander Khalifman",
+      "reign": "1999–2000",
+      "games": 2348,
+      "sizeBytes": 1383491,
+      "file": "players/khalifman.pgn"
+    },
+    {
+      "id": "kramnik",
+      "name": "Vladimir Kramnik",
+      "reign": "2000–2007",
+      "games": 4355,
+      "sizeBytes": 3020139,
+      "file": "players/kramnik.pgn"
     },
     {
       "id": "anand",
@@ -18,12 +130,52 @@
       "file": "players/anand.pgn"
     },
     {
-      "id": "petrosian",
-      "name": "Tigran Petrosian",
-      "reign": "1963–1969",
-      "games": 1893,
-      "sizeBytes": 1130944,
-      "file": "players/petrosian.pgn"
+      "id": "ponomariov",
+      "name": "Ruslan Ponomariov",
+      "reign": "2002–2004",
+      "games": 2714,
+      "sizeBytes": 1905769,
+      "file": "players/ponomariov.pgn"
+    },
+    {
+      "id": "kasimdzhanov",
+      "name": "Rustam Kasimdzhanov",
+      "reign": "2004–2005",
+      "games": 1858,
+      "sizeBytes": 1260613,
+      "file": "players/kasimdzhanov.pgn"
+    },
+    {
+      "id": "topalov",
+      "name": "Veselin Topalov",
+      "reign": "2005–2006",
+      "games": 2652,
+      "sizeBytes": 1849908,
+      "file": "players/topalov.pgn"
+    },
+    {
+      "id": "carlsen",
+      "name": "Magnus Carlsen",
+      "reign": "2013–2023",
+      "games": 7818,
+      "sizeBytes": 5732853,
+      "file": "players/carlsen.pgn"
+    },
+    {
+      "id": "ding",
+      "name": "Ding Liren",
+      "reign": "2023–2024",
+      "games": 2274,
+      "sizeBytes": 1623728,
+      "file": "players/ding.pgn"
+    },
+    {
+      "id": "gukesh",
+      "name": "Gukesh Dommaraju",
+      "reign": "2024–",
+      "games": 2402,
+      "sizeBytes": 1745043,
+      "file": "players/gukesh.pgn"
     }
   ]
 }

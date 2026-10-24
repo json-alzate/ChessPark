@@ -1,5 +1,12 @@
 # Método del Pájaro Carpintero (Woodpecker Method) — Feature Document
 
+> **✅ Implementado.** Cómo funciona hoy y las decisiones que se tomaron:
+> [`../implementado/PAJARO_CARPINTERO_FLOW.md`](../implementado/PAJARO_CARPINTERO_FLOW.md).
+> Este documento queda como la idea original. Lo que cambió respecto a ella: el usuario elige
+> tamaño, rango de ELO, temas, vueltas, orden y ritmo (no hay «distribución por tema» ni
+> «mínimo» editable), el tiempo decreciente es solo por porcentaje, y el set y el progreso
+> viven en `localStorage` en vez de colgar de un `Plan` de tipo `woodpecker`.
+
 ## Concepto
 
 Un modo de entrenamiento basado en el **Woodpecker Method** (Axel Smith / Hans Tikkanen): en vez de resolver puzzles siempre nuevos, el usuario **arma un set fijo y grande de puzzles** y lo **repite en varias vueltas**, cada vuelta más rápido. La idea no es la novedad sino la **repetición del mismo material** hasta que el reconocimiento de patrones se vuelve casi automático.

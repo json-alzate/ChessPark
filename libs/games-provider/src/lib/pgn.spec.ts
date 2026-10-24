@@ -107,6 +107,16 @@ describe('parseGameHeader', () => {
     expect(header.blackElo).toBeNull();
   });
 
+  it('sin etiquetas de ELO, o con un valor que no es un ELO, no inventa ninguno', () => {
+    const sinEtiquetas = parseGameHeader('[White "A"]\n[Black "B"]\n\n1. e4 e5 *', 0);
+    const sinSentido = parseGameHeader('[White "A"]\n[Black "B"]\n[WhiteElo "?"]\n[BlackElo "0"]\n\n1. e4 e5 *', 0);
+
+    expect(sinEtiquetas.whiteElo).toBeNull();
+    expect(sinEtiquetas.blackElo).toBeNull();
+    expect(sinSentido.whiteElo).toBeNull();
+    expect(sinSentido.blackElo).toBeNull();
+  });
+
   it('entiende una fecha con el mes y el día en interrogantes', () => {
     const header = parseGameHeader(games[0], 0);
 

@@ -22,6 +22,7 @@ import { es } from 'date-fns/locale';
 import { ConfettiService, RandomFENService, SoundsService } from '@chesspark/common-utils';
 
 // Navbar
+import { BoardResizeHandleComponent } from '@shared/components/board-resize-handle/board-resize-handle.component';
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 
 // Importar componentes auxiliares
@@ -44,6 +45,7 @@ addIcons({ settingsOutline, homeOutline });
   styleUrls: ['coordinates.page.scss'],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
+    BoardResizeHandleComponent,
     CommonModule,
     IonContent,
     BoardComponent,

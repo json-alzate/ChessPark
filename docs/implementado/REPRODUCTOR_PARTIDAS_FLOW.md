@@ -81,6 +81,14 @@ Por eso el índice de partidas se pide al CDN, con esta cadena de respaldos:
 el `.pgn` en `players/`, añadir nombre y años en `players.meta.json`, ejecutar
 `node tools/build-index.mjs` y hacer push. La app no se toca.
 
+**Catálogo actual: los 22 campeones del mundo**, de Steinitz a Gukesh, con los de
+FIDE 1999–2006 (Khalifman, Ponomariov, Kasimdzhanov, Topalov). Los `.pgn` son el
+archivo de [PGN Mentor](https://www.pgnmentor.com/files.html) tal cual (suman
+~50.000 partidas; el más pesado, Carlsen, son 5,5 MB con 7.818). El catálogo se
+pinta en el orden del índice, y `build-index.mjs` lo toma del orden de
+`players.meta.json`, que va **cronológico por reinado**. Al añadir uno, hay que
+colocarlo en su sitio del archivo, no al final.
+
 La copia de respaldo dentro de la app
 ([`games-index.fallback.json`](../../libs/games-provider/src/lib/games-index.fallback.json))
 existe solo para que el primer arranque sin red no muestre una pantalla vacía.

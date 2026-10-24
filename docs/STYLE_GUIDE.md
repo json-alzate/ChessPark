@@ -73,6 +73,18 @@ Todas las páginas deben seguir esta estructura base:
 2. **Contenedor principal**: Usar `main-container` (el tema lo pone `<html>`)
 3. **Contenedor de contenido**: Usar `container mx-auto px-4 py-6` para el contenido principal
 
+### Superficies: fondo de página y tarjetas
+
+El fondo de **toda** página es `main-container` (`bg-base-200`) y las tarjetas, listas y paneles van
+encima con `bg-base-100` (+ `border border-base-content/10` si hace falta separarlas). No envuelvas una
+página en `min-h-screen bg-base-100`: el fondo salta de tono al navegar entre pantallas y los paneles
+`bg-base-200/40` quedan casi invisibles. Un panel dentro de otra tarjeta sí puede ser `bg-base-200/40`
+(queda "hundido"). El aire entre el navbar y el breadcrumb es el mismo en todas las pantallas
+(`pt-2`, sin `py-8`): en móvil cada píxel de alto cuenta.
+
+En pruebas E2E no se localizan elementos por clases de color (`bg-base-100`…): son decoración y
+cambian con el diseño; usa la estructura (`section.grid-cols-2 > div`) o el texto.
+
 ---
 
 ## ✍️ Tipografía
@@ -172,6 +184,9 @@ La aplicación utiliza los colores del tema Halloween de DaisyUI:
 - `bg-base-200`: Fondo secundario
 - `text-base-content`: Texto principal
 - `text-base-content/70`: Texto secundario (70% opacidad)
+- `text-base-content/60`: Texto de apoyo (pistas, notas, rótulos pequeños). Es lo más tenue que se admite en **texto**: en el
+  tema por defecto da un contraste de 4,8:1 y `/50` se quedaba en 3,7:1, por debajo del mínimo AA (4,5:1).
+- `text-base-content/40` y `/30`: solo para iconos decorativos y estados deshabilitados, nunca para texto que haya que leer.
 
 ---
 
@@ -273,12 +288,24 @@ Los botones de inicio de sesión con proveedores externos (ej. Google) pueden us
 
 ### Tabs
 
+Las pestañas de sección (Análisis, reproductor de partidas, Apariencia, Planes públicos) usan **`cc-tabs`**, un
+control segmentado definido en `global.scss`: una pista con borde (`bg-base-100`) con las opciones dentro; la activa va
+en `btn-primary` con sombra y las demás en `btn-ghost`. Los botones llevan `btn btn-sm` (el CSS les da alto táctil de
+2,5 rem y reparte el ancho) y el contenedor `role="tablist"`, cada botón `role="tab"` y `aria-selected`.
+
 ```html
-<div class="tabs tabs-boxed justify-center">
-  <button class="tab tab-active">Tab 1</button>
-  <button class="tab">Tab 2</button>
+<div class="cc-tabs mb-3" role="tablist">
+  <button type="button" role="tab" class="btn btn-sm"
+    [class.btn-primary]="active === 'a'" [class.btn-ghost]="active !== 'a'"
+    [attr.aria-selected]="active === 'a'" (click)="active = 'a'">Tab A</button>
+  <button type="button" role="tab" class="btn btn-sm"
+    [class.btn-primary]="active === 'b'" [class.btn-ghost]="active !== 'b'"
+    [attr.aria-selected]="active === 'b'" (click)="active = 'b'">Tab B</button>
 </div>
 ```
+
+No uses `join` para pestañas: es para grupos de opciones (plataforma, tamaño, color), donde no se cambia de vista.
+Las sub-pestañas con subrayado (filtros dentro de una pestaña) siguen siendo `border-b` + botón con borde inferior.
 
 ### Loading/Skeleton
 
@@ -542,6 +569,16 @@ Para botones fijos en mobile:
 
 ---
 
+## ♟️ Pantallas con tablero
+
+En escritorio la columna del tablero lleva la clase `cc-board-column` (y `cc-board-column--compact`
+si hay título y ajustes encima), es `relative` y contiene `<app-board-resize-handle>`: así el usuario
+puede cambiar su tamaño y la preferencia es la misma en todas. No fijes el ancho del tablero a mano con
+`lg:w-[…]`. Detalle y pasos para una pantalla nueva en
+[`implementado/TABLERO_REDIMENSIONABLE_FLOW.md`](implementado/TABLERO_REDIMENSIONABLE_FLOW.md).
+
+---
+
 ## 🧭 Navegación / Menú lateral
 
 El menú lateral izquierdo (`side-menu`) se define en
@@ -559,7 +596,7 @@ Cada grupo lleva una etiqueta pequeña (`section`, clave `MENU.sections.*`):
 2. **Entrenar** (núcleo de la app) — flujo descubrir → crear → revisar:
    Sesiones públicas · Mis sesiones · Historial.
 3. **Estudio** — Análisis de mis partidas · Partidas históricas.
-4. **Práctica** — Racha · Coordenadas · Recorrido del caballo · Chess960.
+4. **Práctica** — Racha · Pájaro carpintero · Chess Runner · Coordenadas · Recorrido del caballo · Chess960.
 5. **App y cuenta** — Ajustes · Donar (solo nativo).
 
 Los nombres de las opciones siguen la [Guía de tono](GUIA_DE_TONO.md).

@@ -256,6 +256,19 @@ describe('StreakService', () => {
       expect(calls()).toHaveLength(9);
     });
 
+    it('si el catálogo no responde deja de probar temas al pasar el presupuesto de tiempo', async () => {
+      let ahora = 1_000_000;
+      jest.spyOn(Date, 'now').mockImplementation(() => ahora);
+      // Cada intento agota sus tiempos de espera antes de fallar
+      provider.getPuzzles.mockImplementation(async () => {
+        ahora += 16_000;
+        throw new Error('Tiempo de espera agotado');
+      });
+
+      await expect(service.getPuzzleForElo(1505, config, new Set())).resolves.toBeNull();
+      expect(calls()).toHaveLength(2);
+    });
+
     it('un fallo puntual no impide encontrar un puzzle en el siguiente intento', async () => {
       provider.getPuzzles
         .mockRejectedValueOnce(new Error('timeout'))

@@ -73,8 +73,10 @@ test('/puzzles/public-plans sin sesión abre la pantalla pero sin rutinas dispon
   await expect(publicas.getByRole('button', { name: 'Most recent' })).toBeVisible();
   await expect(publicas.getByRole('button', { name: 'Most played' })).toBeVisible();
   await expect(publicas.getByRole('button', { name: 'Most liked' })).toBeVisible();
-  // La red está cortada: la lista de rutinas públicas no llega y se ve el estado vacío
-  await expect(publicas).toContainText('No public sessions available');
+  // La red está cortada: la lista de rutinas públicas no llega. No es una lista vacía: se avisa y se puede reintentar
+  await expect(publicas).toContainText("We couldn't load the public sessions");
+  await expect(publicas.getByRole('button', { name: 'Try again' })).toBeVisible();
+  await expect(publicas).not.toContainText('No public sessions available');
   await expect(publicas.locator('.skeleton')).toHaveCount(0);
 
   await expect(publicas).toHaveScreenshot('public-plans-sin-sesion.png');
@@ -87,7 +89,7 @@ test('/puzzles/public-plans sin sesión abre la pantalla pero sin rutinas dispon
 
 test('en /puzzles/public-plans el guard intenta leer las rutinas públicas aunque no haya sesión', async ({ page, network }) => {
   await page.goto('/puzzles/public-plans');
-  await expect(pantalla(page)).toContainText('No public sessions available');
+  await expect(pantalla(page)).toContainText("We couldn't load the public sessions");
   // Las rutinas públicas se piden a Firestore sin esperar a un perfil; aquí la red está cortada
   await expect
     .poll(() => network.blocked.some((u) => u.includes('firestore.googleapis.com')), {

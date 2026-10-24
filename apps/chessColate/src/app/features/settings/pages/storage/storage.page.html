@@ -1,8 +1,8 @@
 <ion-content [fullscreen]="true">
-  <div class="min-h-screen bg-base-100">
+  <div class="main-container">
     <app-navbar></app-navbar>
 
-    <div class="container mx-auto px-4 py-8 max-w-lg pb-16">
+    <div class="container mx-auto px-4 pt-2 max-w-lg pb-16">
 
       <!-- Header -->
       <div class="mb-6">
@@ -33,14 +33,14 @@
           <div class="skeleton h-14 w-full"></div>
         </div>
       } @else if (totalFiles === 0) {
-        <div class="bg-base-200/40 border border-base-content/10 rounded-box p-6 text-center">
+        <div class="bg-base-100 border border-base-content/10 rounded-box p-6 text-center">
           <ion-icon name="server-outline" class="text-4xl opacity-40"></ion-icon>
           <p class="mt-3 text-sm opacity-70">{{ 'STORAGE.empty' | transloco }}</p>
         </div>
       } @else {
 
         <!-- Resumen + borrar todo -->
-        <div class="bg-base-200/40 border border-base-content/10 rounded-box p-4 mb-4
+        <div class="bg-base-100 border border-base-content/10 rounded-box p-4 mb-4
                     flex items-center justify-between gap-4">
           <div>
             <div class="text-base font-bold">
@@ -61,7 +61,7 @@
             </h3>
             <ul class="flex flex-col gap-2">
               @for (pack of gamePacks; track pack.id) {
-                <li class="bg-base-200/40 border border-base-content/10 rounded-box
+                <li class="bg-base-100 border border-base-content/10 rounded-box
                            p-4 flex items-center justify-between gap-3">
                   <div class="min-w-0">
                     <div class="text-base font-bold truncate">{{ pack.name }}</div>
@@ -89,7 +89,7 @@
             </h3>
             <ul class="flex flex-col gap-2">
               @for (account of archiveAccounts; track account.platform + account.username) {
-                <li class="bg-base-200/40 border border-base-content/10 rounded-box
+                <li class="bg-base-100 border border-base-content/10 rounded-box
                            p-4 flex items-center justify-between gap-3">
                   <div class="min-w-0">
                     <div class="text-base font-bold truncate">{{ account.username }}</div>
@@ -113,7 +113,7 @@
         <!-- Lista agrupada por tema / apertura -->
         <ul class="flex flex-col gap-2">
           @for (group of groups; track group.key) {
-            <li class="bg-base-200/40 border border-base-content/10 rounded-box overflow-hidden">
+            <li class="bg-base-100 border border-base-content/10 rounded-box overflow-hidden">
 
               <!-- Cabecera del grupo -->
               <div class="flex items-center gap-2 p-3">
@@ -133,7 +133,7 @@
                   </div>
                 </button>
                 <button class="btn btn-ghost btn-sm btn-square text-error shrink-0"
-                  [attr.aria-label]="'STORAGE.deleteAll' | transloco"
+                  [attr.aria-label]="'STORAGE.deleteGroup' | transloco: { name: group.name }"
                   (click)="confirmDeleteGroup(group)">
                   <ion-icon name="trash-outline" class="text-lg"></ion-icon>
                 </button>
@@ -152,7 +152,7 @@
                         <span class="opacity-60"> · {{ fileSizeLabel(file) }}</span>
                       </div>
                       <button class="btn btn-ghost btn-xs btn-square text-error shrink-0"
-                        [attr.aria-label]="'STORAGE.confirm.delete' | transloco"
+                        [attr.aria-label]="'STORAGE.deleteFile' | transloco: { range: file.eloLabel }"
                         (click)="confirmDeleteFile(group, file)">
                         <ion-icon name="trash-outline" class="text-base"></ion-icon>
                       </button>
