@@ -276,6 +276,10 @@ ion-modal {
     --width: 860px;
     --height: 85vh;
     --border-radius: 16px;
+    // Con el 0.4 por defecto de Ionic, en pantallas anchas se alcanza a ver (y leer)
+    // el tablero y el panel de la página de atrás alrededor del modal: parece una
+    // sección rota en vez de un diálogo enfocado. Más opaco lo tapa de verdad.
+    --backdrop-opacity: 0.85;
   }
 
   ion-modal.puzzle-solution-modal::part(handle) {

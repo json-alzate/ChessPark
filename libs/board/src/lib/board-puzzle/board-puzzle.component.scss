@@ -15,6 +15,20 @@
     }
 }
 
+// Barra de tiempo: el valor se actualiza desde TS cada 100ms (smoothProgress).
+// Sin esta transición el navegador redibuja el relleno a saltos de 100ms y se ve
+// "pausada" en vez de ir bajando fluida; con ella el relleno persigue cada nuevo
+// valor con una interpolación corta, así que el ojo ve un movimiento continuo.
+progress.progress {
+    &::-webkit-progress-value {
+        transition: width 120ms linear;
+    }
+
+    &::-moz-progress-bar {
+        transition: width 120ms linear;
+    }
+}
+
 // Flecha de pista (hint) — discreta: trazo fino y translúcido para guiar sin
 // gritar. Color índigo, consistente con la flecha de "mejor jugada" de la app.
 :host ::ng-deep .cm-chessboard .arrow-hint .arrow-line {
