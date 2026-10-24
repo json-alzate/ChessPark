@@ -123,11 +123,11 @@ Lo que queda:
   tablero, la descarga real desde el CDN y el encadenado del modo TV no se han
   ejecutado en un dispositivo. Comprobar sobre todo que la pantalla se queda
   encendida al reproducir y **se suelta al salir**.
-- **Completar el catálogo** 🔴 — hoy hay tres campeones (Alekhine, Anand y
-  Petrosian). Los demás salen de [PGN Mentor](https://www.pgnmentor.com/files.html)
-  y **no requieren tocar la app**: dejar el `.pgn` en `players/`, añadir su
-  entrada en `players.meta.json`, ejecutar `node tools/build-index.mjs` y hacer
-  push en [chesscolate_pngs_packs](https://github.com/json-alzate/chesscolate_pngs_packs).
+- ~~**Completar el catálogo**~~ ✅ — ya están los 22 campeones del mundo, de Steinitz a
+  Gukesh (incluidos los de FIDE 1999–2006: Khalifman, Ponomariov, Kasimdzhanov y Topalov), en
+  [chesscolate_pngs_packs](https://github.com/json-alzate/chesscolate_pngs_packs). Falta solo que el CDN
+  sirva el índice nuevo: jsDelivr cachea `@main` hasta ~12 h; para forzarlo, abrir
+  `https://purge.jsdelivr.net/gh/json-alzate/chesscolate_pngs_packs@main/index.json`.
 - **Mirar `games_pack_downloaded`** tras unas semanas: dice qué campeones pide
   la gente y por tanto a quién añadir después.
 - **Segunda entrega**: listas de reproducción y la lista automática de "me

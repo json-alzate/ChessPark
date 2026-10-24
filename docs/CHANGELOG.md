@@ -18,6 +18,8 @@ y el versionado sigue [SemVer](https://semver.org/lang/es/) para `versionName`.
 ## [Sin publicar]
 
 ### Añadido
+- **Catálogo de Partidas completo**: ya están los 22 campeones del mundo (de Steinitz a Gukesh, con los de FIDE 1999–2006), en orden
+  cronológico de reinado. Antes solo había tres (Alekhine, Anand y Petrosian). No requiere versión nueva: el catálogo se descarga.
 - **Método del Pájaro Carpintero** (menú Práctica y tarjeta en el inicio): armas un set fijo de
   ejercicios con tu rango de ELO, tus temas y el número de vueltas, y lo repites con menos tiempo
   en cada una. Cada vuelta te dice cuánto mejoraste en acierto y en velocidad, y el panel enseña
