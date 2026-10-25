@@ -1,0 +1,365 @@
+{
+ "version": 1,
+ "characters": {
+  "choco": {
+   "name": "Choco",
+   "family": "lab",
+   "size": "M",
+   "collar": "#7fd35a",
+   "cellW": 54,
+   "cellH": 43,
+   "animations": {
+    "run": {
+     "file": "pack-choco-run.png",
+     "frames": 4,
+     "fps": 12
+    },
+    "jump": {
+     "file": "pack-choco-jump.png",
+     "frames": 3,
+     "fps": 1
+    },
+    "hurt": {
+     "file": "pack-choco-hurt.png",
+     "frames": 2,
+     "fps": 8
+    },
+    "happy": {
+     "file": "pack-choco-happy.png",
+     "frames": 2,
+     "fps": 6
+    },
+    "idle": {
+     "file": "pack-choco-idle.png",
+     "frames": 2,
+     "fps": 3
+    }
+   },
+   "portrait": "pack-choco-portrait.png"
+  },
+  "gatita": {
+   "name": "La gatita",
+   "family": "cat",
+   "size": "S",
+   "collar": "#9be7ff",
+   "cellW": 35,
+   "cellH": 29,
+   "animations": {
+    "run": {
+     "file": "pack-gatita-run.png",
+     "frames": 4,
+     "fps": 12
+    },
+    "jump": {
+     "file": "pack-gatita-jump.png",
+     "frames": 3,
+     "fps": 1
+    },
+    "hurt": {
+     "file": "pack-gatita-hurt.png",
+     "frames": 2,
+     "fps": 8
+    },
+    "idle": {
+     "file": "pack-gatita-idle.png",
+     "frames": 2,
+     "fps": 3
+    },
+    "happy": {
+     "file": "pack-gatita-happy.png",
+     "frames": 2,
+     "fps": 6
+    }
+   },
+   "portrait": "pack-gatita-portrait.png"
+  },
+  "kiana": {
+   "name": "Kiana",
+   "family": "husky",
+   "size": "L",
+   "collar": "#4fa3ff",
+   "cellW": 58,
+   "cellH": 47,
+   "animations": {
+    "run": {
+     "file": "pack-kiana-run.png",
+     "frames": 4,
+     "fps": 12
+    },
+    "jump": {
+     "file": "pack-kiana-jump.png",
+     "frames": 3,
+     "fps": 1
+    },
+    "hurt": {
+     "file": "pack-kiana-hurt.png",
+     "frames": 2,
+     "fps": 8
+    },
+    "idle": {
+     "file": "pack-kiana-idle.png",
+     "frames": 2,
+     "fps": 3
+    },
+    "happy": {
+     "file": "pack-kiana-happy.png",
+     "frames": 2,
+     "fps": 6
+    }
+   },
+   "portrait": "pack-kiana-portrait.png"
+  },
+  "luna": {
+   "name": "Luna",
+   "family": "small",
+   "size": "S",
+   "collar": "#36d1c4",
+   "cellW": 38,
+   "cellH": 32,
+   "animations": {
+    "run": {
+     "file": "pack-luna-run.png",
+     "frames": 4,
+     "fps": 12
+    },
+    "jump": {
+     "file": "pack-luna-jump.png",
+     "frames": 3,
+     "fps": 1
+    },
+    "hurt": {
+     "file": "pack-luna-hurt.png",
+     "frames": 2,
+     "fps": 8
+    },
+    "idle": {
+     "file": "pack-luna-idle.png",
+     "frames": 2,
+     "fps": 3
+    },
+    "happy": {
+     "file": "pack-luna-happy.png",
+     "frames": 2,
+     "fps": 6
+    }
+   },
+   "portrait": "pack-luna-portrait.png"
+  },
+  "maryluna": {
+   "name": "Maryluna",
+   "family": "small",
+   "size": "S",
+   "collar": "#ff6fb0",
+   "cellW": 41,
+   "cellH": 34,
+   "animations": {
+    "run": {
+     "file": "pack-maryluna-run.png",
+     "frames": 4,
+     "fps": 12
+    },
+    "jump": {
+     "file": "pack-maryluna-jump.png",
+     "frames": 3,
+     "fps": 1
+    },
+    "hurt": {
+     "file": "pack-maryluna-hurt.png",
+     "frames": 2,
+     "fps": 8
+    },
+    "idle": {
+     "file": "pack-maryluna-idle.png",
+     "frames": 2,
+     "fps": 3
+    },
+    "happy": {
+     "file": "pack-maryluna-happy.png",
+     "frames": 2,
+     "fps": 6
+    }
+   },
+   "portrait": "pack-maryluna-portrait.png"
+  },
+  "nannukk": {
+   "name": "Nannukk",
+   "family": "malamute",
+   "size": "XL",
+   "collar": "#ee6f86",
+   "cellW": 70,
+   "cellH": 56,
+   "animations": {
+    "run": {
+     "file": "pack-nannukk-run.png",
+     "frames": 4,
+     "fps": 12
+    },
+    "jump": {
+     "file": "pack-nannukk-jump.png",
+     "frames": 3,
+     "fps": 1
+    },
+    "hurt": {
+     "file": "pack-nannukk-hurt.png",
+     "frames": 2,
+     "fps": 8
+    },
+    "idle": {
+     "file": "pack-nannukk-idle.png",
+     "frames": 2,
+     "fps": 3
+    },
+    "happy": {
+     "file": "pack-nannukk-happy.png",
+     "frames": 2,
+     "fps": 6
+    }
+   },
+   "portrait": "pack-nannukk-portrait.png"
+  },
+  "romeo": {
+   "name": "Romeo",
+   "family": "small",
+   "size": "S–M",
+   "collar": "#e5483f",
+   "cellW": 45,
+   "cellH": 36,
+   "animations": {
+    "run": {
+     "file": "pack-romeo-run.png",
+     "frames": 4,
+     "fps": 12
+    },
+    "jump": {
+     "file": "pack-romeo-jump.png",
+     "frames": 3,
+     "fps": 1
+    },
+    "hurt": {
+     "file": "pack-romeo-hurt.png",
+     "frames": 2,
+     "fps": 8
+    },
+    "idle": {
+     "file": "pack-romeo-idle.png",
+     "frames": 2,
+     "fps": 3
+    },
+    "happy": {
+     "file": "pack-romeo-happy.png",
+     "frames": 2,
+     "fps": 6
+    }
+   },
+   "portrait": "pack-romeo-portrait.png"
+  },
+  "tony": {
+   "name": "Tony",
+   "family": "lab",
+   "size": "M",
+   "collar": "#ff8a2b",
+   "cellW": 54,
+   "cellH": 43,
+   "animations": {
+    "run": {
+     "file": "pack-tony-run.png",
+     "frames": 4,
+     "fps": 12
+    },
+    "jump": {
+     "file": "pack-tony-jump.png",
+     "frames": 3,
+     "fps": 1
+    },
+    "hurt": {
+     "file": "pack-tony-hurt.png",
+     "frames": 2,
+     "fps": 8
+    },
+    "idle": {
+     "file": "pack-tony-idle.png",
+     "frames": 2,
+     "fps": 3
+    },
+    "happy": {
+     "file": "pack-tony-happy.png",
+     "frames": 2,
+     "fps": 6
+    }
+   },
+   "portrait": "pack-tony-portrait.png"
+  },
+  "tormenta": {
+   "name": "Tormenta",
+   "family": "lab",
+   "size": "M",
+   "collar": "#ffd23f",
+   "cellW": 54,
+   "cellH": 43,
+   "animations": {
+    "run": {
+     "file": "pack-tormenta-run.png",
+     "frames": 4,
+     "fps": 12
+    },
+    "jump": {
+     "file": "pack-tormenta-jump.png",
+     "frames": 3,
+     "fps": 1
+    },
+    "hurt": {
+     "file": "pack-tormenta-hurt.png",
+     "frames": 2,
+     "fps": 8
+    },
+    "idle": {
+     "file": "pack-tormenta-idle.png",
+     "frames": 2,
+     "fps": 3
+    },
+    "happy": {
+     "file": "pack-tormenta-happy.png",
+     "frames": 2,
+     "fps": 6
+    }
+   },
+   "portrait": "pack-tormenta-portrait.png"
+  },
+  "zack": {
+   "name": "Zack",
+   "family": "husky",
+   "size": "L",
+   "collar": "#b46cff",
+   "cellW": 58,
+   "cellH": 47,
+   "animations": {
+    "run": {
+     "file": "pack-zack-run.png",
+     "frames": 4,
+     "fps": 12
+    },
+    "jump": {
+     "file": "pack-zack-jump.png",
+     "frames": 3,
+     "fps": 1
+    },
+    "hurt": {
+     "file": "pack-zack-hurt.png",
+     "frames": 2,
+     "fps": 8
+    },
+    "idle": {
+     "file": "pack-zack-idle.png",
+     "frames": 2,
+     "fps": 3
+    },
+    "happy": {
+     "file": "pack-zack-happy.png",
+     "frames": 2,
+     "fps": 6
+    }
+   },
+   "portrait": "pack-zack-portrait.png"
+  }
+ }
+}
