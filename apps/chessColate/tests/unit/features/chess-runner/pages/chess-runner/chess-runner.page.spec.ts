@@ -2472,6 +2472,27 @@ describe('ChessRunnerPage', () => {
     });
   });
 
+  describe('el atajo al laboratorio de la manada', () => {
+    it('en desarrollo hay un botón que lleva al laboratorio', async () => {
+      await entrar();
+      fixture.detectChanges();
+
+      expect(page.devTools).toBe(true);
+      expect(el('open-lab')).not.toBeNull();
+
+      page.openLab();
+      expect(router.navigate).toHaveBeenCalledWith(['/chess-runner/laboratorio']);
+    });
+
+    it('en la versión publicada no se ve el botón', async () => {
+      await entrar();
+      (page as { devTools: boolean }).devTools = false;
+      fixture.detectChanges();
+
+      expect(el('open-lab')).toBeNull();
+    });
+  });
+
   describe('salir', () => {
     it('la equis a mitad de partida lleva al panel, con lo corrido guardado; desde el panel, al inicio', async () => {
       await entrarYCorrer();

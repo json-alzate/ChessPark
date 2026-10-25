@@ -217,6 +217,7 @@ ruta está en `features/<funcionalidad>/pages/`.
 | `woodpecker` | `woodpecker` · El set del Pájaro Carpintero: configurar, panel y evolución | `WoodpeckerService`, `WoodpeckerSetService` |
 | `woodpecker/play` | `woodpecker` · Una vuelta del set | `WoodpeckerService`, `TrainingReminderService` |
 | `chess-runner` | `chess-runner` · Carrera previa al ejercicio y el ejercicio | `RunnerPuzzleService`, `RunnerSpritesService`, `RunnerPiecesService`, `RunnerRecordService`, `TrainingReminderService` |
+| `chess-runner/laboratorio` | `chess-runner` · Laboratorio de la manada: pantalla de prueba de los sprites de la manada y del mapa (solo se llega por el **matraz de la barra del Chess Runner, que existe únicamente en desarrollo** —`isDevMode()`—; en la versión publicada no hay enlace) | `PackAssetsService` |
 | `coordinates`, `knight-tour`, `chess960` | una funcionalidad cada una · Minijuegos | Servicios propios / `libs/board` |
 | `settings`, `settings/storage`, `settings/credits` | `settings` · Ajustes, descargas y créditos (la de créditos es pública y solo lee `config/credits.config.ts` y el `music-credits.config.ts` generado) | `AppService`, `AppearanceService`, `LanguageService`, caché de `puzzles-provider` |
 | `donation`, `privacy` | `donation`, `privacy` | `RevenueCatService` (donación) |
@@ -336,6 +337,19 @@ Lo único que guarda en el dispositivo es **el récord de distancia y la campañ
 perrito y el escenario los genera `tools/stream-assets/export_runner.py` (el mismo pipeline que el directo 24/7); el resto del arte
 (galleta, frasco, iconos, equipo, guardianes teñidos) está dibujado con código. Detalle:
 [`implementado/CHESS_RUNNER_FLOW.md`](./implementado/CHESS_RUNNER_FLOW.md).
+
+**Laboratorio de la manada** (`pages/pack-lab/`, ruta `chess-runner/laboratorio`, con un atajo solo en desarrollo): solo sirve para revisar los assets
+nuevos de la manada y del mapa (contrato en [`personajes/ASSETS_SPEC.md`](./personajes/ASSETS_SPEC.md)). `PackAssetsService` lee
+`assets/images/pack/pack.json`, `assets/images/map/map.json` y `assets/images/runner/runner.json` **sin caché** (los exportadores
+de `tools/stream-assets/` los reescriben mientras se revisan; «Recargar» los pide con `?v=` y `cache: 'no-store'`) y
+`utils/pack-manifest.util.ts` los normaliza **sin listas fijas** de personajes ni zonas: lo que falte llega vacío y la pantalla
+muestra un estado vacío. Tras cargar, la página prueba cada PNG de los manifiestos (`labImages` + `brokenImages`, con `Image()`)
+y avisa «falta X» de los que no cargan; también mide en un `canvas` el alto visible del primer cuadro de `run`
+(`visibleHeight` + `opaqueHeight`; «—» si no se puede). `utils/pack-lab.util.ts` (puro) decide el cuadro de cada instante, el «Recorrido», el
+salto por fases, el sprite de cada estado de un punto, a qué zona va cada parada del papel (por jefe) y el rastro de galletas del
+papel; `components/pack-sprite` pinta un cuadro de una tira con
+zoom entero y `components/pack-lab-map` el mapa por zonas y el de papel (con el zoom de la página, salvo que no quepa a lo ancho:
+mide su ancho con `ResizeObserver`, aplazando la medida un fotograma, y baja al mayor entero que quepa, `fitScale`; con 393 px queda a ×1). No guarda nada.
 
 ### 5.3 Recordatorios de entrenamiento
 

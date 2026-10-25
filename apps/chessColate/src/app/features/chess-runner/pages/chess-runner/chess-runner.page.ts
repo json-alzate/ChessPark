@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy } from '@angular/core';
+import { Component, inject, OnDestroy, isDevMode } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
@@ -15,6 +15,7 @@ import {
   checkmarkCircle,
   closeOutline,
   bulbOutline,
+  flaskOutline,
   eye,
   flagOutline,
   flame,
@@ -169,6 +170,9 @@ export class ChessRunnerPage implements ViewWillEnter, ViewWillLeave, OnDestroy 
 
   status: RunnerPageStatus = 'loading';
 
+  /** Solo en desarrollo (`ng serve`): un atajo al laboratorio de la manada. En producción no se ve. */
+  readonly devTools = isDevMode();
+
   /** El ejercicio de esta vuelta y las piezas de su carrera. */
   puzzle: Puzzle | null = null;
   sequence: RunnerPiece[] = [];
@@ -297,6 +301,7 @@ export class ChessRunnerPage implements ViewWillEnter, ViewWillLeave, OnDestroy 
       checkmarkCircle,
       closeOutline,
       bulbOutline,
+      flaskOutline,
       eye,
       flagOutline,
       flame,
@@ -1215,6 +1220,10 @@ export class ChessRunnerPage implements ViewWillEnter, ViewWillLeave, OnDestroy 
     } else {
       this.endGame('quit');
     }
+  }
+
+  openLab(): void {
+    void this.router.navigate(['/chess-runner/laboratorio']);
   }
 
   goToHome(): void {

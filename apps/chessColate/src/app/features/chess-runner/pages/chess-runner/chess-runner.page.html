@@ -35,6 +35,13 @@
           [class.!badge-error]="status === 'result' && ratingChange && ratingChange.to < ratingChange.from">
           {{ 'CHESS_RUNNER.rating' | transloco }} {{ shownRating }}
         </span>
+        @if (devTools) {
+        <!-- Atajo de desarrollo al laboratorio de la manada (no existe en la versión publicada) -->
+        <button class="btn btn-square btn-ghost" (click)="openLab()" [attr.aria-label]="'CHESS_RUNNER.openLab' | transloco"
+          data-testid="open-lab">
+          <ion-icon name="flask-outline" class="h-5 w-5"></ion-icon>
+        </button>
+        }
         <button class="btn btn-square btn-ghost" (click)="exit()" [attr.aria-label]="'CHESS_RUNNER.exit' | transloco"
           data-testid="exit">
           <ion-icon name="close-outline" class="h-5 w-5"></ion-icon>

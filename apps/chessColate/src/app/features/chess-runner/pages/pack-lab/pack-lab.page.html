@@ -1,0 +1,271 @@
+<ion-content [fullscreen]="true">
+  <div class="main-container">
+
+    <!-- Barra superior: volver, título y recargar los manifiestos -->
+    <div class="navbar bg-base-100 shadow-sm">
+      <div class="flex-none">
+        <button type="button" class="btn btn-square btn-ghost" (click)="back()" [attr.aria-label]="'PACK_LAB.back' | transloco">
+          <ion-icon name="arrow-back-outline" class="h-5 w-5"></ion-icon>
+        </button>
+      </div>
+      <div class="flex-1">
+        <span class="text-lg font-extrabold">{{ 'PACK_LAB.title' | transloco }}</span>
+      </div>
+      <div class="flex-none">
+        <button type="button" class="btn btn-square btn-ghost" (click)="reload()" [disabled]="loading"
+          [attr.aria-label]="'PACK_LAB.reload' | transloco" data-testid="lab-reload">
+          <ion-icon name="refresh-outline" class="h-5 w-5"></ion-icon>
+        </button>
+      </div>
+    </div>
+
+    <div class="container mx-auto px-4 pt-2 pb-6 space-y-6">
+      <p class="text-sm text-base-content/60">{{ 'PACK_LAB.subtitle' | transloco }}</p>
+
+      @if (loading && !assets) {
+      <div class="space-y-4" data-testid="lab-loading">
+        <div class="skeleton h-8 w-3/4"></div>
+        <div class="skeleton h-24 w-full"></div>
+        <div class="skeleton h-40 w-full"></div>
+      </div>
+      } @else if (assets) {
+
+      @if (assets.missing.length) {
+      <div role="alert" class="alert alert-warning text-sm" data-testid="lab-missing">
+        {{ 'PACK_LAB.missing' | transloco: { files: assets.missing.join(', ') } }}
+      </div>
+      }
+      @if (brokenFiles.length) {
+      <div role="alert" class="alert alert-warning text-sm" data-testid="lab-broken">
+        <span class="break-all">{{ 'PACK_LAB.broken' | transloco: { files: brokenFiles.join(', ') } }}</span>
+      </div>
+      }
+
+      <!-- Personajes -->
+      <section class="space-y-3" data-testid="lab-characters">
+        <div class="flex items-center justify-between">
+          <h3 class="text-xl font-semibold mb-2">{{ 'PACK_LAB.characters.title' | transloco }}</h3>
+          @if (characters.length) {
+          <span class="badge badge-ghost">{{ 'PACK_LAB.characters.count' | transloco: { count: chosen.length, total: characters.length } }}</span>
+          }
+        </div>
+
+        @if (!characters.length) {
+        <div class="rounded-box border border-dashed border-base-content/20 bg-base-100 p-6 text-center" data-testid="lab-characters-empty">
+          <p class="font-semibold">{{ 'PACK_LAB.characters.empty' | transloco }}</p>
+        </div>
+        } @else {
+        <div class="flex flex-wrap gap-2">
+          <button type="button" class="btn h-auto min-h-0 w-[4.5rem] flex-col gap-1 p-1" data-testid="lab-all"
+            [class.btn-primary]="allSelected" [class.btn-ghost]="!allSelected" [attr.aria-pressed]="allSelected" (click)="selectAll()">
+            <span class="flex h-16 w-16 items-center justify-center text-sm font-bold">{{ 'PACK_LAB.characters.all' | transloco }}</span>
+          </button>
+          @for (c of characters; track c.id) {
+          <button type="button" class="btn h-auto min-h-0 w-[4.5rem] flex-col gap-1 p-1" data-testid="lab-character"
+            [attr.data-id]="c.id" [attr.aria-pressed]="isSelected(c.id)" [attr.aria-label]="c.name"
+            [class.btn-primary]="isSelected(c.id)" [class.btn-ghost]="!isSelected(c.id)" (click)="toggle(c.id)">
+            @if (portraitUrl(c); as portrait) {
+            <app-pack-sprite [src]="portrait" [frameW]="32" [frameH]="32" [zoom]="2" />
+            } @else {
+            <span class="flex h-16 w-16 items-center justify-center rounded-lg bg-base-200 text-xl font-bold">{{ c.name.charAt(0) }}</span>
+            }
+            <span class="w-full truncate text-xs leading-tight">{{ c.name }}</span>
+          </button>
+          }
+        </div>
+        }
+      </section>
+
+      @if (characters.length) {
+      <!-- Controles de reproducción -->
+      <section class="card bg-base-100 shadow-sm" data-testid="lab-controls">
+        <div class="card-body gap-3 p-4">
+          <h3 class="text-xl font-semibold mb-2">{{ 'PACK_LAB.play.title' | transloco }}</h3>
+          <div class="flex flex-wrap gap-1" role="group" [attr.aria-label]="'PACK_LAB.play.title' | transloco">
+            @for (a of animOptions; track a) {
+            <button type="button" class="btn btn-sm" data-testid="lab-anim" [attr.data-anim]="a"
+              [class.btn-primary]="a === anim" [class.btn-ghost]="a !== anim" [attr.aria-pressed]="a === anim" (click)="setAnim(a)">
+              {{ a === 'tour' ? ('PACK_LAB.play.tour' | transloco) : a }}
+            </button>
+            }
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2">
+            <button type="button" class="btn btn-sm btn-soft btn-info" (click)="togglePause()" data-testid="lab-pause"
+              [attr.aria-label]="(paused ? 'PACK_LAB.play.resume' : 'PACK_LAB.play.pause') | transloco">
+              <ion-icon [name]="paused ? 'play' : 'pause'"></ion-icon>
+              {{ (paused ? 'PACK_LAB.play.resume' : 'PACK_LAB.play.pause') | transloco }}
+            </button>
+            <button type="button" class="btn btn-sm btn-soft btn-info" (click)="step()" data-testid="lab-step">
+              <ion-icon name="play-skip-forward"></ion-icon>{{ 'PACK_LAB.play.step' | transloco }}
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div>
+              <h6 class="text-sm text-base-content/70 mb-1">{{ 'PACK_LAB.play.speed' | transloco }}</h6>
+              <div class="join">
+                @for (s of speeds; track s) {
+                <button type="button" class="btn btn-sm join-item" data-testid="lab-speed" [class.btn-primary]="s === speed"
+                  [attr.aria-pressed]="s === speed" (click)="setSpeed(s)">{{ s }}×</button>
+                }
+              </div>
+            </div>
+            <div>
+              <h6 class="text-sm text-base-content/70 mb-1">{{ 'PACK_LAB.play.zoom' | transloco }}</h6>
+              <div class="join">
+                @for (z of zooms; track z) {
+                <button type="button" class="btn btn-sm join-item" data-testid="lab-zoom" [class.btn-primary]="z === zoom"
+                  [attr.aria-pressed]="z === zoom" (click)="setZoom(z)">{{ z }}×</button>
+                }
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h6 class="text-sm text-base-content/70 mb-1">{{ 'PACK_LAB.play.background' | transloco }}</h6>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" class="btn btn-sm" data-testid="lab-background" [class.btn-primary]="background === 'none'"
+                [attr.aria-pressed]="background === 'none'" (click)="setBackground('none')">{{ 'PACK_LAB.backgrounds.none' | transloco }}</button>
+              @if (assets.backdrop['scene-floor']) {
+              <button type="button" class="btn btn-sm" data-testid="lab-background" [class.btn-primary]="background === 'runner'"
+                [attr.aria-pressed]="background === 'runner'" (click)="setBackground('runner')">{{ 'PACK_LAB.backgrounds.runner' | transloco }}</button>
+              }
+              @for (zb of zoneBackgrounds(); track zb.id) {
+              <button type="button" class="btn btn-sm" data-testid="lab-background" [class.btn-primary]="background === 'zone:' + zb.id"
+                [attr.aria-pressed]="background === 'zone:' + zb.id" (click)="setBackground('zone:' + zb.id)">
+                {{ 'PACK_LAB.backgrounds.zone' | transloco: { n: zb.id } }}
+              </button>
+              }
+            </div>
+            @if (!zoneBackgrounds().length) {
+            <p class="mt-1 text-xs text-base-content/60">{{ 'PACK_LAB.backgrounds.noZones' | transloco }}</p>
+            }
+          </div>
+        </div>
+      </section>
+
+      @if (!chosen.length) {
+      <p class="text-sm text-base-content/60" data-testid="lab-none-chosen">{{ 'PACK_LAB.characters.none' | transloco }}</p>
+      } @else {
+      <!-- La manada a escala real, con suelo y regla de alturas -->
+      <section class="space-y-2" data-testid="lab-pack">
+        <h3 class="text-xl font-semibold mb-2">{{ 'PACK_LAB.pack.title' | transloco }}</h3>
+        <p class="text-sm text-base-content/60">{{ 'PACK_LAB.pack.hint' | transloco }}</p>
+        <div class="overflow-x-auto rounded-box border border-base-content/10" data-testid="lab-pack-scroll">
+          <div class="lab-stage relative min-w-full" [class.bg-base-200]="!backgroundStyle(false)"
+            [style.background]="backgroundStyle(false)" [style.height.px]="stageHeight"
+            [style.width.px]="rowWidth(40, 8)">
+            <!-- Regla: una línea cada 10 px lógicos desde los pies, de lado a lado -->
+            @for (t of ticks; track t) {
+            <div class="lab-tick pointer-events-none absolute left-0 right-0" [style.bottom.px]="feetY + t * zoom"></div>
+            }
+            <!-- Sus números, en una columna pegada a la izquierda (sticky): no se van al desplazar la manada -->
+            <div class="lab-ruler pointer-events-none sticky left-0 z-10 h-full w-0" data-testid="lab-ruler">
+              @for (t of ticks; track t) {
+              <span class="lab-tick-label" data-testid="lab-tick-label" [style.bottom.px]="feetY + t * zoom">{{ t }}</span>
+              }
+            </div>
+            <div class="lab-ground pointer-events-none absolute left-0 right-0" [style.bottom.px]="feetY - 1" data-testid="lab-ground"></div>
+            <div class="absolute flex items-end" [style.left.px]="40" [style.bottom.px]="feetY" [style.gap.px]="8 * zoom">
+              @for (f of figures; track f.character.id) {
+              <div class="flex flex-col items-center" data-testid="lab-figure" [attr.data-id]="f.character.id"
+                [attr.data-anim]="f.pose.anim" [style.transform]="'translateY(' + -f.lift + 'px)'">
+                <app-pack-sprite [src]="f.src" [frameW]="f.character.cellW" [frameH]="f.character.cellH" [frames]="f.frames"
+                  [frame]="f.pose.frame" [zoom]="zoom" [attr.aria-label]="f.character.name" />
+              </div>
+              }
+            </div>
+            <div class="absolute flex" [style.left.px]="40" [style.bottom.px]="2" [style.gap.px]="8 * zoom">
+              @for (f of figures; track f.character.id) {
+              <span class="lab-name truncate whitespace-nowrap rounded bg-base-100/80 px-1 text-center text-xs font-bold"
+                [style.width.px]="f.character.cellW * zoom" [attr.title]="f.character.name + ' · ' + cellHeight(f.character)"
+                data-testid="lab-name">
+                {{ zoom > 1 ? f.character.name + ' · ' + cellHeight(f.character) : cellHeight(f.character) }}</span>
+              }
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Datos de cada personaje -->
+      <section class="space-y-2" data-testid="lab-data">
+        <h3 class="text-xl font-semibold mb-2">{{ 'PACK_LAB.data.title' | transloco }}</h3>
+        <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+          @for (c of chosen; track c.id) {
+          <div class="card bg-base-100 shadow-sm" data-testid="lab-character-data" [attr.data-id]="c.id">
+            <div class="card-body gap-1 p-3 text-sm">
+              <div class="flex items-center justify-between gap-2">
+                <h4 class="text-lg mb-1 font-bold">{{ c.name }} <span class="text-xs font-normal text-base-content/60">{{ c.id }}</span></h4>
+                @if (c.size) {<span class="badge badge-neutral">{{ c.size }}</span>}
+              </div>
+              <div class="grid grid-cols-2 gap-x-3 gap-y-1">
+                <span class="text-base-content/70">{{ 'PACK_LAB.data.cell' | transloco }}</span>
+                <span class="tabular-nums" data-testid="lab-cell">{{ c.cellW }}×{{ c.cellH }}</span>
+                <span class="text-base-content/70">{{ 'PACK_LAB.data.height' | transloco }}</span>
+                <span class="tabular-nums" data-testid="lab-height">{{ cellHeight(c) }} px</span>
+                <span class="text-base-content/70">{{ 'PACK_LAB.data.visible' | transloco }}</span>
+                <span class="tabular-nums" data-testid="lab-visible">@if (visibleHeight(c); as v) { {{ v }} px } @else { — }</span>
+                <span class="text-base-content/70">{{ 'PACK_LAB.data.collar' | transloco }}</span>
+                <span class="flex items-center gap-1">
+                  @if (c.collar) {
+                  <span class="inline-block h-3 w-3 rounded-sm border border-base-content/30" [style.background]="c.collar"></span>{{ c.collar }}
+                  } @else { — }
+                </span>
+                @if (c.family) {
+                <span class="text-base-content/70">{{ 'PACK_LAB.data.family' | transloco }}</span>
+                <span>{{ c.family }}</span>
+                }
+              </div>
+              @if (brokenOf(c).length) {
+              <p class="text-xs text-error break-all" data-testid="lab-character-broken">
+                {{ 'PACK_LAB.data.broken' | transloco: { files: brokenOf(c).join(', ') } }}
+              </p>
+              }
+              <p class="text-xs text-base-content/60">
+                @for (name of c.animationNames; track name) {
+                <span class="mr-2 inline-block">{{ name }} {{ c.animations[name].frames }}·{{ c.animations[name].fps }}fps</span>
+                }
+              </p>
+            </div>
+          </div>
+          }
+        </div>
+      </section>
+
+      <!-- Carrerita: todos en fila, corriendo y saltando a la vez -->
+      <section class="space-y-2" data-testid="lab-race">
+        <div class="flex items-center justify-between gap-2">
+          <h3 class="text-xl font-semibold mb-2">{{ 'PACK_LAB.race.title' | transloco }}</h3>
+          <label class="label cursor-pointer gap-2">
+            <input type="checkbox" class="toggle toggle-sm toggle-primary" [checked]="autoJump" (change)="toggleAutoJump()"
+              data-testid="lab-auto-jump" />
+            <span class="text-sm">{{ 'PACK_LAB.race.auto' | transloco }}</span>
+          </label>
+        </div>
+        <button type="button" class="block w-full overflow-x-auto rounded-box border border-base-content/10 p-0 text-left"
+          (click)="jump()" [attr.aria-label]="'PACK_LAB.race.jump' | transloco" data-testid="lab-race-stage">
+          <div class="lab-stage relative min-w-full" [class.bg-base-200]="!backgroundStyle(true)" [style.background]="backgroundStyle(true)"
+            [style.height.px]="stageHeight" [style.width.px]="rowWidth(16, 4)">
+            <div class="lab-ground pointer-events-none absolute left-0 right-0" [style.bottom.px]="feetY - 1"></div>
+            <div class="absolute flex items-end" [style.left.px]="16" [style.bottom.px]="feetY" [style.gap.px]="4 * zoom">
+              @for (f of racers; track f.character.id) {
+              <div data-testid="lab-racer" [attr.data-anim]="f.pose.anim" [style.transform]="'translateY(' + -f.lift + 'px)'">
+                <app-pack-sprite [src]="f.src" [frameW]="f.character.cellW" [frameH]="f.character.cellH" [frames]="f.frames"
+                  [frame]="f.pose.frame" [zoom]="zoom" />
+              </div>
+              }
+            </div>
+          </div>
+        </button>
+        <button type="button" class="btn btn-primary w-full" (click)="jump()" data-testid="lab-jump">{{ 'PACK_LAB.race.jump' | transloco }}</button>
+      </section>
+      }
+      }
+
+      <!-- Mapa: zonas y papel -->
+      <app-pack-lab-map [map]="assets.map" [clock]="mapMs" [zoom]="zoom" [urlOf]="mapUrl" />
+      }
+    </div>
+  </div>
+</ion-content>

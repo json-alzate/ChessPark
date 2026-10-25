@@ -1316,6 +1316,7 @@
   },
   "CHESS_RUNNER": {
     "title": "Chess Runner",
+    "openLab": "Pack lab",
     "canvasLabel": "The puppy runs and jumps over the exercise's pieces",
     "loading": "Finding an exercise…",
     "session": "Solved: {{count}}",
@@ -1648,5 +1649,85 @@
     "rule2": "The knight moves in an L shape",
     "rule3": "You cannot revisit squares",
     "rule4": "Complete all 64 squares to win"
+  },
+  "PACK_LAB": {
+    "title": "Pack lab",
+    "subtitle": "Test screen to review the pack and map sprites. It reads pack.json and map.json as they are.",
+    "back": "Back to Chess Runner",
+    "reload": "Reload the manifests",
+    "missing": "Could not read: {{files}}.",
+    "broken": "These images do not load: {{files}}.",
+    "characters": {
+      "title": "Characters",
+      "count": "{{count}} of {{total}}",
+      "all": "All",
+      "empty": "There are no characters in pack.json yet.",
+      "none": "Pick at least one character to see it."
+    },
+    "play": {
+      "title": "Animation",
+      "tour": "Tour",
+      "pause": "Pause",
+      "resume": "Resume",
+      "step": "Step",
+      "speed": "Speed",
+      "zoom": "Zoom",
+      "background": "Background"
+    },
+    "backgrounds": {
+      "none": "No background",
+      "runner": "Runner floor",
+      "zone": "Zone {{n}}",
+      "noZones": "Zone scenes will show up here once they exist."
+    },
+    "pack": {
+      "title": "The pack to scale",
+      "hint": "All at once and at the same zoom. The line marks the floor and the ruler goes every 10 logical px (20 at 1×); next to each name, its cell height (cellH − 1)."
+    },
+    "data": {
+      "title": "Character data",
+      "cell": "Cell",
+      "height": "Cell height",
+      "visible": "Visible height (run)",
+      "collar": "Collar",
+      "family": "Family",
+      "broken": "Missing: {{files}}"
+    },
+    "race": {
+      "title": "Little race",
+      "auto": "Jump on their own",
+      "jump": "Everybody jump!"
+    },
+    "map": {
+      "title": "Map by zones",
+      "empty": "There are no zones yet.",
+      "emptyHint": "They will show up here as soon as they are exported to map.json.",
+      "chooseZone": "Choose zone",
+      "zone": "Zone {{n}}",
+      "boss": "boss: {{boss}}",
+      "info": "{{points}} points · {{ambient}} animations · darkness {{darkness}}",
+      "nodeState": "Point state",
+      "states": {
+        "locked": "Locked",
+        "open": "Open",
+        "current": "Current",
+        "done1": "1 star",
+        "done2": "2 stars",
+        "done3": "3 stars"
+      },
+      "ambient": "Ambient animations",
+      "open": "Zone open",
+      "noScene": "No scene yet"
+    },
+    "paper": {
+      "title": "Paper map",
+      "empty": "There is no paper map yet.",
+      "progress": "Progress: {{n}} of {{total}} checkpoints",
+      "openAll": "Open all",
+      "closeAll": "Close all",
+      "stopHint": "Tap a stop to open or close its zone.",
+      "stop": "{{boss}} stop",
+      "goldHint": "The gold cookie at the end of each zone is just a lab convention to show it: the game may use it elsewhere."
+    }
   }
 }

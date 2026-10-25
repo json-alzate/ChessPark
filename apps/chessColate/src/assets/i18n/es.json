@@ -1316,6 +1316,7 @@
   },
   "CHESS_RUNNER": {
     "title": "Chess Runner",
+    "openLab": "Laboratorio de la manada",
     "canvasLabel": "El perrito corre y salta las piezas del ejercicio",
     "loading": "Buscando un ejercicio…",
     "session": "Resueltos: {{count}}",
@@ -1648,5 +1649,85 @@
     "rule2": "El caballo se mueve en forma de L",
     "rule3": "No puedes repetir casillas",
     "rule4": "Completa las 64 casillas para ganar"
+  },
+  "PACK_LAB": {
+    "title": "Laboratorio de la manada",
+    "subtitle": "Pantalla de prueba para revisar los sprites de la manada y del mapa. Lee pack.json y map.json tal como estén.",
+    "back": "Volver al Chess Runner",
+    "reload": "Recargar los manifiestos",
+    "missing": "No se pudo leer: {{files}}.",
+    "broken": "No cargan estas imágenes: {{files}}.",
+    "characters": {
+      "title": "Personajes",
+      "count": "{{count}} de {{total}}",
+      "all": "Todos",
+      "empty": "Aún no hay personajes en pack.json.",
+      "none": "Elige al menos un personaje para verlo."
+    },
+    "play": {
+      "title": "Animación",
+      "tour": "Recorrido",
+      "pause": "Pausa",
+      "resume": "Seguir",
+      "step": "Paso a paso",
+      "speed": "Velocidad",
+      "zoom": "Zoom",
+      "background": "Fondo"
+    },
+    "backgrounds": {
+      "none": "Sin fondo",
+      "runner": "Suelo del runner",
+      "zone": "Zona {{n}}",
+      "noZones": "Las escenas de zona aparecerán aquí cuando existan."
+    },
+    "pack": {
+      "title": "La manada a escala",
+      "hint": "Todos a la vez y al mismo zoom. La línea marca el suelo y la regla, cada 10 px lógicos (20 a 1×); junto al nombre, su alto de celda (cellH − 1)."
+    },
+    "data": {
+      "title": "Datos de cada personaje",
+      "cell": "Celda",
+      "height": "Alto de celda",
+      "visible": "Alto visible (run)",
+      "collar": "Collar",
+      "family": "Familia",
+      "broken": "Falta: {{files}}"
+    },
+    "race": {
+      "title": "Carrerita",
+      "auto": "Saltar solos",
+      "jump": "¡Saltar todos!"
+    },
+    "map": {
+      "title": "Mapa por zonas",
+      "empty": "Aún no hay zonas.",
+      "emptyHint": "Aparecerán aquí en cuanto se exporten en map.json.",
+      "chooseZone": "Elegir zona",
+      "zone": "Zona {{n}}",
+      "boss": "jefe: {{boss}}",
+      "info": "{{points}} puntos · {{ambient}} animaciones · oscuridad {{darkness}}",
+      "nodeState": "Estado de los puntos",
+      "states": {
+        "locked": "Cerrado",
+        "open": "Abierto",
+        "current": "Actual",
+        "done1": "1 estrella",
+        "done2": "2 estrellas",
+        "done3": "3 estrellas"
+      },
+      "ambient": "Animaciones de ambiente",
+      "open": "Zona abierta",
+      "noScene": "Sin escena todavía"
+    },
+    "paper": {
+      "title": "Mapa de papel",
+      "empty": "Aún no hay mapa de papel.",
+      "progress": "Progreso: {{n}} de {{total}} checkpoints",
+      "openAll": "Abrir todas",
+      "closeAll": "Cerrar todas",
+      "stopHint": "Toca una parada para abrir o cerrar su zona.",
+      "stop": "Parada de {{boss}}",
+      "goldHint": "La galleta dorada al final de cada zona es solo una convención del laboratorio para verla: el juego puede usarla en otro sitio."
+    }
   }
 }

@@ -129,6 +129,12 @@ export const routes: Routes = [
       ),
   },
   {
+    // Laboratorio de la manada: pantalla de prueba de los assets; solo se llega por el matraz de la barra del Chess Runner, y únicamente en desarrollo
+    path: 'chess-runner/laboratorio',
+    loadComponent: () =>
+      import('./features/chess-runner/pages/pack-lab/pack-lab.page').then((m) => m.PackLabPage),
+  },
+  {
     path: 'coordinates',
     loadComponent: () =>
       import('./features/coordinates/pages/coordinates.page').then(
