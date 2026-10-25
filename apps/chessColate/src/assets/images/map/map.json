@@ -1,0 +1,1634 @@
+{
+ "version": 1,
+ "logical": {
+  "zoneW": 220,
+  "zoneH": 420,
+  "paperW": 220,
+  "paperH": 320
+ },
+ "zones": {
+  "1": {
+   "name": "Bosque",
+   "boss": "ardilla",
+   "darkness": 0,
+   "scene": "map-zone-1",
+   "points": [
+    {
+     "x": 109,
+     "y": 392,
+     "kind": "pattern",
+     "order": 1
+    },
+    {
+     "x": 52,
+     "y": 340,
+     "kind": "pattern",
+     "order": 2
+    },
+    {
+     "x": 104,
+     "y": 284,
+     "kind": "pattern",
+     "order": 3
+    },
+    {
+     "x": 167,
+     "y": 253,
+     "kind": "rescue",
+     "order": 4
+    },
+    {
+     "x": 134,
+     "y": 189,
+     "kind": "pattern",
+     "order": 5
+    },
+    {
+     "x": 56,
+     "y": 157,
+     "kind": "pattern",
+     "order": 6
+    },
+    {
+     "x": 87,
+     "y": 96,
+     "kind": "camp",
+     "order": 7
+    },
+    {
+     "x": 152,
+     "y": 59,
+     "kind": "boss",
+     "order": 8
+    }
+   ],
+   "ambient": [
+    {
+     "sprite": "map-fx-1-hojas",
+     "x": 152,
+     "y": 318,
+     "fps": 5,
+     "file": "map-fx-1-hojas.png",
+     "frames": 8,
+     "frameW": 62,
+     "frameH": 74
+    },
+    {
+     "sprite": "map-fx-1-copas",
+     "x": 0,
+     "y": 246,
+     "fps": 3,
+     "file": "map-fx-1-copas.png",
+     "frames": 8,
+     "frameW": 64,
+     "frameH": 44
+    },
+    {
+     "sprite": "map-fx-1-arroyo",
+     "x": 0,
+     "y": 204,
+     "fps": 6,
+     "file": "map-fx-1-arroyo.png",
+     "frames": 8,
+     "frameW": 158,
+     "frameH": 36
+    },
+    {
+     "sprite": "map-fx-1-arroyo2",
+     "x": 185,
+     "y": 216,
+     "fps": 6,
+     "file": "map-fx-1-arroyo2.png",
+     "frames": 8,
+     "frameW": 35,
+     "frameH": 26
+    },
+    {
+     "sprite": "map-fx-1-ardilla",
+     "x": 184,
+     "y": 76,
+     "fps": 4,
+     "file": "map-fx-1-ardilla.png",
+     "frames": 8,
+     "frameW": 30,
+     "frameH": 28
+    }
+   ]
+  },
+  "2": {
+   "name": "Praderas",
+   "boss": "conejo",
+   "darkness": 1,
+   "scene": "map-zone-2",
+   "points": [
+    {
+     "x": 113,
+     "y": 394,
+     "kind": "pattern",
+     "order": 1
+    },
+    {
+     "x": 176,
+     "y": 343,
+     "kind": "pattern",
+     "order": 2
+    },
+    {
+     "x": 109,
+     "y": 294,
+     "kind": "pattern",
+     "order": 3
+    },
+    {
+     "x": 44,
+     "y": 252,
+     "kind": "rescue",
+     "order": 4
+    },
+    {
+     "x": 118,
+     "y": 203,
+     "kind": "pattern",
+     "order": 5
+    },
+    {
+     "x": 175,
+     "y": 152,
+     "kind": "pattern",
+     "order": 6
+    },
+    {
+     "x": 103,
+     "y": 112,
+     "kind": "camp",
+     "order": 7
+    },
+    {
+     "x": 58,
+     "y": 57,
+     "kind": "boss",
+     "order": 8
+    }
+   ],
+   "ambient": [
+    {
+     "sprite": "map-fx-2-conejo",
+     "x": 118,
+     "y": 240,
+     "fps": 4,
+     "file": "map-fx-2-conejo.png",
+     "frames": 8,
+     "frameW": 22,
+     "frameH": 20
+    },
+    {
+     "sprite": "map-fx-2-mariposas",
+     "x": 70,
+     "y": 136,
+     "fps": 6,
+     "file": "map-fx-2-mariposas.png",
+     "frames": 8,
+     "frameW": 82,
+     "frameH": 48
+    },
+    {
+     "sprite": "map-fx-2-hierba",
+     "x": 128,
+     "y": 46,
+     "fps": 5,
+     "file": "map-fx-2-hierba.png",
+     "frames": 8,
+     "frameW": 80,
+     "frameH": 46
+    },
+    {
+     "sprite": "map-fx-2-nube",
+     "x": 0,
+     "y": 368,
+     "fps": 2,
+     "file": "map-fx-2-nube.png",
+     "frames": 8,
+     "frameW": 64,
+     "frameH": 40
+    }
+   ]
+  },
+  "3": {
+   "name": "Selva",
+   "boss": "mono",
+   "darkness": 2,
+   "scene": "map-zone-3",
+   "points": [
+    {
+     "x": 104,
+     "y": 394,
+     "kind": "pattern",
+     "order": 1
+    },
+    {
+     "x": 50,
+     "y": 334,
+     "kind": "pattern",
+     "order": 2
+    },
+    {
+     "x": 129,
+     "y": 293,
+     "kind": "pattern",
+     "order": 3
+    },
+    {
+     "x": 174,
+     "y": 238,
+     "kind": "rescue",
+     "order": 4
+    },
+    {
+     "x": 83,
+     "y": 207,
+     "kind": "pattern",
+     "order": 5
+    },
+    {
+     "x": 60,
+     "y": 141,
+     "kind": "pattern",
+     "order": 6
+    },
+    {
+     "x": 146,
+     "y": 122,
+     "kind": "camp",
+     "order": 7
+    },
+    {
+     "x": 149,
+     "y": 58,
+     "kind": "boss",
+     "order": 8
+    }
+   ],
+   "ambient": [
+    {
+     "sprite": "map-fx-3-cascada",
+     "x": 176,
+     "y": 312,
+     "fps": 8,
+     "file": "map-fx-3-cascada.png",
+     "frames": 8,
+     "frameW": 24,
+     "frameH": 52
+    },
+    {
+     "sprite": "map-fx-3-lianas",
+     "x": 12,
+     "y": 254,
+     "fps": 4,
+     "file": "map-fx-3-lianas.png",
+     "frames": 8,
+     "frameW": 40,
+     "frameH": 38
+    },
+    {
+     "sprite": "map-fx-3-charco",
+     "x": 108,
+     "y": 164,
+     "fps": 6,
+     "file": "map-fx-3-charco.png",
+     "frames": 8,
+     "frameW": 26,
+     "frameH": 24
+    },
+    {
+     "sprite": "map-fx-3-mono",
+     "x": 52,
+     "y": 60,
+     "fps": 5,
+     "file": "map-fx-3-mono.png",
+     "frames": 8,
+     "frameW": 38,
+     "frameH": 34
+    },
+    {
+     "sprite": "map-fx-3-rayos",
+     "x": 70,
+     "y": 226,
+     "fps": 3,
+     "file": "map-fx-3-rayos.png",
+     "frames": 8,
+     "frameW": 80,
+     "frameH": 54
+    }
+   ]
+  },
+  "4": {
+   "name": "Cañón",
+   "boss": "caballo",
+   "darkness": 3,
+   "scene": "map-zone-4",
+   "points": [
+    {
+     "x": 120,
+     "y": 396,
+     "kind": "pattern",
+     "order": 1
+    },
+    {
+     "x": 172,
+     "y": 338,
+     "kind": "pattern",
+     "order": 2
+    },
+    {
+     "x": 84,
+     "y": 306,
+     "kind": "pattern",
+     "order": 3
+    },
+    {
+     "x": 50,
+     "y": 247,
+     "kind": "rescue",
+     "order": 4
+    },
+    {
+     "x": 111,
+     "y": 188,
+     "kind": "pattern",
+     "order": 5
+    },
+    {
+     "x": 178,
+     "y": 140,
+     "kind": "pattern",
+     "order": 6
+    },
+    {
+     "x": 106,
+     "y": 102,
+     "kind": "camp",
+     "order": 7
+    },
+    {
+     "x": 53,
+     "y": 52,
+     "kind": "boss",
+     "order": 8
+    }
+   ],
+   "ambient": [
+    {
+     "sprite": "map-fx-4-remolino",
+     "x": 24,
+     "y": 344,
+     "fps": 8,
+     "file": "map-fx-4-remolino.png",
+     "frames": 8,
+     "frameW": 38,
+     "frameH": 60
+    },
+    {
+     "sprite": "map-fx-4-rodadora",
+     "x": 62,
+     "y": 348,
+     "fps": 6,
+     "file": "map-fx-4-rodadora.png",
+     "frames": 8,
+     "frameW": 80,
+     "frameH": 22
+    },
+    {
+     "sprite": "map-fx-4-caballo",
+     "x": 124,
+     "y": 56,
+     "fps": 4,
+     "file": "map-fx-4-caballo.png",
+     "frames": 8,
+     "frameW": 36,
+     "frameH": 26
+    },
+    {
+     "sprite": "map-fx-4-humo",
+     "x": 182,
+     "y": 0,
+     "fps": 4,
+     "file": "map-fx-4-humo.png",
+     "frames": 8,
+     "frameW": 34,
+     "frameH": 38
+    },
+    {
+     "sprite": "map-fx-4-bruma",
+     "x": 124,
+     "y": 192,
+     "fps": 3,
+     "file": "map-fx-4-bruma.png",
+     "frames": 8,
+     "frameW": 96,
+     "frameH": 42
+    }
+   ]
+  },
+  "5": {
+   "name": "Sabana",
+   "boss": "elefante",
+   "darkness": 4,
+   "scene": "map-zone-5",
+   "points": [
+    {
+     "x": 96,
+     "y": 391,
+     "kind": "pattern",
+     "order": 1
+    },
+    {
+     "x": 73,
+     "y": 315,
+     "kind": "pattern",
+     "order": 2
+    },
+    {
+     "x": 173,
+     "y": 278,
+     "kind": "rescue",
+     "order": 3
+    },
+    {
+     "x": 97,
+     "y": 225,
+     "kind": "pattern",
+     "order": 4
+    },
+    {
+     "x": 91,
+     "y": 151,
+     "kind": "pattern",
+     "order": 5
+    },
+    {
+     "x": 178,
+     "y": 103,
+     "kind": "camp",
+     "order": 6
+    },
+    {
+     "x": 87,
+     "y": 70,
+     "kind": "boss",
+     "order": 7
+    }
+   ],
+   "ambient": [
+    {
+     "sprite": "map-fx-5-espejismo",
+     "x": 128,
+     "y": 168,
+     "fps": 6,
+     "file": "map-fx-5-espejismo.png",
+     "frames": 8,
+     "frameW": 88,
+     "frameH": 44
+    },
+    {
+     "sprite": "map-fx-5-elefante",
+     "x": 122,
+     "y": 30,
+     "fps": 4,
+     "file": "map-fx-5-elefante.png",
+     "frames": 8,
+     "frameW": 46,
+     "frameH": 36
+    },
+    {
+     "sprite": "map-fx-5-buitres",
+     "x": 4,
+     "y": 236,
+     "fps": 5,
+     "file": "map-fx-5-buitres.png",
+     "frames": 8,
+     "frameW": 56,
+     "frameH": 34
+    },
+    {
+     "sprite": "map-fx-5-charca",
+     "x": 142,
+     "y": 348,
+     "fps": 5,
+     "file": "map-fx-5-charca.png",
+     "frames": 8,
+     "frameW": 72,
+     "frameH": 36
+    },
+    {
+     "sprite": "map-fx-5-hierba",
+     "x": 4,
+     "y": 392,
+     "fps": 4,
+     "file": "map-fx-5-hierba.png",
+     "frames": 8,
+     "frameW": 80,
+     "frameH": 28
+    }
+   ]
+  },
+  "6": {
+   "name": "Pantano",
+   "boss": "tortuga",
+   "darkness": 5,
+   "scene": "map-zone-6",
+   "points": [
+    {
+     "x": 104,
+     "y": 393,
+     "kind": "pattern",
+     "order": 1
+    },
+    {
+     "x": 70,
+     "y": 319,
+     "kind": "pattern",
+     "order": 2
+    },
+    {
+     "x": 144,
+     "y": 267,
+     "kind": "rescue",
+     "order": 3
+    },
+    {
+     "x": 69,
+     "y": 217,
+     "kind": "pattern",
+     "order": 4
+    },
+    {
+     "x": 104,
+     "y": 153,
+     "kind": "pattern",
+     "order": 5
+    },
+    {
+     "x": 160,
+     "y": 87,
+     "kind": "camp",
+     "order": 6
+    },
+    {
+     "x": 85,
+     "y": 49,
+     "kind": "boss",
+     "order": 7
+    }
+   ],
+   "ambient": [
+    {
+     "sprite": "map-fx-6-olas",
+     "x": 158,
+     "y": 136,
+     "fps": 5,
+     "file": "map-fx-6-olas.png",
+     "frames": 8,
+     "frameW": 62,
+     "frameH": 228
+    },
+    {
+     "sprite": "map-fx-6-burbujas",
+     "x": 4,
+     "y": 254,
+     "fps": 5,
+     "file": "map-fx-6-burbujas.png",
+     "frames": 8,
+     "frameW": 72,
+     "frameH": 38
+    },
+    {
+     "sprite": "map-fx-6-niebla",
+     "x": 166,
+     "y": 8,
+     "fps": 3,
+     "file": "map-fx-6-niebla.png",
+     "frames": 8,
+     "frameW": 54,
+     "frameH": 66
+    },
+    {
+     "sprite": "map-fx-6-luciernagas",
+     "x": 136,
+     "y": 370,
+     "fps": 4,
+     "file": "map-fx-6-luciernagas.png",
+     "frames": 8,
+     "frameW": 80,
+     "frameH": 48
+    },
+    {
+     "sprite": "map-fx-6-tortuga",
+     "x": 6,
+     "y": 64,
+     "fps": 4,
+     "file": "map-fx-6-tortuga.png",
+     "frames": 8,
+     "frameW": 58,
+     "frameH": 46
+    }
+   ]
+  },
+  "7": {
+   "name": "Guarida",
+   "boss": "rey",
+   "darkness": 6,
+   "scene": "map-zone-7",
+   "points": [
+    {
+     "x": 111,
+     "y": 402,
+     "kind": "door",
+     "order": 1
+    },
+    {
+     "x": 164,
+     "y": 352,
+     "kind": "door",
+     "order": 2
+    },
+    {
+     "x": 106,
+     "y": 314,
+     "kind": "pattern",
+     "order": 3
+    },
+    {
+     "x": 57,
+     "y": 267,
+     "kind": "door",
+     "order": 4
+    },
+    {
+     "x": 163,
+     "y": 201,
+     "kind": "door",
+     "order": 5
+    },
+    {
+     "x": 115,
+     "y": 169,
+     "kind": "pattern",
+     "order": 6
+    },
+    {
+     "x": 68,
+     "y": 150,
+     "kind": "door",
+     "order": 7
+    },
+    {
+     "x": 70,
+     "y": 106,
+     "kind": "door",
+     "order": 8
+    },
+    {
+     "x": 110,
+     "y": 53,
+     "kind": "king",
+     "order": 9
+    }
+   ],
+   "ambient": [
+    {
+     "sprite": "map-fx-7-relampagos",
+     "x": 0,
+     "y": 0,
+     "fps": 2,
+     "file": "map-fx-7-relampagos.png",
+     "frames": 8,
+     "frameW": 60,
+     "frameH": 42
+    },
+    {
+     "sprite": "map-fx-7-estandartes",
+     "x": 62,
+     "y": 12,
+     "fps": 5,
+     "file": "map-fx-7-estandartes.png",
+     "frames": 8,
+     "frameW": 96,
+     "frameH": 22
+    },
+    {
+     "sprite": "map-fx-7-brasero1",
+     "x": 76,
+     "y": 34,
+     "fps": 6,
+     "file": "map-fx-7-brasero1.png",
+     "frames": 8,
+     "frameW": 18,
+     "frameH": 12
+    },
+    {
+     "sprite": "map-fx-7-brasero2",
+     "x": 126,
+     "y": 34,
+     "fps": 6,
+     "file": "map-fx-7-brasero2.png",
+     "frames": 8,
+     "frameW": 18,
+     "frameH": 12
+    },
+    {
+     "sprite": "map-fx-7-ojos",
+     "x": 176,
+     "y": 228,
+     "fps": 3,
+     "file": "map-fx-7-ojos.png",
+     "frames": 8,
+     "frameW": 44,
+     "frameH": 84
+    },
+    {
+     "sprite": "map-fx-7-grietas",
+     "x": 2,
+     "y": 340,
+     "fps": 4,
+     "file": "map-fx-7-grietas.png",
+     "frames": 8,
+     "frameW": 94,
+     "frameH": 62
+    }
+   ]
+  }
+ },
+ "nodes": {
+  "size": 20,
+  "kinds": [
+   "pattern",
+   "boss",
+   "rescue",
+   "camp",
+   "door",
+   "king"
+  ],
+  "states": {
+   "pattern": [
+    "locked",
+    "open",
+    "current",
+    "done1",
+    "done2",
+    "done3"
+   ],
+   "boss": [
+    "locked",
+    "open",
+    "current",
+    "done1",
+    "done2",
+    "done3"
+   ],
+   "rescue": [
+    "locked",
+    "open",
+    "current",
+    "done"
+   ],
+   "camp": [
+    "locked",
+    "open",
+    "current",
+    "done"
+   ],
+   "door": [
+    "locked",
+    "open",
+    "current",
+    "done"
+   ],
+   "king": [
+    "locked",
+    "open",
+    "current",
+    "done"
+   ]
+  },
+  "pulse": [
+   "open",
+   "current"
+  ]
+ },
+ "paper": {
+  "stops": [
+   {
+    "x": 40,
+    "y": 292,
+    "boss": "ardilla"
+   },
+   {
+    "x": 168,
+    "y": 294,
+    "boss": "conejo"
+   },
+   {
+    "x": 122,
+    "y": 243,
+    "boss": "mono"
+   },
+   {
+    "x": 34,
+    "y": 186,
+    "boss": "caballo"
+   },
+   {
+    "x": 159,
+    "y": 169,
+    "boss": "elefante"
+   },
+   {
+    "x": 145,
+    "y": 110,
+    "boss": "tortuga"
+   },
+   {
+    "x": 37,
+    "y": 97,
+    "boss": "rey"
+   }
+  ],
+  "trail": [
+   {
+    "x": 59,
+    "y": 295,
+    "zone": "1"
+   },
+   {
+    "x": 77,
+    "y": 298,
+    "zone": "1"
+   },
+   {
+    "x": 95,
+    "y": 296,
+    "zone": "1"
+   },
+   {
+    "x": 113,
+    "y": 290,
+    "zone": "1"
+   },
+   {
+    "x": 131,
+    "y": 288,
+    "zone": "1"
+   },
+   {
+    "x": 149,
+    "y": 292,
+    "zone": "1"
+   },
+   {
+    "x": 185,
+    "y": 285,
+    "zone": "2"
+   },
+   {
+    "x": 194,
+    "y": 269,
+    "zone": "2"
+   },
+   {
+    "x": 191,
+    "y": 251,
+    "zone": "2"
+   },
+   {
+    "x": 176,
+    "y": 241,
+    "zone": "2"
+   },
+   {
+    "x": 158,
+    "y": 236,
+    "zone": "2"
+   },
+   {
+    "x": 140,
+    "y": 239,
+    "zone": "2"
+   },
+   {
+    "x": 103,
+    "y": 243,
+    "zone": "3"
+   },
+   {
+    "x": 85,
+    "y": 240,
+    "zone": "3"
+   },
+   {
+    "x": 67,
+    "y": 234,
+    "zone": "3"
+   },
+   {
+    "x": 49,
+    "y": 228,
+    "zone": "3"
+   },
+   {
+    "x": 33,
+    "y": 219,
+    "zone": "3"
+   },
+   {
+    "x": 27,
+    "y": 203,
+    "zone": "3"
+   },
+   {
+    "x": 50,
+    "y": 177,
+    "zone": "4"
+   },
+   {
+    "x": 69,
+    "y": 174,
+    "zone": "4"
+   },
+   {
+    "x": 87,
+    "y": 178,
+    "zone": "4"
+   },
+   {
+    "x": 105,
+    "y": 182,
+    "zone": "4"
+   },
+   {
+    "x": 123,
+    "y": 180,
+    "zone": "4"
+   },
+   {
+    "x": 141,
+    "y": 175,
+    "zone": "4"
+   },
+   {
+    "x": 177,
+    "y": 162,
+    "zone": "5"
+   },
+   {
+    "x": 191,
+    "y": 150,
+    "zone": "5"
+   },
+   {
+    "x": 192,
+    "y": 132,
+    "zone": "5"
+   },
+   {
+    "x": 181,
+    "y": 119,
+    "zone": "5"
+   },
+   {
+    "x": 164,
+    "y": 112,
+    "zone": "5"
+   },
+   {
+    "x": 126,
+    "y": 115,
+    "zone": "6"
+   },
+   {
+    "x": 108,
+    "y": 118,
+    "zone": "6"
+   },
+   {
+    "x": 90,
+    "y": 116,
+    "zone": "6"
+   },
+   {
+    "x": 72,
+    "y": 111,
+    "zone": "6"
+   },
+   {
+    "x": 55,
+    "y": 105,
+    "zone": "6"
+   },
+   {
+    "x": 28,
+    "y": 82,
+    "zone": "7"
+   },
+   {
+    "x": 32,
+    "y": 64,
+    "zone": "7"
+   },
+   {
+    "x": 47,
+    "y": 54,
+    "zone": "7"
+   },
+   {
+    "x": 65,
+    "y": 49,
+    "zone": "7"
+   },
+   {
+    "x": 83,
+    "y": 50,
+    "zone": "7"
+   },
+   {
+    "x": 101,
+    "y": 55,
+    "zone": "7"
+   },
+   {
+    "x": 120,
+    "y": 55,
+    "zone": "7"
+   },
+   {
+    "x": 137,
+    "y": 49,
+    "zone": "7"
+   },
+   {
+    "x": 154,
+    "y": 42,
+    "zone": "7"
+   }
+  ]
+ },
+ "sprites": {
+  "cookie-board": {
+   "file": "cookie-board.png",
+   "frameW": 10,
+   "frameH": 10,
+   "frames": 1
+  },
+  "cookie-board-empty": {
+   "file": "cookie-board-empty.png",
+   "frameW": 10,
+   "frameH": 10,
+   "frames": 1
+  },
+  "cookie-gold": {
+   "file": "cookie-gold.png",
+   "frameW": 10,
+   "frameH": 10,
+   "frames": 1
+  },
+  "map-fx-1-ardilla": {
+   "file": "map-fx-1-ardilla.png",
+   "frameW": 30,
+   "frameH": 28,
+   "frames": 8
+  },
+  "map-fx-1-arroyo": {
+   "file": "map-fx-1-arroyo.png",
+   "frameW": 158,
+   "frameH": 36,
+   "frames": 8
+  },
+  "map-fx-1-arroyo2": {
+   "file": "map-fx-1-arroyo2.png",
+   "frameW": 35,
+   "frameH": 26,
+   "frames": 8
+  },
+  "map-fx-1-copas": {
+   "file": "map-fx-1-copas.png",
+   "frameW": 64,
+   "frameH": 44,
+   "frames": 8
+  },
+  "map-fx-1-hojas": {
+   "file": "map-fx-1-hojas.png",
+   "frameW": 62,
+   "frameH": 74,
+   "frames": 8
+  },
+  "map-fx-2-conejo": {
+   "file": "map-fx-2-conejo.png",
+   "frameW": 22,
+   "frameH": 20,
+   "frames": 8
+  },
+  "map-fx-2-hierba": {
+   "file": "map-fx-2-hierba.png",
+   "frameW": 80,
+   "frameH": 46,
+   "frames": 8
+  },
+  "map-fx-2-mariposas": {
+   "file": "map-fx-2-mariposas.png",
+   "frameW": 82,
+   "frameH": 48,
+   "frames": 8
+  },
+  "map-fx-2-nube": {
+   "file": "map-fx-2-nube.png",
+   "frameW": 64,
+   "frameH": 40,
+   "frames": 8
+  },
+  "map-fx-3-cascada": {
+   "file": "map-fx-3-cascada.png",
+   "frameW": 24,
+   "frameH": 52,
+   "frames": 8
+  },
+  "map-fx-3-charco": {
+   "file": "map-fx-3-charco.png",
+   "frameW": 26,
+   "frameH": 24,
+   "frames": 8
+  },
+  "map-fx-3-lianas": {
+   "file": "map-fx-3-lianas.png",
+   "frameW": 40,
+   "frameH": 38,
+   "frames": 8
+  },
+  "map-fx-3-mono": {
+   "file": "map-fx-3-mono.png",
+   "frameW": 38,
+   "frameH": 34,
+   "frames": 8
+  },
+  "map-fx-3-rayos": {
+   "file": "map-fx-3-rayos.png",
+   "frameW": 80,
+   "frameH": 54,
+   "frames": 8
+  },
+  "map-fx-4-bruma": {
+   "file": "map-fx-4-bruma.png",
+   "frameW": 96,
+   "frameH": 42,
+   "frames": 8
+  },
+  "map-fx-4-caballo": {
+   "file": "map-fx-4-caballo.png",
+   "frameW": 36,
+   "frameH": 26,
+   "frames": 8
+  },
+  "map-fx-4-humo": {
+   "file": "map-fx-4-humo.png",
+   "frameW": 34,
+   "frameH": 38,
+   "frames": 8
+  },
+  "map-fx-4-remolino": {
+   "file": "map-fx-4-remolino.png",
+   "frameW": 38,
+   "frameH": 60,
+   "frames": 8
+  },
+  "map-fx-4-rodadora": {
+   "file": "map-fx-4-rodadora.png",
+   "frameW": 80,
+   "frameH": 22,
+   "frames": 8
+  },
+  "map-fx-5-buitres": {
+   "file": "map-fx-5-buitres.png",
+   "frameW": 56,
+   "frameH": 34,
+   "frames": 8
+  },
+  "map-fx-5-charca": {
+   "file": "map-fx-5-charca.png",
+   "frameW": 72,
+   "frameH": 36,
+   "frames": 8
+  },
+  "map-fx-5-elefante": {
+   "file": "map-fx-5-elefante.png",
+   "frameW": 46,
+   "frameH": 36,
+   "frames": 8
+  },
+  "map-fx-5-espejismo": {
+   "file": "map-fx-5-espejismo.png",
+   "frameW": 88,
+   "frameH": 44,
+   "frames": 8
+  },
+  "map-fx-5-hierba": {
+   "file": "map-fx-5-hierba.png",
+   "frameW": 80,
+   "frameH": 28,
+   "frames": 8
+  },
+  "map-fx-6-burbujas": {
+   "file": "map-fx-6-burbujas.png",
+   "frameW": 72,
+   "frameH": 38,
+   "frames": 8
+  },
+  "map-fx-6-luciernagas": {
+   "file": "map-fx-6-luciernagas.png",
+   "frameW": 80,
+   "frameH": 48,
+   "frames": 8
+  },
+  "map-fx-6-niebla": {
+   "file": "map-fx-6-niebla.png",
+   "frameW": 54,
+   "frameH": 66,
+   "frames": 8
+  },
+  "map-fx-6-olas": {
+   "file": "map-fx-6-olas.png",
+   "frameW": 62,
+   "frameH": 228,
+   "frames": 8
+  },
+  "map-fx-6-tortuga": {
+   "file": "map-fx-6-tortuga.png",
+   "frameW": 58,
+   "frameH": 46,
+   "frames": 8
+  },
+  "map-fx-7-brasero1": {
+   "file": "map-fx-7-brasero1.png",
+   "frameW": 18,
+   "frameH": 12,
+   "frames": 8
+  },
+  "map-fx-7-brasero2": {
+   "file": "map-fx-7-brasero2.png",
+   "frameW": 18,
+   "frameH": 12,
+   "frames": 8
+  },
+  "map-fx-7-estandartes": {
+   "file": "map-fx-7-estandartes.png",
+   "frameW": 96,
+   "frameH": 22,
+   "frames": 8
+  },
+  "map-fx-7-grietas": {
+   "file": "map-fx-7-grietas.png",
+   "frameW": 94,
+   "frameH": 62,
+   "frames": 8
+  },
+  "map-fx-7-ojos": {
+   "file": "map-fx-7-ojos.png",
+   "frameW": 44,
+   "frameH": 84,
+   "frames": 8
+  },
+  "map-fx-7-relampagos": {
+   "file": "map-fx-7-relampagos.png",
+   "frameW": 60,
+   "frameH": 42,
+   "frames": 8
+  },
+  "map-lock": {
+   "file": "map-lock.png",
+   "frameW": 12,
+   "frameH": 14,
+   "frames": 1
+  },
+  "map-node-boss-current": {
+   "file": "map-node-boss-current.png",
+   "frameW": 20,
+   "frameH": 20,
+   "frames": 2
+  },
+  "map-node-boss-done1": {
+   "file": "map-node-boss-done1.png",
+   "frameW": 20,
+   "frameH": 20,
+   "frames": 1
+  },
+  "map-node-boss-done2": {
+   "file": "map-node-boss-done2.png",
+   "frameW": 20,
+   "frameH": 20,
+   "frames": 1
+  },
+  "map-node-boss-done3": {
+   "file": "map-node-boss-done3.png",
+   "frameW": 20,
+   "frameH": 20,
+   "frames": 1
+  },
+  "map-node-boss-locked": {
+   "file": "map-node-boss-locked.png",
+   "frameW": 20,
+   "frameH": 20,
+   "frames": 1
+  },
+  "map-node-boss-open": {
+   "file": "map-node-boss-open.png",
+   "frameW": 20,
+   "frameH": 20,
+   "frames": 2
+  },
+  "map-node-camp-current": {
+   "file": "map-node-camp-current.png",
+   "frameW": 20,
+   "frameH": 20,
+   "frames": 2
+  },
+  "map-node-camp-done": {
+   "file": "map-node-camp-done.png",
+   "frameW": 20,
+   "frameH": 20,
+   "frames": 1
+  },
+  "map-node-camp-locked": {
+   "file": "map-node-camp-locked.png",
+   "frameW": 20,
+   "frameH": 20,
+   "frames": 1
+  },
+  "map-node-camp-open": {
+   "file": "map-node-camp-open.png",
+   "frameW": 20,
+   "frameH": 20,
+   "frames": 2
+  },
+  "map-node-door-current": {
+   "file": "map-node-door-current.png",
+   "frameW": 20,
+   "frameH": 20,
+   "frames": 2
+  },
+  "map-node-door-done": {
+   "file": "map-node-door-done.png",
+   "frameW": 20,
+   "frameH": 20,
+   "frames": 1
+  },
+  "map-node-door-locked": {
+   "file": "map-node-door-locked.png",
+   "frameW": 20,
+   "frameH": 20,
+   "frames": 1
+  },
+  "map-node-door-open": {
+   "file": "map-node-door-open.png",
+   "frameW": 20,
+   "frameH": 20,
+   "frames": 2
+  },
+  "map-node-king-current": {
+   "file": "map-node-king-current.png",
+   "frameW": 20,
+   "frameH": 20,
+   "frames": 2
+  },
+  "map-node-king-done": {
+   "file": "map-node-king-done.png",
+   "frameW": 20,
+   "frameH": 20,
+   "frames": 1
+  },
+  "map-node-king-locked": {
+   "file": "map-node-king-locked.png",
+   "frameW": 20,
+   "frameH": 20,
+   "frames": 1
+  },
+  "map-node-king-open": {
+   "file": "map-node-king-open.png",
+   "frameW": 20,
+   "frameH": 20,
+   "frames": 2
+  },
+  "map-node-pattern-current": {
+   "file": "map-node-pattern-current.png",
+   "frameW": 20,
+   "frameH": 20,
+   "frames": 2
+  },
+  "map-node-pattern-done1": {
+   "file": "map-node-pattern-done1.png",
+   "frameW": 20,
+   "frameH": 20,
+   "frames": 1
+  },
+  "map-node-pattern-done2": {
+   "file": "map-node-pattern-done2.png",
+   "frameW": 20,
+   "frameH": 20,
+   "frames": 1
+  },
+  "map-node-pattern-done3": {
+   "file": "map-node-pattern-done3.png",
+   "frameW": 20,
+   "frameH": 20,
+   "frames": 1
+  },
+  "map-node-pattern-locked": {
+   "file": "map-node-pattern-locked.png",
+   "frameW": 20,
+   "frameH": 20,
+   "frames": 1
+  },
+  "map-node-pattern-open": {
+   "file": "map-node-pattern-open.png",
+   "frameW": 20,
+   "frameH": 20,
+   "frames": 2
+  },
+  "map-node-rescue-current": {
+   "file": "map-node-rescue-current.png",
+   "frameW": 20,
+   "frameH": 20,
+   "frames": 2
+  },
+  "map-node-rescue-done": {
+   "file": "map-node-rescue-done.png",
+   "frameW": 20,
+   "frameH": 20,
+   "frames": 1
+  },
+  "map-node-rescue-locked": {
+   "file": "map-node-rescue-locked.png",
+   "frameW": 20,
+   "frameH": 20,
+   "frames": 1
+  },
+  "map-node-rescue-open": {
+   "file": "map-node-rescue-open.png",
+   "frameW": 20,
+   "frameH": 20,
+   "frames": 2
+  },
+  "map-path-dot": {
+   "file": "map-path-dot.png",
+   "frameW": 4,
+   "frameH": 4,
+   "frames": 2
+  },
+  "map-zone-1": {
+   "file": "map-zone-1.png",
+   "frameW": 220,
+   "frameH": 420,
+   "frames": 1
+  },
+  "map-zone-2": {
+   "file": "map-zone-2.png",
+   "frameW": 220,
+   "frameH": 420,
+   "frames": 1
+  },
+  "map-zone-3": {
+   "file": "map-zone-3.png",
+   "frameW": 220,
+   "frameH": 420,
+   "frames": 1
+  },
+  "map-zone-4": {
+   "file": "map-zone-4.png",
+   "frameW": 220,
+   "frameH": 420,
+   "frames": 1
+  },
+  "map-zone-5": {
+   "file": "map-zone-5.png",
+   "frameW": 220,
+   "frameH": 420,
+   "frames": 1
+  },
+  "map-zone-6": {
+   "file": "map-zone-6.png",
+   "frameW": 220,
+   "frameH": 420,
+   "frames": 1
+  },
+  "map-zone-7": {
+   "file": "map-zone-7.png",
+   "frameW": 220,
+   "frameH": 420,
+   "frames": 1
+  },
+  "paper-map-d0": {
+   "file": "paper-map-d0.png",
+   "frameW": 220,
+   "frameH": 320,
+   "frames": 1
+  },
+  "paper-map-d1": {
+   "file": "paper-map-d1.png",
+   "frameW": 220,
+   "frameH": 320,
+   "frames": 1
+  },
+  "paper-map-d2": {
+   "file": "paper-map-d2.png",
+   "frameW": 220,
+   "frameH": 320,
+   "frames": 1
+  },
+  "paper-marker": {
+   "file": "paper-marker.png",
+   "frameW": 12,
+   "frameH": 12,
+   "frames": 2
+  },
+  "paper-stop-ardilla-locked": {
+   "file": "paper-stop-ardilla-locked.png",
+   "frameW": 20,
+   "frameH": 20,
+   "frames": 1
+  },
+  "paper-stop-ardilla-open": {
+   "file": "paper-stop-ardilla-open.png",
+   "frameW": 20,
+   "frameH": 20,
+   "frames": 1
+  },
+  "paper-stop-caballo-locked": {
+   "file": "paper-stop-caballo-locked.png",
+   "frameW": 20,
+   "frameH": 20,
+   "frames": 1
+  },
+  "paper-stop-caballo-open": {
+   "file": "paper-stop-caballo-open.png",
+   "frameW": 20,
+   "frameH": 20,
+   "frames": 1
+  },
+  "paper-stop-conejo-locked": {
+   "file": "paper-stop-conejo-locked.png",
+   "frameW": 20,
+   "frameH": 20,
+   "frames": 1
+  },
+  "paper-stop-conejo-open": {
+   "file": "paper-stop-conejo-open.png",
+   "frameW": 20,
+   "frameH": 20,
+   "frames": 1
+  },
+  "paper-stop-elefante-locked": {
+   "file": "paper-stop-elefante-locked.png",
+   "frameW": 20,
+   "frameH": 20,
+   "frames": 1
+  },
+  "paper-stop-elefante-open": {
+   "file": "paper-stop-elefante-open.png",
+   "frameW": 20,
+   "frameH": 20,
+   "frames": 1
+  },
+  "paper-stop-mono-locked": {
+   "file": "paper-stop-mono-locked.png",
+   "frameW": 20,
+   "frameH": 20,
+   "frames": 1
+  },
+  "paper-stop-mono-open": {
+   "file": "paper-stop-mono-open.png",
+   "frameW": 20,
+   "frameH": 20,
+   "frames": 1
+  },
+  "paper-stop-rey-locked": {
+   "file": "paper-stop-rey-locked.png",
+   "frameW": 20,
+   "frameH": 20,
+   "frames": 1
+  },
+  "paper-stop-rey-open": {
+   "file": "paper-stop-rey-open.png",
+   "frameW": 20,
+   "frameH": 20,
+   "frames": 1
+  },
+  "paper-stop-tortuga-locked": {
+   "file": "paper-stop-tortuga-locked.png",
+   "frameW": 20,
+   "frameH": 20,
+   "frames": 1
+  },
+  "paper-stop-tortuga-open": {
+   "file": "paper-stop-tortuga-open.png",
+   "frameW": 20,
+   "frameH": 20,
+   "frames": 1
+  }
+ }
+}
