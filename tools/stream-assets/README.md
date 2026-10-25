@@ -89,3 +89,24 @@ usuario eligió para el tablero.
 | `export_runner.py` | Pega los cuadros en tiras y escribe `runner.json` (con `--check`) |
 | `preview_runner.py` | Hoja de contacto de los assets del runner |
 | `test_runner_assets.py` | Determinismo, coincidencia con la app, manifiesto y que exista todo lo que el juego pide por nombre |
+
+## La manada y el mapa del Chess Runner
+
+Los 10 personajes de la manada y el mapa por zonas siguen el contrato de
+[`docs/personajes/ASSETS_SPEC.md`](../../docs/personajes/ASSETS_SPEC.md). Salen a `apps/chessColate/src/assets/images/pack/`
+(`pack.json`) y `…/images/map/` (`map.json`). Nadie edita un registro común: los exportadores **descubren** los módulos.
+
+```bash
+./.venv/bin/python export_pack.py [--check]       # personajes: módulos pack_char_<id>.py
+./.venv/bin/python preview_pack.py [--only choco] # docs/local/preview/: hoja ×8 por personaje, tallas y 1×/2×
+./.venv/bin/python export_map.py [--check]        # mapa: módulos map_*.py (ASSETS + META)
+./.venv/bin/python preview_map.py [--only 1,2]    # docs/local/preview/: zona con puntos, tira animada y GIF, nodos, papel
+```
+
+| Archivo | Qué contiene |
+|---|---|
+| `pack_common.py` | Descubrimiento de módulos, pegado en tiras con la celda única y el `--check` compartido |
+| `pack_char_<id>.py` | Un personaje: `META` (nombre, talla, collar…), `animations()` y `portrait()` |
+| `export_pack.py` / `preview_pack.py` / `test_pack_assets.py` | Exportador, vistas previas y pruebas de la manada |
+| `map_*.py` | Una parte del mapa (una zona, los nodos, el papel): `ASSETS` y `META` |
+| `export_map.py` / `preview_map.py` / `test_map_assets.py` | Exportador, vistas previas y pruebas del mapa |
